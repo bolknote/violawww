@@ -174,7 +174,7 @@ static MenuItem fileMenuItems[] = {
 	  FALSE,
 	  (MenuItem *) NULL},
     */
-    { "Show Source", &xmPushButtonWidgetClass, 'S', "Ctrl<Key>S", "Ctrl-S",
+    { "Show Source", &xmPushButtonWidgetClass, 0, "Ctrl<Key>S", "Ctrl-S",
 	  showSourceCB, "showSource",
 	  "Show the document source.",
 	  TRUE,

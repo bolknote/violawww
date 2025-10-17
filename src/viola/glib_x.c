@@ -452,9 +452,8 @@ int GLInit(dpy, scrn)
 			XrmMergeDatabases(resManagerDB, &resDB);
 /*			XrmDestroyDatabase(resManagerDB);*/
 		}
-	} else {
-		fprintf(stderr, "failed to get RESOURCE_MANAGER.\n");
 	}
+	/* RESOURCE_MANAGER not set - this is normal on XQuartz/macOS */
 
 	colorNameShareDB = initHashTable(300, hash_str, cmp_str, NULL, NULL,
 				getHashEntry_str, 

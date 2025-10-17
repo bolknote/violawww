@@ -16,6 +16,14 @@ INSTALL = /usr/ucb/install
 #TOP = 
 #LDCOMBINEFLAGS = 
 
+#ifdef DarwinArchitecture
+CDEBUGFLAGS   = -Os -arch arm64 -std=gnu89
+CCOPTIONS     = -Wno-everything -no-cpp-precomp
+STD_INCLUDES  = -I/opt/homebrew/include -I/opt/homebrew/Cellar/openmotif/2.3.8_3/include
+LDOPTIONS     = -L/opt/homebrew/lib -L/opt/homebrew/Cellar/openmotif/2.3.8_3/lib -arch arm64
+WWW_BIN       = ../libWWW/Library/darwin
+#endif
+
 #ifdef SunArchitecture
 CDEBUGFLAGS   = -g
 

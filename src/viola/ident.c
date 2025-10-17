@@ -633,9 +633,9 @@ int init_ident()
 				removeHashEntry_int);
 
 	for (symp = symList; symp->s; symp++) {
-		if (!symStr2ID->get(symStr2ID, (int)symp->s)) {
-			symStr2ID->put(symStr2ID, (int)symp->s, (int)symp->i);
-			symID2Str->put(symID2Str, (int)symp->i, (int)symp->s);
+		if (!symStr2ID->get(symStr2ID, (long)symp->s)) {
+			symStr2ID->put(symStr2ID, (long)symp->s, (long)symp->i);
+			symID2Str->put(symID2Str, (long)symp->i, (long)symp->s);
 		}
 	}
 

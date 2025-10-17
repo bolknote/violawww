@@ -12,7 +12,7 @@
 VList *scanVListNode(head_list, id, cmpf)
 	VList **head_list;
 	long id;
-	int (*cmpf)();
+	long (*cmpf)();
 {
 	if (*head_list) {
 		VList *list;
@@ -29,7 +29,7 @@ VList *scanVListNode(head_list, id, cmpf)
 VList *removeVListNode(head_list, id, cmpf)
 	VList **head_list;
 	long id;
-	int (*cmpf)();
+	long (*cmpf)();
 {
 	if (*head_list) {
 

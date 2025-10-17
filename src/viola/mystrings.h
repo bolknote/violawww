@@ -53,14 +53,14 @@ extern int GBuffSize[];
 int cmp_str();
 int cmp_int();
 
-char *trimFrontSpaces();
+char *trimFrontSpaces(char *str);
 
 /*
  * cuts of the spaces, if any, at the beginning and the end of a string.
  */
-char *trimEdgeSpaces();
+char *trimEdgeSpaces(char *str);
 
-void SkipBlanks();
+void SkipBlanks(char *linep, int *i);
 
 /*
  * case insensitive strcmp
@@ -95,17 +95,17 @@ int SkipNextWord();
  */
 int GetNextPhrase();
 
-char *NextLines();
+char *NextLines(char **textpp, int *lines, int *size);
 
 /*
- ** Gets a line of strings.
- *
- * PreCondition:  commandline must have atleat MAX_LINE_LENGTH characters.
- * PostCondition: commandline contains a line of strings ended with '\0'.
- *                terminate line with <return>.
- * Return: address of the string
- */
-char *GetLine();
+** Gets a line of strings.
+*
+* PreCondition:  commandline must have atleat MAX_LINE_LENGTH characters.
+* PostCondition: commandline contains a line of strings ended with '\0'.
+*                terminate line with <return>.
+* Return: address of the string
+*/
+char *GetLine(char *commandline);
 
 /*
  ** Determines if a line is all blank(without any printable characters
@@ -137,47 +137,48 @@ int CutTailSpace();
 int strToVal();
 
 /* puts the int val in str form*/
-char *valToStr();
+char *valToStr(long val, char *str);
 
 /*
  * see if str contains any characters in set.
  */
-int anyCommonChar();
+int anyCommonChar(char *str, char *set);
 
 /*
  * see if character ch is in string str
  * returns the index of ch in str
  */
-int charIsInStr();
+int charIsInStr(char ch, char *str);
 
-int numOfChar();
+int numOfChar(char *str, char ch);
 
 /* 
  * trim off the enclosing quotes of a string
  */
-char *trimQuote();
+char *trimQuote(char *str);
 
 /* allocates bigger space, and append to it.. the original string is freed*/
-char *append();
+char *append(char *orig, char *append);
 
 /* same as append, with a carriage appended at the end */
-char *appendLine();
+char *appendLine(char *orig, char *append);
 
-char *saveString();
-char *saveStringN();
-char *VsaveString();
+char *saveString(char *str);
+char *saveStringN(char *str, int n);
+/* MemoryGroup is defined elsewhere, use void* for now */
+char *VsaveString(void *group, char *str);
 
-int eqStr();
+int eqStr(char *s1, char *s2);
 
-char *listSum2Str();
+char *listSum2Str(int list1[], int list2[], int listLength, char *str);
 
-void insertChar();
-int shiftStr();
+void insertChar(char *str, int i, char ch);
+int shiftStr(char *strp, int starti, int shift);
 
-char *getLines();
-char *enQuote();
-char *enBracket();
-char *deBracket();
-char *listItem();
-char *extractWord();
+char *getLines(int low, int high, char *text, int *size);
+char *enQuote(char *str);
+char *enBracket(char *str);
+char *deBracket(char *str);
+char *listItem(char *list, int li, int hi);
+char *extractWord(char *text, int li, int hi, char *retStr);
 

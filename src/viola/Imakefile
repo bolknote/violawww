@@ -25,6 +25,14 @@ CDEBUGFLAGS   = -Wf,-XNl15000
 WWW_BIN       = ../libWWW/Library/decstation
 #endif
 
+#ifdef DarwinArchitecture
+CDEBUGFLAGS   = -Os -arch arm64 -std=gnu89
+CCOPTIONS     = -Wno-everything -no-cpp-precomp
+STD_INCLUDES  = -I/opt/homebrew/include
+LDOPTIONS     = -L/opt/homebrew/lib -arch arm64
+WWW_BIN       = ../libWWW/Library/darwin
+#endif
+
 #WWW_BIN       = ../libWWW/Library/Implementation
 #LEX =  flex
 

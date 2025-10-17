@@ -523,7 +523,7 @@ int meth_pane_initialize(self, result, argc, argv)
 	Packet argv[];
 {
 	Packet pks[2];
-	int (*func)();
+	long (*func)();
 
 	if (!meth_field_initialize(self, result, argc, argv)) return 0;
 

@@ -56,20 +56,20 @@ int varStrID = 0;
 /* 
  * Stores identifier in hashtable
  */
-int storeIdent(identStr)
+long storeIdent(identStr)
 	char *identStr;
 {
 	HashEntry *entry;
 
 	if (!(entry = symStr2ID->get(symStr2ID, (long)identStr))) {
 		entry = symStr2ID->put(symStr2ID,(long)identStr,++identStrID);
-		symID2Str->put(symID2Str, identStrID, (long)identStr);
+		symID2Str->put(symID2Str, (long)identStrID, (long)identStr);
 	}
 
 	return entry->val;
 }
 
-int getIdent(identStr)
+long getIdent(identStr)
         char *identStr;
 {
         HashEntry *entry;
@@ -77,7 +77,7 @@ int getIdent(identStr)
         if (entry = symStr2ID->get(symStr2ID, (long)identStr))
 	  return entry->val;
 
-        return NULL;
+        return 0;
 }
 
 int tokenize(identStr)
@@ -478,7 +478,7 @@ void skip_hashbang() {
 	}
 }
 
-static int refresh_buf() {
+int refresh_buf() {
     switch(lexsource) {
 	case FROMFILE:
             getc_buf[0] = *(getc_ptr - 1);
@@ -662,7 +662,7 @@ yypoint:
 extern void *is_inlib(char *s);
 #endif /* ANSI */
 
-static int grabtag(c)
+int grabtag(c)
     char c;
 {
 	char buf[BUFSIZ];
@@ -800,7 +800,7 @@ static int snarf_comment2() {
     return yylex();
 }
 
-static int grabop(c)
+int grabop(c)
     char c;
 {
 	int i;
@@ -829,7 +829,7 @@ static int grabop(c)
 }
 
 #define MAXNLEN 38
-static int grabint(c)
+int grabint(c)
     char c;
 {
     char intbuf[MAXNLEN + 2];
@@ -863,7 +863,7 @@ static int grabint(c)
     return INTCONST;
 }
 
-static int iskeyword(name)
+int iskeyword(name)
     char *name;
 {
 	int index = 0;

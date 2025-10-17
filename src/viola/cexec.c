@@ -13,6 +13,7 @@
  * be charged with express written permission of the copyright holder.
  * This software is provided ``as is'' without express or implied warranty.
  */
+#include <stdlib.h>
 #include "utils.h"
 #include "sys.h"
 #include "hash.h"
@@ -81,6 +82,8 @@ int argListSaveStackIdx = 0;
 CallObjStack callObjStack[OBJ_CALL_STACK];
 int callObjStackIdx = 0;
 
+long incrementExecStack();  /* forward declaration */
+
 int init_cexec() {
 	nullPacket(&reg1);
 	nullPacket(&reg2);
@@ -91,30 +94,30 @@ int init_cexec() {
  * (may be pointers into the stack?)
  * oh well, just start out with a large enough stack, I guess, for now.
  */
-int incrementExecStack()
+long incrementExecStack()
 {
 	Packet *newStack;
 
-	newStack = (Packet*)malloc(sizeof(struct Packet*) * 
-				(execStackSize + EXEC_STACK_SIZE_INCREMENT));
+	newStack = (Packet*)malloc(sizeof(struct Packet) * 
+			(execStackSize + EXEC_STACK_SIZE_INCREMENT));
 	if (!newStack) {
 		return 0;
 	}
 	if (execStackSize > 0) {
 		fprintf(stderr, 
 		"WARNING: pcode execution stack overflow. Errors may occur\n");
-		bcopy(newStack, execStack, 
-			execStackSize * sizeof(struct Packet*));
+		bcopy(execStack, newStack, 
+			execStackSize * sizeof(struct Packet));
 	/*	free(execStack);*/
 	} else {
 		bzero(newStack, (execStackSize + EXEC_STACK_SIZE_INCREMENT) 
-					* sizeof(struct Packet*));
+				* sizeof(struct Packet));
 	}
 	execStackSize = execStackSize + EXEC_STACK_SIZE_INCREMENT;
 	execStackSizeCheck = execStackSize - 100; /* 100 as arbitrary margin */
 	execStack = newStack;
 
-	return (int)execStack;
+	return (long)execStack;
 }
 
 int getlistcount(attrp)
@@ -416,10 +419,11 @@ Packet *codeExec(self, pcode, pcode_end, varVectorp)
 
 	    if (flag_printExec) {
 		fprintf(stderr, 
-			"pc=%d\tcurrBaseIdx=%d\tstackExecIdx=%d\n",
+			"pc=%d\tcurrBaseIdx=%d\tstackExecIdx=%d\tcode=%lx\n",
 			pcode - pcode_start,
 			currBaseIdx, 
-			stackExecIdx);
+			stackExecIdx,
+			(*pcode).x);
 	    }
 
 	    code = (*pcode++).x;
@@ -427,13 +431,19 @@ Packet *codeExec(self, pcode, pcode_end, varVectorp)
 		data = code & 0xffff;
 		switch (code & 0x0fff0000) {
 		case CODE_INTEGER << 16:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.i = data;
 			reg1.type = PKT_INT;
 			reg1.canFree = 0;
 		continue;
 		case CODE_CHAR << 16:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.c = data;
 			reg1.type = PKT_CHR;
 			reg1.canFree = 0;
@@ -460,7 +470,10 @@ Packet *codeExec(self, pcode, pcode_end, varVectorp)
 		continue;
 
 		case CODE_EQ_STACK_NBR_NZERO2 << 16:
-			if (reg2.canFree & PK_CANFREE_STR) free(reg2.info.s);
+			if (reg2.canFree & PK_CANFREE_STR) {
+				if (reg2.info.s) free(reg2.info.s);
+				reg2.info.s = NULL;
+			}
 			reg2.info = execStack[stackExecIdx].info;
 			reg2.type = execStack[stackExecIdx].type;
 			reg2.canFree = 0;
@@ -522,15 +535,18 @@ printf("\n");
 		continue;
 
 		case CODE_LISTC2 << 16:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.i = getlistcount((*varVectorp)[data]);
 			reg1.type = PKT_INT;
 			reg1.canFree = 0;
 		continue;
 
-		case CODE_GET2 << 16: {
-			int (*func)() = GET__classInfo(self)->slotGetMeth;
-			if (func) {
+	case CODE_GET2 << 16: {
+		long (*func)() = GET__classInfo(self)->slotGetMeth;
+		if (func) {
 				clearPacket(&reg1);
 				((long (*)())(func))
 					(self, &reg1, 0, NULL, data);
@@ -538,8 +554,8 @@ printf("\n");
 		}
 		continue;
 
-		case CODE_PUSH_SET2 << 16: {
-			int (*func)() = GET__classInfo(self)->slotSetMeth;
+	case CODE_PUSH_SET2 << 16: {
+		long (*func)() = GET__classInfo(self)->slotSetMeth;
 
 			if (stackExecIdx > execStackSizeCheck) {
 				if (!incrementExecStack()) return 0;
@@ -725,10 +741,10 @@ printf("<<<<<\n");
 
 		} continue;
 
-		case CODE_CALL2_C << 16: {
-			int save_stackExecIdx;
-			int (*func)(), argc;
-			CallObjStack *cs;
+	case CODE_CALL2_C << 16: {
+		int save_stackExecIdx;
+		long (*func)(), argc;
+		CallObjStack *cs;
 
 			func = (*pcode++).i;
 			argc = data;
@@ -787,28 +803,40 @@ printf("<<<<<\n");
 	    } else {
 		switch (code) {
 		case CODE_INTEGER:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.i = (*pcode++).i;
 			reg1.type = PKT_INT;
 			reg1.canFree = 0;
 		continue;
 
-        	case CODE_CHAR:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+       	case CODE_CHAR:
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.c = (*pcode++).c;
 			reg1.type = PKT_CHR;
 			reg1.canFree = 0;
 		continue;
 
 		case CODE_FLOAT:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.f = (*pcode++).f;
 			reg1.type = PKT_FLT;
 			reg1.canFree = 0;
 		continue;
 
 		case CODE_STRING:
-			if (reg1.canFree & PK_CANFREE_STR) free(reg1.info.s);
+			if (reg1.canFree & PK_CANFREE_STR) {
+				if (reg1.info.s) free(reg1.info.s);
+				reg1.info.s = NULL;
+			}
 			reg1.info.s = (*pcode++).s;
 			reg1.type = PKT_STR;
 			reg1.canFree = 0;
@@ -1057,7 +1085,7 @@ dumpStack();
 			varCount_TMP = varCount;
 
 			varlist = GET__varList(self);
-			*varVectorp = (Attr**)malloc(sizeof(struct Packet) *
+			*varVectorp = (Attr**)malloc(sizeof(Attr*) *
 							varCount);
 			while (varCount--) {
 				varID = (*pcode++).i;
@@ -2034,8 +2062,10 @@ dumpStack();
 		continue;
 		default:
 			fprintf(stderr, 
-				"pc=%d, unknown pcode=%d\n", 
-				pcode - pcode_start - 1, (*(pcode - 1)).x);
+				"pc=%d, unknown pcode=%lx (decimal=%ld, shifted=%lx)\n", 
+				pcode - pcode_start - 1, (*(pcode - 1)).x,
+				(*(pcode - 1)).x, ((*(pcode - 1)).x & 0x0fff0000) >> 16);
+			fprintf(stderr, "  This is likely a bug or unimplemented instruction\n");
 		continue;
 		}
 	    }
@@ -2076,7 +2106,7 @@ Packet *execObjScript(obj)
 		listRefArrayIdx = 0;
 
 #ifdef SCRIPT_FROM_FILENOT
-        tmpfile = saveString("/usr/tmp/violaXXXXXX");
+        tmpfile = saveString("/tmp/violaXXXXXX");
         mktemp(tmpfile);
         fp = fopen(tmpfile, "w");
         fputs(yyscript, fp);
@@ -2194,7 +2224,7 @@ Packet *execObjClassScript(obj, result)
 		listRefArrayIdx = 0;
 
 #ifdef SCRIPT_FROM_FILENOT
-        tmpfile = saveString("/usr/tmp/violaXXXXXX");
+        tmpfile = saveString("/tmp/violaXXXXXX");
         mktemp(tmpfile);
         fp = fopen(tmpfile, "w");
         fputs(yyscript, fp);
@@ -2301,7 +2331,7 @@ Packet *execScript(obj, result, script)
 	listRefArrayIdx = 0;
 
 #ifdef SCRIPT_FROM_FILENOT
-        tmpfile = saveString("/usr/tmp/violaXXXXXX");
+        tmpfile = saveString("/tmp/violaXXXXXX");
         mktemp(tmpfile);
         fp = fopen(tmpfile, "w");
         fputs(yyscript, fp);
@@ -2445,7 +2475,7 @@ Packet *spp, *pp;
 	}
 
 
-int sendMessagePackets(self, packets, packetc)
+long sendMessagePackets(self, packets, packetc)
 	VObj *self;
 	Packet *packets;
 	int packetc;
@@ -2477,7 +2507,7 @@ int sendMessagePackets(self, packets, packetc)
 	return 1;
 }
 
-int sendMessagePackets_result(self, packets, packetc, result)
+long sendMessagePackets_result(self, packets, packetc, result)
 	VObj *self;
 	Packet *packets;
 	int packetc;
@@ -2512,7 +2542,7 @@ int sendMessagePackets_result(self, packets, packetc, result)
 	return 1;
 }
 
-int sendMessageAndInts(self, messg, intArray, intCount)
+long sendMessageAndInts(self, messg, intArray, intCount)
 	VObj *self;
 	char *messg;
 	int *intArray;
@@ -2549,7 +2579,7 @@ int sendMessageAndInts(self, messg, intArray, intCount)
 	return 1;
 }
 
-int sendTokenMessageAndInts(self, tok, intArray, intCount)
+long sendTokenMessageAndInts(self, tok, intArray, intCount)
 	VObj *self;
 	int tok;
 	int *intArray;
@@ -2585,7 +2615,7 @@ int sendTokenMessageAndInts(self, tok, intArray, intCount)
 	return 1;
 }
 
-int sendTokenMessage_result(self, tok, result)
+long sendTokenMessage_result(self, tok, result)
 	VObj *self;
 	int tok;
 	Packet *result;
@@ -2617,7 +2647,7 @@ int sendTokenMessage_result(self, tok, result)
 	return 1;
 }
 
-int sendTokenMessage(self, tok)
+long sendTokenMessage(self, tok)
 	VObj *self;
 	int tok;
 {
@@ -2643,7 +2673,7 @@ int sendTokenMessage(self, tok)
 	return 1;
 }
 
-int sendMessage1(self, messg)
+long sendMessage1(self, messg)
 	VObj *self;
 	char *messg;
 {
@@ -2672,7 +2702,7 @@ int sendMessage1(self, messg)
 	return 1;
 }
 
-int sendMessage1N1str(self, messg, s1)
+long sendMessage1N1str(self, messg, s1)
 	VObj *self;
 	char *messg;
 	char *s1;
@@ -2701,7 +2731,7 @@ int sendMessage1N1str(self, messg, s1)
 	return 1;
 }
 
-int sendMessage1N2str(self, messg, s1, s2)
+long sendMessage1N2str(self, messg, s1, s2)
 	VObj *self;
 	char *messg;
 	char *s1, *s2;
@@ -2732,7 +2762,7 @@ int sendMessage1N2str(self, messg, s1, s2)
 	return 1;
 }
 
-int sendMessage1N1int(self, messg, a)
+long sendMessage1N1int(self, messg, a)
 	VObj *self;
 	char *messg;
 	int a;
@@ -2761,7 +2791,7 @@ int sendMessage1N1int(self, messg, a)
 	return 1;
 }
 
-int sendMessage1N1int_result(self, messg, val, result)
+long sendMessage1N1int_result(self, messg, val, result)
 	VObj *self;
 	char *messg;
         int  val;
@@ -2796,7 +2826,7 @@ int sendMessage1N1int_result(self, messg, val, result)
 	return 1;
 }
 
-int sendTokenMessageN1int(self, tok, a)
+long sendTokenMessageN1int(self, tok, a)
 	VObj *self;
 	int tok;
 	int a;
@@ -2825,7 +2855,7 @@ int sendTokenMessageN1int(self, tok, a)
 	return 1;
 }
 
-int sendMessage1N2int(self, messg, a, b)
+long sendMessage1N2int(self, messg, a, b)
 	VObj *self;
 	char *messg;
 	int a, b;
@@ -2837,7 +2867,7 @@ int sendMessage1N2int(self, messg, a, b)
 	return sendMessageAndInts(self, messg, buff, 2);
 }
 
-int sendMessage1N4int(self, messg, a, b, c, d)
+long sendMessage1N4int(self, messg, a, b, c, d)
 	VObj *self;
 	char *messg;
 	int a, b, c, d;
@@ -2851,7 +2881,7 @@ int sendMessage1N4int(self, messg, a, b, c, d)
 	return sendMessageAndInts(self, messg, buff, 4);
 }
 
-int sendMessage1chr(self, c1)
+long sendMessage1chr(self, c1)
 	VObj *self;
 	char c1;
 {
@@ -2877,7 +2907,7 @@ int sendMessage1chr(self, c1)
 	return 1;
 }
 
-int sendMessage1_result(self, messg, result)
+long sendMessage1_result(self, messg, result)
 	VObj *self;
 	char *messg;
 	Packet *result;
@@ -2909,7 +2939,7 @@ int sendMessage1_result(self, messg, result)
 	return 1;
 }
 
-int sendMessage1chr_result(self, c1, result)
+long sendMessage1chr_result(self, c1, result)
 	VObj *self;
 	char c1;
 	Packet *result;
@@ -2941,7 +2971,7 @@ int sendMessage1chr_result(self, c1, result)
 	return 1;
 }
 
-int sendMessage1N1str_result(self, messg, s1, result)
+long sendMessage1N1str_result(self, messg, s1, result)
 	VObj *self;
 	char *messg, *s1;
 	Packet *result;
@@ -2975,7 +3005,7 @@ int sendMessage1N1str_result(self, messg, s1, result)
 	return 1;
 }
 
-int sendMessage1N2str_result(self, messg, s1, s2, result)
+long sendMessage1N2str_result(self, messg, s1, s2, result)
 	VObj *self;
 	char *messg, *s1, *s2;
 	Packet *result;
@@ -3042,7 +3072,7 @@ int getVariable(varlist, name, result)
 	return 0;
 }
 
-int getVariable_id(varlist, varid)
+long getVariable_id(varlist, varid)
 	Attr *varlist;
 	int varid;
 {
@@ -3055,7 +3085,7 @@ int getVariable_id(varlist, varid)
 		printf("id=%d=\"%s\"\n", varlist->id, pk->info.s);
 */
 		if (varlist->id == varid) {
-			return varlist->val;
+			return (long)varlist->val;
 		}
 	}
 	return 0;
@@ -3166,7 +3196,7 @@ int destroyVariable(varlist, name, retp)
 	return 0;
 }
 
-int sendMessageAndIntsByName(objName, messg, intArray, intCount)
+long sendMessageAndIntsByName(objName, messg, intArray, intCount)
     char *objName;
     char *messg;
     int *intArray;
@@ -3179,7 +3209,7 @@ int sendMessageAndIntsByName(objName, messg, intArray, intCount)
     return sendMessageAndInts(theObj, messg, intArray, intCount);
 }
 
-int sendMessage1ByName(objName, messg)
+long sendMessage1ByName(objName, messg)
     char *objName;
     char *messg;
 {
@@ -3190,7 +3220,7 @@ int sendMessage1ByName(objName, messg)
     return sendMessage1(theObj, messg);
 }
 
-int sendMessage1N1strByName(objName, messg, s1)
+long sendMessage1N1strByName(objName, messg, s1)
     char *objName;
     char *messg;
     char *s1;
@@ -3202,7 +3232,7 @@ int sendMessage1N1strByName(objName, messg, s1)
     return sendMessage1N1str(theObj, messg, s1);
 }
 
-int sendMessage1N2strByName(objName, messg, s1, s2)
+long sendMessage1N2strByName(objName, messg, s1, s2)
     char *objName;
     char *messg;
     char *s1, *s2;
@@ -3214,7 +3244,7 @@ int sendMessage1N2strByName(objName, messg, s1, s2)
     return sendMessage1N2str(theObj, messg, s1, s2);
 }
 
-int sendMessage1N1intByName(objName, messg, a)
+long sendMessage1N1intByName(objName, messg, a)
     char *objName;
     char *messg;
     int a;
@@ -3226,7 +3256,7 @@ int sendMessage1N1intByName(objName, messg, a)
     return sendMessage1N1int(theObj, messg, a);
 }
 
-int sendMessage1N2intByName(objName, messg, a, b)
+long sendMessage1N2intByName(objName, messg, a, b)
     char *objName;
     char *messg;
     int a, b;
@@ -3238,7 +3268,7 @@ int sendMessage1N2intByName(objName, messg, a, b)
     return sendMessage1N2int(theObj, messg, a, b);
 }
 
-int sendMessage1N4intByName(objName, messg, a, b, c, d)
+long sendMessage1N4intByName(objName, messg, a, b, c, d)
     char *objName;
     char *messg;
     int a, b, c, d;

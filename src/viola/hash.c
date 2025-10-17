@@ -12,6 +12,7 @@
 /*
  * hash.c
  */
+#include <stdlib.h>
 #include "utils.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -71,7 +72,7 @@ HashTable *initHashTable(size, func_hash, func_cmp,
 	HashEntry * (*func_get)();
 	HashEntry * (*func_put)();
 	HashEntry * (*func_put_replace)();
-	int (*func_remove)();
+	long (*func_remove)();
 {
 	struct HashTable *ht;
 	HashEntry *entryp;

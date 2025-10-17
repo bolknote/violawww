@@ -325,7 +325,7 @@ int meth_cosmic_clone2(self, result, argc, argv)
 
 	objID2Obj->put_replace(objID2Obj, 
 			     storeIdent(saveString(GET_name(cloneObj))), 
-			     (int)cloneObj);
+			     (long)cloneObj);
 
 	objObj2ExistP->put_replace(objObj2ExistP, cloneObj, (int)1);
 
@@ -359,7 +359,8 @@ int meth_cosmic_create(self, result, argc, argv)
 	int argc;
 	Packet argv[];
 {
-	int slotv[100][2], slotc = 0, i;
+	long slotv[100][2]; 
+	int slotc = 0, i;
 	char *cp;
 	HashEntry *entry;
 	VObj *obj;
@@ -375,20 +376,20 @@ int meth_cosmic_create(self, result, argc, argv)
 			printf("\n");
 			return 0;
 		}
-		entry = symStr2ID->get(symStr2ID, (int)cp);
+		entry = symStr2ID->get(symStr2ID, (long)cp);
 		if (!entry) {
 			printf("create(): unknown attribute: \"%s\"\n", cp);
 			return 0;
 		}
-		slotv[slotc][0] = (int)(entry->val);
-		slotv[slotc][1] = (int)saveString(PkInfo2Str(&argv[i + 1]));
+		slotv[slotc][0] = (long)(entry->val);
+		slotv[slotc][1] = (long)saveString(PkInfo2Str(&argv[i + 1]));
 	}
 	if (slotc <= 0) return 0;
 
 	if (obj = instantiateObj(slotv, &slotc)) {
 		objID2Obj->put_replace(objID2Obj, 
 				     storeIdent(saveString(GET_name(obj))),
-				     (int)obj);
+				     (long)obj);
 		objObj2ExistP->put_replace(objObj2ExistP, obj, 1);
 /*		SET__memoryGroup(obj, newMemoryGroup(1024));
 */
@@ -516,7 +517,7 @@ int meth_cosmic_exist(self, result, argc, argv)
 	result->canFree = 0;
 
 	if (obj) {
-		if (entry = objObj2ExistP->get(objObj2ExistP, (int)obj)) {
+		if (entry = objObj2ExistP->get(objObj2ExistP, (long)obj)) {
 			result->info.i = 1;
 			return 1;
 		}
@@ -524,7 +525,7 @@ int meth_cosmic_exist(self, result, argc, argv)
 /*
 	char *objName;
 	if (entry = objID2Obj->get(objID2Obj, (int)getIdent(objName))) {
-		if (entry = symStr2ID->get(symStr2ID, (int)objName)) {
+		if (entry = symStr2ID->get(symStr2ID, (long)objName)) {
 			if (findObject(entry->val)) {
 				result->info.i = 1;
 				return 1;
@@ -596,7 +597,7 @@ int meth_cosmic_info(self, result, argc, argv)
 	Packet argv[];
 {
 	char *cp;
-	extern int fprintf();
+	/* extern int fprintf(); */
 
 	clearPacket(result);
 	if (argc == 0) {

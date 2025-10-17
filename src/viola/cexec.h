@@ -17,42 +17,43 @@ extern int callObjStackIdx;
  * ...
  */
 
-extern Packet *codeExec();
-extern Packet *execObjScript();
-extern Packet *execObjClassScript();
-extern Packet *execScript();
-extern void freeVarList();
-extern void dumpVarList();
-extern Attr *makeArgAttr();
-extern int makeArgList();
-extern void freeArgList();
+extern Packet *codeExec(VObj *self, union PCode *pcode, union PCode *pcode_end, Attr *varVectorp);
+extern Packet *execObjScript(VObj *obj);
+extern Packet *execObjClassScript(VObj *obj);
+extern Packet *execScript(VObj *self, Packet *result, char *script);
+extern void freeVarList(Attr *varlist);
+extern void dumpVarList(Attr *varlist);
+extern Attr *makeArgAttr(VObj *obj);
+extern int makeArgList(Attr *varlist, Packet argv[], int argc);
+extern void freeArgList(Attr *arglist);
 
-extern int sendMessagePackets();
-extern int sendMessageAndInts();
-extern int sendMessage1_result();
-extern int sendMessage1N1str();
-extern int sendMessage1N1str_result();
-extern int sendMessage1N2str();
-extern int sendMessage1N1int();
-extern int sendMessage1N1int_result();
-extern int sendMessage1N2int();
-extern int sendMessage1N4int();
-extern int sendMessage1chr();
-extern int sendMessage1chr_result();
-extern int sendTokenMessageAndInts();
-extern int sendTokenMessage_result();
-extern int sendTokenMessage();
-extern int sendTokenMessageN1int();
+extern long sendMessagePackets(VObj *self, Packet *packets, int packetc);
+extern long sendMessageAndInts(VObj *self, char *messg, int i1, int i2, int i3, int i4);
+extern long sendMessage1_result(VObj *self, char *messg, Packet *result);
+extern long sendMessage1N1str(VObj *self, char *messg, char *s1);
+extern long sendMessage1N1str_result(VObj *self, char *messg, char *s1, Packet *result);
+extern long sendMessage1N2str(VObj *self, char *messg, char *s1, char *s2);
+extern long sendMessage1N1int(VObj *self, char *messg, int i1);
+extern long sendMessage1N1int_result(VObj *self, char *messg, int i1, Packet *result);
+extern long sendMessage1N2int(VObj *self, char *messg, int i1, int i2);
+extern long sendMessage1N4int(VObj *self, char *messg, int i1, int i2, int i3, int i4);
+extern long sendMessage1chr(VObj *self, char ch);
+extern long sendMessage1chr_result(VObj *self, char ch, Packet *result);
+extern long sendTokenMessageAndInts(VObj *self, int tok, int i1, int i2, int i3, int i4);
+extern long sendTokenMessage_result(VObj *self, int tok, Packet *result);
+extern long sendTokenMessage(VObj *self, int tok);
+extern long sendTokenMessageN1int(VObj *self, int tok, int i1);
 
 extern int flag_printExec;
 extern char *passthru_argument;
-extern int getVariable();
-extern int setVariable();
-extern Attr *setVariable_STR();
-extern Attr *setVariable_id_STR();
-extern Attr *setVariable_INT();
+extern int getVariable(VObj *self, Packet *result, char *varname);
+extern int setVariable(VObj *self, char *varname, Packet *valpk);
+extern Attr *setVariable_STR(VObj *self, char *varname, char *str);
+extern Attr *setVariable_id_STR(VObj *self, int varid, char *str);
+extern Attr *setVariable_INT(VObj *self, char *varname, int val);
+extern long getVariable_id(Attr *varlist, int varid);
 
-extern int destroyVariable();
+extern int destroyVariable(VObj *self, char *varname);
 
 /*extern int ASSERT();*/
 #define ASSERT(t,mesg) NULL

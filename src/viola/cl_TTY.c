@@ -221,7 +221,7 @@ int meth_TTY__startClient(self, result, argc, argv)
 
 #ifdef SYSV
 	struct	termio b;
-#else
+#elif !defined(__DARWIN__)
 	struct	sgttyb b;
 	struct	tchars tc;
 	struct	ltchars lc;
@@ -230,6 +230,9 @@ int meth_TTY__startClient(self, result, argc, argv)
 #endif
 	int lb;
 	int l;
+#endif
+#ifdef TIOCGWINSZ
+	struct	winsize win;
 #endif
 	 
 	ptymajorp = index(pty, 'X');
@@ -261,28 +264,28 @@ int meth_TTY__startClient(self, result, argc, argv)
 					continue; /* Try next pty */
 				}
 #ifdef SYSV
-			 	ioctl(0, TCGETA, (char *)&b);
-			 	b.c_cc[VMIN] = 1;
-			 	b.c_cc[VTIME] = 0;
-			 	b.c_lflag &= ~ (ICANON | ECHO);
-			 	ioctl(fd_client, TCSETA, (char *)&b);
-#else
-				ioctl(0, TIOCGETP, (char *)&b);
-				b.sg_flags |= RAW;
-				b.sg_flags &= ~ECHO;
-				ioctl(fd_client, TIOCSETP, (char *)&b);
-				ioctl(0, TIOCGETC, (char *)&tc);
-				ioctl(fd_client, TIOCSETC, (char *)&tc);
-				ioctl(0, TIOCGETD, (char *)&l);
-				ioctl(fd_client, TIOCSLTC, (char *)&lc);
-				ioctl(0, TIOCGLTC, (char *)&lc);
-				ioctl(fd_client, TIOCLSET, (char *)&lb);
-				ioctl(0, TIOCLGET, (char *)&lb);
-				ioctl(fd_client, TIOCSETD, (char *)&l);
-#ifdef	TIOCGWINSZ
-				ioctl(0, TIOCGWINSZ, (char *)&win);
-				ioctl(fd_client, TIOCSWINSZ, (char *)&win);
+		 	ioctl(0, TCGETA, (char *)&b);
+		 	b.c_cc[VMIN] = 1;
+		 	b.c_cc[VTIME] = 0;
+		 	b.c_lflag &= ~ (ICANON | ECHO);
+		 	ioctl(fd_client, TCSETA, (char *)&b);
+#elif !defined(__DARWIN__)
+			ioctl(0, TIOCGETP, (char *)&b);
+			b.sg_flags |= RAW;
+			b.sg_flags &= ~ECHO;
+			ioctl(fd_client, TIOCSETP, (char *)&b);
+			ioctl(0, TIOCGETC, (char *)&tc);
+			ioctl(fd_client, TIOCSETC, (char *)&tc);
+			ioctl(0, TIOCGETD, (char *)&l);
+			ioctl(fd_client, TIOCSLTC, (char *)&lc);
+			ioctl(0, TIOCGLTC, (char *)&lc);
+			ioctl(fd_client, TIOCLSET, (char *)&lb);
+			ioctl(0, TIOCLGET, (char *)&lb);
+			ioctl(fd_client, TIOCSETD, (char *)&l);
 #endif
+#ifdef	TIOCGWINSZ
+			ioctl(0, TIOCGWINSZ, (char *)&win);
+			ioctl(fd_client, TIOCSWINSZ, (char *)&win);
 #endif
 				args[0] = GET_path(self);
 				n = makeArgv(&args[1], GET_args(self));

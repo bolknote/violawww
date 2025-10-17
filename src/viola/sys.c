@@ -5,6 +5,7 @@
 #include <sys/file.h>
 #include <sys/time.h>
 #include "sys.h"
+#include "mystrings.h"
 
 /*#define MEM_VERBOSE */
 /*#define MEM_USE*/

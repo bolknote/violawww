@@ -63,7 +63,7 @@ static unsigned int bitsPerPixelAtDepth(disp, scrn, depth)
      int           scrn;
      unsigned int  depth;
 {
-#if 1 /* the way things are */
+#if 0 /* the way things are */
   unsigned int a;
 /*  unsigned int n = disp->nformats;*/
     unsigned int n;
@@ -78,10 +78,10 @@ static unsigned int bitsPerPixelAtDepth(disp, scrn, depth)
   XPixmapFormatValues *xf;
   unsigned int nxf, a;
 
-  xf = XListPixmapFormats(disp, &nxf);
+  xf = XListPixmapFormats(disp, (int*)&nxf);
   for (a = 0; a < nxf; a++)
-    if (xf[a].depth == closest_depth)
-      return(disp->pixmap_format[a].bits_per_pixel);
+    if (xf[a].depth == depth)
+      return(xf[a].bits_per_pixel);
 #endif
 
   /* this should never happen; if it does, we're in trouble

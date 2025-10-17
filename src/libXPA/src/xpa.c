@@ -43,18 +43,29 @@ static char octtools_copyright[] = "Copyright (c) 1988, 1989, Regents of the Uni
 #endif 
 
 /*#include "defhell.h"*/
+/* Workaround for macOS header conflicts */
+#ifdef __DARWIN__
+#define _ARM__OSBYTEORDER_H_
+#define _I386__OSBYTEORDER_H_
+#include <libkern/OSByteOrder.h>
+#endif
+
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "xpa.h"
 
 /* there is a better way, right? */
 #ifdef hpux
 #include "X11/Xos.h"
 #include "X11/Xutil.h"
+#include "X11/Xresource.h"
 #include "X11/cursorfont.h"
 #else
 #include "X11/Xos.h"
 #include "X11/Xutil.h"
+#include "X11/Xresource.h"
 #include "X11/cursorfont.h"
 #endif
 
@@ -78,11 +89,6 @@ static char octtools_copyright[] = "Copyright (c) 1988, 1989, Regents of the Uni
 #define XPA_SAVE(str)		strcpy(XPA_MEMX(char, strlen(str)+1), str)
 
 #define XPA_FREE(ptr)		free((char *) ptr)
-
-extern char *malloc();
-extern char *realloc();
-extern void free();
-extern void exit();
 
 static XContext xpa_xcon = (XContext) 0;
 static void pb_draw();

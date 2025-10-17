@@ -1,0 +1,25 @@
+#  Make WWW under Darwin (macOS)
+
+# For W3 distribution, machine type for subdirectories
+WWW_MACH = darwin
+
+# The ASIS repository's name for the machine we are on
+ASIS_MACH = darwin
+
+CFLAGS = -D__DARWIN__ -std=gnu89 -arch arm64 -Wno-implicit-function-declaration -Wno-deprecated-non-prototype -Wno-pointer-integer-compare -Wno-int-conversion -Wno-incompatible-function-pointer-types
+LFLAGS = -arch arm64
+CC = cc
+
+# Directory for installed binary:
+BINDIR = /usr/local/bin
+
+# Where is the W3 object library to be installed (not normally done)?
+LIBDIR = $(WWW)/Library/Implementation/$(WWW_MACH)
+
+#_________________ OK if normal W3 distribution
+# Where is the WWW source root?
+WWW = ../..
+
+#  Where should temporary (object) files go?
+WTMP = /tmp
+

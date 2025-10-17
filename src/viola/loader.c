@@ -1,6 +1,7 @@
 /*
  * loader.c
  */
+#include <stdlib.h>
 #include "utils.h"
 #ifndef SEEK_SET
 #define SEEK_SET 0
@@ -117,7 +118,9 @@ int load_object(filename, pathname)
 	char *pathname;
 {
 	FILE *fp;
-	int slotv[100][2], slotc, *slotp;
+	long slotv[100][2]; 
+	int slotc;
+	long *slotp;
 	int i, status = 1, newObjCount;
 	VObj *obj, *newObj[NEWOBJ_SIZE];
 	char path[256]; /*XXX*/
@@ -159,9 +162,9 @@ int load_object(filename, pathname)
 			if (obj = instantiateObj(slotv, &slotc)) {
 				objID2Obj->put_replace(objID2Obj, 
 				     storeIdent(saveString(GET_name(obj))),
-				     (int)obj);
+				     (long)obj);
 				objObj2ExistP->put_replace(objObj2ExistP, 
-							   obj, 1);
+							   (long)obj, 1);
 				newObj[newObjCount++] = obj;
 				if (newObjCount > NEWOBJ_SIZE) {
 					fprintf(stderr, 
@@ -212,7 +215,7 @@ int load_object(filename, pathname)
  */
 int load_objects_slots(fp, slotv, slotc)
 	FILE *fp;
-	int (*slotv)[100][2];
+	long (*slotv)[100][2];
 	int *slotc;
 {
 	char label[SLOT_LABEL_SIZE], *dynaBuff;
@@ -308,8 +311,8 @@ int load_objects_slots(fp, slotv, slotc)
 			llc = lc; lc = c;
 		}
 donecontent:
-		if (entry = symStr2ID->get(symStr2ID, (int)label)) {	
-			(*slotv)[*slotc][0] = (int)(entry->val);
+		if (entry = symStr2ID->get(symStr2ID, (long)label)) {	
+			(*slotv)[*slotc][0] = (long)(entry->val);
 		} else {
 			fprintf(stderr,	"unknown slot label:\"%s\"\n", label);
 			return 0;
@@ -337,11 +340,11 @@ donecontent:
 			dynaBuff[sloti - 1] = '\0';
 /*			printf("dynabuff=\"%s\"\n", dynaBuff);*/
 			seekBackPosition = 0;
-			(*slotv)[*slotc][1] = (int)dynaBuff;
+			(*slotv)[*slotc][1] = (long)dynaBuff;
 		} else {
 			char *cp = (char*)malloc(sizeof(char) * (sloti - 1));
 			buff[sloti - 2] = '\0';
-			(*slotv)[*slotc][1] = (int)strcpy(cp, buff);
+			(*slotv)[*slotc][1] = (long)strcpy(cp, buff);
 /*			printf("buff=\"%s\"\n", buff);*/
 		}
 /*
@@ -363,7 +366,7 @@ donecontent:
 int load_objects_slots_fromBuiltInCache(slotsInfo, slotsInfoIdx, slotv, slotc)
 	SlotStruct *slotsInfo;
 	int *slotsInfoIdx;
-	int (*slotv)[100][2];
+	long (*slotv)[100][2];
 	int *slotc;
 {
 	HashEntry *entry;
@@ -388,8 +391,8 @@ printf("CONSIDERING: {%s} {%s}\n",
 			}
 		}
 
-		if (entry = symStr2ID->get(symStr2ID, (int)label)) {	
-			(*slotv)[*slotc][0] = (int)(entry->val);
+		if (entry = symStr2ID->get(symStr2ID, (long)label)) {	
+			(*slotv)[*slotc][0] = (long)(entry->val);
 		} else {
 			fprintf(stderr,	"unknown slot label:\"%s\"\n", label);
 			return 0;
@@ -398,7 +401,7 @@ printf("CONSIDERING: {%s} {%s}\n",
 		/* read the slot content 
 		 */
 		(*slotv)[*slotc][1] = 
-		    (int)saveString(slotsInfo[(*slotsInfoIdx)++].slotValue);
+		    (long)saveString(slotsInfo[(*slotsInfoIdx)++].slotValue);
 
 		(*slotc)++;
 	}
@@ -409,7 +412,9 @@ printf("CONSIDERING: {%s} {%s}\n",
 int loadFromBuiltInCache(filename)
 	char *filename;
 {
-	int slotv[100][2], slotc, *slotp;
+	long slotv[100][2]; 
+	int slotc;
+	long *slotp;
 	int i, status = 1, newObjCount;
 	VObj *obj, *newObj[NEWOBJ_SIZE];
 	char path[256]; /*XXX*/
@@ -436,10 +441,15 @@ int loadFromBuiltInCache(filename)
 					slotv, &slotc);
 		if (slotc > 0) {
 			if (obj = instantiateObj(slotv, &slotc)) {
+				char *objname = GET_name(obj);
+				if (!objname) {
+					fprintf(stderr, "Object has NULL name\n");
+					continue;
+				}
 				objID2Obj->put_replace(objID2Obj, 
-				     storeIdent(saveString(GET_name(obj))),
-				     (int)obj);
-				objObj2ExistP->put_replace(objObj2ExistP,
+				     storeIdent(saveString(objname)),
+				     (long)obj);
+				objObj2ExistP->put_replace(objObj2ExistP, (long)
 							   obj, 1);
 				newObj[newObjCount++] = obj;
 				if (newObjCount > NEWOBJ_SIZE) {

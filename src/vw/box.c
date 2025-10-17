@@ -20,6 +20,10 @@
 #define _NOBOOLEAN_
 #include "box.h"
 
+/* Forward declarations to avoid including stdlib.h which causes OSByteOrder conflicts */
+extern void *malloc(unsigned long);
+extern void free(void *);
+
 
 Box *cloneBox(box)
     Box *box;

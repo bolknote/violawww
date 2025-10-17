@@ -57,7 +57,7 @@ long callMeth(self, result, argc, argv, funcid)
 	return 0;
 }
 
-int findMeth(self, funcid)
+long findMeth(self, funcid)
 	VObj *self;
 	int funcid;
 {

@@ -160,9 +160,9 @@ void   freeImage();
 void   freeImageData();
 void   newRGBMapData();
 void   freeRGBMapData();
-byte  *lcalloc();
-byte  *lmalloc();
-void   lfree();
+byte  *lcalloc(unsigned int size);
+byte  *lmalloc(unsigned int size);
+void   lfree(byte *area);
 
 #define depthToColors(n) DepthToColorsTable[((n) < 32 ? (n) : 32)]
 

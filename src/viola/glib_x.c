@@ -273,8 +273,8 @@ unsigned long xpm_valuemask = 0;
 
 /* A smugy fingerprint pixmap ... 
  */
-int thumbXPM_width;
-int thumbXPM_height;
+unsigned int thumbXPM_width;
+unsigned int thumbXPM_height;
 Pixmap thumbXPM;
 static char * thumbXPM_src = {"/* XPM */\n\
 static char * thumb [] = {\n\
@@ -736,9 +736,12 @@ int GLInit(dpy, scrn)
 			toggleXBM_disc1_bits, 
 			togglePixmap_width, togglePixmap_height);
 
-	thumbXPM = GLMakeXPMFromASCII(rootWindow, thumbXPM_src, 
-				&thumbXPM_width, &thumbXPM_height, 
-				&i, &i);
+	{
+		int hotx, hoty;
+		thumbXPM = GLMakeXPMFromASCII(rootWindow, thumbXPM_src, 
+					&thumbXPM_width, &thumbXPM_height, 
+					&hotx, &hoty);
+	}
 
 	screenDPI = 25.4 * WidthOfScreen(screen) / WidthMMOfScreen(screen);
 
@@ -1425,32 +1428,23 @@ int GLUpdateFontInfo(fontInfo, id)
 	if (!FontWidths(id)) return 0;
 
 	if (xfontStruct->per_char) {
-		for (i = 0; i < xfontStruct->min_char_or_byte2; i++) {
+		int min_char = xfontStruct->min_char_or_byte2;
+		int max_char = xfontStruct->max_char_or_byte2;
+		
+		for (i = 0; i < min_char; i++) {
 			FontWidths(id)[i] = 0;
-/*			printf("[%d,?,0] ", i);*/
-		}
-		for (; i < 255; i++) {
-			if (isprint((unsigned char)i)) {
-				FontWidths(id)[i] = xfontStruct->per_char[i - 
-					xfontStruct->min_char_or_byte2].width;
-/*				printf("(%d,%c,%d) ", 
-					(int)i, i, FontWidths(id)[i]);
-*/
-			} else {
-				FontWidths(id)[i] = 1;
-/*
-				printf("**** (%d,?(%d),0) ", i,
-					xfontStruct->per_char[i - 
-					xfontStruct->min_char_or_byte2].width);
-*/
-			}
 		}
 		for (; i < 400; i++) {
-			FontWidths(id)[i] = 1;
-			/* XXXX this is ultra gross. but some ISO Latin chars
-			 * make viola look for these high chars.
-			 * ...
-			 */
+			/* Check if character is within font's range */
+			if (i >= min_char && i <= max_char) {
+				int idx = i - min_char;
+				FontWidths(id)[i] = xfontStruct->per_char[idx].width;
+			} else if (i >= 32 && i < 255) {
+				/* Character outside font range - use max_bounds width */
+				FontWidths(id)[i] = xfontStruct->max_bounds.width;
+			} else {
+				FontWidths(id)[i] = 1;
+			}
 		}
 	} else {
 		for (i = 0; i < 255; i++)
@@ -1472,6 +1466,7 @@ int GLUpdateFontInfo(fontInfo, id)
 				"Font initialization error #2. font id = %d. Please report this to viola-bugs@xcf.berkeley.edu\n", id);
 		}
 	}
+	
 
 	/*FontDescent(id) = FontDescent(id) = fontStruct->max_bounds.descent;*/
 	/*XFreeFontNames(clist);*/
@@ -1536,10 +1531,7 @@ int GLPaintTextLength(w, gc, fontID, x0, y0, str, length)
 ** bitmap
 **
 */
-Pixmap GLMakeXBMFromASCII(w, bitmapStr, width, height, hotx, hoty)
-	Window w;
-	char *bitmapStr;
-	int *width, *height, *hotx, *hoty;
+Pixmap GLMakeXBMFromASCII(Window w, char *bitmapStr, unsigned int *width, unsigned int *height, int *hotx, int *hoty)
 {
 	Pixmap bitmap;
 	char *data;
@@ -1551,6 +1543,9 @@ Pixmap GLMakeXBMFromASCII(w, bitmapStr, width, height, hotx, hoty)
 #define USETEMPFILE
 #endif
 #ifdef i386
+#define USETEMPFILE
+#endif
+#ifdef __DARWIN__
 #define USETEMPFILE
 #endif
 
@@ -1581,7 +1576,7 @@ Pixmap GLMakeXBMFromASCII(w, bitmapStr, width, height, hotx, hoty)
 #else 
 	/* peter@hpkslx.mayfield.HP.COM */
         if (!tmpfile) {
-		tmpfile = saveString("/usr/tmp/violaXXXXXX");
+		tmpfile = saveString("/tmp/violaXXXXXX");
 		mktemp(tmpfile);
 	}
 	if (saveFile(tmpfile, bitmapStr) !=0) {
@@ -1598,54 +1593,63 @@ Pixmap GLMakeXBMFromASCII(w, bitmapStr, width, height, hotx, hoty)
 	return 0;
 }
 
-Pixmap GLMakeXPMFromASCII(w, bitmapStr, width, height, hotx, hoty)
-	Window w;
-	char *bitmapStr;
-	int *width, *height, *hotx, *hoty;
+Pixmap GLMakeXPMFromASCII(Window w, char *bitmapStr, unsigned int *width, unsigned int *height, int *hotx, int *hoty)
 {
 	static char *tmpFile = NULL;
-	XpmIcon view;
+	XpmAttributes *attributes;
+	Pixmap pixmap, mask;
 	int status;
 
-	if (!tmpFile) {
-		/* should be able to avoid this kludge soon, when 
-		 * XPM functions take as data string or file pointer...
-		 */
-		tmpFile = saveString("/usr/tmp/violaXXXXXX");
-		mktemp(tmpFile);
-	}
-	if (saveFile(tmpFile, bitmapStr) != 0) {
-		unlink(tmpFile);
-		return 0;
-	}
-	view.attributes.colorsymbols = xpm_symbols;
-	view.attributes.numsymbols = xpm_numsymbols;
-	view.attributes.valuemask = xpm_valuemask;
-	view.attributes.valuemask |= XpmReturnInfos;
-	view.attributes.valuemask |= XpmReturnPixels;
-	view.attributes.colorTable = 0;
-	view.attributes.hints_cmt = 0;
-	view.attributes.colors_cmt = 0;
-	view.attributes.pixels_cmt = 0;
-	view.attributes.pixels = 0;
-	view.attributes.x_hotspot = 0;
-	view.attributes.x_hotspot = 0;
-	status = XpmReadFileToPixmap(display, w, tmpFile, &view.pixmap, 
-					&view.mask, &view.attributes);
-	unlink(tmpFile);
-	if (status != XpmSuccess) {
+	/* Allocate XpmAttributes on heap to avoid stack corruption */
+	attributes = (XpmAttributes *)malloc(sizeof(XpmAttributes));
+	if (!attributes) {
 		*width = 1;
 		*height = 1;
 		*hotx = 0;
 		*hoty = 0;
 		return 0;
 	}
-	*width = view.attributes.width; 
-	*height = view.attributes.height;
-	*hotx = view.attributes.x_hotspot;
-	*hoty = view.attributes.x_hotspot;
 
-	return view.pixmap;
+	/* Initialize XpmAttributes structure */
+	memset(attributes, 0, sizeof(XpmAttributes));
+	attributes->valuemask = 0;
+	attributes->colorsymbols = xpm_symbols;
+	attributes->numsymbols = xpm_numsymbols;
+	attributes->valuemask = xpm_valuemask;
+	attributes->valuemask |= XpmReturnInfos;
+	attributes->valuemask |= XpmReturnPixels;
+
+	if (!tmpFile) {
+		/* should be able to avoid this kludge soon, when 
+		 * XPM functions take as data string or file pointer...
+		 */
+		tmpFile = saveString("/tmp/violaXXXXXX");
+		mktemp(tmpFile);
+	}
+	if (saveFile(tmpFile, bitmapStr) != 0) {
+		unlink(tmpFile);
+		free(attributes);
+		return 0;
+	}
+	
+	status = XpmReadFileToPixmap(display, w, tmpFile, &pixmap, 
+					&mask, attributes);
+	unlink(tmpFile);
+	if (status != XpmSuccess) {
+		free(attributes);
+		*width = 1;
+		*height = 1;
+		*hotx = 0;
+		*hoty = 0;
+		return 0;
+	}
+	*width = attributes->width; 
+	*height = attributes->height;
+	*hotx = attributes->x_hotspot;
+	*hoty = attributes->y_hotspot;
+
+	free(attributes);
+	return pixmap;
 }
 
 int GLDisplayXBMFromASCII(w, x, y, bitmapStr)
@@ -1654,7 +1658,8 @@ int GLDisplayXBMFromASCII(w, x, y, bitmapStr)
 	char *bitmapStr;
 {
 	Pixmap bitmap;
-	int width, height, hotx, hoty;
+	unsigned int width, height;
+	int hotx, hoty;
 
 	if (!w || !bitmapStr) return 0;
 
@@ -1672,7 +1677,8 @@ int GLDisplayXPMFromASCII(w, x, y, bitmapStr)
 	char *bitmapStr;
 {
 	Pixmap bitmap;
-	int width, height, hotx, hoty;
+	unsigned int width, height;
+	int hotx, hoty;
 
 	if (!w || !bitmapStr) return 0;
 
@@ -3085,4 +3091,5 @@ int GLShadeColor(orig_red, orig_green, orig_blue, shade)
 		if (!newPixel) return -1;
 	}
 }
+
 

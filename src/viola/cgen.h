@@ -1,8 +1,8 @@
 /*typedef int union PCode;*/
 
 typedef union PCode {
-	int	x;	/* executable instruction */
-	int 	i;
+	long	x;	/* executable instruction */
+	long 	i;
 	float 	f;
 	char	*s;
 	char	c;

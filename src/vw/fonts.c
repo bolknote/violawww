@@ -36,14 +36,26 @@ XFontStruct *loadFont(display, fontNames)
 
 
 char *titleFonts[] = {
-    "*times*bold*-r-*--24-*",
-    "*times*bold*-r-*--25-*",
-    "*times*bold*-r-*--18-*",
-    "*times*bold*-r-*--17-*",
-    "*helvetica*medium*-r-*--24-*",
-    "*helvetica*medium*-r-*--25-*",
-    "*helvetica*medium*-r-*--18-*",
-    "*helvetica*medium*-r-*--17-*",
+    "*times*bold*-r-*--24-*koi8*",
+    "*times*bold*-r-*--25-*koi8*",
+    "*times*bold*-r-*--18-*koi8*",
+    "*times*bold*-r-*--17-*koi8*",
+    "*helvetica*medium*-r-*--24-*koi8*",
+    "*helvetica*medium*-r-*--25-*koi8*",
+    "*helvetica*medium*-r-*--18-*koi8*",
+    "*helvetica*medium*-r-*--17-*koi8*",
+    "*bold*-r-*--24-*koi8*",
+    "*bold*-r-*--25-*koi8*",
+    "*bold*-r-*--18-*koi8*",
+    "*bold*-r-*--17-*koi8*",
+    "*times*bold*-r-*--24-*iso8859*",
+    "*times*bold*-r-*--25-*iso8859*",
+    "*times*bold*-r-*--18-*iso8859*",
+    "*times*bold*-r-*--17-*iso8859*",
+    "*helvetica*medium*-r-*--24-*iso8859*",
+    "*helvetica*medium*-r-*--25-*iso8859*",
+    "*helvetica*medium*-r-*--18-*iso8859*",
+    "*helvetica*medium*-r-*--17-*iso8859*",
     "*bold*-r-*--24-*iso8859*",
     "*bold*-r-*--25-*iso8859*",
     "*bold*-r-*--18-*iso8859*",
@@ -53,18 +65,31 @@ char *titleFonts[] = {
     "*bold*-r-*iso8859*",
     "*bold*iso8859*",
     "*iso8859*",
+    NULL
 };
 
 
 char *urlFonts[] = {
-    "*times*bold*-r-*--18-*",
-    "*times*bold*-r-*--17-*",
-    "*times*bold*-r-*--14-*",
-    "*times*bold*-r-*--13-*",
-    "*helvetica*medium*-r-*--18-*",
-    "*helvetica*medium*-r-*--17-*",
-    "*helvetica*medium*-r-*--14-*",
-    "*helvetica*medium*-r-*--13-*",
+    "*times*bold*-r-*--18-*koi8*",
+    "*times*bold*-r-*--17-*koi8*",
+    "*times*bold*-r-*--14-*koi8*",
+    "*times*bold*-r-*--13-*koi8*",
+    "*helvetica*medium*-r-*--18-*koi8*",
+    "*helvetica*medium*-r-*--17-*koi8*",
+    "*helvetica*medium*-r-*--14-*koi8*",
+    "*helvetica*medium*-r-*--13-*koi8*",
+    "*bold*-r-*--18-*koi8*",
+    "*bold*-r-*--17-*koi8*",
+    "*bold*-r-*--14-*koi8*",
+    "*bold*-r-*--13-*koi8*",
+    "*times*bold*-r-*--18-*iso8859*",
+    "*times*bold*-r-*--17-*iso8859*",
+    "*times*bold*-r-*--14-*iso8859*",
+    "*times*bold*-r-*--13-*iso8859*",
+    "*helvetica*medium*-r-*--18-*iso8859*",
+    "*helvetica*medium*-r-*--17-*iso8859*",
+    "*helvetica*medium*-r-*--14-*iso8859*",
+    "*helvetica*medium*-r-*--13-*iso8859*",
     "*bold*-r-*--18-*iso8859*",
     "*bold*-r-*--17-*iso8859*",
     "*bold*-r-*--14-*iso8859*",
@@ -74,13 +99,21 @@ char *urlFonts[] = {
     "*bold*-r-*iso8859*",
     "*bold*iso8859*",
     "*iso8859*",
+    NULL
 };
 
 
 char *subTitleFonts[] = {
-    "*helvetica*medium*-r-*--14-*",
-    "*helvetica*medium*-r-*--12-*",
-    "*helvetica*medium*-r-*--11-*",
+    "*helvetica*medium*-r-*--14-*koi8*",
+    "*helvetica*medium*-r-*--12-*koi8*",
+    "*helvetica*medium*-r-*--11-*koi8*",
+    "*medium*-r-*--14-*koi8*",
+    "*medium*-r-*--12-*koi8*",
+    "*medium*-r-*--11-*koi8*",
+    "*medium*-r-*koi8*",
+    "*helvetica*medium*-r-*--14-*iso8859*",
+    "*helvetica*medium*-r-*--12-*iso8859*",
+    "*helvetica*medium*-r-*--11-*iso8859*",
     "9x15",
     "8x13",
     "*medium*-r-*--14-*iso8859*",
@@ -88,6 +121,7 @@ char *subTitleFonts[] = {
     "*medium*-r-*--11-*iso8859*",
     "*medium*-r-*iso8859*",
     "*iso8859*",
+    NULL
 };
 
 

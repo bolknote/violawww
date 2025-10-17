@@ -113,6 +113,10 @@ PUBLIC int HTLoadHTTP ARGS4 (
     char *cp, *buffp, buff[100];
     int foundContentLength = 0;
 
+    /* DEBUG: unconditional trace */
+    fprintf(stderr, "HTTP: START loading %s\n", arg);
+    fflush(stderr);
+
     if (delimSize == 0) delimSize = strlen(delim);
 
 
@@ -139,12 +143,24 @@ PUBLIC int HTLoadHTTP ARGS4 (
     
 /* Get node name and optional port number:
 */
+    fprintf(stderr, "HTTP: Parsing hostname...\n");
+    fflush(stderr);
     {
 	char *p1 = HTParse(gate ? gate : arg, "", PARSE_HOST);
+	fprintf(stderr, "HTTP: Hostname: %s\n", p1);
+	fflush(stderr);
 	int status = HTParseInet(sin, p1);  /* TBL 920622 */
+	fprintf(stderr, "HTTP: HTParseInet returned %d\n", status);
+	fflush(stderr);
         free(p1);
-	if (status) return status;   /* No such host for example */
+	if (status) {
+	    fprintf(stderr, "HTTP: DNS lookup failed, returning %d\n", status);
+	    fflush(stderr);
+	    return status;   /* No such host for example */
+	}
     }
+    fprintf(stderr, "HTTP: DNS lookup successful!\n");
+    fflush(stderr);
     
 retry:
 
@@ -186,20 +202,27 @@ retry:
    
 /*	Now, let's get a socket set up from the server for the data:
 */      
+    fprintf(stderr, "HTTP: Creating socket...\n");
+    fflush(stderr);
 #ifdef DECNET
     s = socket(AF_DECnet, SOCK_STREAM, 0);
 #else
     s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 #endif
+    fprintf(stderr, "HTTP: Socket created: %d. Connecting...\n", s);
+    fflush(stderr);
     status = connect(s, (struct sockaddr*)&soc_address, sizeof(soc_address));
+    fprintf(stderr, "HTTP: Connect returned %d (errno=%d)\n", status, errno);
+    fflush(stderr);
     if (status < 0) {
-	    if (TRACE) fprintf(stderr, 
-	      "HTTP: Unable to connect to remote host for `%s' (errno = %d).\n", arg, errno);
+	    fprintf(stderr, "HTTP: Unable to connect to remote host for `%s' (errno = %d).\n", arg, errno);
+	    fflush(stderr);
 	    /* free(command);   BUG OUT TBL 921121 */
 	    return HTInetStatus("connect");
       }
     
-    if (TRACE) fprintf(stderr, "HTTP connected, socket %d\n", s);
+    fprintf(stderr, "HTTP connected, socket %d\n", s);
+    fflush(stderr);
 
 /*	Ask that node for the document,
 **	omitting the host name & anchor if not gatewayed.
@@ -265,6 +288,18 @@ retry:
 		HTLibraryVersion, crlf);
 	StrAllocCat(command, line);
 
+	/* Add Host: header (required by many modern servers, even for HTTP/1.0) */
+	{
+	    char *hostname = HTParse(arg, "", PARSE_HOST);
+	    if (hostname && *hostname) {
+		sprintf(line, "Host: %s%s", hostname, crlf);
+		StrAllocCat(command, line);
+		fprintf(stderr, "HTTP: Added Host header: %s\n", hostname);
+		fflush(stderr);
+	    }
+	    if (hostname) free(hostname);
+	}
+
 #ifdef ACCESS_AUTH
 	if (auth != NULL) {
 	    sprintf(line, "%s%s", auth, crlf);
@@ -289,7 +324,8 @@ retry:
 
     StrAllocCat(command, crlf);	/* Blank line means "end" */
 
-    if (TRACE) fprintf(stderr, "HTTP Tx: %s\n", command);
+    fprintf(stderr, "HTTP Tx: %s", command);
+    fflush(stderr);
 
 /*	Translate into ASCII if necessary
 */
@@ -302,12 +338,19 @@ retry:
     }
 #endif
 
+    fprintf(stderr, "HTTP: Sending %d bytes...\n", (int)strlen(command));
+    fflush(stderr);
     status = NETWRITE(s, command, (int)strlen(command));
+    fprintf(stderr, "HTTP: NETWRITE returned %d\n", status);
+    fflush(stderr);
     free(command);
     if (status<0) {
-	if (TRACE) fprintf(stderr, "HTTPAccess: Unable to send command.\n");
+	fprintf(stderr, "HTTPAccess: Unable to send command.\n");
+	fflush(stderr);
 	    return HTInetStatus("send");
     }
+    fprintf(stderr, "HTTP: Command sent successfully! Reading response...\n");
+    fflush(stderr);
 
 
 /*	Read the first line of the response
@@ -361,7 +404,11 @@ retry:
 	    }
 	    status = NETREAD(s, binary_buffer + length,
  	    			buffer_length - length -1);
+	    fprintf(stderr, "HTTP: NETREAD returned %d bytes\n", status);
+	    fflush(stderr);
 	    if (status < 0) {
+	        fprintf(stderr, "HTTP: Unexpected network read error on response\n");
+		fflush(stderr);
 	        HTAlert("Unexpected network read error on response");
 		NETCLOSE(s);
 		return status;
@@ -466,35 +513,52 @@ retry:
 	}
 /* end kludge */
 
+	fprintf(stderr, "HTTP: Parsing response line: %.70s\n", text_buffer);
+	fflush(stderr);
 	fields = sscanf(text_buffer, "%20s%d",
 	    server_version,
 	    &server_status);
+	fprintf(stderr, "HTTP: Parsed %d fields: version=%s status=%d\n", 
+		fields, server_version, server_status);
+	fflush(stderr);
 
 	if (fields < 2 || 
 	       strncmp(server_version, "HTTP/", 5)!=0) { /* HTTP0 reply */
+	    fprintf(stderr, "HTTP: Detected HTTP/0.9 server (no status line)\n");
+	    fflush(stderr);
 	    format_in = WWW_HTML;
 	    start_of_data = text_buffer;	/* reread whole reply */
 	    if (eol) *eol = '\n';		/* Reconstitute buffer */
 	    
 	} else {				/* Full HTTP reply */
+	    fprintf(stderr, "HTTP: Full HTTP/1.x response, status=%d\n", server_status);
+	    fflush(stderr);
 	
 	/*	Decode full HTTP response */
 	
 	    format_in = HTAtom_for("www/mime");
 	    start_of_data = eol ? eol + 1 : text_buffer + length;
 
+	    fprintf(stderr, "HTTP: Entering status switch (status/100=%d)\n", server_status / 100);
+	    fflush(stderr);
 	    switch (server_status / 100) {
 	    
 	    default:		/* bad number */
+		fprintf(stderr, "HTTP: Unknown status %d!\n", server_status);
+		fflush(stderr);
 		HTAlert("Unknown status reply from server!");
 		break;
 		
 	    case 3:		/* Various forms of redirection */
+		fprintf(stderr, "HTTP: Redirection status %d (not handled)\n", server_status);
+		fflush(stderr);
 		HTAlert(
 	"Redirection response from server is not handled by this client");
 		break;
 		
 	    case 4:		/* Access Authorization problem */
+		fprintf(stderr, "HTTP: Client error status %d\n", server_status);
+		fflush(stderr);
 #ifdef ACCESS_AUTH
 		switch (server_status) {
 		  case 401:
@@ -542,6 +606,8 @@ retry:
 #endif /* ACCESS_AUTH */
 
 	    case 5:		/* I think you goofed */
+		fprintf(stderr, "HTTP: Server error status %d\n", server_status);
+		fflush(stderr);
 		{
 		    char *p1 = HTParse(gate ? gate : arg, "", PARSE_HOST);
 		    char * message = (char*)malloc(
@@ -557,6 +623,8 @@ retry:
 		break;
 		
 	    case 2:		/* Good: Got MIME object */
+		fprintf(stderr, "HTTP: Success status %d - processing MIME\n", server_status);
+		fflush(stderr);
 /*printf("XXXXXXXXX retrying to read header text_buffer={%s}\n", 
       text_buffer);
 */
@@ -576,18 +644,27 @@ retry:
 */
 
 copy:
+    fprintf(stderr, "HTTP: Creating stream stack (format_in=%p, format_out=%p)\n", 
+	    (void*)format_in, (void*)format_out);
+    fflush(stderr);
 
     target = HTStreamStack(format_in,
 			format_out,
 			sink , anAnchor);
 
+    fprintf(stderr, "HTTP: Stream stack created: target=%p\n", (void*)target);
+    fflush(stderr);
+
     if (!target) {
 	char buffer[1024];	/* @@@@@@@@ */
+	fprintf(stderr, "HTTP: No converter available!\n");
+	fflush(stderr);
 	if (binary_buffer) free(binary_buffer);
 	if (text_buffer) free(text_buffer);
 	sprintf(buffer, "Sorry, no known way of converting %s to %s.",
 		HTAtom_name(format_in), HTAtom_name(format_out));
-	fprintf(stderr, "HTTP: %s", buffer);
+	fprintf(stderr, "HTTP: %s\n", buffer);
+	fflush(stderr);
 	status = HTLoadError(sink, 501, buffer);
 	goto clean_up;
     }
@@ -722,6 +799,8 @@ copy:
 */
     
 clean_up: 
+    fprintf(stderr, "HTTP: CLEAN_UP - final status=%d\n", status);
+    fflush(stderr);
 
     --http_progress_reporter_level;
     if (http_progress_reporter_level == 0) { 

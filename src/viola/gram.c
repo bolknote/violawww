@@ -1,4 +1,4 @@
-extern char *malloc(), *realloc();
+#include <stdlib.h>
 
 # line 12 "gram.y"
 #define YYDEBUG 0

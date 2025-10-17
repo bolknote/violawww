@@ -496,8 +496,10 @@ void parseCommandLine(argc, argv,
 #include <pwd.h>
 
 extern int errno;
+#ifndef __DARWIN__
 extern char *sys_errlist[];
 extern int sys_nerr;
+#endif
 
 initUserWWW ( www )
 	 char *www;
@@ -510,7 +512,7 @@ initUserWWW ( www )
 	Errno = 0;
 	bzero(path, 128);
 
-#ifdef i386
+#if defined(i386) || defined(__DARWIN__)
 	pw = getpwuid(getuid());
 #else
 	{

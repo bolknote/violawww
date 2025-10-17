@@ -1,0 +1,4 @@
+*.o
+*.a
+src/viola/viola
+src/vw/vw

@@ -21,6 +21,16 @@
 07/03/90   2 nazgul	Added recovery for premature EOF
 */
 
+/* Workaround for macOS OSByteOrder conflicts */
+#ifdef __DARWIN__
+#define _I386__OSBYTEORDER_H_
+#define _ARM__OSBYTEORDER_H_
+#include <libkern/OSByteOrder.h>
+#undef _I386__OSBYTEORDER_H_
+#undef _ARM__OSBYTEORDER_H_
+#define _OSBYTEORDER_H
+#endif
+
 #include <sys/types.h>
 #include <sys/file.h>
 

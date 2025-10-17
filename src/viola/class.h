@@ -45,15 +45,15 @@ typedef struct SlotInfo {
  */
 typedef struct MethodInfo {
 	int	id;
-	int	(*method)();
+	long	(*method)();
 } MethodInfo;
 
 /*****************************************************************************
  * class info
  */
 typedef struct ClassInfo {
-	int 		(*slotGetMeth)();
-	int 		(*slotSetMeth)();
+	long 		(*slotGetMeth)();
+	long 		(*slotSetMeth)();
 
 	SlotInfo	**slots;
 	MethodInfo	*methods;

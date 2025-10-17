@@ -57,8 +57,10 @@ extern int errno;
 #ifndef VMS
 #ifndef NeXT
 #ifndef THINK_C
+#ifndef __DARWIN__
 extern char *sys_errlist[];		/* see man perror on cernvax */
 extern int sys_nerr;
+#endif  /* __DARWIN__ */
 #endif  /* think c */
 #endif	/* NeXT */
 #endif  /* VMS */

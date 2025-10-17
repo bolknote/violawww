@@ -35,6 +35,7 @@ endif
 if ($UNAME == "ULTRIX")	setenv WWW_MACH		decstation
 if ($UNAME == "AIX")    setenv WWW_MACH		rs6000
 if ($UNAME == "OSF1")   setenv WWW_MACH		osf1
+if ($UNAME == "Darwin") setenv WWW_MACH		darwin
 if ($WWW_MACH == "") then
     echo "Please edit BUILD file to include your machine OS"
     echo "and mail differences back to www-bug@info.cern.ch

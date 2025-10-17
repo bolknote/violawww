@@ -1704,19 +1704,72 @@ int meth_generic_HTTPGet(self, result, argc, argv)
 	if (self) if (notSecure(self)) return 0;
 
 	src = PkInfo2Str(&argv[0]);
+	
+	/* Safety check: validate src */
+	if (!src || (unsigned long)src < 0x1000) {
+		fprintf(stderr, "ERROR: Invalid src pointer in HTTPGet: %p\n", src);
+		clearPacket(result);
+		return 0;
+	}
+	
 	len = strlen(src);
+	fprintf(stderr, "DEBUG HTTPGet: src='%s' len=%d\n", src, len);
 
-	for (ext = src + len; ext >= src; ext--) {
-		if (*ext == '.') break;
-		if (*ext == '/' || span++ > 6) {
-			/* assume extensions are <6 chars */
+	/* Safety check: ensure tempFileNamePrefix is valid 
+	 * Check for:
+	 * - NULL pointer
+	 * - Low addresses (< 0x1000)
+	 * - Sign-extended 32-bit addresses (0xffffffff........)
+	 */
+	if (!tempFileNamePrefix || 
+	    (unsigned long)tempFileNamePrefix < 0x1000 ||
+	    ((unsigned long)tempFileNamePrefix & 0xffffffff00000000UL) == 0xffffffff00000000UL) {
+		fprintf(stderr, "WARNING: Invalid tempFileNamePrefix=%p, using default\n", 
+			(void*)tempFileNamePrefix);
+		tempFileNamePrefix = "/tmp/violaTmp";
+	}
+
+	/* Find extension - scan backwards from end */
+	ext = NULL;  /* Initialize to NULL */
+	for (char *p = src + len; p >= src; p--) {
+		if (*p == '.') {
+			ext = p;  /* Found extension */
+			fprintf(stderr, "DEBUG: Found extension at offset %ld: '%s'\n", 
+				(long)(p - src), p);
+			break;
+		}
+		if (*p == '/' || (p - src) > len - 6) {
+			/* No extension or too far - use no extension */
+			fprintf(stderr, "DEBUG: No extension found (/ or too far)\n");
+			fprintf(stderr, "DEBUG: tempFileNamePrefix=%p\n", (void*)tempFileNamePrefix);
+			
+			/* Re-check tempFileNamePrefix before sprintf - catch sign-extended addresses */
+			if (!tempFileNamePrefix || 
+			    (unsigned long)tempFileNamePrefix < 0x1000 ||
+			    ((unsigned long)tempFileNamePrefix & 0xffffffff00000000UL) == 0xffffffff00000000UL) {
+				fprintf(stderr, "ERROR: tempFileNamePrefix corrupted (%p)! Using fallback.\n",
+					(void*)tempFileNamePrefix);
+				tempFileNamePrefix = "/tmp/violaTmp";
+			}
+			
 			sprintf(tempFileName, "%s%ld", 
 				tempFileNamePrefix, tempFileNameIDCounter++);
 			tfn = tempFileName;
 			goto gogo;
 		}
-		if (ext == src) break;
 	}
+	
+	/* If no extension found, use empty string */
+	if (!ext) {
+		fprintf(stderr, "DEBUG: ext is NULL, using empty string\n");
+		ext = "";
+	} else {
+		fprintf(stderr, "DEBUG: Using extension: '%s'\n", ext);
+	}
+	
+	fprintf(stderr, "DEBUG: About to sprintf with tempFileNamePrefix='%s' ext='%s'\n",
+		tempFileNamePrefix, ext);
+	
 	sprintf(tempFileName, "%s%ld%s", 
 		tempFileNamePrefix, tempFileNameIDCounter++, ext);
 	tfn = tempFileName;
@@ -1766,6 +1819,11 @@ int helper_buildingHTML(result, obj, url, width, method, dataToPost)
 	printf("**** duration=%d secs to for %s\n", 
 		time2.tv_sec - time1.tv_sec, url);
 */
+	fprintf(stderr, "helper_buildingHTML: newObj=%p\n", (void*)newObj);
+	if (newObj) {
+		fprintf(stderr, "  name=%s\n", GET_name(newObj));
+	}
+	
 	result->info.o = newObj;
 	result->canFree = 0;
 	result->type = PKT_OBJ;
@@ -4226,6 +4284,12 @@ int meth_generic_makeTempFile(self, result, argc, argv)
 	Packet argv[];
 {
 	char tfn[200];
+	
+	/* Safety check: ensure tempFileNamePrefix is valid */
+	if (!tempFileNamePrefix || (unsigned long)tempFileNamePrefix < 0x1000) {
+		tempFileNamePrefix = "/tmp/violaTmp";
+	}
+	
 	sprintf(tfn, "%s%ld", tempFileNamePrefix, tempFileNameIDCounter++);
 	result->info.s = saveString(tfn);
 	result->type = PKT_STR;
@@ -4711,7 +4775,8 @@ int meth_generic_random(self, result, argc, argv)
 #ifdef i386
 	result->info.i = rand();
 #else 
-	result->info.i = rand((unsigned)PkInfo2Int(&argv[0]));
+	if (argc) srand((unsigned)PkInfo2Int(&argv[0]));
+	result->info.i = rand();
 #endif
 #endif
 	return 1;
@@ -5040,7 +5105,7 @@ int helper_generic_set(self, result, argc, argv, labelID)
 		result->type = PKT_STR;
 		result->canFree = 0;
 		objID2Obj->put_replace(objID2Obj, 
-			storeIdent(saveString(GET_name(self))), (int)self);
+			storeIdent(saveString(GET_name(self))), (long)self);
 		return 1;
 
 	case STR_parent: {
@@ -5052,7 +5117,7 @@ int helper_generic_set(self, result, argc, argv, labelID)
 		SET_parent(self, result->info.s);
 		result->type = PKT_STR;
 		result->canFree = 0;
-		if (entry = symStr2ID->get(symStr2ID, (int)result->info.s))
+		if (entry = symStr2ID->get(symStr2ID, (long)result->info.s))
 			if (obj = findObject(entry->val)) {
 				SET__parent(self, obj);
 				return 1;

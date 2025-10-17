@@ -11,6 +11,9 @@
 #include "copyright.h"
 #include "image.h"
 
+/* Forward declarations */
+void make_gamma(double gamma, int gammamap[256]);
+
 /* alter an image's brightness by a given percentage
  */
 
@@ -242,6 +245,7 @@ Image *normalize(image, verbose)
 
 void gray(image, verbose)
      Image *image;
+     int verbose;
 { int a;
   unsigned int size;
   Intensity intensity, red, green, blue;

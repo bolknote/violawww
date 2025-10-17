@@ -23,13 +23,13 @@ int tagName2ID(s)
 	HashEntry *entry;
 	static int idCount = 0;
 
-	entry = HT_str2token->get(HT_str2token, (int)s);
+	entry = HT_str2token->get(HT_str2token, (long)s);
 	if (entry) return entry->val;
 
-	entry = HT_str2token->put(HT_str2token, (int)saveString(s), (int)++idCount);
+	entry = HT_str2token->put(HT_str2token, (long)saveString(s), (long)++idCount);
 	if (!entry) return 0;
 
-	entry = putHashEntry(HT_token2str, (int)idCount, (int)saveString(s));
+	entry = putHashEntry(HT_token2str, (long)idCount, (long)saveString(s));
 	if (!entry) return 0;
 	return idCount;
 }
@@ -37,7 +37,7 @@ int tagName2ID(s)
 char *tagID2Name(id)
 	int id;
 {
-	HashEntry *entry = HT_token2str->get(HT_token2str, (int)id);
+	HashEntry *entry = HT_token2str->get(HT_token2str, (long)id);
 	if (entry) return (char*)entry->val;
 	return NULL;
 }

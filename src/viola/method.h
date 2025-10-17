@@ -1,3 +1,3 @@
 extern long callMeth();
-extern int (*findMeth)();
+extern long findMeth(VObj *, int);
 

@@ -13,7 +13,7 @@ void tfed_FreeTmpFileToFree();
 
 extern MethodInfo defaultKeyBinding[];
 
-extern int (*kbflookup[])();
+extern long (*kbflookup[])();
 extern char sbuff[];
 extern int buffi;
 

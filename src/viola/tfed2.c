@@ -60,19 +60,24 @@ int kbf_delete_backward_char(tf)
 			     i < tf->current_row; i++) {
 				tf->csr_py += currentp->maxFontHeight *
 						currentp->breakc;
-				currentp = currentp->next;
-				if (!currentp) break;
-			}
-			tf->currentp = currentp;
+			currentp = currentp->next;
+			if (!currentp) break;
+		}
+		tf->currentp = currentp;
 
-			tf->csr_px = tf->xUL;
-			for (i = 0; i < tf->current_col; i++) {
-				tf->csr_px += TFCWidth(tf->currentp->linep+i);
-				if (TFCFlags(tf->currentp->linep + i) &
-				    MASK_WRAP) {
-					tf->csr_px = tf->xUL;
-				}
+		/* Safety check: ensure currentp is valid */
+		if (!tf->currentp || !tf->currentp->linep) {
+			return 0;
+		}
+
+		tf->csr_px = tf->xUL;
+		for (i = 0; i < tf->current_col; i++) {
+			tf->csr_px += TFCWidth(tf->currentp->linep+i);
+			if (TFCFlags(tf->currentp->linep + i) &
+			    MASK_WRAP) {
+				tf->csr_px = tf->xUL;
 			}
+		}
 
 			rangeOperation(tf, 
 				tf->highLiteFrom_cx, tf->highLiteFrom_cy,
@@ -86,6 +91,10 @@ int kbf_delete_backward_char(tf)
 			replaceNodeLine(theEditLN, tf->currentp, 0, NULL);
 			refreshMode = SCREEN;
 		} else {
+			/* Safety check: ensure theEditLN and linep are valid */
+			if (!theEditLN || !theEditLN->linep) {
+				return 0;
+			}
 			--(tf->current_col);
 			tf->current_col_sticky = tf->current_col;
 			--(theEditLN->length);
@@ -93,9 +102,9 @@ int kbf_delete_backward_char(tf)
 					tf->current_col);
 /*
        printf("kbf_delete_backward_char(): px=%d c=[%d]'%c'\n",
-		       tf->csr_px,
-		       tf->current_col,
-		       TFCChar(theEditLN->linep + tf->current_col));
+	       tf->csr_px,
+	       tf->current_col,
+	       TFCChar(theEditLN->linep + tf->current_col));
 */
 			scrollLineBackward(tf, 1, tf->current_col);
 			TFCShiftStr(theEditLN->linep, tf->current_col+1, -1);
@@ -119,6 +128,11 @@ int scrollLineBackward(tf, delta, col)
 	int patchstart_col, patchstart_px;
 	TFLineNode *currentp = theEditLN;
 	int orig_breakc;
+
+	/* Safety check: ensure currentp and linep are valid */
+	if (!currentp || !currentp->linep) {
+		return 0;
+	}
 
 	linep = currentp->linep;
 

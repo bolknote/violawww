@@ -21,7 +21,7 @@ typedef struct HashTable {
 	HashEntry *	(*get)();
 	HashEntry *	(*put)();
 	HashEntry *	(*put_replace)();
-	int		(*remove)();
+	long		(*remove)();
 } HashTable;
 
 int hash_int();
@@ -33,17 +33,17 @@ HashEntry *putHashEntry_replace();
 HashEntry *getHashEntry();
 int removeHashEntry();
 
-HashEntry *putHashEntry_cancelable_int();
+HashEntry *putHashEntry_cancelable_int(HashTable *ht, long label, long val);
 
-HashEntry *putHashEntry_int();
-HashEntry *putHashEntry_replace_int();
-HashEntry *getHashEntry_int();
-int removeHashEntry_int();
+HashEntry *putHashEntry_int(HashTable *ht, long label, long val);
+HashEntry *putHashEntry_replace_int(HashTable *ht, long label, long val);
+HashEntry *getHashEntry_int(HashTable *ht, long label);
+int removeHashEntry_int(HashTable *ht, long label);
 
-HashEntry *putHashEntry_str();
-HashEntry *putHashEntry_replace_str();
-HashEntry *getHashEntry_str();
-int removeHashEntry_str();
+HashEntry *putHashEntry_str(HashTable *ht, char *label, long val);
+HashEntry *putHashEntry_replace_str(HashTable *ht, char *label, long val);
+HashEntry *getHashEntry_str(HashTable *ht, char *label);
+int removeHashEntry_str(HashTable *ht, char *label);
 
 void dumpHashTable();
 

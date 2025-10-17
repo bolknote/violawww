@@ -539,7 +539,7 @@ int meth_stack_setCurrentCard(self, result, argc, argv)
 {
 	VObj *obj = GET__currentCard(self);
 	Packet pks[2];
-	int (*func)();
+	long (*func)();
 
 	pks[0].type = PKT_STR;
 	pks[0].info.s = "visible";

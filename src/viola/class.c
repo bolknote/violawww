@@ -11,6 +11,7 @@
 /*
  * class.c
  */
+#include <stdlib.h>
 #include "utils.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -28,6 +29,10 @@
 int intArrayBuff[INTARRAYBUFF_SIZE];
 
 int loadClassScriptsP = 0;
+
+/* Explicit forward declarations to avoid 32-bit truncation */
+extern char *saveString(char *);
+extern long storeIdent(char *);
 
 long initSlot();
 
@@ -258,7 +263,7 @@ int init_class()
 		for (tcip = cip; tcip; tcip = tcip->superClass) {
 			for (mip = tcip->methods; id = mip->id; mip++) {
 				putHashEntry_cancelable_int(methHashTable, 
-					mip->id, (int)mip->method);
+					mip->id, (long)mip->method);
 			}
 		}
 /*
@@ -494,7 +499,7 @@ ClassInfo *getClassInfoByName(className)
 	HashEntry *entry;
 	int classid, i;
 
-	if (entry = symStr2ID->get(symStr2ID, (int)className)) {
+	if (entry = symStr2ID->get(symStr2ID, (long)className)) {
 		classid = entry->val;
 		for (i = 0; cip = classList[i++]; cip++)
 			if (classid == cip->id) return cip;
@@ -505,7 +510,7 @@ ClassInfo *getClassInfoByName(className)
 
 VObj *buildObjWithLoadedSlots(cip, slotv, slotc)
 	ClassInfo *cip;
-	int slotv[100][2];
+	long slotv[100][2];
 	int slotc;
 {
 	VObj *obj = (VObj*)malloc(sizeof(long) * cip->totalcount);
@@ -534,9 +539,9 @@ VObj *buildObjWithLoadedSlots(cip, slotv, slotc)
 			       (char*)symID2Str->get(symID2Str, sip->id)->val);
 */
 			if ((sip->flags & SLOT_MASK_TYPE) == LONG) {
-				val = atoi((char*)((int*)sip->tmp)[1]);
+				val = atoi((char*)((long*)sip->tmp)[1]);
 			} else {
-				val = (long)((int*)sip->tmp)[1];
+				val = (long)((long*)sip->tmp)[1];
 			}
 		} else {
 /*			printf("%d default\t%s\n",
@@ -552,7 +557,7 @@ VObj *buildObjWithLoadedSlots(cip, slotv, slotc)
 }
 
 long *searchSlot(slotv, slotc, key)
-	int (*slotv)[100][2];
+	long (*slotv)[100][2];
 	int slotc;
 	int key;
 {
@@ -565,7 +570,7 @@ long *searchSlot(slotv, slotc, key)
 }
 
 VObj *instantiateObj(slotv, slotc)
-	int (*slotv)[100][2];
+	long (*slotv)[100][2];
 	int *slotc;
 {
 	long *slotp;
@@ -589,7 +594,7 @@ VObj *instantiateObj(slotv, slotc)
 	"instantiateObj(): no class specified for obj %s. Using generic.\n",
 			objName);
 		(*slotv)[*slotc][0] = STR_class;
-		(*slotv)[*slotc][1] = (int)saveString("generic");
+		(*slotv)[*slotc][1] = (long)saveString("generic");
 		slotp = (*slotv)[*slotc];
 		++(*slotc);
 	}
@@ -598,7 +603,7 @@ VObj *instantiateObj(slotv, slotc)
 		"class id = %d, class name=\"%s\"\n",
 		(int)(slotp)[0], (char*)(slotp)[1]);
 */
-	entry = symStr2ID->get(symStr2ID, (int)slotp[1]);
+	entry = symStr2ID->get(symStr2ID, (long)slotp[1]);
 	if (!entry) {
 		fprintf(stderr,
 			"unknown class \"%s\" (not in symbolic table).\n",

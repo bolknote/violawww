@@ -25,7 +25,7 @@
 #define ITEM_ALLOC_CHUNK 32
 
 /* For testing purposes ... to be removed later. */
-#define DEFAULT_CATALOG_FILE "/usr/tmp/defaultSpiderCatalog"
+#define DEFAULT_CATALOG_FILE "/tmp/defaultSpiderCatalog"
 
 enum itemTypes {ITEM, FOLDER, LINK};
 enum itemStates {NONE=0, SELECTED};

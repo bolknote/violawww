@@ -352,14 +352,14 @@ BinaryOpInfo binaryOpInfo[] = {
 int flag_printPCode = 0;
 int flag_printAST = 0;
 
-#define IEMIT(val) pcode[(*pc)++].i = (int)(val)
+#define IEMIT(val) pcode[(*pc)++].i = (long)(val)
 #define FEMIT(val) pcode[(*pc)++].f = (float)(val)
 #define SEMIT(val) pcode[(*pc)++].s = (char*)(val)
 #define CEMIT(val) pcode[(*pc)++].c = (char)(val)
-#define XEMIT(val) pcode[(*pc)++].x = (int)(val)
+#define XEMIT(val) pcode[(*pc)++].x = (long)(val)
 /*
-#define IEMIT(val) pcode[(*pc)++].i = (int)val;\
-	printf("pc=%d\tint\t%d\n", *pc-1, (int)val)
+#define IEMIT(val) pcode[(*pc)++].i = (long)val;\
+	printf("pc=%d\tlong\t%ld\n", *pc-1, (long)val)
 #define FEMIT(val) pcode[(*pc)++].f = (float)val;\
 	printf("pc=%d\tfloat\t%f\n", *pc-1, (float)val)
 #define SEMIT(val) pcode[(*pc)++].s = (char*)val;\

@@ -114,8 +114,8 @@
 #define SET_gapV(o,v) ((long)((o)[32]=(long)(v)))
 #define IDX_gapV(o) (32)
 
-#define GET_window(o) ((int)((o)[33]))
-#define SET_window(o,v) ((int)((o)[33]=(long)(v)))
+#define GET_window(o) ((long)((o)[33]))
+#define SET_window(o,v) ((long)((o)[33]=(long)(v)))
 
 #define GET_shownPositionH(o) ((int)((o)[34]))
 #define SET_shownPositionH(o,v) ((int)((o)[34]=(long)(v)))

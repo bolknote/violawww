@@ -112,7 +112,8 @@ static int fbmin_close_file()
   return FBMIN_SUCCESS;
 }
     
-static fbmin_image_test()
+/* Removed static to avoid declaration conflict */
+int fbmin_image_test()
 {
   if (fbmin_img_width < 1 || fbmin_img_width > 32767) {
     fprintf (stderr, "Invalid width (%d) on input\n", fbmin_img_width);

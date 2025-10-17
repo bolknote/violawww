@@ -57,7 +57,7 @@ static int signal_nonfatal[] = {
 typedef struct TimeInfo {
 	struct timeval time;
 	struct TimeInfo *next;
-	int (*func)();
+	long (*func)();
 	VObj *obj;
 	int argc;
 	Packet *argv;
@@ -648,7 +648,7 @@ if (verbose) printf("MapNotify! w = ox%x obj=%s not IGNORED\n",
 /*safer & slower:
 		obj = findWindowObject((XMapEvent*)eep->window);
 */
-		if (entry = window2Obj->get(window2Obj, 
+		if (entry = window2Obj->get(window2Obj, (long) 
 					 (XMapEvent*)eep->window)) {
 			obj = (VObj*)entry->val;
 		} else {
@@ -1643,7 +1643,7 @@ int checkParam(self, resize_corner)
 
 long scheduleEvent(delay, func, obj, argc, argv)
 	int delay;	/* milliseconds */
-	int (*func)();
+	long (*func)();
 	VObj *obj;
 	int argc;
 	Packet *argv;

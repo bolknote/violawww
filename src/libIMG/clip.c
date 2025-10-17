@@ -11,6 +11,9 @@
 #include "copyright.h"
 #include "image.h"
 
+/* Forward declaration to avoid including stdlib.h which causes OSByteOrder conflicts on macOS */
+extern void exit(int);
+
 Image *clip(simage, clipx, clipy, clipw, cliph, verbose)
      Image        *simage;
      unsigned int  clipx, clipy, clipw, cliph;

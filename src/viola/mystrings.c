@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "sys.h"
 #include <ctype.h>
+#include <stdlib.h>  /* для правильного объявления malloc */
 #include "mystrings.h"
 
 #define CTRL_d 4
@@ -393,6 +394,8 @@ char *trimEdgeSpaces(str)
   int i;
   char c, *cp, *cp2;
 
+  /* Safety check: ensure str is not NULL */
+  if (!str) return str;
   if (!str[0]) return str;
 
   for (cp = str; c = *cp; cp++) {
@@ -428,6 +431,9 @@ char *trimFrontSpaces(str)
      char *str;
 {
   int i = 0, j = 0;
+
+  /* Safety check: ensure str is not NULL */
+  if (!str) return str;
 
   do {
     if (!ISSPACE(str[i])) {
@@ -581,6 +587,9 @@ char *trimQuote(str)
 {
   char *s, *h = str;
 
+  /* Safety check: ensure str is not NULL */
+  if (!str) return str;
+
   while (*str != '\0') {
     if (*str == '\"') {
       s = str;
@@ -600,6 +609,9 @@ char *append(orig, append)
 {
   char *sp;
   
+  /* Safety check: ensure pointers are not NULL */
+  if (!orig || !append) return orig;
+  
   if (sp = (char*)malloc(sizeof(char)*(strlen(orig) + strlen(append) + 1))) {
     strcpy(sp, orig);
     strcat(sp, append);
@@ -617,6 +629,9 @@ char *appendLine(orig, append)
 {
   char *sp;
 
+  /* Safety check: ensure pointers are not NULL */
+  if (!orig || !append) return orig;
+
   if (sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 2))) {
     strcpy(sp, orig);
     strcat(sp, append);
@@ -629,14 +644,27 @@ char *appendLine(orig, append)
   }
 }
 
-char *saveString(str)
-     char *str;
+char *saveString(char *str)
 {
   char *sp;
 
   if (!str) return NULL;/*bad*/
+  
+  /* Проверка что указатель валидный (не слишком маленький адрес) */
+  /* Check for invalid pointers: NULL, low addresses, truncated 32-bit pointers */
+  if (!str || 
+      (unsigned long)str < 0x1000 ||
+      ((unsigned long)str & 0xFFFFFFFF00000000UL) == 0 ||  /* Truncated 32-bit */
+      ((unsigned long)str & 0xFFFFFFFF00000000UL) == 0xFFFFFFFF00000000UL) {  /* Sign-extended */
+    fprintf(stderr, "saveString: invalid pointer %p, returning empty string\n", str);
+    /* Allocate empty string to avoid recursion */
+    sp = (char*)malloc(1);
+    if (sp) sp[0] = '\0';
+    return sp;
+  }
 
-  if (sp = (char*)malloc(sizeof(char) * (strlen(str) + 1))) {
+  sp = (char*)malloc(sizeof(char) * (strlen(str) + 1));
+  if (sp) {
     strcpy(sp, str);
     return sp;
   }
@@ -644,9 +672,7 @@ char *saveString(str)
   return NULL;
 }
 
-char *saveStringN(str, size)
-     char *str;
-     int size;
+char *saveStringN(char *str, int size)
 {
   char *sp = (char*)malloc(sizeof(char) * size);
 
@@ -659,7 +685,7 @@ char *saveStringN(str, size)
 }
 
 char *VsaveString(group, str)
-     MemoryGroup *group;
+     void *group;  /* Actually MemoryGroup*, but avoid header dependency */
      char *str;
 {
   char *sp;
@@ -675,8 +701,7 @@ char *VsaveString(group, str)
   }
 }
 
-int eqStr(cmpStr, fixedStr)
-     char *cmpStr, *fixedStr;
+int eqStr(char *cmpStr, char *fixedStr)
 {
   char *sp = (char*)malloc(sizeof(char) * (strlen(cmpStr) + 1));
 
@@ -690,9 +715,7 @@ int eqStr(cmpStr, fixedStr)
   return 0;
 }
 
-char *listSum2Str(list1, list2, listLength, str)
-     int list1[], list2[], listLength;
-     char *str;
+char *listSum2Str(int list1[], int list2[], int listLength, char *str)
 {
   int i = 0;
   char localBuff[40];
@@ -705,18 +728,13 @@ char *listSum2Str(list1, list2, listLength, str)
   return str;
 }
 
-void insertChar(eStr, col, c)
-    char *eStr;
-    int   col;
-    char  c;
+void insertChar(char *eStr, int col, char c)
 {
   shiftStr(eStr, col, 1);
   eStr[col] = c;
 }
 
-int shiftStr(strp, starti, shift)
-     char *strp;
-     int starti, shift;
+int shiftStr(char *strp, int starti, int shift)
 {
   int length, shifts = 0;
   int i, j = 0;
@@ -747,10 +765,7 @@ int shiftStr(strp, starti, shift)
  *
  * Up to the user to free returned data.
  */
-char *getLines(low, high, text, size)
-	int low, high;
-	char *text;
-	int *size;
+char *getLines(int low, int high, char *text, int *size)
 {
 	char *cp;
 	char *begin = text;
@@ -786,8 +801,7 @@ char *getLines(low, high, text, size)
 }
 
 /* UNUSED */
-char *enQuote(str)
-     char *str;
+char *enQuote(char *str)
 {
   char *buffp = buff;
 
@@ -799,8 +813,7 @@ char *enQuote(str)
   return SaveString(buff);
 }
 
-char *enBracket(list)
-     char *list;
+char *enBracket(char *list)
 {
   char *buffp = buff;
 
@@ -815,8 +828,7 @@ char *enBracket(list)
 /* not properly done - merely replaces {...} with space 
  * may bomb if list string is empty ""
  */
-char *deBracket(list)
-     char *list;
+char *deBracket(char *list)
 {
   if (!list[0]) {
     return list;
@@ -844,9 +856,7 @@ char *deBracket(list)
 /*
  * grabs item(s) out of a {list}
  */
-char *listItem(list, li, hi)
-     char *list;
-     int li, hi;
+char *listItem(char *list, int li, int hi)
 {
   char c;
   int i, bi = 0, itemNum = 1, paren = 0;
@@ -893,9 +903,7 @@ char *listItem(list, li, hi)
 /*
  * individual items must be less than 32 characters long.
  */
-int getItemVals(li, hi, itemStr)
-     int li, hi;
-     char *itemStr;
+int getItemVals(int li, int hi, char *itemStr)
 {
   int itemNum= 1;
   int bi = 0, i, flag = 0, ai=1;
@@ -925,10 +933,7 @@ int getItemVals(li, hi, itemStr)
   return ai;
 }
 
-char *extractWord(text, li, hi, retStr)
-	char *text;
-	int li, hi;
-	char *retStr;
+char *extractWord(char *text, int li, int hi, char *retStr)
 {
 	int bi = 0, i = 0, itemNum = 1;
 	char c;

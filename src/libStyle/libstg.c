@@ -13,6 +13,10 @@
 #include <stdio.h>
 #include "libstg.h"
 
+/* Forward declarations to avoid including stdlib.h which causes OSByteOrder conflicts */
+extern void *malloc(unsigned long);
+extern void free(void *);
+extern char *strcpy(char *, const char *);
 extern char *saveString();
 
 #define ISSPACE(c) (c == ' ' || c == '\t' || c == '\n')
@@ -44,8 +48,8 @@ char stgInfo_buff[1000];
 int stgInfo_buffIdx;
 
 char stack_str[1000];
-char stack_char = NULL;
-char stack_op = NULL;
+char stack_char = '\0';
+char stack_op = '\0';
 
 int (*stg_tagNameCmp)();
 int (*stg_tagName2ID)();
@@ -233,29 +237,29 @@ STGMajor *parseMajor(superMajor, s)
 				printf("### major: assert: %s = %s\n", 
 					stack_str, stgInfo.info.s);
 */
-				assertAttr(&major->firstAssert, 
-					stack_str, stgInfo.info.s);
-				stgInfo.info.s = NULL;
-				stgInfo.type = NULL;
-			} else if (stack_op == '(') {
+			assertAttr(&major->firstAssert, 
+				stack_str, stgInfo.info.s);
+			stgInfo.info.s = NULL;
+			stgInfo.type = 0;
+		} else if (stack_op == '(') {
 /*				printf("### major: add(1): %s\n", 
-					stgInfo.info.s);
+				stgInfo.info.s);
 */
-				addID(&major->IDList, 
-					stg_tagName2ID(stgInfo.info.s));
+			addID(&major->IDList, 
+				(char*)(long)stg_tagName2ID(stgInfo.info.s));
 
-				stgInfo.info.s = NULL;
-				stgInfo.type = NULL;
-			} else if (stack_op == ',') {
+			stgInfo.info.s = NULL;
+			stgInfo.type = 0;
+		} else if (stack_op == ',') {
 /*				printf("### major: add: %s\n", 
-					stgInfo.info.s);
+				stgInfo.info.s);
 */
-				addID(&major->IDList, 
-					stg_tagName2ID(stgInfo.info.s));
+			addID(&major->IDList, 
+				(char*)(long)stg_tagName2ID(stgInfo.info.s));
 
-				stgInfo.info.s = NULL;
-				stgInfo.type = NULL;
-			} else if (stack_op == NULL) {
+			stgInfo.info.s = NULL;
+			stgInfo.type = 0;
+		} else if (stack_op == '\0') {
 				if (stack_str[0]) {
 /*					printf("@@@ major: flag: %s\n", 
 						stack_str);
@@ -263,14 +267,14 @@ STGMajor *parseMajor(superMajor, s)
 					assertAttr(&major->firstAssert, 
 						stack_str, NULL);
 				}
-			} else {
-				printf("libstg: major: unable to apply word.\n");
-				stack_str[0] = '\0';
-				stack_op = NULL;
-				return major;
-			}
+		} else {
+			printf("libstg: major: unable to apply word.\n");
 			stack_str[0] = '\0';
-			stack_op = NULL;
+			stack_op = '\0';
+			return major;
+		}
+		stack_str[0] = '\0';
+		stack_op = '\0';
 		} else {
 			printf("libstg: major: parse error (unknown type).\n");
 			return major;
@@ -313,19 +317,19 @@ STGMinor *parseMinor(s, major)
 				printf("### minor: add(1): %s\n", 
 					stgInfo.info.s);
 			} else if (stack_op == ',') {
-				printf("### minor: add: %s\n", 
-					stgInfo.info.s);
-			} else if (stack_op == NULL) {
-				printf("### minor: flag: %s\n", 
-					stgInfo.info.s);
-			} else {
-				printf("libstg: unable to apply word.\n");
-				stack_str[0] = '\0';
-				stack_op = NULL;
-				return NULL;
-			}
+			printf("### minor: add: %s\n", 
+				stgInfo.info.s);
+		} else if (stack_op == '\0') {
+			printf("### minor: flag: %s\n", 
+				stgInfo.info.s);
+		} else {
+			printf("libstg: unable to apply word.\n");
 			stack_str[0] = '\0';
-			stack_op = NULL;
+			stack_op = '\0';
+			return NULL;
+		}
+		stack_str[0] = '\0';
+		stack_op = '\0';
 		} else {
 			printf("libstg: parse error (unknown type).\n");
 			return NULL;
@@ -564,7 +568,7 @@ STGAssert *assertAttr(firstAssert, name, val)
 
 /*	printf("##### assert: %s = %s\n", name, val);*/
 
-	new->name = stg_tagName2ID(name);
+	new->name = (char*)(long)stg_tagName2ID(name);
 	new->val = saveString(val);
 	new->next = NULL;
 /*

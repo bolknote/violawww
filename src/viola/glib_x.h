@@ -260,8 +260,8 @@ int 	GLPaintTextLength();
 
 /* bitmap
  */
-Pixmap 	GLMakeXBMFromASCII();
-Pixmap 	GLMakeXPMFromASCII();
+Pixmap 	GLMakeXBMFromASCII(Window w, char *bitmapStr, unsigned int *width, unsigned int *height, int *hotx, int *hoty);
+Pixmap 	GLMakeXPMFromASCII(Window w, char *bitmapStr, unsigned int *width, unsigned int *height, int *hotx, int *hoty);
 int 	GLDisplayXBMFromASCII();
 int 	GLDisplayXPMFromASCII();
 int 	GLDisplayXBM();

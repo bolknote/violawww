@@ -8,6 +8,7 @@
  *
  */
 #include <ctype.h>
+#include <stdlib.h>
 #include "utils.h"
 
 #include "HTFont.h"
@@ -25,6 +26,7 @@
 
 #undef HTWRITE_H
 #include "../libWWW/Library/Implementation/HTWriter.h"
+#include "../libWWW/Library/Implementation/HTFWriter.h"
 #include "../libWWW/Library/Implementation/HTFile.h"
 
 #include "mystrings.h"
@@ -479,15 +481,17 @@ PUBLIC void HText_beginHiddenAppend ARGS1(HText *,text)
 **		current style. Text after the split (if split nonzero)
 **		is taken over onto the next line.
 */
+
+#define VERBOSE_SPLIT_LINE___
+void split_line ARGS2(HText *,text, int,split);
+
 PRIVATE void new_line ARGS1(HText *,text)
 {
-	PRIVATE void split_line();
 	split_line(text, text->tbuffi);
 	return;
 }
 
-#define VERBOSE_SPLIT_LINE___
-PRIVATE void split_line ARGS2(HText *,text, int,split)
+void split_line ARGS2(HText *,text, int,split)
 {
 	HTStyle *style = text->style;
 	HTStyle *nextstyle = text->next_style;
@@ -1023,7 +1027,7 @@ printf("HText_endAnchor \n");
 #endif
 }
 
-PUBLIC void HText_appendText ARGS2(HText *,text, char *,str)
+PUBLIC void HText_appendText ARGS2(HText *,text, CONST char *,str)
 {
 	char *p;
 	for (p = str; *p; p++) HText_appendCharacter(text, *p);
@@ -1156,7 +1160,7 @@ PUBLIC HTStyle * HText_selectionStyle ARGS2(
 */
 PUBLIC void HText_replaceSel ARGS3(
 	HText *,me,
-	char *,aString, 
+	CONST char *,aString, 
 	HTStyle *,aStyle)
 {
 	printf("HText_replaceSel.\n");

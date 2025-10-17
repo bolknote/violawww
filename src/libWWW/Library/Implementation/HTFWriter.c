@@ -365,7 +365,17 @@ PUBLIC HTStream* HTSaveLocally ARGS3(
 
     free(answer);
 #else
-    me->fp = sink->fp; /* kludge kludge */
+    /* Safety check: ensure sink is not NULL */
+    if (sink && sink->fp) {
+        me->fp = sink->fp; /* kludge kludge */
+    } else {
+        /* Fallback: try to save to /tmp */
+        me->fp = fopen("/tmp/viola_download.html", "w");
+        if (!me->fp) {
+            free(me);
+            return NULL;
+        }
+    }
 #endif
 
     return me;

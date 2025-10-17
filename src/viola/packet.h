@@ -28,12 +28,12 @@ enum {
 typedef struct Packet {
 	union {
 		VObj	*o;
-		int	i;
+		long	i;
 		float	f;
 		char	c;
 		char	*s;
 		FILE	*fp;
-		int	t;
+		long	t;
 		struct Packet *p;
 		struct Attr *a;
 		struct Array *y;
@@ -47,7 +47,7 @@ typedef struct Packet {
 
 typedef struct Array {
 	int size;
-	int *info;
+	long *info;
 } Array;
 
 typedef struct StrInfo {

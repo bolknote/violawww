@@ -10,7 +10,7 @@
 #include "HTUtils.h"
 #include "tcp.h"
 
-PUBLIC int WWW_TraceFlag = 0;	/* Global trace flag for ALL W3 code */
+PUBLIC int WWW_TraceFlag = 1;	/* Global trace flag for ALL W3 code - ENABLED FOR DEBUG */
 
 #ifndef VC
 #define VC "unknown"

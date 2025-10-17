@@ -12,8 +12,8 @@ typedef struct MemoryGroup {
 
 /*MemoryGroup *newMemoryGroup();*/
 
-char *_Vmalloc();
-void _Vfree();
+char *_Vmalloc(int size);
+void _Vfree(char *x);
 
 /*#define Vmalloc(gp, size) _Vmalloc(size)*/
 /*#define Vfree(gp, size) _Vfree(size)*/
@@ -32,6 +32,7 @@ void freeMemoryGroupHeaps();
 extern long tempFileNameIDCounter;
 extern char *tempFileNamePrefix;
 
-int sys_alarm();
-int sys_date();
-int sys_time();
+int init_sys(void);
+int sys_alarm(int sec);
+int sys_date(int *year, int *month, int *day);
+int sys_time(int *hour, int *minute, int *sec);

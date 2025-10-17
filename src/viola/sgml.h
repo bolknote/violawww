@@ -11,7 +11,7 @@ typedef struct SGMLTagMappingInfo {
 	int	flushOnSubTagP;
 	int	hpaneP;
 	VObj 	*template;		/* place holder for binary 'type' */
-	int	(*cloneMeth)();		/* to avoid repeatly looking it up */
+	long	(*cloneMeth)(VObj *self, Packet *result, int argc, Packet *argv);	/* to avoid repeatly looking it up */
 	int 	top;
 	int 	bottom;
 	int 	left;

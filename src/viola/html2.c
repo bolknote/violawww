@@ -65,6 +65,9 @@ extern int insert_width;
 extern Packet scrapPk;
 extern SGMLDocMappingInfo SGMLForms[];
 
+/* Explicit prototype to fix 64-bit pointer truncation issue */
+extern long findMeth(VObj *self, int funcid);
+
 VObj *mesgObj = NULL;
 
 SGMLBuildInfo SBI;
@@ -217,13 +220,21 @@ VObj *html2_parseHTMLDocument(self, address, simpleAddress, anchorSearch,
 	http_method = method;
 	http_dataToPost = dataToPost;
 	HTPushInputBuffer();
+	
+	fprintf(stderr, "Attempting to load URL: %s\n", *simpleAddress);
 	stat = HTLoadAbsolute(*simpleAddress);
+	fprintf(stderr, "HTLoadAbsolute returned: %d\n", stat);
+	
 	http_method = HTTP_METHOD_GET;
 	http_dataToPost = NULL;
 	HTPopInputBuffer();
 
-	if (stat) return SBI.stack[0].obj;
+	if (stat) {
+		fprintf(stderr, "Successfully loaded, returning object\n");
+		return SBI.stack[0].obj;
+	}
 	/* delete objects (SBI.stack[0].obj) */
+	fprintf(stderr, "Failed to load URL: %s\n", *simpleAddress);
 	return NULL;
 }
 
@@ -1482,8 +1493,13 @@ void nullifyCallerDataBuff()
 Bool initHotList()
 {
 	char *url, *desc, *date, *cp;
+	char local_buff[1000];  /* use local buffer instead of global */
+	extern char *vl_expandPath(char *, char *);  /* proper declaration */
 	  
-	cp = vl_expandPath("~/.mosaic-hotlist-default", buff);
+	cp = vl_expandPath("~/.mosaic-hotlist-default", local_buff);
+	if (!cp) {
+		return False;  /* no home directory or path expansion failed */
+	}
 	HotList_path = saveString(cp);
 	HotList_fp = fopen(HotList_path, "r");
 	if (HotList_fp) {

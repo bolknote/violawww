@@ -71,7 +71,7 @@ MethodInfo defaultKeyBinding[] =
 	NULL,		NULL
 };
 
-int (*kbflookup[128])();
+long (*kbflookup[128])();
 char sbuff[128];
 int buffi;
 

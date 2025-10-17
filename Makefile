@@ -6,18 +6,22 @@ CC = cc
 AR = ar rcs
 RANLIB = ranlib
 
+# Auto-detect Homebrew paths
+BREW_PREFIX := $(shell brew --prefix 2>/dev/null || echo /opt/homebrew)
+OPENMOTIF_PREFIX := $(shell brew --prefix openmotif 2>/dev/null || echo $(BREW_PREFIX)/opt/openmotif)
+
 # Compiler flags
 ARCH_FLAGS = -arch arm64
 CFLAGS = -Os $(ARCH_FLAGS) -std=gnu89 -Wno-everything -D__DARWIN__
 CFLAGS_LIBS = -Os $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common \
               -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED
-INCLUDES = -I/opt/homebrew/include \
-           -I/opt/homebrew/Cellar/openmotif/2.3.8_3/include \
+INCLUDES = -I$(BREW_PREFIX)/include \
+           -I$(OPENMOTIF_PREFIX)/include \
            -I/opt/X11/include
 
 # Linker flags
-LDFLAGS = $(ARCH_FLAGS) -L/opt/homebrew/lib \
-          -L/opt/homebrew/Cellar/openmotif/2.3.8_3/lib \
+LDFLAGS = $(ARCH_FLAGS) -L$(BREW_PREFIX)/lib \
+          -L$(OPENMOTIF_PREFIX)/lib \
           -L/opt/X11/lib
 LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lm
 
@@ -280,6 +284,10 @@ info:
 	@echo "CFLAGS:   $(CFLAGS)"
 	@echo "LDFLAGS:  $(LDFLAGS)"
 	@echo "LIBS:     $(LIBS)"
+	@echo ""
+	@echo "Detected paths:"
+	@echo "  Homebrew:   $(BREW_PREFIX)"
+	@echo "  OpenMotif:  $(OPENMOTIF_PREFIX)"
 	@echo ""
 	@echo "Source directories:"
 	@echo "  libWWW:   $(LIBWWW_DIR)"

@@ -110,10 +110,11 @@ The build system uses the following configuration:
 - **C Standard**: gnu89 (for compatibility with 1990s code)
 - **Optimization**: -Os (size optimization)
 - **GUI Toolkit**: Motif (OpenMotif)
+- **Auto-detection**: Homebrew and OpenMotif paths are automatically detected
 
 ### Customizing the Build
 
-You can override build variables by editing the `Makefile` or passing them on the command line:
+The Makefile automatically detects Homebrew and OpenMotif installation paths. You can override build variables by editing the `Makefile` or passing them on the command line:
 
 ```bash
 # Build with debugging symbols
@@ -124,6 +125,9 @@ make CC=gcc-13
 
 # Change optimization level
 make CFLAGS="-O0 -arch arm64 -std=gnu89 -Wno-everything -D__DARWIN__"
+
+# Override Homebrew prefix (if installed in non-standard location)
+make BREW_PREFIX=/usr/local
 ```
 
 ## Troubleshooting
@@ -136,11 +140,11 @@ Make sure OpenMotif is properly installed:
 brew info openmotif
 ```
 
-The Makefile expects OpenMotif to be installed at:
-- Headers: `/opt/homebrew/Cellar/openmotif/2.3.8_3/include`
-- Libraries: `/opt/homebrew/Cellar/openmotif/2.3.8_3/lib`
+The Makefile automatically detects the OpenMotif installation using `brew --prefix openmotif`. If you have a custom installation, you can override the path:
 
-If your version is different, update the paths in the Makefile.
+```bash
+make OPENMOTIF_PREFIX=/your/custom/path
+```
 
 ### X11 Not Found
 

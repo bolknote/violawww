@@ -207,20 +207,15 @@ char* dataToPost;
     http_dataToPost = dataToPost;
     HTPushInputBuffer();
 
-    fprintf(stderr, "Attempting to load URL: %s\n", *simpleAddress);
     stat = HTLoadAbsolute(*simpleAddress);
-    fprintf(stderr, "HTLoadAbsolute returned: %d\n", stat);
 
     http_method = HTTP_METHOD_GET;
     http_dataToPost = NULL;
     HTPopInputBuffer();
 
     if (stat) {
-        fprintf(stderr, "Successfully loaded, returning object\n");
         return SBI.stack[0].obj;
     }
-    /* delete objects (SBI.stack[0].obj) */
-    fprintf(stderr, "Failed to load URL: %s\n", *simpleAddress);
     return NULL;
 }
 

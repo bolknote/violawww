@@ -113,10 +113,6 @@ PUBLIC int HTLoadHTTP ARGS4(CONST char*, arg,
     char *cp, *buffp, buff[100];
     int foundContentLength = 0;
 
-    /* DEBUG: unconditional trace */
-    fprintf(stderr, "HTTP: START loading %s\n", arg);
-    fflush(stderr);
-
     if (delimSize == 0)
         delimSize = strlen(delim);
 
@@ -146,24 +142,14 @@ PUBLIC int HTLoadHTTP ARGS4(CONST char*, arg,
 
     /* Get node name and optional port number:
      */
-    fprintf(stderr, "HTTP: Parsing hostname...\n");
-    fflush(stderr);
     {
         char* p1 = HTParse(gate ? gate : arg, "", PARSE_HOST);
-        fprintf(stderr, "HTTP: Hostname: %s\n", p1);
-        fflush(stderr);
         int status = HTParseInet(sin, p1); /* TBL 920622 */
-        fprintf(stderr, "HTTP: HTParseInet returned %d\n", status);
-        fflush(stderr);
         free(p1);
         if (status) {
-            fprintf(stderr, "HTTP: DNS lookup failed, returning %d\n", status);
-            fflush(stderr);
             return status; /* No such host for example */
         }
     }
-    fprintf(stderr, "HTTP: DNS lookup successful!\n");
-    fflush(stderr);
 
 retry:
 

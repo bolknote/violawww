@@ -1339,10 +1339,6 @@ long int helper_buildingHTML(Packet* result, VObj* obj, char* url, int width, in
             printf("**** duration=%d secs to for %s\n",
                     time2.tv_sec - time1.tv_sec, url);
     */
-    fprintf(stderr, "helper_buildingHTML: newObj=%p\n", (void*)newObj);
-    if (newObj) {
-        fprintf(stderr, "  name=%s\n", GET_name(newObj));
-    }
 
     result->info.o = newObj;
     result->canFree = 0;

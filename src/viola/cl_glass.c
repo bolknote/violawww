@@ -31,11 +31,11 @@
 #include "event.h"
 
 SlotInfo cl_glass_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_glass_NPSlots[] = {
 {
-	NULL
+	0
 }
 };
 SlotInfo cl_glass_CSlots[] = {
@@ -85,7 +85,7 @@ SlotInfo cl_glass_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_glass_PSlots[] = {
@@ -98,7 +98,7 @@ SlotInfo cl_glass_PSlots[] = {
 	LONG | SLOT_RW,
 	BORDER_NONE
 },{
-	NULL
+	0
 }
 };
 
@@ -112,7 +112,7 @@ SlotInfo *slots_glass[] = {
 MethodInfo meths_glass[] = {
 	/* local methods */
 {
-	NULL
+	0
 }
 };
 

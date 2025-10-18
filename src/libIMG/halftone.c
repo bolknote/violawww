@@ -11,6 +11,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
 
 /* RGB intensity tables.  red is (val * 0.30), green is (val * 0.59), blue

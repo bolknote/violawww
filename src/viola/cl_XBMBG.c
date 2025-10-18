@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_XBMBG_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XBMBG_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XBMBG_CSlots[] = {
 {
@@ -87,11 +87,11 @@ SlotInfo cl_XBMBG_CSlots[] = {
 			print(\"unknown message, clsss = XBMBG: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_XBMBG_PSlots[] = {
@@ -100,7 +100,7 @@ SlotInfo cl_XBMBG_PSlots[] = {
 	CLSI,
 	(long)&class_XBMBG
 },{
-	NULL
+	0
 }
 };
 
@@ -120,7 +120,7 @@ MethodInfo meths_XBMBG[] = {
 	STR_render,
 	meth_XBMBG_render
 },{
-	NULL
+	0
 }
 };
 
@@ -133,11 +133,7 @@ ClassInfo class_XBMBG = {
 	&class_XBM,		/* super class info		*/
 };
 
-int meth_XBMBG_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XBMBG_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	Pixmap pixmap;
@@ -173,11 +169,7 @@ int meth_XBMBG_expose(self, result, argc, argv)
 	return 0;
 }
 
-int meth_XBMBG_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XBMBG_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	Pixmap pixmap;
@@ -194,7 +186,7 @@ int meth_XBMBG_render(self, result, argc, argv)
 		return 0;
 	}
 	pixmap = GLMakeXBMFromASCII(w, cp, &width, &height, 
-					(int*)NULL, (int*)NULL);
+					(int*)0, (int*)0);
 	SET__label(self, pixmap);
 	SET_width(self, width);
 	SET_height(self, height);

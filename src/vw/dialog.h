@@ -61,4 +61,6 @@ void simpleOpenURLDialog();
 
 void openURLInSelectionBuffer();
 
+char *openSimpleLineEntryDialog();
+
 #endif _DIALOG_H_

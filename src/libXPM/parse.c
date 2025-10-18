@@ -11,6 +11,7 @@
 
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 char *xpmColorKeys[] =
 {

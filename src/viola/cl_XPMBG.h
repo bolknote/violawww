@@ -5,7 +5,7 @@
 #include "cl_XPM.h"
 
 extern ClassInfo class_XPMBG;
-int helper_XPMBG_get();
-int helper_XPMBG_set();
+long helper_XPMBG_get();
+long helper_XPMBG_set();
 
-int meth_XPMBG_render();
+long meth_XPMBG_render();

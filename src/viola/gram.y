@@ -21,6 +21,10 @@ int	yyscriptidx;
 char	*yyobjcontext;
 int	yyscriptcontext;
 
+extern void reportError();
+extern void regListRef();
+extern int yylex();
+
 %}
 
 %{

@@ -26,21 +26,22 @@
 #include "classlist.h"
 #include "cl_GIF.h"
 #include "misc.h"
+#include "method.h"
 #include "glib.h"
 #include "event.h"
 
 SlotInfo cl_GIF_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_GIF_NPSlots[] = {
 {
 	STR__baseImage,
 	PTRV,
-	NULL
+	0
 },{
 	STR__expImage,
 	PTRV,
-	NULL
+	0
 },{
 	STR_baseImageWidth,
 	LONG,
@@ -50,7 +51,7 @@ SlotInfo cl_GIF_NPSlots[] = {
 	LONG,
 	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_GIF_CSlots[] = {
@@ -111,12 +112,12 @@ SlotInfo cl_GIF_CSlots[] = {
 		default:\n\
 			print(\"unknown message, clsss = GIF: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
-			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	print(\"\n\");\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_GIF_PSlots[] = {
@@ -125,7 +126,7 @@ SlotInfo cl_GIF_PSlots[] = {
 	CLSI,
 	(long)&class_GIF
 },{
-	NULL
+	0
 }
 };
 
@@ -151,7 +152,7 @@ MethodInfo meths_GIF[] = {
 	STR_render,
 	meth_GIF_render
 },{
-	NULL
+	0
 }
 };
 
@@ -164,11 +165,7 @@ ClassInfo class_GIF = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_GIF_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_GIF_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int new_width, new_height;
 	int old_width, old_height;
@@ -196,8 +193,8 @@ int meth_GIF_config(self, result, argc, argv)
 
 		/* free expImage, baseImage here */
 
-		SET__expImage(self, NULL);
-		SET__baseImage(self, NULL);
+		SET__expImage(self, 0);
+		SET__baseImage(self, 0);
 		expImage = NULL;
 		baseImage = NULL;
 
@@ -226,30 +223,18 @@ int meth_GIF_config(self, result, argc, argv)
 	return 1;
 }
 
-int meth_GIF_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_GIF_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_GIF_render(self, result, argc, argv);
 }
 
-int meth_GIF_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_GIF_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	meth_field_initialize(self, result, argc, argv);
 	return 1;
 }
 
-int meth_GIF_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_GIF_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 
@@ -291,12 +276,7 @@ int meth_GIF_render(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_GIF_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_GIF_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_label: {
@@ -325,8 +305,8 @@ int helper_GIF_set(self, result, argc, argv, labelID)
 
 		/* free expImage, baseImage here */
 
-		SET__expImage(self, NULL);
-		SET__baseImage(self, NULL);
+		SET__expImage(self, 0);
+		SET__baseImage(self, 0);
 		expImage = NULL;
 		baseImage = NULL;
 
@@ -350,11 +330,7 @@ int helper_GIF_set(self, result, argc, argv, labelID)
 	}      
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_GIF_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_GIF_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_GIF_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));

@@ -69,7 +69,7 @@ SGMLTagMappingInfo *HMMLTagMappingInfo[] = {
 	"",						0,0,
 	0,0
 },{
-	NULL
+	{0}
 }
 };
 

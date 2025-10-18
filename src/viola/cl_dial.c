@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_dial_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_dial_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_dial_CSlots[] = {
 {
@@ -118,7 +118,7 @@ SlotInfo cl_dial_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_dial_PSlots[] = {
@@ -127,7 +127,7 @@ SlotInfo cl_dial_PSlots[] = {
 	CLSI,
 	(long)&class_dial
 },{
-	NULL
+	0
 }
 };
 
@@ -153,7 +153,7 @@ MethodInfo meths_dial[] = {
 	STR_render,
 	meth_dial_render
 },{
-	NULL
+	0
 }
 };
 
@@ -166,39 +166,23 @@ ClassInfo class_dial = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_dial_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_dial_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_config(self, result, argc, argv);
 }
 
-int meth_dial_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_dial_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_render(self, result, argc, argv);
 }
 
-int meth_dial_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_dial_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	meth_field_initialize(self, result, argc, argv);
 	return 1;
 }
 
-int meth_dial_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_dial_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 

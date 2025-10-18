@@ -19,6 +19,9 @@
 #include "HTChunk.h"
 #include "tcp.h"		/* For FROMASCII */
 
+/* Forward declarations */
+extern void http_progress_notify();
+
 #define INVALID (-1)
 
 /*	The State (context) of the parser

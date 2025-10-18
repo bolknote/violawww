@@ -31,10 +31,10 @@
 #include "glib.h"
 
 SlotInfo cl_rubber_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_rubber_NPSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_rubber_CSlots[] = {
 {
@@ -42,7 +42,7 @@ SlotInfo cl_rubber_CSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"rubber"
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_rubber_PSlots[] = {
@@ -51,7 +51,7 @@ SlotInfo cl_rubber_PSlots[] = {
 	CLSI,
 	(long)&class_rubber
 },{
-	NULL
+	{0}
 }
 };
 
@@ -74,7 +74,7 @@ MethodInfo meths_rubber[] = {
 	STR_render,
 	meth_rubber_render
 },{
-	NULL
+	{0}
 }
 };
 
@@ -87,9 +87,7 @@ ClassInfo class_rubber = {
 	&class_field,		/* super class info		*/
 };
 
-helper_rubber_config(self, oldWidth, oldHeight)
-	VObj *self;
-	int oldWidth, oldHeight;
+void helper_rubber_config(VObj *self, int oldWidth, int oldHeight)
 {
 	float xratio, yratio;
 	int x, y, width, height;
@@ -110,11 +108,7 @@ helper_rubber_config(self, oldWidth, oldHeight)
 	}
 }
 
-int meth_rubber_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_rubber_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int oldWidth, oldHeight;
 
@@ -129,20 +123,12 @@ int meth_rubber_config(self, result, argc, argv)
 	return 1;
 }
 
-int meth_rubber_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_rubber_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_initialize(self, result, argc, argv);
 }
 
-int meth_rubber_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_rubber_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 

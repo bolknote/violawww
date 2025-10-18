@@ -28,9 +28,12 @@
 #include "misc.h"
 #include "glib.h"
 #include "event.h"
+#include "method.h"
+#include <unistd.h>
+#include <string.h>
 
 SlotInfo cl_client_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_client_NPSlots[] = {
 {
@@ -58,7 +61,7 @@ SlotInfo cl_client_NPSlots[] = {
 	LONG,
 	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_client_CSlots[] = {
@@ -143,7 +146,7 @@ SlotInfo cl_client_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_client_PSlots[] = {
@@ -152,7 +155,7 @@ SlotInfo cl_client_PSlots[] = {
 	CLSI,
 	(long)&class_client
 },{
-	NULL
+	0
 }
 };
 
@@ -193,7 +196,7 @@ MethodInfo meths_client[] = {
 	STR_startClient,
 	meth_client_startClient
 },{
-	NULL
+	0
 }
 };
 
@@ -206,12 +209,11 @@ ClassInfo class_client = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_client_endClient(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_endClient(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	int fd = GET_clientFD(self);
 
 	result->type = PKT_INT;
@@ -228,12 +230,11 @@ int meth_client_endClient(self, result, argc, argv)
 	return 1;
 }
 
-int meth_client_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	char *cp;
 
 	callMeth(self, result, 0, NULL, STR_endClient);
@@ -248,13 +249,11 @@ int meth_client_freeSelf(self, result, argc, argv)
 	return 1;
 }
 
-int helper_client_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_client_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
+
+
+
 	switch (labelID) {
 	case STR_clientFD:
 		result->type = PKT_INT;
@@ -288,22 +287,20 @@ int helper_client_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_client_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	return helper_client_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_client_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	meth_field_initialize(self, result, argc, argv);
 	return 1;
 }
@@ -323,12 +320,11 @@ int meth_client_initialize(self, result, argc, argv)
  *	-2	if fd is if (read() <= 0). are these stats even useful?
  *	-3	if fd is if (read() != 1).
  */
-int meth_client_input(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_input(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	int fd = GET_clientFD(self);
 	int c, cc, i = 0, n;
 	char *inDelimStr1 = GET_inDelimStr1(self);
@@ -423,12 +419,11 @@ int meth_client_input(self, result, argc, argv)
 	}
 }
 
-int meth_client_inputn(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_inputn(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	int fd = GET_clientFD(self);
 	int cc, i = 0, n;
 
@@ -463,12 +458,11 @@ int meth_client_inputn(self, result, argc, argv)
  * result set to length of data if successful
  * returns 1 on success, 0 on failure
  */
-int meth_client_output(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_output(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	int i, res;
 	int fd = GET_clientFD(self);
 	char *data, length, *outDelimStr = GET_outDelimStr(self);
@@ -505,12 +499,11 @@ int meth_client_output(self, result, argc, argv)
 	return 1;
 }
 
-int meth_client_startClient(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_startClient(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	int fd = GET_clientFD(self);
 
 	result->type = PKT_INT;
@@ -542,13 +535,11 @@ int meth_client_startClient(self, result, argc, argv)
 	}
 }
 
-int helper_client_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_client_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
+
+
+
 	switch (labelID) {
 	case STR_inDelimStr1:
 		result->info.s = SaveString(PkInfo2Str(&argv[1]));
@@ -579,12 +570,11 @@ int helper_client_set(self, result, argc, argv, labelID)
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_client_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_client_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
+
+
+
 	return helper_client_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }

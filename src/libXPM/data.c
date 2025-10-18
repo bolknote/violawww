@@ -15,6 +15,7 @@ static char *RCS_Version = "$XpmVersion: 3.0 $";
 static char *RCS_Id = "$Id: xpm.shar,v 3.0 1991/10/04 10:38:20 lehors Exp $";
 
 #include "xpmP.h"
+#include <stdlib.h>
 #ifdef VMS
 #include "sys$library:stat.h"
 #include "sys$library:ctype.h"
@@ -50,7 +51,7 @@ atoui(p, l, ui_return)
 /*
  * skip to the end of the current string and the beginning of the next one
  */
-xpmNextString(mdata)
+int xpmNextString(mdata)
     xpmData *mdata;
 {
     int c;
@@ -73,8 +74,7 @@ xpmNextString(mdata)
  * skip whitespace and compute the following unsigned int,
  * returns 1 if one is found and 0 if not
  */
-int
-xpmNextUI(mdata, ui_return)
+int xpmNextUI(mdata, ui_return)
     xpmData *mdata;
     unsigned int *ui_return;
 {
@@ -88,7 +88,7 @@ xpmNextUI(mdata, ui_return)
 /*
  * return the current character, skipping comments
  */
-xpmGetC(mdata)
+int xpmGetC(mdata)
     xpmData *mdata;
 {
     int c;
@@ -163,9 +163,7 @@ xpmGetC(mdata)
 /*
  * push the given character back
  */
-xpmUngetC(c, mdata)
-    int c;
-    xpmData *mdata;
+int xpmUngetC(int c, xpmData *mdata)
 {
     switch (mdata->type) {
     case XPMARRAY:
@@ -217,7 +215,7 @@ xpmNextWord(mdata, buf)
 /*
  * get the current comment line
  */
-xpmGetCmt(mdata, cmt)
+int xpmGetCmt(mdata, cmt)
     xpmData *mdata;
     char **cmt;
 {
@@ -351,8 +349,7 @@ xpmOpenArray(data, mdata)
 /*
  * close the file related to the xpmData if any
  */
-XpmDataClose(mdata)
-    xpmData *mdata;
+int XpmDataClose(xpmData *mdata)
 {
     switch (mdata->type) {
     case XPMARRAY:
@@ -364,4 +361,5 @@ XpmDataClose(mdata)
     case XPMPIPE:
 	pclose(mdata->stream.file);
     }
+    return 0;
 }

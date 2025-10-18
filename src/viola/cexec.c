@@ -14,6 +14,7 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 #include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 #include "sys.h"
 #include "hash.h"
@@ -28,9 +29,11 @@
 #include "vlist.h"
 #include "attr.h"
 #include "cexec.h"
+#include "loader.h"
 #include "mystrings.h"
 #include "ident.h"
 #include "scanutils.h"
+#include "biop.h"
 
 #ifdef hpux
 #include <time.h>
@@ -741,7 +744,7 @@ printf("<<<<<\n");
 		long (*func)(), argc;
 		CallObjStack *cs;
 
-			func = (*pcode++).i;
+			func = (long (*)())(*pcode++).i;
 			argc = data;
 
 			stackBaseIdx = stackExecIdx;

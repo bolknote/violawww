@@ -29,10 +29,10 @@
 #include "glib.h"
 
 SlotInfo cl_BCard_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_BCard_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_BCard_CSlots[] = {
 {
@@ -116,7 +116,7 @@ SlotInfo cl_BCard_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_BCard_PSlots[] = {
@@ -125,7 +125,7 @@ SlotInfo cl_BCard_PSlots[] = {
 	CLSI,
 	(long)&class_BCard
 },{
-	NULL
+	0
 }
 };
 
@@ -157,7 +157,7 @@ MethodInfo meths_BCard[] = {
 	STR_seta,
 	meth_BCard_set
 },{
-	NULL
+	0
 }
 };
 
@@ -170,60 +170,34 @@ ClassInfo class_BCard = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_BCard_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_field_config(self, result, argc, argv)) return 0;
 	return 1;
 }
 
-int meth_BCard_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_render(self, result, argc, argv);
 }
 
-int helper_BCard_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_BCard_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	return helper_field_get(self, result, argc, argv, labelID);
 }
 
-int meth_BCard_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_BCard_get(self, result, argc, argv, 
 					getIdent(PkInfo2Str(argv)));
 }
 
-int meth_BCard_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
-	meth_field_initialize(self, result, argc, argv);
-	return 1;
+	return meth_field_initialize(self, result, argc, argv);
 }
 
-int meth_BCard_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 
@@ -232,12 +206,7 @@ int meth_BCard_render(self, result, argc, argv)
 	return 1;
 }
 
-int helper_BCard_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_BCard_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	return helper_field_set(self, result, argc, argv, labelID);
 }
@@ -245,11 +214,7 @@ int helper_BCard_set(self, result, argc, argv, labelID)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int meth_BCard_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_BCard_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_BCard_set(self, result, argc, argv, 
 					getIdent(PkInfo2Str(argv)));

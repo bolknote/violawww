@@ -30,11 +30,11 @@
 #include "glib.h"
 
 SlotInfo cl_txtButton_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txtButton_NPSlots[] = {
 {
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtButton_CSlots[] = {
@@ -117,7 +117,7 @@ SlotInfo cl_txtButton_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtButton_PSlots[] = {
@@ -130,7 +130,7 @@ SlotInfo cl_txtButton_PSlots[] = {
 	LONG | SLOT_RW,
 	BORDER_BUTTON
 },{
-	NULL
+	{0}
 }
 };
 
@@ -150,7 +150,7 @@ MethodInfo meths_txtButton[] = {
 	STR_render,
 	meth_txtButton_render
 },{
-	NULL
+	{0}
 }
 };
 
@@ -163,7 +163,7 @@ ClassInfo class_txtButton = {
 	&class_txt,			/* super class info		*/
 };
 
-int meth_txtButton_initialize(self, result, argc, argv)
+long int meth_txtButton_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -172,7 +172,7 @@ int meth_txtButton_initialize(self, result, argc, argv)
 	return meth_txt_initialize(self, result, argc, argv);
 }
 
-int meth_txtButton_render(self, result, argc, argv)
+long int meth_txtButton_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

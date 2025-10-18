@@ -12,7 +12,15 @@
  * class.c
  */
 #include <stdlib.h>
+#include <strings.h>
 #include "utils.h"
+
+/* Forward declarations */
+extern long setMember();
+extern char *vl_expandPath();
+extern char *loadFile();
+extern int transferNumList2Array();
+extern void dumpVarList();
 #include "mystrings.h"
 #include "hash.h"
 #include "ident.h"
@@ -356,7 +364,7 @@ long initSlot(self, slotp, sip, val)
 		  ci->bg = NULL;
 		  ci->fg = NULL;
 		  ci->cr = NULL;
-		  return *slotp = ci;
+		  return *slotp = (long)ci;
 		}
 
 	case STRI:
@@ -372,12 +380,12 @@ long initSlot(self, slotp, sip, val)
 			Array *array = (Array*)malloc(sizeof(struct Array));
 			array->size = transferNumList2Array((char*)val,
 					intArrayBuff, INTARRAYBUFF_SIZE);
-			array->info = (int*)malloc(sizeof(int) * array->size);
+			array->info = (long*)malloc(sizeof(long) * array->size);
 			bcopy(intArrayBuff, array->info, 
 					sizeof(int) * array->size);
 			return *slotp = (long)array;
 		}
-		return NULL;
+		return 0;
 
 	case PTRS:
 		return *slotp = (long)saveString((char*)val);
@@ -392,7 +400,7 @@ long initSlot(self, slotp, sip, val)
 		fprintf(stderr, 
 			"initSlot(): unknown slot type = %d. Setting to NULL.\n",
 			sip->flags & SLOT_MASK_TYPE);
-		return NULL;
+		return 0;
 	}
 }
 
@@ -631,7 +639,7 @@ VObj *instantiateObj(slotv, slotc)
 
 	for (i = 0; i < *slotc; i++) {
 		/*print("FREE'ing: \"%s\"\n", (char*)(*slotv)[i][1]);*/
-		free((*slotv)[i][1]);
+		free((void*)(*slotv)[i][1]);
 	}
 	if (securityMode > 0) SET_security(obj, securityMode);
 
@@ -821,13 +829,13 @@ VObj *clone(original)
 
 		case RGBV:
 			{
-			  ColorInfo *ci, *oci;
-			  ci = (ColorInfo*)malloc(
-				     sizeof(struct ColorInfoStruct));
-			  if (ci == NULL) {
-			    *clonep = NULL;
-			    break;
-			  }
+		  ColorInfo *ci, *oci;
+		  ci = (ColorInfo*)malloc(
+			     sizeof(struct ColorInfoStruct));
+		  if (ci == NULL) {
+		    *clonep = 0;
+		    break;
+		  }
 			  oci = (ColorInfo*)(*originalp);
 			  if (oci) {
 			    ci->bd = oci->bd;
@@ -838,17 +846,17 @@ VObj *clone(original)
 			    ci->bd = NULL; 
 			    ci->bg = NULL;
 			    ci->fg = NULL;
-			    ci->cr = NULL;
-			  }
-			  *clonep = ci;
-			}
-			break;
+		    ci->cr = NULL;
+		  }
+		  *clonep = (VObj)ci;
+		}
+		break;
 
-		case STRI:
-			{
-			  StrInfo *si = *originalp;
-			  si->refc++;
-			  *clonep = *originalp;
+	case STRI:
+		{
+		  StrInfo *si = (StrInfo*)*originalp;
+		  si->refc++;
+		  *clonep = *originalp;
 			}
 			break;
 
@@ -912,9 +920,9 @@ void methodMembershipProfile()
 
 		entry = symID2Str->get(symID2Str, (long)cip->id);
 
-		printf("%20s refc=%5d\t hits=%5d\t misses=%5d collision=%5d\n", 
-		    (char*)entry->val, mhp->refc, mhp->hits, mhp->misses, 
-			mhp->collisions);
+		printf("%20s refc=%5ld\t hits=%5ld\t misses=%5ld collision=%5ld\n", 
+			(char*)entry->val, mhp->refc, mhp->hits, mhp->misses, 
+			    mhp->collisions);
 	}
 }
 

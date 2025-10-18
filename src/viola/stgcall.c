@@ -1,9 +1,14 @@
+#include <string.h>
 #include "utils.h"
+#include <string.h>
 #include "mystrings.h"
 #include "hash.h"
 #include "obj.h"
 #include "packet.h"
 #include "../libStyle/libstg.h"
+
+/* Forward declarations */
+extern char *loadFile();
 
 STGLib *stgLib;
 STGGroup *stgGroup;
@@ -77,7 +82,7 @@ int loadSTG(url)
 	/* load a stylesheet
 	 */
 	strcpy(inFile, url);
-	stat = loadFile(inFile, &spec);
+	stat = (int)(long)loadFile(inFile, &spec);
 
 	if (stat == -1) {
 	  printf("failed to open %s\n", inFile);
@@ -107,17 +112,17 @@ int getSTGInfo_tagPtr(result, tagName1, tagName2)
 
 	/* XXX BUG: no context spec
 	 */
-	context[0] = tagName2ID(tagName1);
-	context[1] = NULL;
+	context[0] = (char*)(long)tagName2ID(tagName1);
+	context[1] = 0;
 	if (tagName2) {
-		context[2] = tagName2ID(tagName2);
-		context[3] = NULL;
+		context[2] = (char*)(long)tagName2ID(tagName2);
+		context[3] = 0;
 		stat = STG_findStyle(stgGroup, context, 2, results, 2);
 	} else {
 		stat = STG_findStyle(stgGroup, context, 1, results, 1);
 	}
 	if (stat) {
-		result->info.i = results[0].smajor;	/*XXX*/
+		result->info.i = (long)results[0].smajor;	/*XXX*/
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
@@ -170,8 +175,8 @@ int getSTGInfo(tagName, attrName, result)
 
 	/* BUG no context spec
 	 */
-	context[0] = tagName2ID(tagName);
-	context[1] = NULL;
+	context[0] = (char*)(long)tagName2ID(tagName);
+	context[1] = 0;
 
 	if (!stgGroup) return 0;
 

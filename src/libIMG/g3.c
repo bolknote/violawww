@@ -33,9 +33,15 @@
 
 #include <sys/types.h>
 #include <sys/file.h>
+#include <stdlib.h>
+#include <strings.h>
 
 #include "image.h"
 #include "g3.h"
+
+/* Forward declarations */
+extern int g3_rawgetbit();
+extern int g3_bitson();
 
 /* SUPPRESS 530 */
 /* SUPPRESS 558 */

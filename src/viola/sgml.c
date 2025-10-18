@@ -13,6 +13,7 @@
  * 
  * Various SGML related procedures, and interface to sgmls.
  */
+#include <string.h>
 #include "utils.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -23,6 +24,8 @@
 #include "packet.h"
 #include "membership.h"
 #include "class.h"
+#include "method.h"
+#include "cexec.h"
 #include "slotaccess.h"
 #include "glib.h"
 #include "slib.h"
@@ -34,6 +37,11 @@
 #include "stgcall.h"
 
 #include "HTML_style.h"
+
+/* Forward declarations */
+extern void stgcall_init();
+extern char *vl_expandPath();
+extern char *loadFile();
 
 
 /*#define malloc(s) printf("malloc(%d)\t%s:%d\n",s,__FILE__,__LINE__);malloc(s)*/
@@ -459,7 +467,7 @@ void loadTemplateObjectNMethod(tmi)
 			tmi->type);
 	}
 	if (tmi->template) {
-		tmi->cloneMeth = findMeth(tmi->template, STR_clone);
+		tmi->cloneMeth = (long (*)(VObj *, Packet *, int, Packet *))findMeth(tmi->template, STR_clone);
 		if (!tmi->template) {
 			fprintf(stderr,
 				"loadTemplateObjectNMethod: can't find clone method for template object '%s'\n",
@@ -1106,10 +1114,10 @@ VObj *SGMLBuildDoc_B(srcp, url, parent, name, width, anchor)
 					tmi->type);
 			}
 
-			if (tmi->template) {
-				tmi->cloneMeth = 
-					findMeth(tmi->template, STR_clone);
-				if (!tmi->template) {
+		if (tmi->template) {
+			tmi->cloneMeth = 
+				(long (*)(VObj *, Packet *, int, Packet *))findMeth(tmi->template, STR_clone);
+			if (!tmi->template) {
 					fprintf(stderr,
 	"SGMLBuild_B: can't find clone method for template object '%s'\n",
 						tmi->type);

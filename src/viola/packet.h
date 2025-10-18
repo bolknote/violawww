@@ -46,7 +46,7 @@ typedef struct Packet {
 } Packet;
 
 typedef struct Array {
-	int size;
+	long size;
 	long *info;
 } Array;
 

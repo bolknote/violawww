@@ -9,6 +9,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 int
 XpmCreateImageFromData(display, data, image_return,

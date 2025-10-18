@@ -14,6 +14,7 @@
  */
 #include "utils.h"
 #include <ctype.h>
+#include <string.h>
 #include "error.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -40,11 +41,11 @@ char *paneConfigStr[] = {
 	"westToEast_edge",
 	"eastToWest_edge",
 	"center",
-	NULL
+	{0}
 };
 
 SlotInfo cl_pane_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_pane_NPSlots[] = {
 {
@@ -56,7 +57,7 @@ SlotInfo cl_pane_NPSlots[] = {
  	LONG,
 	PANE_CONFIG_FREE
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_pane_CSlots[] = {
@@ -106,12 +107,12 @@ SlotInfo cl_pane_CSlots[] = {
 			print(\"unknown message, clsss = \", get(\"class\"),\n\
 				\": self = \", get(\"name\"), \" args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
-			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	print(\"\n\");\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_pane_PSlots[] = {
@@ -120,7 +121,7 @@ SlotInfo cl_pane_PSlots[] = {
 	CLSI,
 	(long)&class_pane
 },{
-	NULL
+	0
 }
 };
 
@@ -158,7 +159,7 @@ MethodInfo meths_pane[] = {
 	STR_seta,
 	meth_pane_set
 },{
-	NULL
+	0
 }
 };
 
@@ -179,11 +180,7 @@ ClassInfo class_pane = {
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_pane_clone(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_clone(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *cloneObj;
 
@@ -202,11 +199,7 @@ int meth_pane_clone(self, result, argc, argv)
 	return 0;
 }
 
-int meth_pane_clone2(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_clone2(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_field_clone2(self, result, argc, argv)) return 0;
 	return 1;
@@ -467,11 +460,7 @@ printf("GM Set cobj=%s\t span=%d  ospan=%d ospanMax=%d\n",
 	}
 }
 
-int meth_pane_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_field_config(self, result, argc, argv)) return 0;
 
@@ -481,12 +470,7 @@ int meth_pane_config(self, result, argc, argv)
 	return 1;
 }
 
-int helper_pane_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_pane_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_paneConfig:
@@ -497,30 +481,18 @@ int helper_pane_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_pane_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_pane_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_pane_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_expose(self, result, argc, argv);
 }
 
-int meth_pane_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Packet pks[2];
 	long (*func)();
@@ -545,11 +517,7 @@ int meth_pane_initialize(self, result, argc, argv)
 	return 1;
 }
 
-int meth_pane_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_field_render(self, result, argc, argv)) return 0;
 /*	if (GET__paneConfig(self) != PANE_CONFIG_FREE)
@@ -561,12 +529,7 @@ int meth_pane_render(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_pane_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_pane_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_paneConfig: {
@@ -591,11 +554,7 @@ int helper_pane_set(self, result, argc, argv, labelID)
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_pane_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_pane_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_pane_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));

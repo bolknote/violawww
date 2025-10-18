@@ -30,6 +30,7 @@ typedef struct VMsgHandlerStruct {
 /*
  * Registers a message handler that responds to the message named in msgName.
  */
+void ViolaRegisterMessageHandler(/*
 void ViolaRegisterMesssageHandler(/*
 			          char *msgName,
 			          VMsgHandler msgHandler,

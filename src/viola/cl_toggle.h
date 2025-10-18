@@ -5,10 +5,10 @@
 #include "cl_XBM.h"
 
 extern ClassInfo class_toggle;
-int helper_toggle_get();
-int helper_toggle_set();
+long helper_toggle_get();
+long helper_toggle_set();
 
-int meth_toggle_get();
-int meth_toggle_render();
-int meth_toggle_set();
-int meth_toggle_toggle();
+long meth_toggle_get();
+long meth_toggle_render();
+long meth_toggle_set();
+long meth_toggle_toggle();

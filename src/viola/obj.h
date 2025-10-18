@@ -1,5 +1,4 @@
-#ifndef _VIOLA_OBJ_H_
-#define _VIOLA_OBJ_H_
+#pragma once
 
 typedef long VObj;
 
@@ -48,4 +47,4 @@ void freeAllObjects();
 
 int exitingViola;
 
-#endif _VIOLA_OBJ_H_
+

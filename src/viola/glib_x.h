@@ -195,6 +195,9 @@ int 	GLPaintRect();
 	GLPaintRect(w, gc_invert, x1, y1, x2, y2)
 
 int 	GLPaintRect();
+int	GLPaintFillRect();
+ColorInfo *GLInitColorInfo();
+int	GLSetBGColorPixel();
 
 #define GLDrawFillRect(w, x1, y1, x2, y2)\
 	GLPaintFillRect(w, gc_fg, x1, y1, x2, y2)
@@ -302,10 +305,13 @@ void 	GLUpdateColorReference();
 ColorInfo *GLPrepareObjColor();
 void 	GLDumpColorRef();
 
-#ifdef USE_XGIF_PACKAGE
-#include "../libGIF/xgif.h"
+/* GIF functions */
+XImage *GLGIFLoad();
 XImage *GLGIFResize();
 int GLGIFDraw();
+
+#ifdef USE_XGIF_PACKAGE
+#include "../libGIF/xgif.h"
 #endif
 
 /* cut buffer 

@@ -39,6 +39,11 @@ PUBLIC float HTMaxLength = 1e10;	/* No effective limit */
 #include "HTAlert.h"
 #include "HTList.h"
 #include "HTInit.h"
+#include <unistd.h>
+
+/* Forward declarations */
+extern void http_progress_notify();
+
 /*	Streams and structured streams which we use:
 */
 #include "HTFWriter.h"
@@ -470,7 +475,7 @@ PUBLIC void HTFileCopy ARGS2(
     targetClass = *(sink->isa);	/* Copy pointers to procedures */
     
     HTPushInputBuffer();/*PYW*/
-    HTInitInput(fp);/*PYW*//*XXXX*/
+    HTInitInput(fileno(fp));/*PYW*//*XXXX*/
 
 /*    ++http_progress_reporter_level;
 */

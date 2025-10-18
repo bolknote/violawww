@@ -16,6 +16,7 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include "vw.h"
 #include "callbacks.h"
 #include "history.h"
@@ -50,7 +51,7 @@ Widget buildPulldownMenu(parent,
 				      parent,
 				      XmNsubMenuId, pullDown,
 				      XmNlabelString, str,
-				      XmNmnemonic, menuMnemonic,
+				      XmNmnemonic, menuMnemonic ? *menuMnemonic : 0,
 				      NULL);
     XmStringFree(str);
 
@@ -58,7 +59,7 @@ Widget buildPulldownMenu(parent,
 	if (items[i].subMenu)
 	    widget = buildPulldownMenu(pullDown,
 				       items[i].label,
-				       items[i].mnemonic,
+				       &items[i].mnemonic,
 				       items[i].subMenu);
 	else
 	    widget = XtVaCreateManagedWidget(items[i].label,
@@ -119,13 +120,14 @@ Widget buildMenus(menus, helpMenuItems, parent, helpLabel, shellInfo)
     for (i=0; menus[i].title != NULL; i++)
 	(void) buildPulldownMenu(menuBar,
 				 menus[i].title,
-				 menus[i].mnemonic,
+				 &menus[i].mnemonic,
 				 menus[i].menuItems,
 				 helpLabel,
 				 shellInfo);
 
     if (helpMenuItems) {
-	menu = buildPulldownMenu(menuBar, "Help", 'H', helpMenuItems,
+	char helpMnemonic = 'H';
+	menu = buildPulldownMenu(menuBar, "Help", &helpMnemonic, helpMenuItems,
 				 helpLabel, shellInfo);
 	XtVaSetValues(menuBar, XmNmenuHelpWidget, menu, NULL);
     }

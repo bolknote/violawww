@@ -13,6 +13,10 @@
 #include "HTFormat.h"
 #include "HTAlert.h"
 #include "HTFile.h"
+#include <unistd.h>
+
+/* Forward declarations */
+extern void http_progress_notify();
 
 /*		Stream Object
 **		------------

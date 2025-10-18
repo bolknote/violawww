@@ -32,10 +32,12 @@
 #include "cl_txtDisp.h"
 #include "tfed_i.h"
 
+/* Forward declarations */
+extern int replaceNodeLine();
+
 /* delete to left and pull 
  */
-int kbf_delete_backward_char(tf)
-	TFStruct *tf;
+long kbf_delete_backward_char(TFStruct *tf)
 {
 	if (theEditLN->length > 0) {
 		if (tf->highLiteFrom_cx != -1) {

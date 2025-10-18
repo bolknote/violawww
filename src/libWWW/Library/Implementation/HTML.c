@@ -11,6 +11,14 @@
 */
 #include "HTML.h"
 
+/* Forward declarations */
+extern int CB_HTML_data();
+extern int CB_HTML_stag();
+extern int CB_HTML_etag();
+extern int CB_HTML_special_entity();
+extern int CB_HTML_end();
+extern void http_progress_notify();
+
 /* #define CAREFUL		 Check nesting here notreally necessary */
 
 #include <ctype.h>

@@ -206,6 +206,9 @@ enum PCodeTypes {
 extern int flag_printPCode;
 extern int flag_printAST;
 
+void printPCode(union PCode *pcode, int *pc, int size);
+int assignReferences(AST *ast, union PCode *pcode, int *pc);
+int codeGen(AST *ast, union PCode *pcode, int *pc);
 
 typedef struct RefInfo {
 	short flag;

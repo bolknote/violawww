@@ -38,6 +38,7 @@
 #include <Xm/MessageB.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "vw.h"
 #include "menu.h"
@@ -48,6 +49,8 @@
 #include "dialog.h"
 #include "../viola/msgHandler.h"
 #include "selection.h"
+#include "../viola/cexec.h"
+#include "../viola/ast.h"
 #include "catalog.h"
 #include "fonts.h"
 #include "mail.h"
@@ -147,7 +150,7 @@ static MenuItem fileMenuItems[] = {
 	  "Open a document by typing in URL.",
 	  TRUE,
 	  (MenuItem *) NULL},
-    { "Open URL in Selection Buffer", &xmPushButtonWidgetClass, NULL,NULL,NULL,
+    { "Open URL in Selection Buffer", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	  openURLInSelectionBuffer, "Open URL in Selection Buffer", 
 	 "Follow the URL in the X selection/cut buffer.",
 	  TRUE,
@@ -179,7 +182,7 @@ static MenuItem fileMenuItems[] = {
 	  "Show the document source.",
 	  TRUE,
 	  (MenuItem *) NULL},
-    { "Save As", &xmPushButtonWidgetClass,  NULL, NULL, NULL,
+    { "Save As", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	/*'A', "Ctrl<Key>A", "Ctrl-A",*/
 	  vwSaveAsCB, NULL, 
 	  "Save the current document to a new local file.",
@@ -215,25 +218,25 @@ static MenuItem editMenuItems[] = {
 
 
 static MenuItem navigationMenuItems[] = {
-    { "Home", &xmPushButtonWidgetClass, NULL, NULL, NULL,
+    { "Home", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	/*'H', "Ctrl<Key>H", "Ctrl-H",*/
 	  navigateHome, "Home", 
 	  "Go to the HOME page document.",
 	  TRUE,
 	  (MenuItem *) NULL},
-    { "Back Up", &xmPushButtonWidgetClass,  NULL, NULL, NULL,
+    { "Back Up", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	/*'B', "Ctrl<Key>B", "Ctrl-B",*/
 	  navigateBackUp, "Back Up", 
 	  "Backup to the previous document, removing the current document from memory.",
 	  TRUE,
 	  (MenuItem *) NULL},
-    { "Previous", &xmPushButtonWidgetClass,  NULL, NULL, NULL,
+    { "Previous", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	/*'P', "Ctrl<Key>P", "Ctrl-P",*/
 	  navigatePrev, "Previous", 
 	  "Go the the previous document but keep the current document in memory.",
 	  TRUE,
 	  (MenuItem *) NULL},
-    { "Next", &xmPushButtonWidgetClass,  NULL, NULL, NULL,
+    { "Next", &xmPushButtonWidgetClass, 0, NULL, NULL,
 	/*'N', "Ctrl<Key>N", "Ctrl-N",*/
 	  navigateNext, "Next", 
 	 "Go to the next document in history list.",
@@ -482,7 +485,7 @@ DocViewInfo *makeBrowserInterface(shell, shellName, parentInfo, argc, argv)
     Dimension th, tw;
     XmString xms;
     DocViewInfo *docViewInfo;
-    int status;
+    char *status;
     VObj *obj;
     extern Window topWindow; /* super kludge to corse viola objects to 
 			      * stick into the window */

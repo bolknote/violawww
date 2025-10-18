@@ -30,10 +30,10 @@
 #include "glib.h"
 
 SlotInfo cl_hpane_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_hpane_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_hpane_CSlots[] = {
 {
@@ -87,7 +87,7 @@ SlotInfo cl_hpane_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_hpane_PSlots[] = {
@@ -104,7 +104,7 @@ SlotInfo cl_hpane_PSlots[] = {
  	LONG,
 	PANE_CONFIG_W2E		/* default with W2E */
 },{
-	NULL
+	0
 }
 };
 
@@ -117,7 +117,7 @@ SlotInfo *slots_hpane[] = {
 
 MethodInfo meths_hpane[] = {
 	/* local methods */
-	NULL
+	0
 };
 
 ClassInfo class_hpane = {

@@ -22,6 +22,21 @@
 #include "hash.h"
 #include "obj.h"
 #include "sys.h"
+#include <strings.h>
+#include <unistd.h>
+
+/* Forward declarations */
+extern void process_event();
+extern int countBreaks();
+extern int insertStr();
+extern int replaceNodeLine2();
+extern int rowAdjustOffset();
+extern char *decodeURL();
+extern int replaceNodeLine();
+extern int insertKey();
+extern int updateHilite();
+extern int mapFromPixelToCharPosition();
+extern int tfed_placeCursor();
 #include "packet.h"
 #include "membership.h"
 #include "class.h"
@@ -68,7 +83,7 @@ MethodInfo defaultKeyBinding[] =
 /*	ESC,		kbf_esc_prefix,*/
 	RETURN,		kbf_newline,
 	TAB,		kbf_ident,
-	NULL,		NULL
+	0,		NULL
 };
 
 long (*kbflookup[128])();
@@ -137,7 +152,7 @@ int init_tfed()
 	/*
 	 * bind key to functions 
 	 */
-	for (i = 0; i < 128; i++) kbflookup[i] = NULL;
+	for (i = 0; i < 128; i++) kbflookup[i] = 0;
 	for (i = 0; defaultKeyBinding[i].id; i++)
 		kbflookup[defaultKeyBinding[i].id] = 
 		  defaultKeyBinding[i].method;
@@ -207,9 +222,9 @@ int init_tfed()
 	dunselPic->type = TFPic_XBML;
 	dunselPic->width = violaIcon_width;
 	dunselPic->height = violaIcon_height;
-	dunselPic->data = violaPixmap;
+	dunselPic->data = (XImage*)(long)violaPixmap;
 	dunselPic->canFree = 0; /* others may point to here */
-	dunselPic->next = NULL;
+	dunselPic->next = 0;
 
 	return 1;
 }
@@ -235,7 +250,7 @@ TFStruct *tfed_setUpTFStruct(self, text)
 		tf->firstp =
 		tf->lastp =
 		tf->offsetp =
-		tf->currentp = NULL;
+		tf->currentp = 0;
 
 		tf->current_col_sticky = tf->current_col = 0;
 		tf->current_row = 0;
@@ -248,7 +263,7 @@ TFStruct *tfed_setUpTFStruct(self, text)
 
 		tf->num_of_lines = 0;
 
-		tf->w = NULL;
+		tf->w = 0;
 
 		tf->xUL = PXX;
 		tf->yUL = PYY;
@@ -284,7 +299,7 @@ TFStruct *tfed_setUpTFStruct(self, text)
 		tf->search_x = 0;
 		tf->search_y = 0;
 
-		tf->pics = NULL;
+		tf->pics = 0;
 
 		/* could be better. !make an (inheritable) flag in class def */
 		tf->editableP = (GET__classInfo(self) == &class_txtEdit ? 1:0);
@@ -328,7 +343,7 @@ TFStruct *tfed_updateTFStruct(self, text)
 
 	if (!tf) {
 /*		printf("tfed_updateTFStruct: tf=NULL!\n");*/
-		return NULL;
+		return 0;
 	}
 	/* 
 	 * update geometry of the field
@@ -371,8 +386,8 @@ TFStruct *tfed_updateTFStruct(self, text)
 		tf->lineVisibleCount = 0;
 
 		buildInfo.self = self;
-		buildInfo.currentp = NULL;
-		buildInfo.beginp = NULL;
+		buildInfo.currentp = 0;
+		buildInfo.beginp = 0;
 		buildInfo.str = text; 
 		buildInfo.fontID = fontID;
 		buildInfo.lineNodeCountp = tf->lineNodeCount;
@@ -392,7 +407,7 @@ TFStruct *tfed_updateTFStruct(self, text)
 		buildInfo.verbatim = GET_verbatim(self);
 		buildInfo.format = GET_format(self);
 		buildInfo.vspan = 0;
-		buildInfo.pics = NULL;
+		buildInfo.pics = 0;
 
 		tfed_buildLines(&buildInfo);
 
@@ -455,22 +470,22 @@ TFStruct *tfed_clone(orig, clone)
 	TFStruct *origtf = GET__TFStruct(orig);
 	TagInfo *ti, *cti;
 
-	if (!origtf) return NULL;
+	if (!origtf) return 0;
 	newtf = (TFStruct*)Vmalloc(GET__memoryGroup(clone), 
 					sizeof(struct TFStruct));
 	if (!newtf) {
 		perror("malloc");
-		return NULL;
+		return 0;
 	}
 	bcopy(origtf, newtf, sizeof(struct TFStruct));
 
-	newtf->firstp = NULL;
-	newtf->offsetp = NULL;
-	newtf->currentp = NULL;
+	newtf->firstp = 0;
+	newtf->offsetp = 0;
+	newtf->currentp = 0;
 
 	newtf->mg = GET__memoryGroup(clone);
 
-	prevp = NULL;
+	prevp = 0;
 	if (origtf->firstp) {
 		currentp = origtf->firstp;
 		while (currentp) {
@@ -490,7 +505,7 @@ TFStruct *tfed_clone(orig, clone)
 				prevp->next = newLN;
 				newLN->prev = prevp;
 			} else {
-				newLN->prev = NULL;
+				newLN->prev = 0;
 			}
 
 			if (currentp == origtf->firstp) 
@@ -508,7 +523,7 @@ TFStruct *tfed_clone(orig, clone)
 				if (cp) {
 					ti->info = VSaveString(newtf->mg, cp);
 				} else {
-					ti->info = NULL;
+					ti->info = 0;
 				}
 /*				ti->x_begin = 0;
 				ti->x_end = 0;
@@ -640,7 +655,7 @@ updateHilite(tf, x1, y1, x2, y2, mode)
 
 	if ((oldstart == newstart) && (oldend == newend)) {
 	    /* no work */
-	    return;
+	    return 0;
 	}
 
 	if (oldend < oldstart) {
@@ -713,18 +728,21 @@ char *tfed_processMouseMove(self)
 	ln = tf->offsetp;
 	for (i = 0; i < scr_off_y; i++) {
 		ln = ln->next;
-		if (ln == NULL) return NULL;
+		if (ln == NULL) return 0;
 	}
 	tfcp = ln->linep + cx;
 
-	if (!(TFCFlags(tfcp) & MASK_BUTTON)) return NULL;
+	if (!(TFCFlags(tfcp) & MASK_BUTTON)) return 0;
 
 	/* search forward to find an tag */
 	for (; TFCChar(tfcp); tfcp++)
 		if (TFCTagID(tfcp)) {
-			url = (char*)ln->tagInfo[TFCTagID(tfcp)].info;
-			if (url) return decodeURL(url);
-			return NULL;
+		url = (char*)ln->tagInfo[TFCTagID(tfcp)].info;
+		if (url) {
+			char *decoded = decodeURL(url);
+			return decoded ? decoded : (char*)0;
+		}
+		return 0;
 		}
 /*
 	ti = ln->tagInfo;
@@ -739,7 +757,7 @@ char *tfed_processMouseMove(self)
 		}
 	}
 */
-	return NULL;
+	return 0;
 }
 
 int tfed_processMouseInput(self)
@@ -871,7 +889,7 @@ char *tfed_getSelection(self)
 				tf->highLiteFrom_cx, tf->highLiteFrom_cy,
 				tf->highLiteTo_cx, tf->highLiteTo_cy,
 				0, 0, 1);
-	return NULL;
+	return 0;
 }
 
 int tfed_clearSelection(self)
@@ -881,7 +899,7 @@ int tfed_clearSelection(self)
 
 	if (tf->highLiteFrom_cx != -1) {
 		GLPrepareObjColor(self);
-		xselectionObj = NULL;
+		xselectionObj = 0;
 		rangeOperation(tf, 
 				tf->highLiteFrom_cx, tf->highLiteFrom_cy,
 				tf->highLiteTo_cx, tf->highLiteTo_cy,
@@ -1113,7 +1131,7 @@ int insertKey(tf, c, fontID)
 
 /* insert tab character 
  */
-int kbf_ident(tf)
+long kbf_ident(tf)
 	TFStruct *tf;
 {
 	/*XXX*/
@@ -1130,7 +1148,7 @@ int kbf_ident(tf)
 
 /* start of line 
  */
-int kbf_beginning_of_line(tf)
+long kbf_beginning_of_line(tf)
 	TFStruct *tf;
 {
 	tf->current_col_sticky = tf->current_col = 0;
@@ -1143,7 +1161,7 @@ int kbf_beginning_of_line(tf)
 
 /* end of line 
  */
-int kbf_end_of_line(tf)
+long kbf_end_of_line(tf)
 	TFStruct *tf;
 {
 	tf->current_col_sticky = tf->current_col = theEditLN->length;
@@ -1156,7 +1174,7 @@ int kbf_end_of_line(tf)
 
 /* back_space 
  */
-int kbf_backward_char(tf)
+long kbf_backward_char(tf)
 	TFStruct *tf;
 {
 	tf->current_col -= 1;
@@ -1174,7 +1192,7 @@ int kbf_backward_char(tf)
 
 /* forward char 
  */
-int kbf_forward_char(tf)
+long kbf_forward_char(tf)
 	TFStruct *tf;
 {
 	tf->current_col++;
@@ -1195,7 +1213,7 @@ int kbf_forward_char(tf)
 
 /* pull in from right 
  */
-int kbf_delete_char(tf)
+long kbf_delete_char(tf)
 	TFStruct *tf;
 {
 	if (theEditLN->length > 0) {
@@ -1224,7 +1242,7 @@ int kbf_delete_char(tf)
 /* kill rest of line, and put it in buffer 
  */
 #define VERBOSE_KBF_KILL_LINE verbose
-int kbf_kill_line(tf)
+long kbf_kill_line(tf)
 	TFStruct *tf;
 {
 	int lnA_breakc, lnB_breakc, lnAB_breakc;
@@ -1462,7 +1480,7 @@ if (verbose) fprintf(stdout, "tfed: 2 XClearArea w=%x %d %d %d %d\n", TFWINDOW,
 }
 
 /* insert buffer */
-int kbf_insert_yank(tf)
+long kbf_insert_yank(tf)
 	TFStruct *tf;
 {
 	insertStr(tf, tf->current_col, theYankLN);
@@ -1476,7 +1494,7 @@ int kbf_insert_yank(tf)
 
 /* join current and the next lines 
  */
-int kbf_join_line(tf)
+long kbf_join_line(tf)
 	TFStruct *tf;
 {
 	joinLine(tf);
@@ -1486,7 +1504,7 @@ int kbf_join_line(tf)
 
 /* delete current line 
  */
-int kbf_delete_line(tf)
+long kbf_delete_line(tf)
 	TFStruct *tf;
 {
 	int col;
@@ -1514,7 +1532,7 @@ int kbf_delete_line(tf)
 /* insert line above current line, after pushing the current line 
  * down one line 
  */
-int kbf_open_line(tf)
+long kbf_open_line(tf)
 	TFStruct *tf;
 {
 	replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -1538,7 +1556,7 @@ int kbf_open_line(tf)
 
 /* insert line below cursor
  */
-int kbf_open_line_below(tf)
+long kbf_open_line_below(tf)
 	TFStruct *tf;
 {
 	insertBelowLineNode(tf, tf->currentp, 1);
@@ -1553,7 +1571,7 @@ int kbf_open_line_below(tf)
 
 /* previous line 
  */
-int kbf_previous_line(tf)
+long kbf_previous_line(tf)
 	TFStruct *tf;
 {
 	moveLine(tf, -1);
@@ -1565,7 +1583,7 @@ int kbf_previous_line(tf)
 
 /* next line 
  */
-int kbf_next_line(tf)
+long kbf_next_line(tf)
 	TFStruct *tf;
 {
 	moveLine(tf, 1);
@@ -1577,7 +1595,7 @@ int kbf_next_line(tf)
 
 /* scroll down one page 
  */
-int kbf_scroll_down(tf)
+long kbf_scroll_down(tf)
 	TFStruct *tf;
 {
 	moveLine(tf, -(tf->num_of_lines + 1));
@@ -1589,7 +1607,7 @@ int kbf_scroll_down(tf)
 
 /* scroll up one page 
  */
-int kbf_scroll_up(tf)
+long kbf_scroll_up(tf)
 	TFStruct *tf;
 {
 	moveLine(tf, tf->num_of_lines + 1);
@@ -1601,7 +1619,7 @@ int kbf_scroll_up(tf)
 
 /* scroll page up one line 
  */
-int kbf_scroll_up_line(tf)
+long kbf_scroll_up_line(tf)
 	TFStruct *tf;
 {
 	moveOffset(tf, -1, &buffi);
@@ -1616,7 +1634,7 @@ int kbf_scroll_up_line(tf)
 
 /* scroll up down one line 
  */
-int kbf_scroll_down_line(tf)
+long kbf_scroll_down_line(tf)
 	TFStruct *tf;
 {
 	moveOffset(tf, 1, &buffi);
@@ -1631,7 +1649,7 @@ int kbf_scroll_down_line(tf)
 
 /* refresh
  */
-int kbf_refresh(tf)
+long kbf_refresh(tf)
 	TFStruct *tf;
 {
 	replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -1643,7 +1661,7 @@ int kbf_refresh(tf)
 
 /* dump lines 
  */
-int kbf_dump(tf)
+long kbf_dump(tf)
 	TFStruct *tf;
 {
 	replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -1654,7 +1672,7 @@ int kbf_dump(tf)
 	return 1;
 }
 
-int kbf_newline(tf)
+long kbf_newline(tf)
 	TFStruct *tf;
 {
 	int length, start = tf->current_col;
@@ -1811,28 +1829,28 @@ if (verbose) fprintf(stdout, "tfed: 3 XClearArea w=%x %d %d %d %d\n", TFWINDOW,
 	return 1;
 }
 
-int kbf_useFont_fixed(tf)
+long kbf_useFont_fixed(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_fixed;
 	return 1;
 }
 
-int kbf_useFont_normal(tf)
+long kbf_useFont_normal(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_normal;
 	return 1;
 }
 
-int kbf_useFont_normal_large(tf)
+long kbf_useFont_normal_large(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_normal_large;
 	return 1;
 }
 
-int kbf_useFont_normal_largest(tf)
+long kbf_useFont_normal_largest(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_normal_largest;
@@ -1840,28 +1858,28 @@ int kbf_useFont_normal_largest(tf)
 	
 }
 
-int kbf_useFont_bold(tf)
+long kbf_useFont_bold(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_bold;
 	return 1;
 }
 
-int kbf_useFont_bold_large(tf)
+long kbf_useFont_bold_large(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_bold_large;
 	return 1;
 }
 
-int kbf_useFont_bold_largest(tf)
+long kbf_useFont_bold_largest(tf)
 	TFStruct *tf;
 {
 	tf->currentFontID = fontID_bold_largest;
 	return 1;
 }
 
-int kbf_useFont_context(tf)
+long kbf_useFont_context(tf)
 	TFStruct *tf;
 {
 	setCurrentFontID(tf);
@@ -1952,7 +1970,7 @@ char *tfed_get_currentTag(tf)
 	if (TFCTagID(tfcp))
 		return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
 
-	return NULL;
+	return 0;
 }
 
 char *tfed_get_previousTag(tf)
@@ -1971,7 +1989,7 @@ char *tfed_get_previousTag(tf)
 		if (TFCTagID(tfcp))
 		    return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
 	}
-	return NULL;
+	return 0;
 }
 
 char *tfed_get_nextTag(tf)
@@ -1992,7 +2010,7 @@ printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 		if (TFCTagID(tfcp))
 		    return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
 	}
-	return NULL;
+	return 0;
 }
 
 int tfed_get_numberOfLinesDisplayed(tf)
@@ -2282,7 +2300,7 @@ int str2EBuff(tf, str, fontID)
 	char *str;
 	int fontID;
 {
-	return NULL; /*XXX*/
+	return 0; /*XXX*/
 }
 
 /* returns length of tfcAttarTo */
@@ -2822,7 +2840,7 @@ int addCtrlChar(buildInfo)
 		}
 		++tfcp;
 		TFCTagID(tfcp) = 0;
-		buildInfo->flags = NULL;
+		buildInfo->flags = 0;
 		++(buildInfo->str);
 		return 1;
 	}
@@ -3142,7 +3160,7 @@ int addCtrlChar(buildInfo)
 			strncpy(cp, buildInfo->str + 1, length);
 			cp[length] = '\0';
 
-			result.info.s = NULL;
+			result.info.s = 0;
 			execScript(buildInfo->self, &result, cp);
 			Rfree(cp);
 			if (!result.info.s) break;
@@ -3235,7 +3253,7 @@ int addCtrlChar(buildInfo)
 				++buildInfo->tbuffi;
 				TFCTagID(tfcp) = 0;
 			}
-			TFCFlags(tfcp) = NULL;
+			TFCFlags(tfcp) = 0;
 			buildInfo->flags &= ~MASK_REVERSE;
 			buildInfo->str = s;
 		} else {
@@ -3586,7 +3604,7 @@ char *url;
 */
 /*
 url = buildInfo->tagInfo[1].info;
-buildInfo->tagInfo[1].info = NULL;
+buildInfo->tagInfo[1].info = 0;
 buildInfo->tagID--;
 */
 					      splitLine(buildInfo, 1,
@@ -3805,7 +3823,7 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 					sizeof(struct TFLineNode));
 	if (!newp) {
 		fprintf(stderr, "Vmalloc failed\n");
-		return NULL;
+		return 0;
 	}
 
 	newp->maxPixelExtentX = 0;
@@ -3824,7 +3842,7 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 	newp->linep = (TFChar*)malloc(size);
 	if (!newp->linep) {
 		fprintf(stderr, "malloc failed\n");
-		return NULL;
+		return 0;
 	}
 	bcopy(buildInfo->tbuff, newp->linep, size);
 	if (newp->length > 0) {
@@ -3863,7 +3881,7 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 */
 		}
 		ti = &(newp->tagInfo[0]); /* old artifact*/
-		ti->info = NULL;
+		ti->info = 0;
 /*
 		ti->x_begin = 0;
 		ti->x_end = 0;
@@ -3871,12 +3889,12 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 */
 	} else {
 		newp->tagInfoCount = 0;
-		newp->tagInfo = NULL;
+		newp->tagInfo = 0;
 	}
 	if (patch) {
 		newp->tagInfoCount++;
 		ti = &(newp->tagInfo[++(buildInfo->tagID)]);
-		ti->info = NULL;
+		ti->info = 0;
 /*
 		ti->x_begin = 0;
 		ti->x_end = 0;
@@ -3908,13 +3926,13 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 		} else {
 			buildInfo->currentp = newp;
 			buildInfo->beginp = newp;
-			newp->prev = NULL;
-			newp->next = NULL;
+			newp->prev = 0;
+			newp->next = 0;
 		}
 	} else {
 /*		fprintf(stderr, "Error: splitLine(): currentp = NULL\n");*/
-		newp->prev = NULL;
-		newp->next = NULL;
+		newp->prev = 0;
+		newp->next = 0;
 		buildInfo->beginp = newp;
 		buildInfo->currentp = newp;
 	}
@@ -3931,7 +3949,7 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 		if (TFCChar(buildInfo->tbuff + j) != ' ') break;
 
 	for (; j < k; n++, j++) {
-		TFPic *picp, *pic = NULL;
+		TFPic *picp, *pic = 0;
 		int picID;
 
 		TFCCopy(&tfc, buildInfo->tbuff + j);
@@ -4010,7 +4028,7 @@ printf(",  buildInfo->maxFontDescent = %d\n", buildInfo->maxFontDescent);
 				printf("@@ tagID=%d [%s]\n", 
 					tagID, newp->tagInfo[tagID].info);
 */
-				newp->tagInfo[tagID].info = NULL;
+				newp->tagInfo[tagID].info = 0;
 			}
 		}
 	}
@@ -4186,7 +4204,7 @@ TFLineNode *insertBelowLineNode(tf, currentp, initLineP)
 		tf->currentp = newp;
 		tf->firstp = newp;
 		tf->offsetp = newp;
-		newp->next = NULL;
+		newp->next = 0;
 	}
 	if (initLineP) {
 		newp->linep = (TFChar*)Rmalloc(sizeof(struct TFChar));
@@ -4226,7 +4244,7 @@ char *convertNodeLinesToStr(self, headp)
 	char *buffp = buff;
 	char s[10];
 	
-	if (!headp) return NULL;
+	if (!headp) return 0;
 
 	/* printf("convertNodeLinesToStr : \n");*/
 /*
@@ -4438,9 +4456,9 @@ void freeNodeLines(tf)
 	TFCClear(theEditLN->linep);
 	theEditLN->length = 0;
 
-	tf->firstp = NULL;
-	tf->currentp = NULL;
-	tf->offsetp = NULL;
+	tf->firstp = 0;
+	tf->currentp = 0;
+	tf->offsetp = 0;
 }
 
 void dumpNodeLines(tf)
@@ -4483,7 +4501,7 @@ int setBreaks(tf, currentp)
 	int segpx = tf->xUL;
 	TFChar *tfcp = currentp->linep;
 	int pwidthlimit = tf->xLR;
-	TFPic *picp, *pic = NULL;
+	TFPic *picp, *pic = 0;
 	int picID;
 
 	currentp->breakc = 0;
@@ -4697,13 +4715,13 @@ void drawChar(tf, tfcp, px, py)
 TFStruct *updateEStrUser(self)
 	VObj *self;
 {
-	static VObj *currentUserObj = NULL;
-	static TFStruct *tf = NULL;
+	static VObj *currentUserObj = 0;
+	static TFStruct *tf = 0;
 
 	if (self == NULL) {
-		currentUserObj = NULL;
-		tf = NULL;
-		return NULL;
+		currentUserObj = 0;
+		tf = 0;
+		return 0;
 	} if (self == currentUserObj) {
 		return GET__TFStruct(self);
 	} else {
@@ -4725,7 +4743,7 @@ TFStruct *updateEStrUser(self)
 			return selfTF;
 		}
 	}
-	return NULL;
+	return 0;
 }
 
 int TFCShiftStr(tfcArray, starti, shift)
@@ -5304,7 +5322,7 @@ int drawLineSeg(tf, currentp, yoffset, fontyoffset)
 				}
 */
 				if (flags & MASK_PIC) {
-					TFPic *picp, *pic = NULL;
+					TFPic *picp, *pic = 0;
 					int picID;
 
 					picID = TFCFontID(segheadtfcp);
@@ -6489,7 +6507,7 @@ int tfed_append(tf, str)
 	if (!tf) return 0;
 	if (insertp) {
 		if (!TFCChar(insertp->linep) && !insertp->next) {
-			insertp = NULL;
+			insertp = 0;
 			setTops = 1;
 		} else {
 			while (insertp->next) insertp = insertp->next;
@@ -6622,7 +6640,7 @@ char *rangeOperation(tf, from_cx, from_cy, to_cx, to_cy,
 		to_cx = i;
 	}
 	for (i = 0; i < from_cy; i++) {
-		if (!currentp) return NULL;
+		if (!currentp) return 0;
 		currentp = currentp->next;
 		if (!currentp) return NULL; /* error */
 	}
@@ -6653,7 +6671,7 @@ char *rangeOperation(tf, from_cx, from_cy, to_cx, to_cy,
 				}
 			}
 
-			if (!currentp) return NULL;
+			if (!currentp) return 0;
 
 			tfcp = currentp->linep + left;
 
@@ -6776,7 +6794,7 @@ printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 		buff[buffi] = '\0';
 		return buff;
 	} else {
-		return NULL;
+		return 0;
 	}
 }
 
@@ -6827,7 +6845,7 @@ int scanVerticalMetrics(tf)
 	int lineNodeCount = 0;
 	int lineVisibleCount = 0;
 	int vspan = 0;
-	TFPic *picp, *pic = NULL;
+	TFPic *picp, *pic = 0;
 	int picID;
 	int renderedLines;
 
@@ -6911,7 +6929,7 @@ lineVisibleCount, renderedLines);
 						maxFontHeight = pic->height;
 				    } else if (TFCFlags(tfcp) & MASK_OBJ) {
 					VObj *inset;
-					char *insetName = NULL;
+					char *insetName = 0;
 					int insetHeight;
 					if (currentp->tagInfo) {
 					  insetName = 
@@ -7108,7 +7126,7 @@ TFPic *tfed_addPicFromFile(pics, id, src)
 		return pic;
 	}
 
-	pic->data = NULL;
+	pic->data = 0;
 
 
 	if (pic->type == TFPic_XBML) {
@@ -7116,10 +7134,10 @@ TFPic *tfed_addPicFromFile(pics, id, src)
 		Pixmap bitmap;
 
 		if (XReadBitmapFile(display, rootWindow, id, 
-				&(pic->width), &(pic->height),
-				&bitmap, &hotx, &hoty) == 0) {
-			pic->data = bitmap;
-			pic->canFree = PK_CANFREE_STR;
+			&(pic->width), &(pic->height),
+			&bitmap, &hotx, &hoty) == 0) {
+		pic->data = (XImage*)(long)bitmap;
+		pic->canFree = PK_CANFREE_STR;
 		} else {
 			pic->canFree = 0;
 		}
@@ -7149,7 +7167,7 @@ TFPic *tfed_addPicFromFile(pics, id, src)
 		pic->canFree = 0;
 	}
 	if (pic->data) {
-		pic->next = NULL;
+		pic->next = 0;
 		if (*pics) {
 			for (picp = *pics; picp; picp = picp->next) {
 				if (picp->id > largestID) largestID = picp->id;
@@ -7163,7 +7181,7 @@ TFPic *tfed_addPicFromFile(pics, id, src)
 		return pic;
 	}
 	free(pic);
-	return NULL;
+	return 0;
 }
 
 TFPic *tfed_addPic(pics, oldpic)
@@ -7179,7 +7197,7 @@ TFPic *tfed_addPic(pics, oldpic)
 	bcopy(oldpic, pic, sizeof(struct TFPic));
 
 	if (pic->data) {
-		pic->next = NULL;
+		pic->next = 0;
 		if (*pics) {
 			for (picp = *pics; picp; picp = picp->next) {
 				if (picp->id > largestID) largestID = picp->id;
@@ -7193,7 +7211,7 @@ TFPic *tfed_addPic(pics, oldpic)
 		return pic;
 	}
 	free(pic);
-	return NULL;
+	return 0;
 }
 
 

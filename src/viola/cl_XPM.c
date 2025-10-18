@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_XPM_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPM_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPM_CSlots[] = {
 {
@@ -104,7 +104,7 @@ SlotInfo cl_XPM_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_XPM_PSlots[] = {
@@ -113,7 +113,7 @@ SlotInfo cl_XPM_PSlots[] = {
 	CLSI,
 	(long)&class_XPM
 },{
-	NULL
+	0
 }
 };
 
@@ -145,7 +145,7 @@ MethodInfo meths_XPM[] = {
 	STR_seta,
 	meth_XPM_set
 },{
-	NULL
+	0
 }
 };
 
@@ -158,37 +158,24 @@ ClassInfo class_XPM = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_XPM_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_config(self, result, argc, argv);
 }
 
-int meth_XPM_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!exitingViola) {
 	  if (GET__label(self)) {
 	    XFreePixmap(display, (Pixmap)GET__label(self));
-	    SET__label(self, NULL);
+	    SET__label(self, 0);
 	  }
 	}
 	meth_field_freeSelf(self, result, argc, argv);
 	return 1;
 }
 
-int helper_XPM_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_XPM_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_direction:
@@ -199,21 +186,13 @@ int helper_XPM_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_XPM_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_XPM_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_XPM_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	meth_field_initialize(self, result, argc, argv);
 	return 1;
@@ -222,12 +201,7 @@ int meth_XPM_initialize(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_XPM_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_XPM_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_label: {
@@ -255,21 +229,13 @@ int helper_XPM_set(self, result, argc, argv, labelID)
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_XPM_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_XPM_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_XPM_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPM_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	Pixmap pixmap;

@@ -9,6 +9,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
 
 /* if merging bitmaps they don't have to be converted to
@@ -190,7 +193,7 @@ Image *merge(dest, src, atx, aty, verbose)
   if ((atx + clipw < 0) || (aty + cliph < 0) ||
       (atx >= (int)dest->width) ||
       (aty >= (int)dest->height)) /* not on dest, ignore */
-    return;
+    return(dest);
 
   if (atx + clipw > dest->width)
     clipw = dest->width - atx;

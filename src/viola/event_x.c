@@ -24,10 +24,14 @@
 #include <sys/time.h>
 #include <pwd.h>
 #include <ctype.h>
+#include <string.h>
+#include <unistd.h>
 #include "mystrings.h"
 #include "error.h"
 #include "hash.h"
 #include "ident.h"
+#include "method.h"
+#include "cexec.h"
 #include "obj.h"
 #include "vlist.h"
 #include "packet.h"
@@ -46,6 +50,17 @@
 #ifdef _AIX
 #include <sys/select.h>
 #endif
+
+/* Forward declarations for event handlers */
+void handle_KeyPress();
+void handle_KeyRelease(XKeyEvent *ep);
+long handle_EnterNotify();
+long handle_LeaveNotify();
+long handle_ButtonPress();
+long handle_ButtonRelease();
+long handle_MotionNotify();
+long handle_ResizeRequest();
+long handle_ConfigureNotify();
 
 static int signal_fatal[] = {
 	SIGBUS, SIGFPE, SIGEMT, SIGILL, SIGSEGV, SIGSYS, 0
@@ -775,7 +790,7 @@ if (verbose) fprintf(stderr, "destroyNotify! w=ox%x obj=%s\n",
 	}
 }
 
-handle_KeyPress(ep)
+void handle_KeyPress(ep)
 	XKeyEvent *ep;
 {
 	VObj *obj = findWindowObject(ep->window);
@@ -793,8 +808,7 @@ handle_KeyPress(ep)
 	/* printf("control=%d shift=%d\n", keyStat_control, keyStat_shift);*/
 }
 
-handle_KeyRelease(ep)
-	XKeyEvent *ep;
+void handle_KeyRelease(XKeyEvent *ep)
 {
 	VObj *obj = findWindowObject(ep->window);
 	if (((int)eventChar(ep) <= 1) && obj) {
@@ -802,19 +816,16 @@ handle_KeyRelease(ep)
 	}
 }
 
-handle_EnterNotify(ep, dragObjp, tool, mouseDown)
-	XEnterWindowEvent *ep;
-	VObj **dragObjp;
-	int tool;
-	int *mouseDown;
+long handle_EnterNotify(XEnterWindowEvent *ep, VObj **dragObjp, int tool, int *mouseDown)
+
 {
-	if (VCurrentObj == NULL) return;
+	if (VCurrentObj == NULL) return 0;
 	if (ep->detail == NotifyVirtual || 
-	    ep->detail == NotifyNonlinearVirtual) return;
+	    ep->detail == NotifyNonlinearVirtual) return 0;
 
 	if (validObjectP(VCurrentObj) == 0) {
 		VCurrentObj = NULL;
-		return;
+		return 0;
 	}
 	
 	if ((tool != ACTION_TOOL) && (*mouseDown == 0)) {
@@ -828,21 +839,22 @@ handle_EnterNotify(ep, dragObjp, tool, mouseDown)
 	} else {
 		sendMessage1(VCurrentObj, "enter");
 	}
+	return 0;
 }
 
-handle_LeaveNotify(ep, dragObjp, tool, mouseDown)
+long handle_LeaveNotify(ep, dragObjp, tool, mouseDown)
 	XLeaveWindowEvent *ep;
 	VObj **dragObjp;
 	int tool;
 	int *mouseDown;
 {
-	if (VCurrentObj == NULL) return;
+	if (VCurrentObj == NULL) return 0;
 	if (ep->detail == NotifyVirtual ||
-	    ep->detail == NotifyNonlinearVirtual) return;
+	    ep->detail == NotifyNonlinearVirtual) return 0;
 
 	if (validObjectP(VCurrentObj) == 0) {
 		VCurrentObj = NULL;
-		return;
+		return 0;
 	}
 
 	/*
@@ -854,14 +866,15 @@ handle_LeaveNotify(ep, dragObjp, tool, mouseDown)
 				GET_y(VCurrentObj) + 1,
 				GET_x(VCurrentObj) 
 				  + GET_width(VCurrentObj) - 1, 
-				GET_y(VCurrentObj) 
-				  + GET_height(VCurrentObj) - 1);
+			GET_y(VCurrentObj) 
+			  + GET_height(VCurrentObj) - 1);
 	} else {
 		sendMessage1(VCurrentObj, "leave");
 	}
+	return 0;
 }
 
-handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x,from_y)
+long handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x,from_y)
 	XButtonEvent *ep;
 	VObj **dragObjp;
 	int tool;
@@ -873,7 +886,7 @@ handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x,from_y)
 
 	if (validObjectP(VCurrentObj) == 0) {
 		VCurrentObj = NULL;
-		return;
+		return 0;
 	}
 
 	mouseButtonPressedState |= 1<<(ep->button);
@@ -884,9 +897,9 @@ handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x,from_y)
 	 */
 	if (keyStat_control) {
 		execScript(VCurrentObj, result, "shell(\"visible\", 1);");
-		execScript(VCurrentObj, result, "shell(\"raise\");");
-		return;
-	}
+	execScript(VCurrentObj, result, "shell(\"raise\");");
+	return 0;
+}
 
 	switch (tool) {
 	case ACTION_TOOL: { /* press */
@@ -917,10 +930,10 @@ handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x,from_y)
 			IERROR("reparent tool: can't find the object! abort.\n");
 		}
 		if (!w) {
-			MERROR(*dragObjp, "reparent to root window failed.\n");
-			*dragObjp = NULL;
-			return;
-		}
+		MERROR(*dragObjp, "reparent to root window failed.\n");
+		*dragObjp = NULL;
+		return 0;
+	}
 		if (GET__classInfo(VCurrentObj) != &class_glass) {
 			XSetWindowAttributes attrs;
 			attrs.save_under = True;
@@ -998,7 +1011,7 @@ printf("	 x,y %d,%d\n", GET_x(*dragObjp), GET_y(*dragObjp));
 
 		Window w = GET_window(VCurrentObj);
 
-		if (!w) return;
+		if (!w) return 0;
 
 		/* restrict user from moving non-field (stack, card...) */
 		*dragObjp = VCurrentObj;
@@ -1042,7 +1055,7 @@ printf("	 x,y %d,%d\n", GET_x(*dragObjp), GET_y(*dragObjp));
 
 		Window w = GET_window(VCurrentObj);
 
-		if (!w) return;
+		if (!w) return 0;
 
 		*dragObjp = VCurrentObj;
 
@@ -1069,23 +1082,24 @@ printf("	 x,y %d,%d\n", GET_x(*dragObjp), GET_y(*dragObjp));
 		*from_x = root_x;
 		*from_y = root_y;
 			
-		if (mouse.x < (int)(GET_width(*dragObjp) / 2)) {
-			if (mouse.y < (int)(GET_height(*dragObjp) / 2))
-				*resize_corner = RC_UPPER_LEFT;
-			else
-				*resize_corner = RC_LOWER_LEFT;
-		} else {
-			if (mouse.y < (int)(GET_height(*dragObjp) / 2))
-				*resize_corner = RC_UPPER_RIGHT;
-			else
-				*resize_corner = RC_LOWER_RIGHT;
-		}
+	if (mouse.x < (int)(GET_width(*dragObjp) / 2)) {
+		if (mouse.y < (int)(GET_height(*dragObjp) / 2))
+			*resize_corner = RC_UPPER_LEFT;
+		else
+			*resize_corner = RC_LOWER_LEFT;
+	} else {
+		if (mouse.y < (int)(GET_height(*dragObjp) / 2))
+			*resize_corner = RC_UPPER_RIGHT;
+		else
+			*resize_corner = RC_LOWER_RIGHT;
+	}
+	return 0;
 	}
 	break;
 	}
 }
 
-handle_ButtonRelease(ep, dragObjp, tool, resize_corner, mouseDown)
+long handle_ButtonRelease(ep, dragObjp, tool, resize_corner, mouseDown)
 	XButtonEvent *ep;
 	VObj **dragObjp;
 	int tool;
@@ -1096,7 +1110,7 @@ handle_ButtonRelease(ep, dragObjp, tool, resize_corner, mouseDown)
 
 	if (validObjectP(VCurrentObj) == 0) {
 		VCurrentObj = NULL;
-		return;
+	return 0;
 	}
 	w = GET_window(VCurrentObj);
 
@@ -1259,7 +1273,7 @@ handle_ButtonRelease(ep, dragObjp, tool, resize_corner, mouseDown)
 	}
 }
 
-handle_MotionNotify(ep, dragObjp, tool, resize_corner,mouseDown, from_x,from_y)
+long handle_MotionNotify(ep, dragObjp, tool, resize_corner,mouseDown, from_x,from_y)
 	XEvent *ep;
 	VObj **dragObjp;
 	int tool;
@@ -1267,11 +1281,11 @@ handle_MotionNotify(ep, dragObjp, tool, resize_corner,mouseDown, from_x,from_y)
 	int *mouseDown;
 	int *from_x, *from_y;
 {
-	if (((XMotionEvent*)ep)->is_hint != NotifyHint) return;
+	if (((XMotionEvent*)ep)->is_hint != NotifyHint) return 0;
 
 	if (validObjectP(VCurrentObj) == 0) {
 		VCurrentObj = NULL;
-		return;
+	return 0;
 	}
 
 	switch (tool) {
@@ -1295,7 +1309,7 @@ handle_MotionNotify(ep, dragObjp, tool, resize_corner,mouseDown, from_x,from_y)
 			Window w = GET_window(*dragObjp);
 			int root_x, root_y, dx, dy;
 
-/*			if (*dragObjp != findWindowObject(w)) return;
+/*			if (*dragObjp != findWindowObject(w)) return 0;
 */
 			GLQueryMouse(rootWindow, &root_x, &root_y, 
 				     &(mouse.x), &(mouse.y));
@@ -1353,7 +1367,7 @@ handle_MotionNotify(ep, dragObjp, tool, resize_corner,mouseDown, from_x,from_y)
 			Window pw, w = eventWindow(*((XEvent*)ep));
 			int root_x, root_y, dx, dy;
 
-			if (*dragObjp != findWindowObject(w)) return;
+			if (*dragObjp != findWindowObject(w)) return 0;
 
 			GLDrawRubberFrame(*dragObjp,
 					GET_x(*dragObjp) + 1,
@@ -1516,7 +1530,7 @@ handle_ExposeNotify(ep)
 }
 #endif
 
-handle_ResizeRequest(ep)
+long handle_ResizeRequest(ep)
 	XResizeRequestEvent *ep;
 {
 	VObj *obj = findWindowObject(ep->window);
@@ -1530,7 +1544,7 @@ handle_ResizeRequest(ep)
 	}
 }
 
-handle_ConfigureNotify(ep)
+long handle_ConfigureNotify(ep)
 	XConfigureEvent *ep;
 { 
 	VObj *obj = findWindowObject(ep->window);
@@ -1592,9 +1606,9 @@ char *eventChar(e)
 			return "key_next";
 		default:
 			keyStat_key = keybuf[0];
-		}
-		if (keyStat_key != '\0') 
-			return (char)1; /*XXX 1 has special meaning. ick. */
+	}
+	if (keyStat_key != '\0') 
+		return (char*)1; /*XXX 1 has special meaning. ick. */
 	}
 	return NULL;
 }

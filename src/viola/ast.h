@@ -109,7 +109,7 @@ hard coded methos -- optimization hack
 typedef struct ATT {
 	struct ATT	*next;
 	union {
-		int	i;
+		long	i;
 		float	f;
 		char	c;
 		char	*s;
@@ -135,4 +135,6 @@ extern char *ASTTypeStr[];
 extern int init_ast();
 extern int countASTSiblings();
 extern AST *makeAST();
-
+extern long getIdent();
+extern int yyparse();
+void printAST(AST *ast, int tab);

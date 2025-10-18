@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_XPMBG_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPMBG_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPMBG_CSlots[] = {
 {
@@ -93,7 +93,7 @@ SlotInfo cl_XPMBG_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_XPMBG_PSlots[] = {
@@ -102,7 +102,7 @@ SlotInfo cl_XPMBG_PSlots[] = {
 	CLSI,
 	(long)&class_XPMBG
 },{
-	NULL
+	0
 }
 };
 
@@ -119,7 +119,7 @@ MethodInfo meths_XPMBG[] = {
 	STR_render,
 	meth_XPMBG_render
 },{
-	NULL
+	0
 }
 };
 
@@ -133,11 +133,7 @@ ClassInfo class_XPMBG = {
 };
 
 
-int meth_XPMBG_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPMBG_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	Pixmap pixmap;

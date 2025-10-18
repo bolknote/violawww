@@ -1,4 +1,6 @@
+#include <string.h>
 #include "utils.h"
+#include <string.h>
 #include "mystrings.h"
 #include "hash.h"
 #include "ident.h"
@@ -610,7 +612,7 @@ strNIntPair symList[] = {
 	STR_baseImageWidth,	"baseImageWidth",
 	STR_baseImageHeight,	"baseImageHeight",
 	STR_sendToInterface, 	"sendToInterface",	/* Scott: for motif */
-	NULL,			NULL
+	0,			NULL
 };
 
 HashTable *symStr2ID, *symID2Str;

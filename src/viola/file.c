@@ -11,6 +11,7 @@
  * be charged with express written permission of the copyright holder.
  * This software is provided ``as is'' without express or implied warranty.
  */
+#include <string.h>
 #include <stdio.h>
 #include <pwd.h>
 #include "utils.h"

@@ -9,6 +9,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 #define MAXPRINTABLE 93			/* number of printable ascii chars
 					 * minus \ and " for string compat

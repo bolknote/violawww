@@ -48,6 +48,9 @@
 
 #include <sys/ioctl.h>
 #include <sys/file.h>
+#include <unistd.h>
+#include <strings.h>
+#include <stdlib.h>
 #ifdef SYSV
 #include <termio.h>
 #endif
@@ -61,7 +64,7 @@ static	char	tty[] = "/dev/ttyXY";
 #endif
 
 SlotInfo cl_TTY_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_TTY_NPSlots[] = {
 {
@@ -77,7 +80,7 @@ SlotInfo cl_TTY_NPSlots[] = {
 	LONG,
 	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_TTY_CSlots[] = {
@@ -157,12 +160,12 @@ SlotInfo cl_TTY_CSlots[] = {
 			print(\"unknown message, clsss = \", get(\"class\"),\n\
 				\": self = \", get(\"name\"), \" args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
-			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	print(\"\n\");\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_TTY_PSlots[] = {
@@ -171,7 +174,7 @@ SlotInfo cl_TTY_PSlots[] = {
 	CLSI,
 	(long)&class_TTY
 },{
-	NULL
+	0
 }
 };
 
@@ -194,7 +197,7 @@ MethodInfo meths_TTY[] = {
 	STR_seta,
 	meth_TTY_set
 },{
-	NULL
+	0
 }
 };
 
@@ -207,11 +210,7 @@ ClassInfo class_TTY = {
 	&class_client,		/* super class info		*/
 };
 
-int meth_TTY__startClient(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_TTY__startClient(VObj *self, Packet *result, int argc, Packet argv[])
 {
 #ifndef i386
 
@@ -329,12 +328,7 @@ int meth_TTY__startClient(self, result, argc, argv)
 	return 0;
 }
 
-int helper_TTY_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_TTY_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_pid:
@@ -358,22 +352,13 @@ int helper_TTY_get(self, result, argc, argv, labelID)
 	}
 	return helper_client_get(self, result, argc, argv, labelID);
 }
-int meth_TTY_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_TTY_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_TTY_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int helper_TTY_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_TTY_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_args:
@@ -392,11 +377,7 @@ int helper_TTY_set(self, result, argc, argv, labelID)
 	}
 	return helper_client_set(self, result, argc, argv, labelID);
 }
-int meth_TTY_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_TTY_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_TTY_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));

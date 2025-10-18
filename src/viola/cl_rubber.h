@@ -5,12 +5,12 @@
 #include "cl_field.h"
 
 extern ClassInfo class_rubber;
-int helper_rubber_get();
-int helper_rubber_set();
+long int helper_rubber_get();
+long int helper_rubber_set();
 
-int meth_rubber_config();
-int meth_rubber_get();
-int meth_rubber_initialize();
-int meth_rubber_render();
-int meth_rubber_set();
+long meth_rubber_config();
+long meth_rubber_get();
+long meth_rubber_initialize();
+long meth_rubber_render();
+long meth_rubber_set();
 

@@ -12,6 +12,7 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 /*#include <stdio.h>*/
+#include <string.h>
 #include "utils.h"
 #ifdef SVR4
 #include <strings.h>
@@ -89,7 +90,7 @@ char *ASTTypeStr[] = {
 	"METH_SELF",
 	"METH_PARENT",
 	"METH_SEND",
-	NULL
+	{0}
 };
 
 int my_yyinput(buf, max_size)
@@ -156,7 +157,7 @@ AST *makeAST(type)
 	ast->parent = NULL;
 	ast->parent = NULL;
 	ast->attribute.next = NULL;
-	ast->attribute.info.i = NULL;
+	ast->attribute.info.i = 0;
 	ast->type = type;
 	ast->lineno = lineno;
 

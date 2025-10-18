@@ -31,7 +31,7 @@
 #include "event.h"
 
 SlotInfo cl_toggle_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_toggle_NPSlots[] = {
 {
@@ -43,7 +43,7 @@ SlotInfo cl_toggle_NPSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"check"
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_toggle_CSlots[] = {
@@ -125,11 +125,11 @@ SlotInfo cl_toggle_CSlots[] = {
 			print(\"unknown message, clsss = toggle: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_toggle_PSlots[] = {
@@ -138,7 +138,7 @@ SlotInfo cl_toggle_PSlots[] = {
 	CLSI,
 	(long)&class_toggle
 },{
-	NULL
+	{0}
 }
 };
 
@@ -164,7 +164,7 @@ MethodInfo meths_toggle[] = {
 	STR_toggle,
 	meth_toggle_toggle
 },{
-	NULL
+	{0}
 }
 };
 
@@ -177,7 +177,7 @@ ClassInfo class_toggle = {
 	&class_XBM,		/* super class info		*/
 };
 
-int helper_toggle_get(self, result, argc, argv, labelID)
+long helper_toggle_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -199,7 +199,8 @@ int helper_toggle_get(self, result, argc, argv, labelID)
 	}
 	return helper_XBM_get(self, result, argc, argv, labelID);
 }
-int meth_toggle_get(self, result, argc, argv)
+
+long meth_toggle_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -212,7 +213,7 @@ int meth_toggle_get(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_toggle_set(self, result, argc, argv, labelID)
+long helper_toggle_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -239,7 +240,7 @@ int helper_toggle_set(self, result, argc, argv, labelID)
 	}
 	return helper_XBM_set(self, result, argc, argv, labelID);
 }
-int meth_toggle_set(self, result, argc, argv)
+long meth_toggle_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -249,7 +250,7 @@ int meth_toggle_set(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_toggle_render(self, result, argc, argv)
+long meth_toggle_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -283,7 +284,7 @@ int meth_toggle_render(self, result, argc, argv)
 	return 1;
 }
 
-int meth_toggle_toggle(self, result, argc, argv)
+long meth_toggle_toggle(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

@@ -30,10 +30,10 @@
 #include "glib.h"
 
 SlotInfo cl_vpane_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_vpane_NPSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_vpane_CSlots[] = {
 {
@@ -87,7 +87,7 @@ SlotInfo cl_vpane_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_vpane_PSlots[] = {
@@ -104,7 +104,7 @@ SlotInfo cl_vpane_PSlots[] = {
  	LONG,
 	PANE_CONFIG_N2S		/* default with N2S */
 },{
-	NULL
+	{0}
 }
 };
 
@@ -117,7 +117,7 @@ SlotInfo *slots_vpane[] = {
 
 MethodInfo meths_vpane[] = {
 	/* local methods */
-	NULL
+	{0}
 };
 
 ClassInfo class_vpane = {

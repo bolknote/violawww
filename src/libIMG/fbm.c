@@ -15,10 +15,15 @@
  * "mrmcpyrght.h" for complete copyright information)
  */
 # include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
 # include <math.h>
 # include <ctype.h>
 # include "image.h"
 # include "fbm.h"
+
+/* Forward declarations */
+static int fbmin_image_test();
 
 /****
  **

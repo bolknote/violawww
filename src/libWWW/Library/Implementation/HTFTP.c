@@ -52,6 +52,7 @@ BUGS:	@@@  	Limit connection cache size!
 */		
 
 #include "HTFTP.h"	/* Implemented here */
+#include <unistd.h>
 
 #define CR   FROMASCII('\015')	/* Must be converted to ^M for transmission */
 #define LF   FROMASCII('\012')	/* Must be converted to ^J for transmission */

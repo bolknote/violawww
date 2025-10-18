@@ -1176,10 +1176,7 @@ int codeGen(ast, pcode, pc)
 	return 0;
 }
 
-printPCode(pcode, pc, size)
-	union PCode *pcode;
-	int *pc;
-	int size;
+void printPCode(union PCode *pcode, int *pc, int size)
 {
 	int code, data;
 

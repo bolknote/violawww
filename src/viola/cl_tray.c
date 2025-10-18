@@ -31,10 +31,10 @@
 #include "glib.h"
 
 SlotInfo cl_tray_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_tray_NPSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_tray_CSlots[] = {
 {
@@ -42,7 +42,7 @@ SlotInfo cl_tray_CSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"tray"
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_tray_PSlots[] = {
@@ -51,7 +51,7 @@ SlotInfo cl_tray_PSlots[] = {
 	CLSI,
 	(long)&class_tray
 },{
-	NULL
+	{0}
 }
 };
 
@@ -74,7 +74,7 @@ MethodInfo meths_tray[] = {
 	STR_render,
 	meth_tray_render
 },{
-	NULL
+	{0}
 }
 };
 
@@ -110,7 +110,7 @@ helper_tray_config(self, oldWidth, oldHeight)
 	}
 }
 
-int meth_tray_config(self, result, argc, argv)
+long meth_tray_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -129,7 +129,7 @@ int meth_tray_config(self, result, argc, argv)
 	return 1;
 }
 
-int meth_tray_initialize(self, result, argc, argv)
+long meth_tray_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -138,7 +138,7 @@ int meth_tray_initialize(self, result, argc, argv)
 	return meth_field_initialize(self, result, argc, argv);
 }
 
-int meth_tray_render(self, result, argc, argv)
+long meth_tray_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

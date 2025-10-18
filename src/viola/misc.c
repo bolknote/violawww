@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 #include "error.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -10,6 +11,7 @@
 #include "packet.h"
 #include "slotaccess.h"
 #include "misc.h"
+#include "loader.h"
 
 int cmd_history = 0;
 int verbose = 0;
@@ -188,7 +190,7 @@ char *PkInfos2Str(argc, argv)
 			sprintf(sbuff, "%c", argv[i].info.c);
 		break;
 		case PKT_INT:
-			sprintf(sbuff, "%d", argv[i].info.i);
+			sprintf(sbuff, "%ld", argv[i].info.i);
 		break;
 		case PKT_FLT:
 			sprintf(sbuff, "%f", argv[i].info.f);
@@ -204,7 +206,7 @@ char *PkInfos2Str(argc, argv)
 				int n;
 				Array *array = argv[i].info.y;
 				for (n = 0; n < array->size; n++)
-					sprintf(sbuff, "%d ", array->info[n]);
+					sprintf(sbuff, "%ld ", array->info[n]);
 			}
 		break;
 /*		case PKT_STRI:
@@ -241,7 +243,7 @@ char *PkInfo2Str(pk)
 		sprintf(buff, "%c", pk->info.c);
 	break;
 	case PKT_INT:
-		sprintf(buff, "%d", pk->info.i);
+		sprintf(buff, "%ld", pk->info.i);
 	break;
 	case PKT_FLT:
 		sprintf(buff, "%f", pk->info.f);
@@ -254,10 +256,10 @@ char *PkInfo2Str(pk)
 	break;
 	case PKT_ARY:
 		if (pk->info.y) {
-			int n;
-			Array *array = pk->info.y;
-			for (n = 0; n < array->size; n++)
-				sprintf(buff, "%d ", array->info[n]);
+		int n;
+		Array *array = pk->info.y;
+		for (n = 0; n < array->size; n++)
+			sprintf(buff, "%ld ", array->info[n]);
 		}
 	break;
 /*	case PKT_STRI:
@@ -305,8 +307,7 @@ char PkInfo2Char(pk)
 	}
 }
 
-int PkInfo2Int(pk)
-	Packet *pk;
+long PkInfo2Int(Packet *pk)
 {
 	switch (pk->type) {
 	case PKT_INT:
@@ -320,11 +321,11 @@ int PkInfo2Int(pk)
 			return 0;
 		}
 	case PKT_FLT:
-		return (int)(pk->info.f);
+		return (long)(pk->info.f);
 	case PKT_CHR:
-		return (int)(pk->info.c);	/* ?? */
+		return (long)(pk->info.c);	/* ?? */
 	}
-	return (int)(pk->info.i);
+	return pk->info.i;
 }
 
 /* load if necessary 

@@ -11,6 +11,7 @@
  * PGM and PPM files (03-July-1990)
  */
 
+#include <stdlib.h>
 #include "image.h"
 #include "pbm.h"
 

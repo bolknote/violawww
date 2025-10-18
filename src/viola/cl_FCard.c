@@ -30,15 +30,15 @@
 #include "event.h"
 
 SlotInfo cl_FCard_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_FCard_NPSlots[] = {
 {
 	STR_BCard,
 	OBJP | SLOT_RW,
-	NULL
+	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_FCard_CSlots[] = {
@@ -70,12 +70,12 @@ SlotInfo cl_FCard_CSlots[] = {
 		default:\n\
 			print(\"unknown message, clsss = FCard: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
-			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	print(\"\n\");\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_FCard_PSlots[] = {
@@ -92,7 +92,7 @@ SlotInfo cl_FCard_PSlots[] = {
  	LONG,
 	PANE_CONFIG_FREE	/* default with FREEFORM */
 },{
-	NULL
+	0
 }
 };
 
@@ -121,7 +121,7 @@ MethodInfo meths_FCard[] = {
 	STR_render,
 	meth_FCard_render
 },{
-	NULL
+	0
 }
 };
 
@@ -134,31 +134,18 @@ ClassInfo class_FCard = {
 	&class_pane,		/* super class info		*/
 };
 
-int meth_FCard_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_FCard_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_pane_config(self, result, argc, argv)) return 0;
 	return 1;
 }
 
-int meth_FCard_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_FCard_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_pane_render(self, result, argc, argv);
 }
 
-int helper_FCard_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_FCard_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_BCard:
@@ -168,31 +155,19 @@ int helper_FCard_get(self, result, argc, argv, labelID)
 	}
 	return helper_pane_get(self, result, argc, argv, labelID);
 }
-int meth_FCard_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_FCard_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_FCard_get(self, result, argc, argv,
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_FCard_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_FCard_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	meth_pane_initialize(self, result, argc, argv);
 	return 1;
 }
 
-int meth_FCard_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_FCard_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 

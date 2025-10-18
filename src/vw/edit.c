@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -34,6 +35,10 @@
 #include "fileIO.h"
 #include "cursor.h"
 #include "edit.h"
+#include "../viola/packet.h"
+#include "../viola/attr.h"
+#include "../viola/msgHandler.h"
+#include "../viola/cexec.h"
 
 
 
@@ -161,14 +166,14 @@ char *readFile(fileName, dvi)
     char *fileName;
     DocViewInfo *dvi;
 {
-    int bytes, bytesRead=0, bytesInFile;
+    size_t bytes, bytesRead=0, bytesInFile;
     char *fileData;
     FILE *fp;
     
     fp = fopen(fileName, "r");
     if (!fp) {
 	/* Inform user of error. */
-	return;
+	return NULL;
     }
 
     /*
@@ -176,11 +181,14 @@ char *readFile(fileName, dvi)
      * least it is ANSI.  I don't know how portable fstat() is.
      */
     fseek(fp, 0, SEEK_END);
-    bytesInFile = ftell(fp);
-    if (bytesInFile <= 0) {
-	/* Inform user of problem. */
-	fclose(fp);
-	return;
+    {
+	long fileSize = ftell(fp);
+	if (fileSize <= 0) {
+	    /* Inform user of problem. */
+	    fclose(fp);
+	    return NULL;
+	}
+	bytesInFile = (size_t)fileSize;
     }
     rewind(fp);
 
@@ -188,7 +196,7 @@ char *readFile(fileName, dvi)
     if (!fileData) {
 	/* Inform user of error. */
 	fclose(fp);
-	return;
+	return NULL;
     }
     
     while(!feof(fp) && !ferror(fp) && bytesRead < bytesInFile) {
@@ -526,7 +534,7 @@ int writeFile(textData, fileName, dvi)
 	sprintf(buf, "Unable to open the file \"%s\" for writing!\n", fileName);
 	modalErrorDialog(dvi, buf);
     } else {
-	int bytesLeft, numBytes;
+	size_t bytesLeft, numBytes;
 	bytesLeft = numBytes = strlen(textData);
 	
 	while(bytesLeft>0 && !ferror(fp))
@@ -564,7 +572,8 @@ void saveSource(button, clientData, callData)
 	/* This document's URL is a file, try to save to that. */
 	
 	char fileName[256], *data, *answer, buf[512];
-	int i=0, j=0, length, writeStatus;
+	int i=0, j=0, writeStatus;
+	size_t length;
 	struct stat statbuf;
 
 	length = strlen(dvi->URL);

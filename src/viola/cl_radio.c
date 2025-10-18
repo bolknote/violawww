@@ -31,7 +31,7 @@
 #include "event.h"
 
 SlotInfo cl_radio_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_radio_NPSlots[] = {
 {
@@ -43,7 +43,7 @@ SlotInfo cl_radio_NPSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"check"
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_radio_CSlots[] = {
@@ -110,11 +110,11 @@ SlotInfo cl_radio_CSlots[] = {
 			print(\"unknown message, clsss = radio: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_radio_PSlots[] = {
@@ -123,7 +123,7 @@ SlotInfo cl_radio_PSlots[] = {
 	CLSI,
 	(long)&class_radio
 },{
-	NULL
+	{0}
 }
 };
 
@@ -137,7 +137,7 @@ SlotInfo *slots_radio[] = {
 MethodInfo meths_radio[] = {
 	/* local methods */
 {
-	NULL
+	{0}
 }
 };
 

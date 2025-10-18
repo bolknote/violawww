@@ -32,13 +32,16 @@
 #include "misc.h"
 #include "glib.h"
 #include "tfed.h"
+#include "tfed_i.h"
 #include "cexec.h"
+
+extern int replaceNodeLine();
 #include "sgml.h"
 #include "html2.h"
 #include "event_x.h"
 
 SlotInfo cl_txtDisp_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txtDisp_NPSlots[] = {
 {
@@ -62,7 +65,7 @@ SlotInfo cl_txtDisp_NPSlots[] = {
 	TFLD,
 	0
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtDisp_CSlots[] = {
@@ -179,7 +182,7 @@ SlotInfo cl_txtDisp_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtDisp_PSlots[] = {
@@ -192,7 +195,7 @@ SlotInfo cl_txtDisp_PSlots[] = {
 	LONG | SLOT_RW,
 	BORDER_NONE
 },{
-	NULL
+	{0}
 }
 };
 
@@ -335,7 +338,7 @@ MethodInfo meths_txtDisp[] = {
 	STR_totalLineCount,
 	meth_txtDisp_totalLineCount
 },{
-	NULL
+	{0}
 }
 };
 
@@ -355,7 +358,7 @@ ClassInfo class_txtDisp = {
  * Result: content of the selection buffer
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txtDisp__getSelection(self, result, argc, argv)
+long int meth_txtDisp__getSelection(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -367,7 +370,7 @@ int meth_txtDisp__getSelection(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_append(self, result, argc, argv)
+long int meth_txtDisp_append(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -382,7 +385,7 @@ int meth_txtDisp_append(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_building_maxFontDescent(self, result, argc, argv)
+long int meth_txtDisp_building_maxFontDescent(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -396,7 +399,7 @@ int meth_txtDisp_building_maxFontDescent(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_building_maxFontHeight(self, result, argc, argv)
+long int meth_txtDisp_building_maxFontHeight(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -410,7 +413,7 @@ int meth_txtDisp_building_maxFontHeight(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_building_vspan(self, result, argc, argv)
+long int meth_txtDisp_building_vspan(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -429,7 +432,7 @@ int meth_txtDisp_building_vspan(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_charMask(self, result, argc, argv)
+long int meth_txtDisp_charMask(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -447,7 +450,7 @@ int meth_txtDisp_charMask(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_charButtonMask(self, result, argc, argv)
+long int meth_txtDisp_charButtonMask(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -465,7 +468,7 @@ int meth_txtDisp_charButtonMask(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_charHighLiteMask(self, result, argc, argv)
+long int meth_txtDisp_charHighLiteMask(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -483,7 +486,7 @@ int meth_txtDisp_charHighLiteMask(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_charUnderlineMask(self, result, argc, argv)
+long int meth_txtDisp_charUnderlineMask(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -512,7 +515,7 @@ TEMPORARILY OUT OF COMISSION
  * Result: 1 if successful, 0 if error occured
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txtDisp_clearSelection(self, result, argc, argv)
+long int meth_txtDisp_clearSelection(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -532,7 +535,7 @@ int meth_txtDisp_clearSelection(self, result, argc, argv)
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txtDisp_clone(self, result, argc, argv)
+long int meth_txtDisp_clone(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -554,7 +557,7 @@ int meth_txtDisp_clone(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_clone2(self, result, argc, argv)
+long meth_txtDisp_clone2(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -582,7 +585,7 @@ int meth_txtDisp_clone2(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_config(self, result, argc, argv)
+long int meth_txtDisp_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -614,7 +617,7 @@ int meth_txtDisp_config(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_currentChar(self, result, argc, argv)
+long int meth_txtDisp_currentChar(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -634,7 +637,7 @@ int meth_txtDisp_currentChar(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_currentLine(self, result, argc, argv)
+long int meth_txtDisp_currentLine(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -654,7 +657,7 @@ int meth_txtDisp_currentLine(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_currentTag(self, result, argc, argv)
+long int meth_txtDisp_currentTag(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -676,7 +679,7 @@ int meth_txtDisp_currentTag(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_currentWord(self, result, argc, argv)
+long int meth_txtDisp_currentWord(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -696,7 +699,7 @@ int meth_txtDisp_currentWord(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_cursorColumn(self, result, argc, argv)
+long int meth_txtDisp_cursorColumn(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -715,7 +718,7 @@ int meth_txtDisp_cursorColumn(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_cursorRow(self, result, argc, argv)
+long int meth_txtDisp_cursorRow(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -734,7 +737,7 @@ int meth_txtDisp_cursorRow(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_deHighLight(self, result, argc, argv)
+long int meth_txtDisp_deHighLight(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -754,7 +757,7 @@ int meth_txtDisp_deHighLight(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_drawCursor(self, result, argc, argv)
+long int meth_txtDisp_drawCursor(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -763,7 +766,7 @@ int meth_txtDisp_drawCursor(self, result, argc, argv)
 	return tfed_drawCursor(self);
 }
 
-int meth_txtDisp_eraseCursor(self, result, argc, argv)
+long int meth_txtDisp_eraseCursor(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -772,7 +775,7 @@ int meth_txtDisp_eraseCursor(self, result, argc, argv)
 	return tfed_eraseCursor(self);
 }
 
-int meth_txtDisp_expose(self, result, argc, argv)
+long int meth_txtDisp_expose(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -791,7 +794,7 @@ int meth_txtDisp_expose(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_freeSelf(self, result, argc, argv)
+long int meth_txtDisp_freeSelf(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -811,7 +814,7 @@ int meth_txtDisp_freeSelf(self, result, argc, argv)
 	return 1;
 }
 
-int helper_txtDisp_get(self, result, argc, argv, labelID)
+long int helper_txtDisp_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -860,7 +863,7 @@ int helper_txtDisp_get(self, result, argc, argv, labelID)
 	}
 	return helper_txt_get(self, result, argc, argv, labelID);
 }
-int meth_txtDisp_get(self, result, argc, argv)
+long int meth_txtDisp_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -875,7 +878,7 @@ int meth_txtDisp_get(self, result, argc, argv)
  * highLight(lineNumber, charactersToHighLight)
  *
  */ 
-int meth_txtDisp_highLight(self, result, argc, argv)
+long int meth_txtDisp_highLight(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -895,7 +898,7 @@ int meth_txtDisp_highLight(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_initialize(self, result, argc, argv)
+long int meth_txtDisp_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -908,7 +911,7 @@ int meth_txtDisp_initialize(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_insert(self, result, argc, argv)
+long int meth_txtDisp_insert(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -931,7 +934,7 @@ int meth_txtDisp_insert(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_lineRowOffset(self, result, argc, argv)
+long int meth_txtDisp_lineRowOffset(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -949,7 +952,7 @@ int meth_txtDisp_lineRowOffset(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_nextTag(self, result, argc, argv)
+long int meth_txtDisp_nextTag(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -972,7 +975,7 @@ int meth_txtDisp_nextTag(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_numberOfLinesDisplayed(self, result, argc, argv)
+long int meth_txtDisp_numberOfLinesDisplayed(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -990,7 +993,7 @@ int meth_txtDisp_numberOfLinesDisplayed(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_previousTag(self, result, argc, argv)
+long int meth_txtDisp_previousTag(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1013,7 +1016,7 @@ int meth_txtDisp_previousTag(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_processInput(self, result, argc, argv)
+long int meth_txtDisp_processInput(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1022,7 +1025,7 @@ int meth_txtDisp_processInput(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_processKeyInput(self, result, argc, argv)
+long int meth_txtDisp_processKeyInput(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1031,7 +1034,7 @@ int meth_txtDisp_processKeyInput(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txtDisp_processMouseInput(self, result, argc, argv)
+long int meth_txtDisp_processMouseInput(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1041,7 +1044,7 @@ int meth_txtDisp_processMouseInput(self, result, argc, argv)
 }
 
 /* was test4*/
-int meth_txtDisp_processMouseMove(self, result, argc, argv)
+long int meth_txtDisp_processMouseMove(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1056,7 +1059,7 @@ int meth_txtDisp_processMouseMove(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txtDisp_render(self, result, argc, argv)
+long int meth_txtDisp_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1106,7 +1109,7 @@ int meth_txtDisp_render(self, result, argc, argv)
  * Result: content of the selection buffer
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txtDisp_setSelection(self, result, argc, argv)
+long int meth_txtDisp_setSelection(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1125,7 +1128,7 @@ int meth_txtDisp_setSelection(self, result, argc, argv)
  * Result: [0] object, [1] from_x, [2] from_y, [3] to_x, [4] to_y
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txtDisp_selectionInfo(self, result, argc, argv)
+long int meth_txtDisp_selectionInfo(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1176,7 +1179,7 @@ int meth_txtDisp_selectionInfo(self, result, argc, argv)
 	}
 }
 
-int meth_txtDisp_shownDepend(self, result, argc, argv)
+long int meth_txtDisp_shownDepend(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1245,7 +1248,7 @@ int help_txtDisp_shownPositionV(self, newPosition)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_txtDisp_set(self, result, argc, argv, labelID)
+long int helper_txtDisp_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1358,7 +1361,7 @@ int helper_txtDisp_set(self, result, argc, argv, labelID)
 	}
 	return helper_txt_set(self, result, argc, argv, labelID);
 }
-int meth_txtDisp_set(self, result, argc, argv)
+long int meth_txtDisp_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1368,7 +1371,7 @@ int meth_txtDisp_set(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_txtDisp_setRevVideoFlag(self, result, argc, argv)
+long int meth_txtDisp_setRevVideoFlag(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -1387,7 +1390,7 @@ int meth_txtDisp_setRevVideoFlag(self, result, argc, argv)
 /*
  * 
  */
-int helper_txtDisp_updateShownInfo(tf)
+long int helper_txtDisp_updateShownInfo(tf)
 	TFStruct *tf;
 {
 	if (tf->lineVisibleCount) {
@@ -1422,7 +1425,7 @@ int helper_txtDisp_updateShownInfo(tf)
 	return 0;
 }
 
-int meth_txtDisp_totalLineCount(self, result, argc, argv)
+long int meth_txtDisp_totalLineCount(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

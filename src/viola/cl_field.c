@@ -32,9 +32,13 @@
 #include "misc.h"
 #include "glib.h"
 #include "event.h"
+#include "cexec.h"
+#include "method.h"
+#include <string.h>
+#include "vlist.h"
 
 SlotInfo cl_field_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_field_NPSlots[] = {
 {
@@ -132,7 +136,7 @@ SlotInfo cl_field_NPSlots[] = {
 },{
 	STR__shownDepend,
 	OBJL,
-	NULL
+	0
 },{
 	STR_shownNotify,
 	PTRS | SLOT_RW,
@@ -140,7 +144,7 @@ SlotInfo cl_field_NPSlots[] = {
 },{
 	STR__shownNotify,
 	OBJL,
-	NULL
+	0
 },{
 	STR_lock,
 	LONG,
@@ -152,23 +156,23 @@ SlotInfo cl_field_NPSlots[] = {
 },{
 	STR__colorInfo,
 	RGBV,
- 	NULL
+ 	0
 },{
 	STR_BDColor,		/* border color */
 	PTRS | SLOT_RW,
- 	NULL/*(long)"black"*/
+ 	0/*(long)"black"*/
 },{
 	STR_BGColor,		/* background color */
 	PTRS | SLOT_RW,
- 	NULL/*(long)"black"*/
+ 	0/*(long)"black"*/
 },{
 	STR_CRColor,		/* cursor color */
 	PTRS | SLOT_RW,
- 	NULL/*(long)"white"*/
+ 	0/*(long)"white"*/
 },{
 	STR_FGColor,		/* foreground color */
 	PTRS | SLOT_RW,
- 	NULL/*(long)"white"*/
+ 	0/*(long)"white"*/
 },{
 	STR__eventMask,
 	LONG,
@@ -182,7 +186,7 @@ SlotInfo cl_field_NPSlots[] = {
 	PTRS | SLOT_RW,
  	(long)""
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_field_CSlots[] = {
@@ -268,7 +272,7 @@ SlotInfo cl_field_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_field_PSlots[] = {
@@ -277,7 +281,7 @@ SlotInfo cl_field_PSlots[] = {
 	CLSI,
 	(long)&class_field
 },{
-	NULL
+	0
 }
 };
 
@@ -453,7 +457,7 @@ MethodInfo meths_field[] = {
 	STR_windowPosition,
 	meth_field_windowPosition
 },{
-	NULL
+	0
 }
 };
 
@@ -469,11 +473,7 @@ ClassInfo class_field = {
 /*
  * canvalize()
  */
-int meth_field_canvalize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_canvalize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -482,11 +482,7 @@ int meth_field_canvalize(self, result, argc, argv)
 /*
  * clean()
  */
-int meth_field_clean(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_clean(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (GET_window(self) && GET_visible(self)) {
 		if (GET__classInfo(self) != &class_glass)
@@ -500,11 +496,7 @@ int meth_field_clean(self, result, argc, argv)
 /*
  * clearWindow()
  */
-int meth_field_clearWindow(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_clearWindow(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (GET_window(self) && GET_visible(self)) 
@@ -516,18 +508,14 @@ int meth_field_clearWindow(self, result, argc, argv)
 /*
  * clearArea(x0, y0, x1, y1)
  */
-int meth_field_clearArea(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_clearArea(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
 
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 	if (GET_window(self)) {
 	  	if (GET__classInfo(self) != &class_glass) {
 			GLPaintFillRect(GET_window(self), 
@@ -546,11 +534,7 @@ int meth_field_clearArea(self, result, argc, argv)
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_clone(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_clone(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *cloneObj;
 
@@ -575,11 +559,7 @@ int colorsizes_clone = 0;
  * the clone() procedure has made copies of data, here we finish up
  * the job.
  */
-int meth_field_clone2(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_clone2(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *suffix;
 	VObj *cloneObj;
@@ -642,11 +622,7 @@ colorsizes_clone += strlen(GET_CRColor(self));
 /*
  * config([x, y, width, height])
  */
-int meth_field_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (argc == 0) {
@@ -677,20 +653,16 @@ int meth_field_config(self, result, argc, argv)
 /*
  * copyArea(fromx, fromy, width, height, tox, toy)
  */
-int meth_field_copyArea(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_copyArea(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int fromx, fromy, width, height, tox, toy;
 
-	fromx = PkInfo2Int(&argv[0]);
-	fromy = PkInfo2Int(&argv[1]);
-	width = PkInfo2Int(&argv[2]);
-	height = PkInfo2Int(&argv[3]);
-	tox = PkInfo2Int(&argv[4]);
-	toy = PkInfo2Int(&argv[5]);
+	fromx = (int)PkInfo2Int(&argv[0]);
+	fromy = (int)PkInfo2Int(&argv[1]);
+	width = (int)PkInfo2Int(&argv[2]);
+	height = (int)PkInfo2Int(&argv[3]);
+	tox = (int)PkInfo2Int(&argv[4]);
+	toy = (int)PkInfo2Int(&argv[5]);
 
 	clearPacket(result);
 	if (GET_window(self)) { /*XXX*/
@@ -707,11 +679,7 @@ int meth_field_copyArea(self, result, argc, argv)
  * Result: unaffected
  * Return: 1
  */
-int meth_field_cycleColors(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_cycleColors(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 
@@ -746,11 +714,7 @@ int meth_field_cycleColors(self, result, argc, argv)
  * Result: cleared
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_deepObjectListSend(self, result, argc, argv)
-      VObj *self;
-      Packet *result;
-      int argc;
-      Packet argv[];
+long meth_field_deepObjectListSend(VObj *self, Packet *result, int argc, Packet argv[])
 {
       VObjList *olist = NULL;
       char *listName = PkInfo2Str(argv);
@@ -779,17 +743,13 @@ int meth_field_deepObjectListSend(self, result, argc, argv)
 /*
  * drawFillOval(x0, y0, x1, y1)
  */
-int meth_field_drawFillOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawFillOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -805,17 +765,13 @@ int meth_field_drawFillOval(self, result, argc, argv)
 /*
  * drawFillRect(x0, y0, x1, y1)
  */
-int meth_field_drawFillRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawFillRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -831,17 +787,13 @@ int meth_field_drawFillRect(self, result, argc, argv)
 /*
  * drawLine(x0, y0, x1, y1)
  */
-int meth_field_drawLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -857,17 +809,13 @@ int meth_field_drawLine(self, result, argc, argv)
 /*
  * drawOval(x0, y0, x1, y1)
  */
-int meth_field_drawOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -883,17 +831,13 @@ int meth_field_drawOval(self, result, argc, argv)
 /*
  * fillArc(x0, y0, x1, y1, degree1, degree2)
  */
-int meth_field_fillArc(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_fillArc(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -912,17 +856,13 @@ int meth_field_fillArc(self, result, argc, argv)
 /*
  * drawRect(x0, y0, x1, y1)
  */
-int meth_field_drawRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -938,16 +878,12 @@ int meth_field_drawRect(self, result, argc, argv)
 /*
  * drawText(x, y, fontID, string)
  */
-int meth_field_drawText(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_drawText(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, fontID;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	fontID = PkInfo2Int(&argv[2]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	fontID = (int)PkInfo2Int(&argv[2]);
 	
 	clearPacket(result);
 	if (GET_window(self) && GET_visible(self)) {
@@ -964,17 +900,13 @@ int meth_field_drawText(self, result, argc, argv)
 /*
  * eraseFillOval(x0, y0, x1, y1)
  */
-int meth_field_eraseFillOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseFillOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -990,17 +922,13 @@ int meth_field_eraseFillOval(self, result, argc, argv)
 /*
  * eraseFillRect(x0, y0, x1, y1)
  */
-int meth_field_eraseFillRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseFillRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1016,17 +944,13 @@ int meth_field_eraseFillRect(self, result, argc, argv)
 /*
  * eraseLine(x0, y0, x1, y1)
  */
-int meth_field_eraseLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1042,17 +966,13 @@ int meth_field_eraseLine(self, result, argc, argv)
 /*
  * eraseOval(x0, y0, x1, y1)
  */
-int meth_field_eraseOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1069,17 +989,13 @@ int meth_field_eraseOval(self, result, argc, argv)
 /*
  * eraseRect(x0, y0, x1, y1)
  */
-int meth_field_eraseRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1095,16 +1011,12 @@ int meth_field_eraseRect(self, result, argc, argv)
 /*
  * eraseText(x, y, fontID, string)
  */
-int meth_field_eraseText(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eraseText(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, fontID;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	fontID = PkInfo2Int(&argv[2]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	fontID = (int)PkInfo2Int(&argv[2]);
 
 	clearPacket(result);
 	if (GET_window(self) && GET_visible(self)) {
@@ -1121,11 +1033,7 @@ int meth_field_eraseText(self, result, argc, argv)
 /*
  * eventMask(args)
  */
-int meth_field_eventMask(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_eventMask(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int currentMask = GET__eventMask(self);
 
@@ -1179,11 +1087,7 @@ int meth_field_eventMask(self, result, argc, argv)
 	return 1;
 }
 
-int meth_field_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_expose(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (GET__classInfo(self) != &class_glass) {
@@ -1192,20 +1096,12 @@ int meth_field_expose(self, result, argc, argv)
 	return 1;
 }
 
-int meth_field_flush(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_flush(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	XFlush(display);
 }
 
-int meth_field_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 /* unsafe to free, b/c cloning now merely copies pointer value, not content */
 /*print("freeSelf: self=0x%x, %s\n", self, GET_name(self));*/
@@ -1244,12 +1140,7 @@ fflush(stderr);
 	return 1;
 }
 
-int helper_field_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_field_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_BDColor: {
@@ -1434,14 +1325,11 @@ int helper_field_get(self, result, argc, argv, labelID)
 	}
 	return helper_generic_get(self, result, argc, argv, labelID);
 }
-int meth_field_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+
+long meth_field_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_field_get(self, result, argc, argv,
-				getIdent(PkInfo2Str(argv)));
+				(int)getIdent(PkInfo2Str(argv)));
 }
 
 
@@ -1451,11 +1339,7 @@ int meth_field_get(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_iconName(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_iconName(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp = PkInfo2Str(argv);
 	Window w = GET_window(self);
@@ -1474,11 +1358,7 @@ int meth_field_iconName(self, result, argc, argv)
 
 int colorsizes = 0;
 
-int meth_field_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	ClassInfo *cip;
@@ -1537,17 +1417,13 @@ int meth_field_initialize(self, result, argc, argv)
 /*
  * invertFillOval(x0, y0, x1, y1)
  */
-int meth_field_invertFillOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertFillOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1561,17 +1437,13 @@ int meth_field_invertFillOval(self, result, argc, argv)
 /*
  * invertFillRect(x0, y0, x1, y1)
  */
-int meth_field_invertFillRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertFillRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1585,17 +1457,13 @@ int meth_field_invertFillRect(self, result, argc, argv)
 /*
  * invertLine(x0, y0, x1, y1)
  */
-int meth_field_invertLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1609,17 +1477,13 @@ int meth_field_invertLine(self, result, argc, argv)
 /*
  * invertOval(x0, y0, x1, y1)
  */
-int meth_field_invertOval(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertOval(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1633,17 +1497,13 @@ int meth_field_invertOval(self, result, argc, argv)
 /*
  * invertRect(x0, y0, x1, y1, mode)
  */
-int meth_field_invertRect(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertRect(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, x1, y1;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	x1 = PkInfo2Int(&argv[2]);
-	y1 = PkInfo2Int(&argv[3]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	x1 = (int)PkInfo2Int(&argv[2]);
+	y1 = (int)PkInfo2Int(&argv[3]);
 
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1657,16 +1517,12 @@ int meth_field_invertRect(self, result, argc, argv)
 /*
  * invertText(x, y, fontID, string)
  */
-int meth_field_invertText(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_invertText(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int x0, y0, fontID;
-	x0 = PkInfo2Int(&argv[0]);
-	y0 = PkInfo2Int(&argv[1]);
-	fontID = PkInfo2Int(&argv[2]);
+	x0 = (int)PkInfo2Int(&argv[0]);
+	y0 = (int)PkInfo2Int(&argv[1]);
+	fontID = (int)PkInfo2Int(&argv[2]);
 	
 	clearPacket(result);
 	if (GET_window(self)) {
@@ -1686,11 +1542,7 @@ int meth_field_invertText(self, result, argc, argv)
  *
  * Result/Return: 1 if successful, 0 if error occured
  */
-int meth_field_lower(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_lower(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *parent = GET__parent(self);
 
@@ -1733,11 +1585,7 @@ int meth_field_lower(self, result, argc, argv)
 	return 0;
 }
 
-int meth_field_mouse(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_mouse(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int rootx, rooty, wx, wy;
 	Packet *packet0 = makePacket();
@@ -1761,11 +1609,7 @@ int meth_field_mouse(self, result, argc, argv)
 	return 1;
 }
 
-int meth_field_mouseLocal(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_mouseLocal(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int rootx, rooty, wx, wy;
 	Packet *packet0 = makePacket();
@@ -1790,11 +1634,7 @@ int meth_field_mouseLocal(self, result, argc, argv)
 }
 
 /* returns the mouse buttons last pressed */
-int meth_field_mouseButton(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_mouseButton(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *state = saveString("00000");
 	if (mouseButtonPressedState & MOUSE_BUTTON_1) state[0] = '1';
@@ -1808,11 +1648,7 @@ int meth_field_mouseButton(self, result, argc, argv)
 	return 1;
 }
 
-int meth_field_mouseX(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_mouseX(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int rootx, rooty, wx, wy;
 
@@ -1823,11 +1659,7 @@ int meth_field_mouseX(self, result, argc, argv)
 	return 1;
 }
 
-int meth_field_mouseY(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_mouseY(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int rootx, rooty, wx, wy;
 
@@ -1846,11 +1678,7 @@ int meth_field_mouseY(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_objectListAppend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_objectListAppend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *listName;
 	VObjList *olist = NULL;
@@ -1889,11 +1717,7 @@ int meth_field_objectListAppend(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_objectListCount(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_objectListCount(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	char *listName;
@@ -1926,11 +1750,7 @@ int meth_field_objectListCount(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_objectListDelete(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_objectListDelete(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = NULL;
 	char *listName = PkInfo2Str(argv);
@@ -1966,11 +1786,7 @@ int meth_field_objectListDelete(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_objectListPrepend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_objectListPrepend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *listName;
 	VObjList *olist = NULL;
@@ -2007,11 +1823,7 @@ int meth_field_objectListPrepend(self, result, argc, argv)
  * objectListSend(<objectListName>, arg1, arg2, ..., argn)
  * send the arguments to each objects in the object list.
  */
-int meth_field_objectListSend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_objectListSend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = NULL;
 	char *listName = PkInfo2Str(argv);
@@ -2042,11 +1854,7 @@ int meth_field_objectListSend(self, result, argc, argv)
  *
  * Result/Return: 1 if successful, 0 if error occured
  */
-int meth_field_raise(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_raise(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *parent = GET__parent(self);
 
@@ -2090,21 +1898,17 @@ int meth_field_raise(self, result, argc, argv)
 /*
  * randomizeArea(fromx, fromy, width, height, iteration, factor)
  */
-int meth_field_randomizeArea(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_randomizeArea(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int fromx, fromy, width, height, iteration, factor;
 	int x0, y0, x1, y1, xx, yy;
 
-	fromx = PkInfo2Int(&argv[0]);
-	fromy = PkInfo2Int(&argv[1]);
-	width = PkInfo2Int(&argv[2]);
-	height = PkInfo2Int(&argv[3]);
-	iteration = PkInfo2Int(&argv[4]);
-	factor = PkInfo2Int(&argv[5]);
+	fromx = (int)PkInfo2Int(&argv[0]);
+	fromy = (int)PkInfo2Int(&argv[1]);
+	width = (int)PkInfo2Int(&argv[2]);
+	height = (int)PkInfo2Int(&argv[3]);
+	iteration = (int)PkInfo2Int(&argv[4]);
+	factor = (int)PkInfo2Int(&argv[5]);
 
 	if (GET_window(self)) { /*XXX*/
 /*		while (iteration-- > 0) {
@@ -2123,11 +1927,7 @@ int meth_field_randomizeArea(self, result, argc, argv)
 	return 0;
 }
 
-int meth_field_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	int isGlassP = 0;
@@ -2184,18 +1984,13 @@ printf("meth_field_render: done w=%x\n", w);
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_field_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_field_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	char *cp;
 
 	switch (labelID) {
 	case STR_x:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_x(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
@@ -2205,7 +2000,7 @@ int helper_field_set(self, result, argc, argv, labelID)
 		return 1;
 
 	case STR_y:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_y(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
@@ -2215,7 +2010,7 @@ int helper_field_set(self, result, argc, argv, labelID)
 		return 1;
 
 	case STR_width:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		if (result->info.i <= 0) result->info.i = 1;
 		SET_width(self, result->info.i);
 		result->type = PKT_INT;
@@ -2225,14 +2020,14 @@ int helper_field_set(self, result, argc, argv, labelID)
 /*
 			GLUpdateGeometry(!GET__parent(self), GET_window(self), 
 				GET_x(self), GET_y(self),
-				GET_width(self), GET_height(self));
+				(unsigned int)GET_width(self), (unsigned int)GET_height(self));
 */
 			if (GET_width(self) > 0 && GET_height(self) > 0) {
 				XSelectInput(display, GET_window(self), 
 						GET__eventMask(self) 
 						& ~StructureNotifyMask);
 				XResizeWindow(display, GET_window(self), 
-					GET_width(self), GET_height(self));
+					(unsigned int)GET_width(self), (unsigned int)GET_height(self));
 				XSelectInput(display, GET_window(self), 
 					GET__eventMask(self));
 			}
@@ -2240,7 +2035,7 @@ int helper_field_set(self, result, argc, argv, labelID)
 		return 1;
 
 	case STR_height:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		if (result->info.i <= 0) result->info.i = 1;
 		SET_height(self, result->info.i);
 		result->type = PKT_INT;
@@ -2250,14 +2045,14 @@ int helper_field_set(self, result, argc, argv, labelID)
 			GLUpdateGeometry(!GET__parent(self), 0,
 				GET_window(self), 
 				GET_x(self), GET_y(self),
-				GET_width(self), GET_height(self));
+				(unsigned int)GET_width(self), (unsigned int)GET_height(self));
 			*/
 			if (GET_width(self) > 0 && GET_height(self) > 0) {
 				XSelectInput(display, GET_window(self), 
 						GET__eventMask(self) 
 						& ~StructureNotifyMask);
 				XResizeWindow(display, GET_window(self), 
-					GET_width(self), GET_height(self));
+					(unsigned int)GET_width(self), (unsigned int)GET_height(self));
 				XSelectInput(display, GET_window(self), 
 					GET__eventMask(self));
 			}
@@ -2318,56 +2113,56 @@ int helper_field_set(self, result, argc, argv, labelID)
 		return 1;
 
 	case STR_lock:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_lock(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_border:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_border(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_minWidth:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_minWidth(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_minHeight:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_minHeight(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_maxWidth:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_maxWidth(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_maxHeight:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_maxHeight(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_gapH:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_gapH(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
 
 	case STR_gapV:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_gapV(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
@@ -2406,11 +2201,10 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 			olist = GET__children(self);
 			for (; olist; olist = olist->next)
 				if (olist->o && validObjectP(olist->o)) {
-				  int (*func)() = 
+				  long (*func)() = 
 					GET__classInfo(olist->o)->slotSetMeth;
 				  if (func) {
-					((long (*)())(func))
-						(olist->o, result, 2, argv,
+					func(olist->o, result, 2, argv,
 							STR_visible);
 				  }
 				}
@@ -2420,11 +2214,10 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 			olist = GET__children(self);
 			for (; olist; olist = olist->next)
 				if (olist->o && validObjectP(olist->o)) {
-				  int (*func)() = 
+				  long (*func)() = 
 					GET__classInfo(olist->o)->slotSetMeth;
 				  if (func) {
-					((long (*)())(func))
-						(olist->o, result, 2, argv,
+					func(olist->o, result, 2, argv,
 							STR_visible);
 				  }
 				}
@@ -2439,14 +2232,14 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_window: {
-		int w = PkInfo2Int(&argv[1]);
+		int w = (int)PkInfo2Int(&argv[1]);
 
 		SET_window(self, w);
 		return 1;
 	}
 
 	case STR_shownPositionH: {
-		int pos = PkInfo2Int(&argv[1]);
+		int pos = (int)PkInfo2Int(&argv[1]);
 
 		if (pos < 0) pos = 0;
 		else if (pos > 100) pos = 100;
@@ -2460,8 +2253,8 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_shownPositionSizeH: {
-		int pos = PkInfo2Int(&argv[1]);
-		int siz = PkInfo2Int(&argv[2]);
+		int pos = (int)PkInfo2Int(&argv[1]);
+		int siz = (int)PkInfo2Int(&argv[2]);
 
 		if (pos < 0) pos = 0;
 		else if (pos > 100) pos = 100;
@@ -2479,8 +2272,8 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_shownPositionSizeV: {
-		int pos = PkInfo2Int(&argv[1]);
-		int siz = PkInfo2Int(&argv[2]);
+		int pos = (int)PkInfo2Int(&argv[1]);
+		int siz = (int)PkInfo2Int(&argv[2]);
 
 		if (pos < 0) pos = 0;
 		else if (pos > 100) pos = 100;
@@ -2498,7 +2291,7 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_shownPositionV: {
-		int pos = PkInfo2Int(&argv[1]);
+		int pos = (int)PkInfo2Int(&argv[1]);
 
 		if (pos < 0) pos = 0;
 		else if (pos > 100) pos = 100;
@@ -2512,7 +2305,7 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_shownSizeH: {
-		int siz = PkInfo2Int(&argv[1]);
+		int siz = (int)PkInfo2Int(&argv[1]);
 
 		if (siz < 0) siz = 0;
 		else if (siz > 100) siz = 100;
@@ -2526,7 +2319,7 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 
 	case STR_shownSizeV: {
-		int siz = PkInfo2Int(&argv[1]);
+		int siz = (int)PkInfo2Int(&argv[1]);
 
 		if (siz < 0) siz = 0;
 		else if (siz > 100) siz = 100;
@@ -2541,24 +2334,17 @@ printf("VISIBLE=%d, w=%x obj=%s\n",
 	}
 	return helper_generic_set(self, result, argc, argv, labelID);
 }
-int meth_field_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+
+long meth_field_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_field_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+				(int)getIdent(PkInfo2Str(argv)));
 }
 
 /*
  * smudge();
  */
-int meth_field_smudge(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_smudge(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern Pixmap thumbXPM;
 	extern int thumbXPM_width;
@@ -2586,11 +2372,7 @@ int meth_field_smudge(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_windowName(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_windowName(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp = PkInfo2Str(argv);
 	Window w = GET_window(self);
@@ -2614,11 +2396,7 @@ int meth_field_windowName(self, result, argc, argv)
  * Result: 
  * Return: 1 if successful, 0 if error occured
  */
-int meth_field_windowPosition(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_field_windowPosition(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	int x, y;

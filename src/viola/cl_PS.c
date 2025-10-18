@@ -29,12 +29,14 @@
 #include "misc.h"
 #include "glib.h"
 #include "event.h"
+#include <X11/Xmu/Atoms.h>
+#include <string.h>
 
 SlotInfo cl_PS_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_PS_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_PS_CSlots[] = {
 {
@@ -74,12 +76,12 @@ SlotInfo cl_PS_CSlots[] = {
 		default:\n\
 			print(\"unknown message, clsss = PS: args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
-			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	print(\"\n\");\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_PS_PSlots[] = {
@@ -88,7 +90,7 @@ SlotInfo cl_PS_PSlots[] = {
 	CLSI,
 	(long)&class_PS
 },{
-	NULL
+	0
 }
 };
 
@@ -117,7 +119,7 @@ MethodInfo meths_PS[] = {
 	STR_seta,
 	meth_PS_set
 },{
-	NULL
+	0
 }
 };
 
@@ -130,21 +132,12 @@ ClassInfo class_PS = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_PS_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_PS_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_field_config(self, result, argc, argv);
 }
 
-int helper_PS_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_PS_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_direction:
@@ -155,21 +148,13 @@ int helper_PS_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_PS_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_PS_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_PS_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_PS_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_PS_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	meth_field_initialize(self, result, argc, argv);
 	return 1;
@@ -178,12 +163,7 @@ int meth_PS_initialize(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_PS_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_PS_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_label: {
@@ -213,9 +193,9 @@ printf("buff=>%s<\n", buff);
 			sprintf(buff, "gs %s", GET_label(self));
 			system(buff);
 
-			SET__label(self, NULL);
+			SET__label(self, 0);
 		} else {
-			SET__label(self, NULL);
+			SET__label(self, 0);
 		}
 		result->type = PKT_STR;
 		result->canFree = 0;
@@ -224,21 +204,13 @@ printf("buff=>%s<\n", buff);
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_PS_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_PS_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_PS_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_PS_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_PS_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 	Pixmap pixmap;

@@ -9,6 +9,7 @@
 #include "HTUtils.h"
 #include "tcp.h"
 #include <stdio.h>
+#include <unistd.h>
 
 
 /*		HTML Object

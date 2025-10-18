@@ -10,6 +10,14 @@
 **
 */
 #include "FOSI.h"
+#include <unistd.h>
+
+/* Forward declarations */
+extern int CB_FOSI_data();
+extern int CB_FOSI_stag();
+extern int CB_FOSI_etag();
+extern int CB_FOSI_end();
+extern int CB_FOSI_new();
 
 #define CAREFUL		/* Check nesting here notreally necessary */
 
@@ -443,8 +451,8 @@ fprintf(stderr, "### FOSI  WRITE {%s}\n", p);
 PRIVATE void FOSI_start_element ARGS5(
 	HTStructured *, this,
 	int,		element_number,
-	BOOL*,		present,
-	char**,		value,
+	CONST BOOL*,	present,
+	CONST char**,	value,
 	HTTag*,		tagInfo)
 {
 /* Safe to ignore only if the FOSI data is never significant
@@ -562,9 +570,13 @@ PUBLIC CONST HTStructuredClass FOSIPresentation = /* As opposed to print etc */
 	"text/FOSI",
 	FOSI_free,
 	FOSI_end_document,
-	FOSI_put_character, 	FOSI_put_string,  FOSI_write,
+	NULL,  /* abort */
+	FOSI_put_character,
+	FOSI_put_string,
 	FOSI_progress,
-	FOSI_start_element, 	FOSI_end_element,
+	FOSI_write,
+	FOSI_start_element,
+	FOSI_end_element,
 	FOSI_put_entity
 }; 
 

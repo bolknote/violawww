@@ -61,7 +61,7 @@ ClassInfo *classList[] = {
 /* experimental classes.. replace once dynamic classing is available */
 	&class_AC_SGML_txt,
 /*	&class_AC_SGML_header_big,*/
-	NULL
+	{0}
 };
 
 

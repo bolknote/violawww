@@ -21,11 +21,14 @@
 #include <Xm/SelectioB.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/param.h>
 
 #include "vw.h"
 #include "dialog.h"
 #include "fileIO.h"
+#include "edit.h"
 
 
 int vwSaveAs(message, dvi)
@@ -33,7 +36,8 @@ int vwSaveAs(message, dvi)
     DocViewInfo *dvi;
 {
     FILE *fp;
-    int done=0, length;
+    int done=0;
+    size_t length;
     char *data, *fileName, *answer, buf[1024];
     
     while (!done) {

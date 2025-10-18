@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_XPMButton_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPMButton_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XPMButton_CSlots[] = {
 {
@@ -115,7 +115,7 @@ SlotInfo cl_XPMButton_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_XPMButton_PSlots[] = {
@@ -124,7 +124,7 @@ SlotInfo cl_XPMButton_PSlots[] = {
 	CLSI,
 	(long)&class_XPMButton
 },{
-	NULL
+	0
 }
 };
 
@@ -141,7 +141,7 @@ MethodInfo meths_XPMButton[] = {
 	STR_render,
 	meth_XPMButton_render
 },{
-	NULL
+	0
 }
 };
 
@@ -154,11 +154,7 @@ ClassInfo class_XPMButton = {
 	&class_XPM,		/* super class info		*/
 };
 
-int meth_XPMButton_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XPMButton_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_XPM_render(self, result, argc, argv);
 }

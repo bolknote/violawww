@@ -38,7 +38,10 @@
 #include "../viola/sys.h"
 #include "../viola/hash.h"
 #include "../viola/obj.h"
+#include "../viola/cexec.h"
+#include "../viola/html2.h"
 #include "../viola/packet.h"
+#include "../viola/misc.h"
 
 Packet pk;
 

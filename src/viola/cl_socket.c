@@ -20,6 +20,9 @@
  */
 #include "utils.h"
 #include <ctype.h>
+#include <string.h>
+#include <strings.h>
+#include <unistd.h>
 #include "error.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -45,7 +48,7 @@
 #endif
 
 SlotInfo cl_socket_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_socket_NPSlots[] = {
 {
@@ -57,7 +60,7 @@ SlotInfo cl_socket_NPSlots[] = {
 	LONG | SLOT_RW,
 	0
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_socket_CSlots[] = {
@@ -138,11 +141,11 @@ SlotInfo cl_socket_CSlots[] = {
 				\": self = \", get(\"name\"), \" args: \");\n\
 			for (i = 0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\n\");\n\
-		break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_socket_PSlots[] = {
@@ -151,7 +154,7 @@ SlotInfo cl_socket_PSlots[] = {
 	CLSI,
 	(long)&class_socket
 },{
-	NULL
+	{0}
 }
 };
 
@@ -177,7 +180,7 @@ MethodInfo meths_socket[] = {
 	STR_seta,
 	meth_socket_set
 },{
-	NULL
+	{0}
 }
 };
 
@@ -190,7 +193,7 @@ ClassInfo class_socket = {
 	&class_client,		/* super class info		*/
 };
 
-int meth_socket__startClient(self, result, argc, argv)
+long meth_socket__startClient(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -208,7 +211,7 @@ int meth_socket__startClient(self, result, argc, argv)
 	return 1;
 }
 
-int helper_socket_get(self, result, argc, argv, labelID)
+long helper_socket_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -237,7 +240,7 @@ int helper_socket_get(self, result, argc, argv, labelID)
 	}
 	return helper_client_get(self, result, argc, argv, labelID);
 }
-int meth_socket_get(self, result, argc, argv)
+long meth_socket_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -247,7 +250,7 @@ int meth_socket_get(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_socket_freeSelf(self, result, argc, argv)
+long meth_socket_freeSelf(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -267,7 +270,7 @@ int meth_socket_freeSelf(self, result, argc, argv)
 	return 1;
 }
 
-int helper_socket_set(self, result, argc, argv, labelID)
+long helper_socket_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -291,7 +294,7 @@ int helper_socket_set(self, result, argc, argv, labelID)
 	}
 	return helper_client_set(self, result, argc, argv, labelID);
 }
-int meth_socket_set(self, result, argc, argv)
+long meth_socket_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -333,15 +336,11 @@ int socket_open(proto, host, port)
 		addr.sin_family = hp->h_addrtype;
 	}
 
-	if (addr.sin_port = port) {
-		addr.sin_port = htons(addr.sin_port);
+	if (port) {
+		addr.sin_port = htons((in_port_t)port);
 	} else {
-		struct	servent		*sp;
-
-		if ((sp = getservbyname(port, proto)) == NULL)
-			return -3;
-
-		addr.sin_port = sp->s_port;
+		/* port must be a number, not a service name */
+		return -3;
 	}
 
 	if ((s = socket(addr.sin_family, stype, 0)) < 0)

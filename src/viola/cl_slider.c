@@ -29,9 +29,12 @@
 #include "misc.h"
 #include "glib.h"
 #include "event.h"
+#include "cexec.h"
+
+extern void process_event();
 
 SlotInfo cl_slider_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_slider_NPSlots[] = {
 {
@@ -39,7 +42,7 @@ SlotInfo cl_slider_NPSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"t"		/* default is top2bottom */
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_slider_CSlots[] = {
@@ -180,11 +183,11 @@ SlotInfo cl_slider_CSlots[] = {
 			print(\"unknown message, clsss = slider: args: \");\n\
 			for (i =0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\\n\");\n\
-			break;\n\
-		}\n\
-	",
+		break;\n\
+	}\n\
+",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_slider_PSlots[] = {
@@ -193,7 +196,7 @@ SlotInfo cl_slider_PSlots[] = {
 	CLSI,
 	(long)&class_slider
 },{
-	NULL
+	{0}
 }
 };
 
@@ -225,7 +228,7 @@ MethodInfo meths_slider[] = {
 	STR_seta,
 	meth_slider_set
 },{
-	NULL
+	{0}
 }
 };
 
@@ -243,7 +246,7 @@ ClassInfo class_slider = {
 #define HORIZONTAL_DIR(dirc) (dirc == 'l' || dirc == 'r')
 #define THUMB_IN_RANGE(s) (s >= 0 && s <= 100)
 
-int meth_slider_config(self, result, argc, argv)
+long meth_slider_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -253,7 +256,7 @@ int meth_slider_config(self, result, argc, argv)
 	return 1;
 }
 
-int helper_slider_get(self, result, argc, argv, labelID)
+long helper_slider_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -269,7 +272,7 @@ int helper_slider_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_slider_get(self, result, argc, argv)
+long meth_slider_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -279,7 +282,7 @@ int meth_slider_get(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_slider_initialize(self, result, argc, argv)
+long meth_slider_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -292,7 +295,7 @@ int meth_slider_initialize(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_slider_set(self, result, argc, argv, labelID)
+long helper_slider_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -316,7 +319,7 @@ int helper_slider_set(self, result, argc, argv, labelID)
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_slider_set(self, result, argc, argv)
+long meth_slider_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -326,7 +329,7 @@ int meth_slider_set(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_slider_render(self, result, argc, argv)
+long meth_slider_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -415,7 +418,7 @@ int meth_slider_render(self, result, argc, argv)
 	return 0;
 }
 
-int meth_slider_processMouseInput(self, result, argc, argv)
+long meth_slider_processMouseInput(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

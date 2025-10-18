@@ -11,6 +11,7 @@
 #include "msgHandler.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 static VMsgHandlerStruct *ViolaMessageHandlers = NULL;

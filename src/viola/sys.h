@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct MemoryGroupHeap {
 	char *mem;
 	int size;

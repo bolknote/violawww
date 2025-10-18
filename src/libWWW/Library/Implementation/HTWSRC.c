@@ -9,7 +9,7 @@
 */
 
 #include "HTWSRC.h"
-
+#include <unistd.h>
 
 /* #include <sys/types.h>	already in tcp.h */
 /* #include <sys/stat.h>  	this too         */
@@ -409,7 +409,7 @@ PRIVATE void WSRCParser_free ARGS1(HTStream *, me)
     free(me);
 }
 
-PRIVATE void WSRCParser_abort ARGS1(HTStream *, me)
+PRIVATE void WSRCParser_abort ARGS2(HTStream *, me, HTError, e)
 {
     WSRCParser_free(me);
 }
@@ -422,6 +422,7 @@ PRIVATE void WSRCParser_abort ARGS1(HTStream *, me)
 HTStreamClass WSRCParserClass = {
 	"WSRCParser",
 	WSRCParser_free,
+	NULL,  /* end */
 	WSRCParser_abort,
 	WSRCParser_put_character,
  	WSRCParser_put_string,

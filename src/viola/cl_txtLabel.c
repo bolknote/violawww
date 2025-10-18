@@ -30,10 +30,10 @@
 #include "glib.h"
 
 SlotInfo cl_txtLabel_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txtLabel_NPSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txtLabel_CSlots[] = {
 {
@@ -107,7 +107,7 @@ SlotInfo cl_txtLabel_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtLabel_PSlots[] = {
@@ -120,7 +120,7 @@ SlotInfo cl_txtLabel_PSlots[] = {
  	PTRS | SLOT_RW,
 	(long)"center"
 },{
-	NULL
+	{0}
 }
 };
 
@@ -143,7 +143,7 @@ MethodInfo meths_txtLabel[] = {
 	STR_render,
 	meth_txtLabel_render
 },{
-	NULL
+	{0}
 }
 };
 
@@ -156,7 +156,7 @@ ClassInfo class_txtLabel = {
 	&class_txt,		/* super class info		*/
 };
 
-int meth_txtLabel_config(self, result, argc, argv)
+long int meth_txtLabel_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -165,7 +165,7 @@ int meth_txtLabel_config(self, result, argc, argv)
 	return meth_txt_config(self, result, argc, argv);
 }
 
-int meth_txtLabel_initialize(self, result, argc, argv)
+long int meth_txtLabel_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -174,7 +174,7 @@ int meth_txtLabel_initialize(self, result, argc, argv)
 	return meth_txt_initialize(self, result, argc, argv);
 }
 
-int meth_txtLabel_render(self, result, argc, argv)
+long int meth_txtLabel_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

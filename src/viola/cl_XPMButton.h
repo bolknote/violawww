@@ -5,7 +5,7 @@
 #include "cl_XPM.h"
 
 extern ClassInfo class_XPMButton;
-int helper_XPMButton_get();
-int helper_XPMButton_set();
+long helper_XPMButton_get();
+long helper_XPMButton_set();
 
-int meth_XPMButton_render();
+long meth_XPMButton_render();

@@ -13,6 +13,8 @@
 #include "copyright.h"
 #include "image.h"
 #include "cmuwmraster.h"
+#include <string.h>
+#include <stdlib.h>
 
 /* SUPPRESS 558 */
 

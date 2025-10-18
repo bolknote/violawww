@@ -4,6 +4,7 @@
  * well, what can I say... we're just not there yet.
  */
 #include "utils.h"
+#include <unistd.h>
 #include "mystrings.h"
 #include "error.h"
 #include "file.h"
@@ -23,5 +24,6 @@ int SLBellVolume(percent)
 int SLBell()
 {
 	write(1, "\007", 1);  /* beep */
+	return 0;
 }
 

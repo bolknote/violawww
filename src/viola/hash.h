@@ -1,6 +1,4 @@
-#ifndef _VIOLA_HASH_H_
-#define _VIOLA_HASH_H_
-
+#pragma once
 /* hash.h
  *
  */
@@ -47,4 +45,3 @@ int removeHashEntry_str(HashTable *ht, char *label);
 
 void dumpHashTable();
 
-#endif _VIOLA_HASH_H_

@@ -76,7 +76,7 @@ Packet *borrowPacket()
 		exit(1);
 	}
 	packetp = &packetStack[packetStackIdx];
-	packetp->info.i = NULL;
+	packetp->info.i = 0;
 	packetp->type = 0;
 	packetp->canFree = 0;
 	return packetp;

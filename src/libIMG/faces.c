@@ -9,6 +9,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
 
 /* SUPPRESS 560 */
@@ -85,6 +88,7 @@ static int nextInt(zf, len)
 
 Image *facesLoad(fullname, name, verbose)
      char *fullname, *name;
+     int verbose;
 { ZFILE        *zf;
   Image        *image;
   char          fname[BUFSIZ];

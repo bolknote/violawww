@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <Xm/Xm.h>
 #include <Xm/Label.h>
@@ -32,6 +33,9 @@
 
 #include "vw.h"
 #include "dialog.h"
+#include "../viola/packet.h"
+#include "../viola/attr.h"
+#include "../viola/cexec.h"
 
 
 void dialogOK(button, clientData, callData)
@@ -732,9 +736,9 @@ void printDialog(dvip, docName)
 	if (printCommand) {
 	    sprintf(printString, "%s %s", printCommand, printOptions);
 	    sendMessage1N1str(dvip->violaDocViewObj,
-				    "printDoc",
-				    printString);
-	    fprintf(stderr, printString);
+			    "printDoc",
+			    printString);
+	    fprintf(stderr, "%s", printString);
 	}
 
 	if (printCommand)
@@ -823,7 +827,7 @@ void urlDlogParseURL(uds)
 void urlDlogConstructURL(uds)
     struct urlDlogStruct *uds;
 {
-    int length;
+    size_t length;
     char *ptr, *psave, *msave, *fsave;
     char *protocol = XmTextFieldGetString(uds->protocolText);
     char *machine = XmTextFieldGetString(uds->machineText);

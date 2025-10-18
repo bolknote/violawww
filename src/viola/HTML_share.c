@@ -1,5 +1,7 @@
 #include "utils.h"
 #include <ctype.h>
+#include <string.h>
+#include <strings.h>
 #include "error.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -22,6 +24,9 @@
 #include "sgml.h"
 #include "html2.h"
 #include "event_x.h"
+
+/* Forward declarations */
+extern int drawLineOffset();
 
 /* a collection of C routines to replace script version of HTML tag handlers.
  * Placed here to be shared by various HTML tag handlers accelerators.
@@ -386,7 +391,7 @@ int cellType(self)
 	VObj *self;
 {
 	Packet *pk;
-	pk = getVariable_id(GET__varList(self), STR_cellType);
+	pk = (Packet*)getVariable_id(GET__varList(self), STR_cellType);
 	if (pk) return pk->info.i;
 	return 0;
 }
@@ -533,11 +538,11 @@ int HTMLTableFormater(self, titleObj, titleTopP)
 	matrix = (TableMatrixCell*)malloc(sizeof(struct TableMatrixCell) *
 						matRows * maxCols);
 	for (i = matRows * maxCols - 1; i >= 0; i--) {
-		mat = &matrix[i];
-		mat->obj = NULL;
-		mat->type = NULL;
-		mat->x = 0;
-		mat->y = 0;
+	mat = &matrix[i];
+	mat->obj = 0;
+	mat->type = 0;
+	mat->x = 0;
+	mat->y = 0;
 		mat->width = 0;
 		mat->height = 0;
 	}

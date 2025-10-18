@@ -31,7 +31,7 @@
 #include "event.h"
 
 SlotInfo cl_stack_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_stack_NPSlots[] = {
 {
@@ -45,17 +45,17 @@ SlotInfo cl_stack_NPSlots[] = {
 },{
 	STR__BCardList,
 	OBJL,
-	NULL
+	0
 },{
 	STR__FCardList,
 	OBJL,
-	NULL
+	0
 },{
 	STR__currentCard,
 	OBJP,
-	NULL
+	0
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_stack_CSlots[] = {
@@ -87,11 +87,11 @@ SlotInfo cl_stack_CSlots[] = {
 		break;\n\
 		case \"init\":\n\
 			initialize();\n\
-		break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_stack_PSlots[] = {
@@ -100,7 +100,7 @@ SlotInfo cl_stack_PSlots[] = {
 	CLSI,
 	(long)&class_stack
 },{
-	NULL
+	{0}
 }
 };
 
@@ -165,7 +165,7 @@ MethodInfo meths_stack[] = {
 	STR_setCurrentCard,
 	meth_stack_setCurrentCard
 },{
-	NULL
+	{0}
 }
 };
 
@@ -178,7 +178,7 @@ ClassInfo class_stack = {
 	&class_pane,		/* super class info		*/
 };
 
-int meth_stack_anyCard(self, result, argc, argv)
+long meth_stack_anyCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -188,7 +188,7 @@ int meth_stack_anyCard(self, result, argc, argv)
 	return 0;
 }
 
-int meth_stack_card(self, result, argc, argv)
+long meth_stack_card(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -198,7 +198,7 @@ int meth_stack_card(self, result, argc, argv)
 	return 0;
 }
 
-int meth_stack_config(self, result, argc, argv)
+long meth_stack_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -211,7 +211,7 @@ int meth_stack_config(self, result, argc, argv)
 /*
  * countBCards()
  */
-int meth_stack_countBCards(self, result, argc, argv)
+long meth_stack_countBCards(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -239,7 +239,7 @@ int meth_stack_countBCards(self, result, argc, argv)
 /*
  * countFCards()
  */
-int meth_stack_countFCards(self, result, argc, argv)
+long meth_stack_countFCards(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -264,7 +264,7 @@ int meth_stack_countFCards(self, result, argc, argv)
 	return 1;
 }
 
-int meth_stack_create(self, result, argc, argv)
+long meth_stack_create(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -274,7 +274,7 @@ int meth_stack_create(self, result, argc, argv)
 	return 0;
 }
 
-int meth_stack_expose(self, result, argc, argv)
+long meth_stack_expose(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -283,7 +283,7 @@ int meth_stack_expose(self, result, argc, argv)
 	return meth_pane_render(self, result, argc, argv);
 }
 
-int meth_stack_firstCard(self, result, argc, argv)
+long meth_stack_firstCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -305,7 +305,7 @@ int meth_stack_firstCard(self, result, argc, argv)
 	return 0;
 }
 
-int helper_stack_get(self, result, argc, argv, labelID)
+long helper_stack_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -333,7 +333,7 @@ int helper_stack_get(self, result, argc, argv, labelID)
 	}
 	return helper_pane_get(self, result, argc, argv, labelID);
 }
-int meth_stack_get(self, result, argc, argv)
+long meth_stack_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -343,7 +343,7 @@ int meth_stack_get(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_stack_getCurrentCard(self, result, argc, argv)
+long meth_stack_getCurrentCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -359,7 +359,7 @@ int meth_stack_getCurrentCard(self, result, argc, argv)
  	return 0;
 }
 
-int meth_stack_initialize(self, result, argc, argv)
+long meth_stack_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -378,7 +378,7 @@ int meth_stack_initialize(self, result, argc, argv)
 	return 1;
 }
 
-int meth_stack_lastCard(self, result, argc, argv)
+long meth_stack_lastCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -409,7 +409,7 @@ int meth_stack_lastCard(self, result, argc, argv)
 /*
  * nextCard
  */
-int meth_stack_nextCard(self, result, argc, argv)
+long meth_stack_nextCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -451,7 +451,7 @@ int meth_stack_nextCard(self, result, argc, argv)
 /*
  * previousCard
  */
-int meth_stack_previousCard(self, result, argc, argv)
+long meth_stack_previousCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -487,7 +487,7 @@ int meth_stack_previousCard(self, result, argc, argv)
 	}
 }
 
-int meth_stack_render(self, result, argc, argv)
+long meth_stack_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -504,7 +504,7 @@ int meth_stack_render(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_stack_set(self, result, argc, argv, labelID)
+long helper_stack_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -521,7 +521,7 @@ int helper_stack_set(self, result, argc, argv, labelID)
 	}
 	return helper_pane_set(self, result, argc, argv, labelID);
 }
-int meth_stack_set(self, result, argc, argv)
+long meth_stack_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -531,7 +531,7 @@ int meth_stack_set(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_stack_setCurrentCard(self, result, argc, argv)
+long meth_stack_setCurrentCard(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

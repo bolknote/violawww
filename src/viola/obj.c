@@ -17,6 +17,7 @@
 #include "obj.h"
 #include "packet.h"
 #include "ident.h"
+#include "method.h"
 
 VObj *VResourceObj;
 VObj *VFontResourceObj;

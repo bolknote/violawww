@@ -9,6 +9,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "xloadimage.h"
 #include <X11/Xos.h>
 #include <sys/stat.h>

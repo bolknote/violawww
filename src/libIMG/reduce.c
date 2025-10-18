@@ -18,6 +18,9 @@
  */
 
 #include "copyright.h"
+#include <string.h>
+#include <strings.h>
+#include <stdlib.h>
 #include "image.h"
 
 #define DIST(A, B) ((A) < (B) ? (B) - (A) : (A) - (B))

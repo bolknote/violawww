@@ -45,6 +45,7 @@
 */
 
 #include <string.h>
+#include <unistd.h>
 #include "HTUtils.h"
 #include "tcp.h"	/* NETREAD() etc.	*/
 #include "HTAAUtil.h"	/* Implemented here	*/

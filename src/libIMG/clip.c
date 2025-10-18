@@ -9,6 +9,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
 
 /* Forward declaration to avoid including stdlib.h which causes OSByteOrder conflicts on macOS */

@@ -5,10 +5,10 @@
 #include "cl_client.h"
 
 extern ClassInfo class_socket;
-int helper_socket_get();
-int helper_socket_set();
+long helper_socket_get();
+long helper_socket_set();
 
-int meth_socket__startClient();
-int meth_socket_freeSelf();
-int meth_socket_get();
-int meth_socket_set();
+long meth_socket__startClient();
+long meth_socket_freeSelf();
+long meth_socket_get();
+long meth_socket_set();

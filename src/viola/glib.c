@@ -8,6 +8,9 @@
 #include "slotaccess.h"
 #include "glib.h"
 
+/* Forward declaration */
+extern int GLInit();
+
 HashTable *window2Obj;	/* used to look up object associated with a window */
 
 int maxNumOfFonts = MAXFONTS;
@@ -67,8 +70,8 @@ int check = 1;
 VObj *findWindowObject(w)
 	Window w;
 {
-	static Window lastFailedSearchW = NULL;
-	static Window lastSuccessSearchW = NULL;
+	static Window lastFailedSearchW = 0;
+	static Window lastSuccessSearchW = 0;
 	static VObj *lastSuccessSearchObj = NULL;
 	VObj *obj;
 	HashEntry *entry;
@@ -84,7 +87,7 @@ VObj *findWindowObject(w)
 			return lastSuccessSearchObj;
           }
 
-		lastSuccessSearchW = NULL;
+		lastSuccessSearchW = 0;
 		return NULL;
 	}
 /*
@@ -100,7 +103,7 @@ VObj *findWindowObject(w)
 	  } else {
 			return lastSuccessSearchObj;
 	  }
-		lastSuccessSearchW = NULL;
+		lastSuccessSearchW = 0;
 		return NULL;
 	}
 

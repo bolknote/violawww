@@ -17,7 +17,7 @@ char *toolID2Str[] = {
 	"move",
 	"resize",
 	"reparent",
-	NULL
+	{0}
 };
 
 /*

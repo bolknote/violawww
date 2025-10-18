@@ -14,6 +14,8 @@
 #include "HTMIME.h"		/* Implemented here */
 #include "HTAlert.h"
 
+/* Forward declarations */
+extern void http_progress_notify();
 
 /*		MIME Object
 **		-----------

@@ -14,6 +14,7 @@
  */
 #include "utils.h"
 #include <ctype.h>
+#include <string.h>
 #include "error.h"
 #include "mystrings.h"
 #include "hash.h"
@@ -32,7 +33,7 @@
 #include "glib.h"
 
 SlotInfo cl_txt_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txt_NPSlots[] = {
 {
@@ -44,7 +45,7 @@ SlotInfo cl_txt_NPSlots[] = {
  	LONG,
 	0
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txt_CSlots[] = {
@@ -99,7 +100,7 @@ SlotInfo cl_txt_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txt_PSlots[] = {
@@ -108,7 +109,7 @@ SlotInfo cl_txt_PSlots[] = {
 	CLSI,
 	(long)&class_txt
 },{
-	NULL
+	{0}
 }
 };
 
@@ -149,7 +150,7 @@ MethodInfo meths_txt[] = {
 	STR_seta,
 	meth_txt_set
 },{
-	NULL
+	{0}
 }
 };
 
@@ -170,7 +171,7 @@ ClassInfo class_txt = {
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_txt_clone(self, result, argc, argv)
+long meth_txt_clone(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -193,7 +194,7 @@ int meth_txt_clone(self, result, argc, argv)
 	return 0;
 }
 
-int meth_txt_clone2(self, result, argc, argv)
+long meth_txt_clone2(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -203,7 +204,7 @@ int meth_txt_clone2(self, result, argc, argv)
 	return 1;
 }
 
-int meth_txt_config(self, result, argc, argv)
+long meth_txt_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -215,7 +216,7 @@ int meth_txt_config(self, result, argc, argv)
 	return meth_pane_config(self, result, argc, argv);
 }
 
-int meth_txt_expose(self, result, argc, argv)
+long meth_txt_expose(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -224,7 +225,7 @@ int meth_txt_expose(self, result, argc, argv)
 	return meth_pane_expose(self, result, argc, argv);
 }
 
-int meth_txt_freeSelf(self, result, argc, argv)
+long meth_txt_freeSelf(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -239,7 +240,7 @@ int meth_txt_freeSelf(self, result, argc, argv)
 	return 1;
 }
 
-int helper_txt_get(self, result, argc, argv, labelID)
+long helper_txt_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -261,7 +262,7 @@ int helper_txt_get(self, result, argc, argv, labelID)
 	}
 	return helper_pane_get(self, result, argc, argv, labelID);
 }
-int meth_txt_get(self, result, argc, argv)
+long meth_txt_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -271,7 +272,7 @@ int meth_txt_get(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_txt_initialize(self, result, argc, argv)
+long meth_txt_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -299,7 +300,7 @@ int meth_txt_initialize(self, result, argc, argv)
 	return 1; /* don't want to kill this object on account of bad font */
 }
 
-int meth_txt_render(self, result, argc, argv)
+long meth_txt_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -311,7 +312,7 @@ int meth_txt_render(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_txt_set(self, result, argc, argv, labelID)
+long helper_txt_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -346,7 +347,7 @@ int helper_txt_set(self, result, argc, argv, labelID)
 	}
 	return helper_pane_set(self, result, argc, argv, labelID);
 }
-int meth_txt_set(self, result, argc, argv)
+long meth_txt_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

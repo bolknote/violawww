@@ -9,12 +9,13 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 /*
  * Free the computed color table
  */
 
-xpmFreeColorTable(colorTable, ncolors)
+int xpmFreeColorTable(colorTable, ncolors)
     char ***colorTable;
     int ncolors;
 {
@@ -29,7 +30,8 @@ xpmFreeColorTable(colorTable, ncolors)
 		free(colorTable[a]);
 	    }
 	free(colorTable);
-    }
+    return 0;
+}
 }
 
 
@@ -38,7 +40,7 @@ xpmFreeColorTable(colorTable, ncolors)
  * which ones must be freed later on.
  */
 
-xpmInitInternAttrib(attrib)
+int xpmInitInternAttrib(attrib)
     xpmInternAttrib *attrib;
 {
     attrib->ncolors = 0;
@@ -54,7 +56,7 @@ xpmInitInternAttrib(attrib)
  * Free the xpmInternAttrib pointers which have been allocated
  */
 
-xpmFreeInternAttrib(attrib)
+int xpmFreeInternAttrib(attrib)
     xpmInternAttrib *attrib;
 {
     unsigned int a;
@@ -78,7 +80,7 @@ xpmFreeInternAttrib(attrib)
  * Retuen the XpmAttributes structure size
  */
 
-XpmAttributesSize()
+int XpmAttributesSize()
 {
     return sizeof(XpmAttributes);
 }
@@ -89,7 +91,7 @@ XpmAttributesSize()
  * but the structure itself
  */
 
-XpmFreeAttributes(attributes)
+int XpmFreeAttributes(attributes)
     XpmAttributes *attributes;
 {
     if (attributes) {
@@ -131,7 +133,7 @@ XpmFreeAttributes(attributes)
  * the xpmInternAttrib structure.
  */
 
-xpmSetAttributes(attrib, attributes)
+int xpmSetAttributes(attrib, attributes)
     xpmInternAttrib *attrib;
     XpmAttributes *attributes;
 {

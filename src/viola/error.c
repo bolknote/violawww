@@ -1,4 +1,6 @@
+#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 #include "error.h"
 #include "mystrings.h"
@@ -33,7 +35,7 @@ strNIntPair errIDList[] = {
 /*
 	ERR_,		"ERR_",
 */
-	NULL,		NULL
+	0,		NULL
 };
 
 /*
@@ -70,7 +72,7 @@ strNIntPair errMessgList[] = {
 /*
 	ERR_,		"",
 */
-	NULL,		NULL
+	0,		NULL
 };
 
 

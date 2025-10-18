@@ -9,6 +9,7 @@
  */
 #include <ctype.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "utils.h"
 
 #include "HTFont.h"
@@ -37,6 +38,8 @@
 #include "packet.h"
 #include "membership.h"
 #include "class.h"
+#include "method.h"
+#include "cexec.h"
 #include "slotaccess.h"
 #include "classlist.h"
 #include "vlist.h"
@@ -46,6 +49,10 @@
 #include "misc.h"
 #include "tfed.h"
 #include "sgml.h"
+
+/* Forward declarations */
+extern void freeNodeLines();
+extern void renderTF();
 #include "html.h"
 #include "html2.h"
 #include "DefaultStyles.h"
@@ -397,10 +404,10 @@ PUBLIC HText *	HText_new ARGS1(HTParentAnchor *,anchor)
 
 	htObj->size = 0;
 	htObj->px = 0;
-	htObj->flags = NULL;
+	htObj->flags = 0;
 	htObj->currentp = NULL;
 	htObj->insertp = NULL;
-	htObj->fontID = NULL;
+	htObj->fontID = 0;
 	htObj->tbuff = tbuff;	/* XXX non-reentrant */
 	htObj->tbuffi = 0;
 	htObj->tagID = 0;
@@ -1245,7 +1252,7 @@ TFStruct *html_setUpTFStruct(self, text)
 
 		tf->num_of_lines = 0;		/* in field view ? */
 
-		tf->w = NULL;
+		tf->w = 0;
 		tf->xUL = tf->yUL =
 		tf->xLR = tf->yLR = 
 		tf->width = tf->height = 0;
@@ -1588,9 +1595,9 @@ HText *html_loadDocument(self, address, title, simpleAddress, anchorSearch)
 }
 
 /*
- * return temporary file name
+ * return status (YES/NO)
  */
-char *html_fetchDocument(self, address, simpleAddress, anchorSearch, fp)
+int html_fetchDocument(self, address, simpleAddress, anchorSearch, fp)
 	VObj *self;
 	char *address;
 	char **simpleAddress;
@@ -1599,7 +1606,7 @@ char *html_fetchDocument(self, address, simpleAddress, anchorSearch, fp)
 {
 	int i;
 	char *cp, anchorInfo[64];
-	int stat;
+	BOOLEAN stat;
 	HTStream* HTOutputStream_save = HTOutputStream;
 	HTFormat HTOutputFormat_save = HTOutputFormat;
 	BOOL HTOutputSource_save = HTOutputSource;
@@ -1641,7 +1648,7 @@ char *html_fetchDocument(self, address, simpleAddress, anchorSearch, fp)
 	HTOutputFormat = HTOutputFormat_save;
 	HTOutputSource = HTOutputSource_save;
 
-	return stat;
+	return (stat == YES) ? 1 : 0;
 }
 
 /***************

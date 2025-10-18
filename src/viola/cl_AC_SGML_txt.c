@@ -31,11 +31,11 @@
 
 SlotInfo cl_AC_SGML_txt_NCSlots[] = {
 {
-	NULL
+	0
 }
 };
 SlotInfo cl_AC_SGML_txt_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_AC_SGML_txt_CSlots[] = {
 {
@@ -179,7 +179,7 @@ print(\"***************  ref = {\", ref, \"}\n\");\n\
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_AC_SGML_txt_PSlots[] = {
@@ -216,7 +216,7 @@ SlotInfo cl_AC_SGML_txt_PSlots[] = {
 	LONG | SLOT_RW,
 	1
 },{
-	NULL
+	0
 }
 };
 
@@ -231,25 +231,25 @@ MethodInfo meths_AC_SGML_txt[] = {
 	/* local methods */
 {
 	STR_initialize,
-	meth_AC_SGML_txt_initialize
+	(long (*)())meth_AC_SGML_txt_initialize
 },{
 	STR_render,
-	meth_AC_SGML_txt_render
+	(long (*)())meth_AC_SGML_txt_render
 },{
-	NULL
+	0
 }
 };
 
 ClassInfo class_AC_SGML_txt = {
-	helper_txtDisp_get,
-	helper_txtDisp_set,
+	(long (*)())helper_txtDisp_get,
+	(long (*)())helper_txtDisp_set,
 	slots_AC_SGML_txt,		/* class slot information	*/
 	meths_AC_SGML_txt,		/* class methods		*/
 	STR_AC_SGML_txt,		/* class identifier number	*/
 	&class_txtDisp,		/* super class info		*/
 };
 
-int meth_AC_SGML_txt_initialize(self, result, argc, argv)
+long int meth_AC_SGML_txt_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -268,7 +268,7 @@ int meth_AC_SGML_txt_initialize(self, result, argc, argv)
 	return stat;
 }
 
-int meth_AC_SGML_txt_render(self, result, argc, argv)
+long int meth_AC_SGML_txt_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

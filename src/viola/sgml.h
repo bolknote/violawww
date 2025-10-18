@@ -1,6 +1,7 @@
 /* 
  * SGMLS interface, an optimized hmml.v. Hopefully generalized, too.
  */
+#pragma once
 
 typedef struct SGMLTagMappingInfo {
 	char 	*tag;
@@ -41,6 +42,7 @@ extern int SGMLBuildDoc_span;
 int SGMLInit();
 VObj *SGMLBuildDoc();
 VObj *SGMLBuildDoc_B();
+int SGMLBuildDoc_setBuff();
 int SGMLTileDoc();
 int SGMLFindAnchorOffset();
 void SGMLBuildDoc_insertObj();

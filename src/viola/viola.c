@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "utils.h"
 #include <math.h>
 #include "mystrings.h"
@@ -38,6 +39,20 @@
 #include "misc.h"
 #include "file.h"
 #include "event_x.h"
+#include <string.h>
+#include <strings.h>
+
+/* Forward declarations */
+extern int init_sys();
+extern int init_obj();
+extern int init_scanutils();
+extern int init_tfed();
+extern int init_cexec();
+extern int init_html();
+extern int SGMLInit();
+extern int meth_generic_cli();
+extern int tfed_FreeTmpFileToFree();
+extern void XtToolkitInitialize();
 
 #define DFLT_USR_WWW_HOME "WWW" /* patched */
 
@@ -287,7 +302,7 @@ char *initViola(argc, argv, vObjFile, display, screen, parentWindow)
 	
 	if (user_action_tracking)
 	if (user_action_tracking != stderr) 
-		close(user_action_tracking);
+		fclose(user_action_tracking);
 
 	if (!runInSubWindow) exit(0);
 

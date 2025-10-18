@@ -1,4 +1,6 @@
+#include <string.h>
 #include <ctype.h>
+#include <string.h>
 #include "utils.h"
 #include "HTFont.h"
 

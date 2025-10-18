@@ -20,6 +20,8 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <pwd.h>
+#include <unistd.h>
+#include <math.h>
 #include "mystrings.h"
 #include "sys.h"
 #include "error.h"
@@ -60,6 +62,14 @@
 /*#include <signal.h>*/
 extern int initImgLib();
 extern int loadImg();
+extern int approximateColor();
+extern void FatalError();
+extern int getVariable();
+extern int resolveFontSet();
+extern long sendMessage1();
+extern long callMeth();
+extern long meth_generic_HTTPGet();
+extern int XmuReadBitmapDataFromFile();
 #endif
 #ifdef USE_XGIF_PACKAGE
 #include "../libGIF/xgif.h"
@@ -181,29 +191,29 @@ GC gc_subWindow;
 /****************************************************************************
  * bitmap stuff
  */
-Pixmap pixmap = NULL;
+Pixmap pixmap = 0;
 
 #define mesh_width	2
 #define mesh_height	2
 static char mesh_bits[] = {0x01, 0x02};
 
-Pixmap violaPixmap = NULL;
+Pixmap violaPixmap = 0;
 
-Pixmap dunselPixmap = NULL;
+Pixmap dunselPixmap = 0;
 
 #define BITMAPDEPTH	1
 #define TOO_SMALL	0
 #define BIG_ENOUGH	1
 
 static char menuXBM_bits[] = {0x00, 0xff, 0x7f, 0xbe, 0x5c, 0x28, 0x10, 0x00};
-Pixmap menuPixmap = NULL;
+Pixmap menuPixmap = 0;
 
-Pixmap togglePixmap_button0 = NULL;
-Pixmap togglePixmap_button1 = NULL;
-Pixmap togglePixmap_check0 = NULL;
-Pixmap togglePixmap_check1 = NULL;
-Pixmap togglePixmap_disc0 = NULL;
-Pixmap togglePixmap_disc1 = NULL;
+Pixmap togglePixmap_button0 = 0;
+Pixmap togglePixmap_button1 = 0;
+Pixmap togglePixmap_check0 = 0;
+Pixmap togglePixmap_check1 = 0;
+Pixmap togglePixmap_disc0 = 0;
+Pixmap togglePixmap_disc1 = 0;
 
 /*
  * toggle button style: boolean -- "0" protruding, "1" protruding
@@ -966,7 +976,7 @@ Window GLOpenWindow(self, x, y, width, height, isGlass)
 	int x, y, width, height;
 	int isGlass;
 {
-	Window w, parentWindow = NULL;
+	Window w, parentWindow = 0;
 	int borderThickness;
 	XSetWindowAttributes attrs;
 	int inputOnlyWindowP = 0;
@@ -982,7 +992,7 @@ Window GLOpenWindow(self, x, y, width, height, isGlass)
 	borderThickness = borderStyleThickness[GET_border(self)];
 
 	parentWindow = bossWindow(self);
-	if (parentWindow == NULL) parentWindow = rootWindow;
+	if (parentWindow == 0) parentWindow = rootWindow;
 
 	if (parentWindow == rootWindow && runInSubWindow)
 		parentWindow = topWindow;
@@ -1011,7 +1021,7 @@ Window GLOpenWindow(self, x, y, width, height, isGlass)
 		attrs.event_mask = GET__eventMask(self);
 		attrs.bit_gravity = StaticGravity;
 		attrs.backing_store = NotUseful;
-		attrs.cursor = NULL;
+		attrs.cursor = 0;
 		w = XCreateWindow(display, parentWindow,
 				  x, y, width, height,
 				  borderThickness,
@@ -1938,7 +1948,7 @@ int GLDrawRubberFrame(self, x1, y1, x2, y2)
 	VObj *self;
 	int x1, y1, x2, y2;
 {
-	Window w = NULL;
+	Window w = 0;
 	if (GET__parent(self)) w = bossWindow(GET__parent(self));
 	if (w) {
 		XDrawLine(display, w, gc_subWindow, x1, y1, x2, y1);
@@ -2279,9 +2289,9 @@ int approximateColor(r, g, b)
 print("glib_x: approximated RGB => [%d] %d %d %d ==> %d %d %d   mdist=%d\n", 
 close, r, g, b, ctab[close].red, ctab[close].green, ctab[close].blue, mdist);
 */
-		return ctab[close].pixel;
+		return (int)ctab[close].pixel;
 	}
-	return NULL;
+	return 0;
 }
 int callCount_GLSetColor = 0;
 
@@ -2844,11 +2854,10 @@ int GLGIFDraw(w, img, x, y, width, height)
 /*
  * may be called by ../libGIF/xloadgif.c
  */
-FatalError (identifier)
+void FatalError (identifier)
        char *identifier;
 {
     if (verbose) fprintf(stderr, "libGIF: %s: %s\n",cmd, identifier);
-    return 0;
 }
 
 #ifdef NEED_A_CLUE

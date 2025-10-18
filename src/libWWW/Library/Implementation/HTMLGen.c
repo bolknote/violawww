@@ -19,6 +19,7 @@
 #include "HTMLGen.h"
 
 #include <stdio.h>
+#include <string.h>
 #include "HTMLDTD.h"
 #include "HTStream.h"
 #include "SGML.h"
@@ -167,11 +168,12 @@ PRIVATE void HTMLGen_write ARGS3(HTStructured *, me, CONST char*, s, int, l)
 **	Within the opening tag, there may be spaces
 **	and the line may be broken at these spaces.
 */
-PRIVATE void HTMLGen_start_element ARGS4(
+PRIVATE void HTMLGen_start_element ARGS5(
 	HTStructured *, 	me,
 	int,			element_number,
 	CONST BOOL*,	 	present,
-	CONST char **,		value)
+	CONST char **,		value,
+	HTTag*,			tag_unused)
 {
     int i;
     
@@ -290,11 +292,14 @@ PRIVATE CONST HTStructuredClass HTMLGeneration = /* As opposed to print etc */
 {		
 	"text/html",
 	HTMLGen_free,
+	NULL,  /* end */
 	HTMLGen_abort,
-	HTMLGen_put_character, 	HTMLGen_put_string, 
+	HTMLGen_put_character,
+	HTMLGen_put_string, 
 	HTMLGen_progress,
 	HTMLGen_write,
-	HTMLGen_start_element, 	HTMLGen_end_element,
+	HTMLGen_start_element,
+	HTMLGen_end_element,
 	HTMLGen_put_entity
 }; 
 
@@ -330,15 +335,16 @@ PUBLIC HTStructured * HTMLGenerator ARGS1(HTStream *, output)
 PRIVATE CONST HTStructuredClass PlainToHTMLConversion =
 {		
 	"plaintexttoHTML",
-	HTMLGen_free,	
+	HTMLGen_free,
+	NULL,  /* end */
 	PlainToHTML_abort,	
 	HTMLGen_put_character,
 	HTMLGen_put_string,
 	HTMLGen_progress,
 	HTMLGen_write,
-	NULL,		/* Structured stuff */
-	NULL,
-	NULL
+	NULL,		/* start_element */
+	NULL,		/* end_element */
+	NULL		/* put_entity */
 }; 
 
 

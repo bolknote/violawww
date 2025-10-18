@@ -31,6 +31,8 @@
 #include "event.h"
 #include "attr.h"
 #include "cexec.h"
+#include "cl_txt.h"
+#include <string.h>
 
 #include "../libXPA/src/xpa.h"
 
@@ -39,7 +41,7 @@
 #define MENU_ITEM_TYPE_SEPARATOR 2
 
 SlotInfo cl_menu_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_menu_NPSlots[] = {
 {
@@ -49,13 +51,13 @@ SlotInfo cl_menu_NPSlots[] = {
 },{
 	STR__menu,		/* internal */
  	PTRV,
-	NULL
+	0
 },{
 	STR__menuEntries,	/* internal */
  	PTRV,
-	NULL
+	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_menu_CSlots[] = {
@@ -114,7 +116,7 @@ SlotInfo cl_menu_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_menu_PSlots[] = {
@@ -127,7 +129,7 @@ SlotInfo cl_menu_PSlots[] = {
 	LONG | SLOT_RW,
 	BORDER_MENU
 },{
-	NULL
+	0
 }
 };
 
@@ -162,7 +164,7 @@ MethodInfo meths_menu[] = {
 	STR_seta,
 	meth_menu_set
 },{
-	NULL
+	0
 }
 };
 
@@ -191,11 +193,7 @@ char *get_menu_message();
 int set_menuConfig();
 
 
-int meth_menu_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_txt_config(self, result, argc, argv);
 }
@@ -208,28 +206,19 @@ int meth_menu_config(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_menu_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	free(GET_menuConfig(self));
 
 	/*XXX NEED TO deep destroy menu structure */
-	if (GET__menu(self)) free(GET__menu(self));
-	if (GET__menuEntries(self)) free(GET__menuEntries(self));
+	if (GET__menu(self)) free((void*)GET__menu(self));
+	if (GET__menuEntries(self)) free((void*)GET__menuEntries(self));
 
 	meth_txt_freeSelf(self, result, argc, argv);
 	return 1;
 }
 
-int helper_menu_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_menu_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_menuConfig:
@@ -240,32 +229,20 @@ int helper_menu_get(self, result, argc, argv, labelID)
 	}
 	return helper_txt_get(self, result, argc, argv, labelID);
 }
-int meth_menu_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_menu_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_menu_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!meth_txt_initialize(self, result, argc, argv)) return 0;
 	return set_menuConfig(self);
 }
 
 
-int meth_menu_processMouseInput(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_processMouseInput(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int *menu_result, menu_resultn;
 	int root_x, root_y;
@@ -298,11 +275,7 @@ int meth_menu_processMouseInput(self, result, argc, argv)
 	}
 }
 
-int meth_menu_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Window w = GET_window(self);
 
@@ -330,12 +303,7 @@ int meth_menu_render(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_menu_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_menu_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_menuConfig:
@@ -351,11 +319,7 @@ int helper_menu_set(self, result, argc, argv, labelID)
 	}
 	return helper_txt_set(self, result, argc, argv, labelID);
 }
-int meth_menu_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_menu_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_menu_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
@@ -363,8 +327,7 @@ int meth_menu_set(self, result, argc, argv)
 
 /****************************************************************************/
 
-int set_menuConfig(self)
-	VObj *self;
+int set_menuConfig(VObj *self)
 {
 	char *menuSpec = GET_menuConfig(self);
 	xpa_menu menu = (xpa_menu)GET__menu(self);
@@ -398,8 +361,7 @@ int set_menuConfig(self)
 /*
  * return depth on the line, 0 if not a proper entry line 
  */
-int countDepth(str)
-	char *str;
+int countDepth(char *str)
 {
 	char c;
 	int depth, i = 0;
@@ -423,8 +385,7 @@ int countDepth(str)
  * non-white-space character must be '.'.
  * all others are treated as comments and ignored.
  */
-int isMenuEntryLine(str)
-	char *str;
+int isMenuEntryLine(char *str)
 {
 	int allSpacesBefore = 1;
 
@@ -439,9 +400,7 @@ int isMenuEntryLine(str)
  * filters out the comments, return menu-entry in buff.
  * if a line is found, return 1, else return 0
  */
-int grabNextMenuLine(index, data, buff)
-	int *index;
-	char *data, *buff;
+int grabNextMenuLine(int *index, char *data, char *buff)
 {
 	int i = 0;
 	char c;
@@ -472,9 +431,7 @@ int grabNextMenuLine(index, data, buff)
 /*
  * count the number of enties for a level 
  */
-int parse_menu_entryScan(idata, textIndex)
-	char *idata;
-	int *textIndex;
+int parse_menu_entryScan(char *idata, int *textIndex)
 {
 	int depth, originalDepth = -1, itemn = 0;
 
@@ -492,15 +449,7 @@ int parse_menu_entryScan(idata, textIndex)
 	return itemn;
 }
 
-int parse_menu_entryLine(self, entry, label, returnStr, type, hasReturnStr,
-			 accelerator, modifier)
-	VObj *self;
-	char *entry;
-	char *label, *returnStr;
-	int *type;
-	int *hasReturnStr;
-	char *accelerator;
-	char *modifier;
+int parse_menu_entryLine(VObj *self, char *entry, char *label, char *returnStr, int *type, int *hasReturnStr, char *accelerator, char *modifier)
 {
 	int i = 0, j, depth;
 
@@ -569,10 +518,7 @@ done:
 /*
  * xpa interface code 
  */
-xpa_entry *parse_menu_allocateEntryTree(self, idata, textIndex)
-	VObj *self;
-	char *idata;
-	int *textIndex;
+xpa_entry *parse_menu_allocateEntryTree(VObj *self, char *idata, int *textIndex)
 {
 	xpa_entry *menu, *subMenu;
 	char label[127], returnStr[512];
@@ -655,9 +601,7 @@ xpa_entry *parse_menu_allocateEntryTree(self, idata, textIndex)
 	return menu;
 }
 
-xpa_entrys parse_menu_configuration(self, data)
-	VObj *self;
-	char *data;
+xpa_entrys parse_menu_configuration(VObj *self, char *data)
 {
 	int dummyDataIndex = 0;
 
@@ -667,11 +611,7 @@ xpa_entrys parse_menu_configuration(self, data)
 /*
  * davidh code? 
  */
-static unsigned long res_color(self, disp, name, color)
-	VObj *self;
-	Display *disp;
-	char *name;
-	XColor *color;			/* Returned color */
+static unsigned long res_color(VObj *self, Display *disp, char *name, XColor *color)		/* Returned color */
 /*
  * Resolves a color name into a color structure.	If
  * it fails to locate an appropriate cell,	it exits.
@@ -706,8 +646,7 @@ static unsigned long res_color(self, disp, name, color)
 	return clr.pixel;
 }
 
-int funny_evt(evt)
-	XEvent *evt;
+int funny_evt(XEvent *evt)
 {
 	extern int verbose;
 
@@ -761,10 +700,7 @@ int funny_evt(evt)
 	}
 }
 
-xpa_menu make_menu(menuSpec, ret_menu_entries, self)
-	char *menuSpec;
-	xpa_entrys *ret_menu_entries;
-	VObj *self;
+xpa_menu make_menu(char *menuSpec, xpa_entrys *ret_menu_entries, VObj *self)
 {
 	xpa_appearance attr;
 	xpa_entrys menu_entries;
@@ -790,8 +726,8 @@ xpa_menu make_menu(menuSpec, ret_menu_entries, self)
 	{
 		char *colorp;
 
-		attr.title_fg = NULL;
-		attr.title_bg = NULL;
+		attr.title_fg = 0;
+		attr.title_bg = 0;
 /*
 		if (colorInfo) {
 			colorp = FGColorName(colorInfo);
@@ -841,10 +777,7 @@ xpa_menu make_menu(menuSpec, ret_menu_entries, self)
 	return menu;
 }
 
-char *get_menu_message(entrys, result, resultn)
-	xpa_entrys entrys;
-	int *result;
-	int resultn;
+char *get_menu_message(xpa_entrys entrys, int *result, int resultn)
 {
 	char *message = NULL;
 	int i;

@@ -9,6 +9,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 int
 XpmCreatePixmapFromData(display, d, data, pixmap_return,
@@ -30,11 +31,11 @@ XpmCreatePixmapFromData(display, d, data, pixmap_return,
      * initialize return values 
      */
     if (pixmap_return) {
-	*pixmap_return = NULL;
+	*pixmap_return = 0;
 	imageptr = &image;
     }
     if (shapemask_return) {
-	*shapemask_return = NULL;
+	*shapemask_return = 0;
 	shapeimageptr = &shapeimage;
     }
 

@@ -9,7 +9,13 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
+
+/* Forward declarations */
+extern int findImage();
 #include "imagetypes.h"
 #include <errno.h>
 

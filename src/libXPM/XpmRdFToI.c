@@ -9,6 +9,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
 xpmDataType xpmDataTypes[] =
 {
@@ -16,9 +17,9 @@ xpmDataType xpmDataTypes[] =
  "C", "/*", "*/", '"', '"', ",\n", "static char *", "[] = {\n", "};\n",
  "Lisp", ";", "\n", '"', '"', "\n", "(setq ", " '(\n", "))\n",
 #ifdef VMS
- NULL
+ '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
 #else
- NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+ '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
 #endif
 };
 

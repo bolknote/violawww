@@ -45,6 +45,11 @@
 
 #include "ast.h"
 #include "cgen.h"
+#include "method.h"
+#include <string.h>
+#include "loader.h"
+#include "html2.h"
+#include "viola.h"
 
 int notSecure(self) 
      VObj *self;
@@ -94,9 +99,9 @@ SlotInfo cl_cosmic_NCSlots[] = {
 },{
 	STR__classScript,
 	PCOD,
-	NULL,
+	0,
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_cosmic_NPSlots[] = {
@@ -107,16 +112,16 @@ SlotInfo cl_cosmic_NPSlots[] = {
 },{
 	STR__memoryGroup,
 	PTRV,
-	NULL,
+	0,
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_cosmic_CSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_cosmic_PSlots[] = {
-	NULL
+	0
 };
 
 SlotInfo *slots_cosmic[] = {
@@ -209,7 +214,7 @@ MethodInfo meths_cosmic[] = {
 	STR_usual,
 	meth_cosmic_usual
 },{
-	NULL
+	0
 }
 };
 
@@ -224,8 +229,7 @@ ClassInfo class_cosmic = {
 
 int global_cloneID = 0;
 
-void sendInitToChildren(self) 
-	VObj *self;
+void sendInitToChildren(VObj *self)
 {
 	Packet *result = borrowPacket();
 	VObjList *olist;
@@ -241,22 +245,12 @@ void sendInitToChildren(self)
 	returnPacket();
 }
 
-int helper_cosmic_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_cosmic_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	return 0;
 }	
 
-int helper_cosmic_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_cosmic_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	return 0;
 }	
@@ -269,11 +263,7 @@ int helper_cosmic_set(self, result, argc, argv, labelID)
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_cosmic_clone(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_clone(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *cloneObj;
 
@@ -292,11 +282,7 @@ int meth_cosmic_clone(self, result, argc, argv)
 	return 0;
 }
 
-int meth_cosmic_clone2(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_clone2(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *suffix;
 	VObj *cloneObj;
@@ -335,11 +321,7 @@ int meth_cosmic_clone2(self, result, argc, argv)
 	return 1;
 }
 
-int meth_cosmic_cloneID(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_cloneID(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = global_cloneID++;
 	result->type = PKT_INT;
@@ -353,11 +335,7 @@ int meth_cosmic_cloneID(self, result, argc, argv)
  * Result: created object
  * Return: 1 if successful, 0 if error occured
  */
-int meth_cosmic_create(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_create(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	long slotv[100][2]; 
 	int slotc = 0, i;
@@ -412,11 +390,7 @@ int meth_cosmic_create(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_detach(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_detach(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -430,11 +404,7 @@ int meth_cosmic_detach(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_debug(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_debug(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (!STRCMP(PkInfo2Str(&argv[0]), "pa")) {
@@ -464,11 +434,7 @@ int meth_cosmic_debug(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_destroy(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_destroy(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	clearPacket(result);
@@ -485,11 +451,7 @@ int meth_cosmic_destroy(self, result, argc, argv)
  * Result: n/a
  * Return: n/a
  */
-int meth_cosmic_exit(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_exit(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 
@@ -504,11 +466,7 @@ int meth_cosmic_exit(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_exist(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_exist(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	HashEntry *entry;
 	VObj *obj = PkInfo2Obj(&argv[0]);
@@ -544,11 +502,7 @@ int meth_cosmic_exist(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 
@@ -590,11 +544,7 @@ int meth_cosmic_freeSelf(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_info(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_info(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	/* extern int fprintf(); */
@@ -721,11 +671,7 @@ int meth_cosmic_info(self, result, argc, argv)
  * Result: as effected by script
  * Return: 1 if successful, 0 if error occured
  */
-int meth_cosmic_interpret(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_interpret(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	char *cp;
@@ -749,11 +695,7 @@ int meth_cosmic_interpret(self, result, argc, argv)
 
 /* return new object count 
  */
-int meth_cosmic_loadObjFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_loadObjFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *path;
 	char *fname = NULL;
@@ -773,11 +715,7 @@ int meth_cosmic_loadObjFile(self, result, argc, argv)
 	return ((result->info.i == -1) ? 0 : 1);
 }
 
-int meth_cosmic_modalExit(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_modalExit(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	modalState = 0;
@@ -793,11 +731,7 @@ int meth_cosmic_modalExit(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_object(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_object(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.o = PkInfo2Obj(&argv[0]);
 	result->type = PKT_OBJ;
@@ -812,11 +746,7 @@ int meth_cosmic_object(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_pop(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_pop(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -829,11 +759,7 @@ int meth_cosmic_pop(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_push(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_push(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -847,11 +773,7 @@ int meth_cosmic_push(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_cosmic_quit(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_quit(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 /*	methodMembershipProfile();*/
@@ -869,11 +791,7 @@ int meth_cosmic_quit(self, result, argc, argv)
  * Result: file name under which the objects were saved in
  * Return:
  */
-int meth_cosmic_save(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_save(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *parent, *obj = self;
 	char fileName[100];
@@ -910,11 +828,7 @@ int meth_cosmic_save(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_saveAs(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_saveAs(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *parent, *obj = self;
 	char *cp, fileName[100];
@@ -955,11 +869,7 @@ int meth_cosmic_saveAs(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_send(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_send(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *obj = PkInfo2Obj(&argv[0]);
 
@@ -976,11 +886,7 @@ int meth_cosmic_send(self, result, argc, argv)
 
 /*
  */
-int meth_cosmic_test1(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_test1(VObj *self, Packet *result, int argc, Packet argv[])
 {
 /*	clearPacket(result);
 	result->info.i = user_message_confirm(PkInfo2Str(&argv[0]));
@@ -991,11 +897,7 @@ int meth_cosmic_test1(self, result, argc, argv)
 
 /*
  */
-int meth_cosmic_test2(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_test2(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.s = user_prompt_default(PkInfo2Str(&argv[0]),
@@ -1006,11 +908,7 @@ int meth_cosmic_test2(self, result, argc, argv)
 
 /*
  */
-int meth_cosmic_test3(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_test3(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	/* cuts off the dataBuff at the caller's string's beginning
 	 * this is useful if the caller wants to get the parent to
@@ -1022,11 +920,7 @@ int meth_cosmic_test3(self, result, argc, argv)
 	return 0;
 }
 
-int meth_cosmic_test4(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_test4(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	HTMLMathDraw(self, GET__content2(self));
 	return 0;
@@ -1041,11 +935,7 @@ int meth_cosmic_test4(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_cosmic_tweak(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_tweak(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *obj;
 	int i, len;
@@ -1083,11 +973,7 @@ int meth_cosmic_tweak(self, result, argc, argv)
  * Result: result of the class script
  * Return:
  */
-int meth_cosmic_usual(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_cosmic_usual(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern int stackExecIdx;
 	extern int stackBaseIdx;

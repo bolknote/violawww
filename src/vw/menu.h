@@ -29,6 +29,7 @@
 #include <Xm/SeparatoG.h>
 
 Widget buildMenus();
+Widget buildPulldownMenu();
 void genericCallback();
 void quitCallback();
 

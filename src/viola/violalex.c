@@ -35,6 +35,8 @@ extern int verbose;
 #define FALSE 0
 #include "ast.h"
 #include "math.h"
+#include <string.h>
+#include <strings.h>
 
 #include "utils.h"
 #include "hash.h"
@@ -42,6 +44,13 @@ extern int verbose;
 #include "ident.h"
 
 char scanComment();
+
+/* Forward declarations */
+int refresh_buf();
+int grabop();
+int grabint();
+int grabtag();
+int iskeyword();
 
 #define strdup saveString
 #define io_getc() (*getc_ptr++)
@@ -80,8 +89,7 @@ long getIdent(identStr)
         return 0;
 }
 
-int tokenize(identStr)
-	char *identStr;
+long tokenize(char *identStr)
 {
 	HashEntry *entry;
 	char *cp;
@@ -271,7 +279,7 @@ reportError()
 
 	for (;;) {
 		c = yyscript[i];
-		if (c == '\0') return;
+		if (c == '\0') return 0;
 		if (c == '\n') {
 			ln++;
 			if (ln >= lineno - 2) break;
@@ -281,20 +289,20 @@ reportError()
 
 	hasmore = dumpProximityErrorLine(buff, &i);
 	printf(" %d:\t%s\n", ln++, buff);
-	if (!hasmore) return;
+	if (!hasmore) return 0;
 	hasmore = dumpProximityErrorLine(buff, &i);
 	printf(" %d:\t%s\n", ln++, buff);
-	if (!hasmore) return;
+	if (!hasmore) return 0;
 	hasmore = dumpProximityErrorLine(buff, &i);
 	printf("*%d:\t%s\n", ln++, buff);
-	if (!hasmore) return;
+	if (!hasmore) return 0;
 	hasmore = dumpProximityErrorLine(buff, &i);
 	printf(" %d:\t%s\n", ln++, buff);
-	if (!hasmore) return;
+	if (!hasmore) return 0;
 	hasmore = dumpProximityErrorLine(buff, &i);
 	printf(" %d:\t%s\n", ln++, buff);
-	if (!hasmore) return;
-
+	if (!hasmore) return 0;
+	return 0;
 }
 
 

@@ -31,6 +31,7 @@
 #include "callbacks.h"
 #include "history.h"
 #include "cursor.h"
+#include "../viola/cexec.h"
 
 
 void printHistoryList(dvi)
@@ -448,5 +449,5 @@ void setHistoryListMH(arg, argc, clientData)
     if (dvip->cloneID != atol(arg[1]))
 	return;
 
-    setHistoryList(dvip, argc-2, (char **) &arg[2]);
+    setHistoryList(dvip, (char **) &arg[2], argc-2);
 }

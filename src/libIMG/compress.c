@@ -11,6 +11,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "image.h"
 
 /* this converts a TLA-style pixel into a 15-bit true color pixel

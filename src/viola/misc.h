@@ -17,7 +17,8 @@ char *PkInfos2Str();
 
 char *PkInfo2Str();
 char PkInfo2Chr();
-int PkInfo2Int();
+char PkInfo2Char();
+long PkInfo2Int();
 float PkInfo2Flt();
 VObj *PkInfo2Obj();
 VObj *getObject();

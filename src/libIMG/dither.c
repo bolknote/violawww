@@ -19,6 +19,9 @@
  */
 
 #include "copyright.h"
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include "kljcpyrght.h"
 #include "image.h"
 

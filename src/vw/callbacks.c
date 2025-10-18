@@ -16,6 +16,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/param.h>
 
 #include <Xm/Xm.h>
@@ -38,6 +41,13 @@
 #include "cursor.h"
 #include "edit.h"
 #include "../viola/ident.h"
+#include "../viola/packet.h"
+#include "../viola/attr.h"
+#include "../viola/obj.h"
+#include "../viola/method.h"
+#include "../viola/msgHandler.h"
+#include "../viola/cexec.h"
+#include "../viola/ast.h"
 
 
 extern Widget mainHelpWidget;
@@ -1280,7 +1290,7 @@ void vwSaveAsCB(button, clientData, callData)
     Widget button;
     XtPointer clientData, callData;
 {
-    int length;
+    size_t length;
     char *fileName, cwd[MAXPATHLEN];
     ClientData *cd = (ClientData *) clientData;
     DocViewInfo *dvi = cd->shellInfo;

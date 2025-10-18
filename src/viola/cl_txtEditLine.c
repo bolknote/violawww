@@ -28,14 +28,15 @@
 #include "cl_txtEditLine.h"
 #include "misc.h"
 #include "glib.h"
+#include "tfed.h"
 
 SlotInfo cl_txtEditLine_NCSlots[] = {
 {
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtEditLine_NPSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_txtEditLine_CSlots[] = {
 {
@@ -143,7 +144,7 @@ SlotInfo cl_txtEditLine_CSlots[] = {
 		}\n\
 	",
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_txtEditLine_PSlots[] = {
@@ -156,7 +157,7 @@ SlotInfo cl_txtEditLine_PSlots[] = {
 	LONG | SLOT_RW,
 	BORDER_SINK
 },{
-	NULL
+	{0}
 }
 };
 
@@ -179,7 +180,7 @@ MethodInfo meths_txtEditLine[] = {
 	STR_render,
 	meth_txtEditLine_render
 },{
-	NULL
+	{0}
 }
 };
 
@@ -192,7 +193,7 @@ ClassInfo class_txtEditLine = {
 	&class_txtDisp,		/* super class info		*/
 };
 
-int meth_txtEditLine_initialize(self, result, argc, argv)
+long int meth_txtEditLine_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -201,7 +202,7 @@ int meth_txtEditLine_initialize(self, result, argc, argv)
 	return meth_txtDisp_initialize(self, result, argc, argv);
 }
 
-int meth_txtEditLine_expose(self, result, argc, argv)
+long int meth_txtEditLine_expose(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -230,7 +231,7 @@ int meth_txtEditLine_expose(self, result, argc, argv)
 }
 
 
-int meth_txtEditLine_render(self, result, argc, argv)
+long int meth_txtEditLine_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

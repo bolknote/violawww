@@ -44,6 +44,14 @@
 #include "html2.h"
 #include "ast.h"
 #include "cgen.h"
+#include "method.h"
+#include "htmath.h"
+#include <unistd.h>
+#include "msgHandler.h"
+#include "cl_txtDisp.h"
+#include "file.h"
+#include "loader.h"
+#include "slib.h"
 
 #include "stgcall.h"
 #include "../libWWW/Library/Implementation/HTParse.h"
@@ -82,7 +90,7 @@ SlotInfo cl_generic_NPSlots[] = {
 },{
 	STR__parent,
 	OBJP,
-	NULL
+	0
 },{
 	STR_children,
 	PTRS | SLOT_RW,
@@ -90,7 +98,7 @@ SlotInfo cl_generic_NPSlots[] = {
 },{
 	STR__children,
 	OBJL,
-	NULL
+	0
 },{
 	STR_security,
 	LONG,
@@ -103,27 +111,27 @@ SlotInfo cl_generic_NPSlots[] = {
 },{
 	STR__script,
 	PCOD,
-	NULL,
+	0,
 },{
 	STR__varList,
 	ATTR,
-	NULL
+	0
 },{
 	STR__argAttr,
 	ATTR,
-	NULL
+	0
 },{
 	STR__classScriptVV,
 	PTRV,
-	NULL
+	0
 },{
 	STR__scriptVV,
 	PTRV,
-	NULL
+	0
 },{
 	STR__tempScriptVV,
 	PTRV,
-	NULL
+	0
 },{
 	STR_active,
 	LONG | SLOT_RW,
@@ -729,11 +737,7 @@ ClassInfo class_generic = {
  *
  * Result: a copy (malloc'ed) of the global buffer
  */
-int meth_generic_GB_copy(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_copy(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *str;
 	int bufferID;
@@ -745,7 +749,7 @@ int meth_generic_GB_copy(self, result, argc, argv)
 		result->canFree = 0;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		fprintf(stderr, "unknown Global Buffer. id=%d\n", bufferID);
@@ -769,14 +773,10 @@ int meth_generic_GB_copy(self, result, argc, argv)
  *
  * Result: the global buffer (no malloc occurs)
  */
-int meth_generic_GB_data(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_data(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *str;
-	int bufferID = PkInfo2Int(&argv[0]);
+	int bufferID = (int)PkInfo2Int(&argv[0]);
 
 	result->type = PKT_STR;
 	if (bufferID >= numOfGBuffs) {
@@ -802,11 +802,7 @@ int meth_generic_GB_data(self, result, argc, argv)
  *
   * Result:  the character at the buffer's index
  */
-int meth_generic_GB_char(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_char(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 	int idx;
@@ -818,14 +814,14 @@ int meth_generic_GB_char(self, result, argc, argv)
 		result->info.c = '\0';
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		fprintf(stderr, "unknown Global Buffer. id=%d\n", bufferID);
 		result->info.c = '\0';
 		return 0;
 	}
-	idx = PkInfo2Int(&argv[1]);
+	idx = (int)PkInfo2Int(&argv[1]);
 	if (GBuff[bufferID]) {
 		result->info.c = GBuff[bufferID][GBuffIdx[bufferID]];
 		return 1;
@@ -835,21 +831,13 @@ int meth_generic_GB_char(self, result, argc, argv)
 	}
 }
 
-int meth_generic_GB_count(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_count(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
 }
 
-int meth_generic_GB_create(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_create(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -862,22 +850,18 @@ int meth_generic_GB_create(self, result, argc, argv)
  *
  * Result: char at index, '\0' on error
  */
-int meth_generic_GB_decChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_decChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID, n;
 
 	result->type = PKT_CHR;
 	result->canFree = 0;
 	if (argc == 2) {
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 	} else {
 		n = 1;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.c = '\0';
@@ -895,11 +879,7 @@ int meth_generic_GB_decChar(self, result, argc, argv)
  *
  * Result: char at index, '\0' on error
  */
-int meth_generic_GB_decChar1(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_decChar1(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -910,7 +890,7 @@ int meth_generic_GB_decChar1(self, result, argc, argv)
 		result->info.c = '\0';
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.c = '\0';
@@ -929,11 +909,7 @@ int meth_generic_GB_decChar1(self, result, argc, argv)
  *
  * Result: index, -1 on error
  */
-int meth_generic_GB_decLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_decLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 	int n, idx;
@@ -942,11 +918,11 @@ int meth_generic_GB_decLine(self, result, argc, argv)
 	result->type = PKT_INT;
 	result->canFree = 0;
 	if (argc == 2) {
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 	} else {
 		n = 1;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
@@ -987,11 +963,7 @@ int meth_generic_GB_decLine(self, result, argc, argv)
  *
  * Result: 0 on success, -1 on error
  */
-int meth_generic_GB_free(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_free(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1003,7 +975,7 @@ int meth_generic_GB_free(self, result, argc, argv)
 		result->canFree = 0;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
@@ -1022,11 +994,7 @@ int meth_generic_GB_free(self, result, argc, argv)
  *
  * Result:  string pointer at index position
  */
-int meth_generic_GB_herePtr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_herePtr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1037,7 +1005,7 @@ int meth_generic_GB_herePtr(self, result, argc, argv)
 		result->canFree = 0;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.s = "";
@@ -1056,22 +1024,18 @@ int meth_generic_GB_herePtr(self, result, argc, argv)
  *
  * Result: char at index, '\0' on error
  */
-int meth_generic_GB_incChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_incChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID, n;
 
 	result->type = PKT_CHR;
 	result->canFree = 0;
 	if (argc == 2) {
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 	} else {
 		n = 1;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.c = '\0';
@@ -1089,11 +1053,7 @@ int meth_generic_GB_incChar(self, result, argc, argv)
  *
  * Result: char at index, '\0' on error
  */
-int meth_generic_GB_incChar1(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_incChar1(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1104,7 +1064,7 @@ int meth_generic_GB_incChar1(self, result, argc, argv)
 		result->info.c = '\0';
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.c = '\0';
@@ -1122,11 +1082,7 @@ int meth_generic_GB_incChar1(self, result, argc, argv)
  *
  * Result:  current index. -1 on error.
  */ 
-int meth_generic_GB_incLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_incLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 	int n, idx;
@@ -1135,11 +1091,11 @@ int meth_generic_GB_incLine(self, result, argc, argv)
 	result->type = PKT_INT;
 	result->canFree = 0;
 	if (argc == 2) {
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 	} else {
 		n = 1;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
@@ -1172,11 +1128,7 @@ int meth_generic_GB_incLine(self, result, argc, argv)
  * Result: the line at the buffer's index (from index to next '\n')
  *         "" on error
  */
-int meth_generic_GB_line(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_line(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 	char *cp, *ccp;
@@ -1190,7 +1142,7 @@ int meth_generic_GB_line(self, result, argc, argv)
 		return 0;
 	}
 
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
@@ -1232,11 +1184,7 @@ int meth_generic_GB_line(self, result, argc, argv)
  *
  * Return: index (0) on success, -1 on failure
  */
-int meth_generic_GB_moveToStart(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_moveToStart(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1248,7 +1196,7 @@ int meth_generic_GB_moveToStart(self, result, argc, argv)
 		result->canFree = 0;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
@@ -1267,11 +1215,7 @@ int meth_generic_GB_moveToStart(self, result, argc, argv)
  *
  * Return: index on success, -1 on failure
  */
-int meth_generic_GB_moveToChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_moveToChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1283,14 +1227,14 @@ int meth_generic_GB_moveToChar(self, result, argc, argv)
 		result->canFree = 0;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
 		result->canFree = 0;
 		return 0;
 	}
-	result->info.i = GBuffIdx[bufferID] = PkInfo2Int(&argv[1]);
+	result->info.i = GBuffIdx[bufferID] = (int)PkInfo2Int(&argv[1]);
 	result->canFree = 0;
 	return 1;
 }
@@ -1300,11 +1244,7 @@ int meth_generic_GB_moveToChar(self, result, argc, argv)
  *
  * Return: index if successful, -1 if error occured
  */
-int meth_generic_GB_moveToLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_moveToLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 	int n;
@@ -1317,16 +1257,16 @@ int meth_generic_GB_moveToLine(self, result, argc, argv)
 		result->info.i = -1;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 	if (bufferID >= numOfGBuffs) {
 		/* unknown buffer */
 		result->info.i = -1;
 		return 0;
 	}
-	result->info.i = GBuffIdx[bufferID] = PkInfo2Int(&argv[1]);
+	result->info.i = GBuffIdx[bufferID] = (int)PkInfo2Int(&argv[1]);
 
 	GBuffIdx[bufferID] = 0;
-	n = PkInfo2Int(&argv[1]);
+	n = (int)PkInfo2Int(&argv[1]);
 
 	if (n > 0) {
 		for (cp = GBuff[bufferID]; *cp; cp++) {
@@ -1347,28 +1287,24 @@ int meth_generic_GB_moveToLine(self, result, argc, argv)
  *
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_GB_nthChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_nthChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
-	int bufferID = PkInfo2Int(&argv[0]);
+	int bufferID = (int)PkInfo2Int(&argv[0]);
 
 	result->type = PKT_CHR;
 	result->canFree = 0;
 	if (argc == 2) {
 		int n;
 
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 		result->info.c = GBuff[bufferID][n];
 		return 1;
 	} else if (argc == 3) {
 		int i, n1, n2;
 		char *cp, *str;
 
-		n1 = PkInfo2Int(&argv[1]);
-		n2 = PkInfo2Int(&argv[2]);
+		n1 = (int)PkInfo2Int(&argv[1]);
+		n2 = (int)(int)PkInfo2Int(&argv[2]);
 		str = GBuff[bufferID];
 		cp = (char*)malloc(sizeof(char) * (n2 - n1 + 2));
 		if (!cp) {
@@ -1401,13 +1337,9 @@ int meth_generic_GB_nthChar(self, result, argc, argv)
  * Result: the specified line(s), "" on error
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_GB_nthLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_nthLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
-	int bufferID = PkInfo2Int(&argv[0]);
+	int bufferID = (int)PkInfo2Int(&argv[0]);
 	int li, hi, lines, size;
 	char *cp, *str;
 
@@ -1421,10 +1353,10 @@ int meth_generic_GB_nthLine(self, result, argc, argv)
 	str = GBuff[bufferID];
 
 	if (argc == 2) {
-		li = hi = PkInfo2Int(&argv[1]);
+		li = hi = (int)PkInfo2Int(&argv[1]);
 	} else if (argc == 3) {
-		li = PkInfo2Int(&argv[1]);
-		hi = PkInfo2Int(&argv[2]);
+		li = (int)PkInfo2Int(&argv[1]);
+		hi = (int)(int)PkInfo2Int(&argv[2]);
 	} else {
 		/* incorrect number of arguments */
 		result->info.s = "";
@@ -1449,11 +1381,7 @@ int meth_generic_GB_nthLine(self, result, argc, argv)
  *
  * Result: GBufffID. -1 on error
  */
-int meth_generic_GB_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1464,11 +1392,11 @@ int meth_generic_GB_set(self, result, argc, argv)
 		result->info.i = -1;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 
 	if (bufferID > NUM_OF_GBUFFS) {
 		fprintf(stderr, 
-	"Error: Trying to set GBuff[%d]. There's only %s Global Buffers.\n",
+	"Error: Trying to set GBuff[%d]. There's only %d Global Buffers.\n",
 			NUM_OF_GBUFFS, NUM_OF_GBUFFS);
 		result->info.i = -1;
 		return 0;
@@ -1487,11 +1415,7 @@ int meth_generic_GB_set(self, result, argc, argv)
  *
  * Result: GBufffID. -1 on error
  */
-int meth_generic_GB_setCopy(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_GB_setCopy(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int bufferID;
 
@@ -1502,11 +1426,11 @@ int meth_generic_GB_setCopy(self, result, argc, argv)
 		result->info.i = -1;
 		return 0;
 	}
-	bufferID = PkInfo2Int(&argv[0]);
+	bufferID = (int)PkInfo2Int(&argv[0]);
 
 	if (bufferID > NUM_OF_GBUFFS) {
 		fprintf(stderr, 
-	"Error: Trying to set GBuff[%d]. There's only %s Global Buffers.\n",
+	"Error: Trying to set GBuff[%d]. There's only %d Global Buffers.\n",
 			NUM_OF_GBUFFS, NUM_OF_GBUFFS);
 		result->info.i = -1;
 		return 0;
@@ -1518,11 +1442,7 @@ int meth_generic_GB_setCopy(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_HTTPCanonicalURL(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPCanonicalURL(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return 1;
 }
@@ -1530,11 +1450,7 @@ int meth_generic_HTTPCanonicalURL(self, result, argc, argv)
 /*
  * HTTPCurrentDocAddr()
  */
-int meth_generic_HTTPCurrentDocAddr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPCurrentDocAddr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char *current_addr; 	/* from html.c */
 	extern char* default_default;	/* from html.c */
@@ -1556,11 +1472,7 @@ int meth_generic_HTTPCurrentDocAddr(self, result, argc, argv)
  *		[3]	file
  *		[4]	anchor
  */
-int meth_generic_HTTPCurrentDocAddrParsed(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPCurrentDocAddrParsed(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char *current_addr; 	/* from html.c */
 	extern char* default_default;	/* from html.c */
@@ -1601,7 +1513,7 @@ int meth_generic_HTTPCurrentDocAddrParsed(self, result, argc, argv)
 	packet1->info.s = saveString(HTParse(addr, relative, PARSE_HOST));
 	path = HTParse(addr, relative, PARSE_PATH | PARSE_PUNCTUATION);
 	
-	length  = strlen(path); 
+	length  = (int)strlen(path); 
 	for (i = length; i >= 0; i--) 
 		if (path[i] == '/') {
 			strncpy(buff, path, i + 1);
@@ -1631,11 +1543,7 @@ lameLoopEsc:
 /*
  * HTTPCurrentDocAddrSet()
  */
-int meth_generic_HTTPCurrentDocAddrSet(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPCurrentDocAddrSet(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char *current_addr; 	/* from html.c */
 
@@ -1649,11 +1557,7 @@ int meth_generic_HTTPCurrentDocAddrSet(self, result, argc, argv)
  * HTTPDecode()
  *
  */
-int meth_generic_HTTPDecodeURL(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPDecodeURL(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.s = decodeURL(PkInfo2Str(&argv[0]));
@@ -1666,11 +1570,7 @@ int meth_generic_HTTPDecodeURL(self, result, argc, argv)
  * HTTPEncodeURL()
  *
  */
-int meth_generic_HTTPEncodeURL(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPEncodeURL(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.s = encodeURL(PkInfo2Str(&argv[0]));
@@ -1687,11 +1587,7 @@ int meth_generic_HTTPEncodeURL(self, result, argc, argv)
  * Result: name of file containing the data
  *
  */
-int meth_generic_HTTPGet(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPGet(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *simpleAddress, *anchorSearch;
 	FILE *fp;
@@ -1712,7 +1608,7 @@ int meth_generic_HTTPGet(self, result, argc, argv)
 		return 0;
 	}
 	
-	len = strlen(src);
+	len = (int)strlen(src);
 	fprintf(stderr, "DEBUG HTTPGet: src='%s' len=%d\n", src, len);
 
 	/* Safety check: ensure tempFileNamePrefix is valid 
@@ -1794,13 +1690,7 @@ gogo:
 	return 0;
 }
 
-int helper_buildingHTML(result, obj, url, width, method, dataToPost)
-	Packet *result;
-	VObj *obj;
-	char *url;
-	int width;
-	int method;
-	char *dataToPost;
+long int helper_buildingHTML(Packet *result, VObj *obj, char *url, int width, int method, char *dataToPost)
 {
 	VObj *newObj;
 	char *simpleAddress, *anchorSearch;
@@ -1838,17 +1728,13 @@ int helper_buildingHTML(result, obj, url, width, method, dataToPost)
  * Result: name of file containing the data
  *
  */
-int meth_generic_HTTPGetNParse(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPGetNParse(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return helper_buildingHTML(result, 
 				PkInfo2Obj(&argv[1]), 
 				PkInfo2Str(&argv[0]),
-				PkInfo2Int(&argv[2]),
+				(int)PkInfo2Int(&argv[2]),
 				HTTP_METHOD_GET,
 				NULL);
 }
@@ -1856,17 +1742,13 @@ int meth_generic_HTTPGetNParse(self, result, argc, argv)
 /*
  * HTTPPost(url, parentForBuiltObjs, width, post-data)
  */
-int meth_generic_HTTPPost(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPPost(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return helper_buildingHTML(result, 
 				PkInfo2Obj(&argv[1]), 
 				PkInfo2Str(&argv[0]),
-				PkInfo2Int(&argv[2]),
+				(int)PkInfo2Int(&argv[2]),
 				HTTP_METHOD_POST,
 				PkInfo2Str(&argv[3]));
 }
@@ -1875,26 +1757,18 @@ int meth_generic_HTTPPost(self, result, argc, argv)
 /*
  * HTTPPost(url, parentForBuiltObjs, width, post-data)
  */
-int meth_generic_HTTPSubmit(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPSubmit(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return helper_buildingHTML(result, 
 				PkInfo2Obj(&argv[1]), 
 				PkInfo2Str(&argv[0]),
-				PkInfo2Int(&argv[2]),
+				(int)PkInfo2Int(&argv[2]),
 				HTTP_METHOD_SUBMIT,
 				PkInfo2Str(&argv[3]));
 }
 
-int meth_generic_HTTPHotListAdd(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListAdd(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	/* url, comment, date */
 	if (notSecure(self)) return 0;
@@ -1903,11 +1777,7 @@ int meth_generic_HTTPHotListAdd(self, result, argc, argv)
 			saveString(PkInfo2Str(&argv[2])));
 }
 
-int meth_generic_HTTPHotListDelete(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListDelete(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return deleteHotListItem(PkInfo2Int(&argv[0]));
@@ -1919,11 +1789,7 @@ int meth_generic_HTTPHotListDelete(self, result, argc, argv)
  * arg[0]	3	returns all Comments in one big string
  * arg[1]	n	nth item in the hotlist
  */
-int meth_generic_HTTPHotListGet(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListGet(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	HotListItem *hip;
 
@@ -1963,11 +1829,7 @@ int meth_generic_HTTPHotListGet(self, result, argc, argv)
  * arg[1]	n	nth item in the hotlist
  * arg[2]	str	new data
  */
-int meth_generic_HTTPHotListChange(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListChange(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	HotListItem *hip;
 
@@ -1994,11 +1856,7 @@ int meth_generic_HTTPHotListChange(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_HTTPHotListLoad(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListLoad(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	clearPacket(result);
@@ -2007,11 +1865,7 @@ int meth_generic_HTTPHotListLoad(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_HTTPHotListSave(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_HTTPHotListSave(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return saveHotList();
@@ -2022,11 +1876,7 @@ int meth_generic_HTTPHotListSave(self, result, argc, argv)
  *
  * Result: document object
  */
-int meth_generic_SGMLBuildDoc(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *newObj;
 
@@ -2055,11 +1905,7 @@ int meth_generic_SGMLBuildDoc(self, result, argc, argv)
  *
  * Result: document object
  */
-int meth_generic_SGMLBuildDocB(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDocB(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *newObj;
 
@@ -2086,11 +1932,7 @@ int meth_generic_SGMLBuildDocB(self, result, argc, argv)
 /*
  * SGMLBuildDoc_setBuff()
  */
-int meth_generic_SGMLBuildDoc_setBuff(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc_setBuff(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	clearPacket(result);
@@ -2109,17 +1951,13 @@ int meth_generic_SGMLBuildDoc_setBuff(self, result, argc, argv)
        color = getResource("Viola.foreground_doc");
        if (color) set("FGColor", color);
  */
-int meth_generic_SGMLBuildDoc_setColors(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc_setColors(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	static Packet largv[2];
 	static char *BG_DOC;
 	static char *FG_DOC;
 	static int init = 0;
-	int (*setFunc)() = GET__classInfo(self)->slotSetMeth;
+	long (*setFunc)() = GET__classInfo(self)->slotSetMeth;
 
 	if (!init) {
 		BG_DOC = GLGetResource("Viola.background_doc");
@@ -2141,11 +1979,7 @@ int meth_generic_SGMLBuildDoc_setColors(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_SGMLBuildDoc_span(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc_span(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern int SGMLBuildDoc_span;
 
@@ -2156,21 +1990,13 @@ int meth_generic_SGMLBuildDoc_span(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_SGMLBuildDoc_flush(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc_flush(VObj *self, Packet *result, int argc, Packet argv[])
 {
 /*	return SGMLBuildDoc_flush();
 */
 }
 
-int meth_generic_SGMLBuildDoc_insertObj(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLBuildDoc_insertObj(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 1) {
 		SGMLBuildDoc_insertObj(PkInfo2Obj(&argv[0]), -1);
@@ -2189,11 +2015,7 @@ int meth_generic_SGMLBuildDoc_insertObj(self, result, argc, argv)
  *
  * Result: vspan
  */
-int meth_generic_SGMLFindAnchorOffset(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLFindAnchorOffset(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (argc != 1) {
@@ -2209,15 +2031,11 @@ int meth_generic_SGMLFindAnchorOffset(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_SGMLMathFormater(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLMathFormater(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 3) {
 		return HTMLMathFormater(self, 
-				&argv[0], &argv[1], PkInfo2Int(&argv[2]));
+				&argv[0], &argv[1], (int)PkInfo2Int(&argv[2]));
 	}
 }
 
@@ -2226,11 +2044,7 @@ int meth_generic_SGMLMathFormater(self, result, argc, argv)
  *
  * Result: document object
  */
-int meth_generic_SGMLReBuildDoc(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLReBuildDoc(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	if (argc != 6) {
@@ -2256,11 +2070,7 @@ int meth_generic_SGMLReBuildDoc(self, result, argc, argv)
  *
  * Result: vspan
  */
-int meth_generic_SGMLTileDoc(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLTileDoc(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc != 2) {
 		/* incorrect number of arguments */
@@ -2281,11 +2091,7 @@ int meth_generic_SGMLTileDoc(self, result, argc, argv)
  * 
  * Result: attribute value
  */
-int meth_generic_SGMLGetStyle(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLGetStyle(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 2)
 		return getSGMLStyle(PkInfo2Str(&argv[0]), 
@@ -2298,41 +2104,25 @@ int meth_generic_SGMLGetStyle(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_STGInfo(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_STGInfo(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return getSTGInfo(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]), result);
 }
 
-int meth_generic_STG_tagPtr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_STG_tagPtr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *superTagName = NULL;
 	if (argc == 2) superTagName = PkInfo2Str(&argv[1]); 
 	return getSTGInfo_tagPtr(result, PkInfo2Str(&argv[0]), superTagName);
 }
 
-int meth_generic_STG_attr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_STG_attr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return getSTGInfo_attr(PkInfo2Int(&argv[0]),
 			       PkInfo2Str(&argv[1]), result);
 }
 
-int meth_generic_STG_clean(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_STG_clean(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return getSTGInfo_clean(PkInfo2Int(&argv[0]));
 }
@@ -2343,21 +2133,13 @@ int meth_generic_STG_clean(self, result, argc, argv)
  * 
  * Result: attribute value
  */
-int meth_generic_SGMLSetStyle(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLSetStyle(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return setSGMLStyle(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]), 
 			    PkInfo2Str(&argv[2]), &argv[2]);
 }
 
-int meth_generic_SGMLTableFormater(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_SGMLTableFormater(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 2) {
 		return HTMLTableFormater(self, 
@@ -2375,11 +2157,7 @@ int meth_generic_SGMLTableFormater(self, result, argc, argv)
  * Result: full file path on success, or "" on failure
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_accessible(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_accessible(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int accessible;
 	char *path;
@@ -2401,11 +2179,7 @@ int meth_generic_accessible(self, result, argc, argv)
 
 /* send message to VW motif active help field
  */
-int meth_generic_activeHelp(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_activeHelp(VObj *self, Packet *result, int argc, Packet argv[])
 {
 #define VW
 #ifdef VW
@@ -2429,11 +2203,7 @@ int meth_generic_activeHelp(self, result, argc, argv)
  *
  * Result/Return: 1 if successful, 0 if error occured
  */
-int meth_generic_after(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_after(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int msec;
 	VObj *obj;
@@ -2443,7 +2213,7 @@ int meth_generic_after(self, result, argc, argv)
 	result->type = PKT_INT;
 	result->canFree = 0;
 
-	msec = PkInfo2Int(&argv[0]);
+	msec = (int)PkInfo2Int(&argv[0]);
 	obj = PkInfo2Obj(&argv[1]);
 
 	if (!msec || !obj) {
@@ -2476,11 +2246,7 @@ int meth_generic_after(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_alarm(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_alarm(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	if (argv[0].type == PKT_INT) {
@@ -2498,11 +2264,7 @@ int meth_generic_alarm(self, result, argc, argv)
  * Result:
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_append(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_append(VObj *self, Packet *result, int argc, Packet argv[])
 {
 #ifdef NOTYET
 			attrp = NULL;
@@ -2535,11 +2297,7 @@ int meth_generic_append(self, result, argc, argv)
  * Result: version string
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_argument(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_argument(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char *passthru_argument;	/* defined in cexec.c */
 	result->info.s = passthru_argument;
@@ -2554,11 +2312,7 @@ int meth_generic_argument(self, result, argc, argv)
  * Result: corresponding ASCII character
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_ascii(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_ascii(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_CHR;
 	result->canFree = 0;
@@ -2572,11 +2326,7 @@ int meth_generic_ascii(self, result, argc, argv)
  * Result: corresponding ASCII code
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_asciiVal(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_asciiVal(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -2590,11 +2340,7 @@ int meth_generic_asciiVal(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_bell(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_bell(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	SLBell();
@@ -2607,11 +2353,7 @@ int meth_generic_bell(self, result, argc, argv)
  * Result: volume value
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_bellVolume(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_bellVolume(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -2622,11 +2364,7 @@ int meth_generic_bellVolume(self, result, argc, argv)
 /*
  * char(<ASCII value>)
  */
-int meth_generic_char(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_char(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_CHR;
 	result->info.c = (char)PkInfos2Str(argc, argv)[0];
@@ -2639,11 +2377,7 @@ int meth_generic_char(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_clear(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_clear(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -2657,11 +2391,7 @@ int meth_generic_clear(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_cli(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_cli(VObj *self, Packet *result, int argc, Packet argv[])
 {
 #define LINE_LENGTH 300
 	char c, cmdLine[LINE_LENGTH];
@@ -2716,11 +2446,7 @@ int meth_generic_cli(self, result, argc, argv)
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_clone(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_clone(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *cloneObj;
 
@@ -2739,11 +2465,7 @@ int meth_generic_clone(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_clone2(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_clone2(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *cloneObj, *obj;
 	VObjList *olist, *newolist;
@@ -2790,8 +2512,8 @@ int meth_generic_clone2(self, result, argc, argv)
 	pcode = GET__script(self);
 	if (pcode) {
 		pcode[PCODE_IDX_REFC].i++;
-		size = sizeof(union PCode) * 
-			(pcode[PCODE_IDX_INSTR].i + pcode[PCODE_IDX_SIZE].i);
+		size = (int)(sizeof(union PCode) * 
+			(pcode[PCODE_IDX_INSTR].i + pcode[PCODE_IDX_SIZE].i));
 		SET__script(cloneObj, pcode);
 	}
 
@@ -2813,11 +2535,7 @@ int meth_generic_clone2(self, result, argc, argv)
 
 /* change to: collapseSpaces 
  */
-int meth_generic_compressSpaces(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_compressSpaces(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char c, *src, *e, *p1, *p2, *p3;
 
@@ -2879,11 +2597,7 @@ int meth_generic_compressSpaces(self, result, argc, argv)
  * Result: concatenation of arguments as strings
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_concatenate(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_concatenate(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 
@@ -2904,11 +2618,7 @@ int meth_generic_concatenate(self, result, argc, argv)
  */
 #define REVERSERBUFF 1000
 char *reverserBuff[REVERSERBUFF];
-int meth_generic_concatList(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_concatList(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	Attr *attrp;
@@ -2925,7 +2635,7 @@ int meth_generic_concatList(self, result, argc, argv)
 	}
 	for (attrp = hattrp; attrp; attrp = attrp->next) {
 		cp = ((Packet*)(attrp->val))->info.s;
-		totalLength += strlen(cp);
+		totalLength += (int)strlen(cp);
 		if (li < REVERSERBUFF) reverserBuff[li++] = cp;
 	}
 	if (li >= REVERSERBUFF) {
@@ -2951,11 +2661,7 @@ int meth_generic_concatList(self, result, argc, argv)
  * Result: cosine value at given degree
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_cos(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_cos(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_FLT;
 	result->info.f = cos((double)(PkInfo2Flt(&argv[0]) * 
@@ -2971,11 +2677,7 @@ int meth_generic_cos(self, result, argc, argv)
  * Result: number of children
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_countChildren(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_countChildren(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = GET__children(self);
 	int i;
@@ -2999,11 +2701,7 @@ int meth_generic_countChildren(self, result, argc, argv)
  * Result: number of items
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_countItems(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_countItems(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp = PkInfo2Str(&argv[0]);
 
@@ -3022,11 +2720,7 @@ int meth_generic_countItems(self, result, argc, argv)
  * Result: number of lines
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_countLines(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_countLines(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp = PkInfo2Str(&argv[0]);
 
@@ -3045,11 +2739,7 @@ int meth_generic_countLines(self, result, argc, argv)
  * Result: number of words
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_countWords(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_countWords(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3063,11 +2753,7 @@ int meth_generic_countWords(self, result, argc, argv)
  * Result: control key state
  * Return: 1
  */
-int meth_generic_ctrlKeyP(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_ctrlKeyP(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->info.i = keyStat_control;
@@ -3083,11 +2769,7 @@ int meth_generic_ctrlKeyP(self, result, argc, argv)
  * Result: current cursor shape
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_cursorShape(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_cursorShape(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *shape = PkInfo2Str(argv);
 
@@ -3116,11 +2798,7 @@ int meth_generic_cursorShape(self, result, argc, argv)
  * Result: date string, like ``Sat Feb 16 19:59:04 1991''
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_date(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_date(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	time_t theTime;
 	time(&theTime);
@@ -3137,11 +2815,7 @@ int meth_generic_date(self, result, argc, argv)
  * Result: cleared
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_deepObjectListSend(self, result, argc, argv)
-      VObj *self;
-      Packet *result;
-      int argc;
-      Packet argv[];
+long meth_generic_deepObjectListSend(VObj *self, Packet *result, int argc, Packet argv[])
 {
       VObjList *olist = NULL;
       char *listName;
@@ -3168,11 +2842,7 @@ int meth_generic_deepObjectListSend(self, result, argc, argv)
  * was test 2
  * defineNewFont(font#, fontName, XFontName)
  */
-int meth_generic_defineNewFont(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_defineNewFont(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.i = GLDefineNewFont(fontInfo, 
@@ -3188,11 +2858,7 @@ int meth_generic_defineNewFont(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_delay(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_delay(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->type = PKT_INT;
@@ -3200,11 +2866,7 @@ int meth_generic_delay(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_deleteFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_deleteFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	clearPacket(result);
@@ -3213,11 +2875,7 @@ int meth_generic_deleteFile(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_deleteSubStr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_deleteSubStr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->info.s = "NOT IMPLEMENTED";
@@ -3225,11 +2883,7 @@ int meth_generic_deleteSubStr(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_deleteSubStrQ(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_deleteSubStrQ(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->info.s = "NOT IMPLEMENTED";
@@ -3242,11 +2896,7 @@ int meth_generic_deleteSubStrQ(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_depth(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_depth(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3258,11 +2908,7 @@ int meth_generic_depth(self, result, argc, argv)
  * Result:
  * Return:
  */
-int meth_generic_destroy(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_destroy(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	Vfree(GET__memoryGroup(self), GET_name(self));
@@ -3276,11 +2922,7 @@ int meth_generic_destroy(self, result, argc, argv)
  * Result: the gotten attribute
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_destroyVariable(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_destroyVariable(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3294,11 +2936,7 @@ int meth_generic_destroyVariable(self, result, argc, argv)
  * Result: the gotten attribute
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_environVar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_environVar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char **environ;
 
@@ -3320,11 +2958,7 @@ int meth_generic_environVar(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_field(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_field(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3335,11 +2969,7 @@ int meth_generic_field(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_fieldList(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_fieldList(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3351,11 +2981,7 @@ int meth_generic_fieldList(self, result, argc, argv)
  * Result: replaces escape code into escape char
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_filter(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_filter(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *inStr = PkInfo2Str(&argv[0]);
 	char *outStr;
@@ -3415,11 +3041,7 @@ int meth_generic_filter(self, result, argc, argv)
  * Result: position where the matching string pattern ends, or -1 if not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_findPattern(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_findPattern(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	char *inStr, *patStr;
@@ -3435,8 +3057,8 @@ int meth_generic_findPattern(self, result, argc, argv)
 		result->info.i = -1;
 		return 0;
 	}
-	inLength = strlen(inStr);
-	patLength = strlen(patStr);
+	inLength = (int)strlen(inStr);
+	patLength = (int)strlen(patStr);
 
 	for (cp = inStr; *cp; cp++) {
 		if (*cp == patStr[pi]) {
@@ -3465,11 +3087,7 @@ int meth_generic_findPattern(self, result, argc, argv)
  * Result: arguement in float
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_float(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_float(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_FLT;
 	result->info.f = PkInfo2Flt(argv);
@@ -3484,11 +3102,7 @@ int meth_generic_float(self, result, argc, argv)
  * Result: arguement in float
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_format(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_format(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (!STRCMP(PkInfo2Str(&argv[1]), "split")) {
 	}
@@ -3509,11 +3123,7 @@ int meth_generic_format(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_freeSelf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	HashEntry *entry;
 	union PCode *pcode;
@@ -3581,21 +3191,13 @@ int meth_generic_freeSelf(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_gravity(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_gravity(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
 }
 
-int meth_generic_hash(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_hash(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.t = storeIdent(PkInfo2Str(&argv[0]));
@@ -3611,12 +3213,7 @@ int meth_generic_hash(self, result, argc, argv)
  * Result: the gotten attribute
  * Return: 1 if successful, 0 if error occured
  */
-int helper_generic_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_generic_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	switch (labelID) {
 	case STR_name:
@@ -3669,21 +3266,13 @@ int helper_generic_get(self, result, argc, argv, labelID)
 	}
 	return 0;
 }
-int meth_generic_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_generic_get(self, result, argc, argv, 
-					getIdent(PkInfo2Str(argv)));
+					(int)getIdent(PkInfo2Str(argv)));
 }
 
-int meth_generic_getResource(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_getResource(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->info.s = GLGetResource(PkInfo2Str(&argv[0]));
@@ -3692,11 +3281,7 @@ int meth_generic_getResource(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_getSelection(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_getSelection(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return GLGetSelection(result);
 }
@@ -3709,11 +3294,7 @@ int meth_generic_getSelection(self, result, argc, argv)
  * Result: the gotten attribute
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_getVariable(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_getVariable(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp = PkInfo2Str(&argv[0]);
 
@@ -3739,11 +3320,7 @@ int meth_generic_getVariable(self, result, argc, argv)
  * 
  * Result: self's height
  */
-int meth_generic_height(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_height(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = GET_height(self);
 	result->type = PKT_INT;
@@ -3759,11 +3336,7 @@ int meth_generic_height(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 
@@ -3795,15 +3368,11 @@ int meth_generic_initialize(self, result, argc, argv)
  * Result: integer type of the argument
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_int(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_int(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
-	result->info.i = PkInfo2Int(&argv[0]);
+	result->info.i = (int)PkInfo2Int(&argv[0]);
 	return 1;
 }
 
@@ -3814,11 +3383,7 @@ int meth_generic_int(self, result, argc, argv)
  * Result: 1 or 0
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_isBlank(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_isBlank(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -3835,11 +3400,7 @@ int meth_generic_isBlank(self, result, argc, argv)
  * Result: string containing the items
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_item(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_item(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -3850,11 +3411,7 @@ int meth_generic_item(self, result, argc, argv)
  * Result: key
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_key(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_key(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.c = keyStat_key;
 	result->type = PKT_CHR;
@@ -3866,11 +3423,7 @@ int meth_generic_key(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_listAllObjects(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_listAllObjects(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 1;
@@ -3884,11 +3437,7 @@ int meth_generic_listAllObjects(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListAppend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListAppend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *listName;
 	VObjList *olist = NULL;
@@ -3916,11 +3465,7 @@ int meth_generic_objectListAppend(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListAppend_children(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListAppend_children(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = GET__children(self);
 	VObj *obj = PkInfo2Obj(&argv[0]);
@@ -3944,11 +3489,7 @@ int meth_generic_objectListAppend_children(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListCount(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListCount(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	char *listName;
@@ -3976,11 +3517,7 @@ int meth_generic_objectListCount(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListCount_children(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListCount_children(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	VObjList *olist = GET__children(self);
@@ -4004,11 +3541,7 @@ int meth_generic_objectListCount_children(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListDelete(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListDelete(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = NULL;
 	char *listName = PkInfo2Str(argv);
@@ -4034,11 +3567,7 @@ int meth_generic_objectListDelete(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListDelete_children(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListDelete_children(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = GET__children(self);
 	VObj *obj = PkInfo2Obj(&argv[0]);
@@ -4060,11 +3589,7 @@ int meth_generic_objectListDelete_children(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListPrepend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListPrepend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *listName;
 	VObjList *olist = NULL;
@@ -4098,11 +3623,7 @@ int meth_generic_objectListPrepend(self, result, argc, argv)
  * Result: object count, -1 if the list is not found
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListPrepend_children(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListPrepend_children(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = GET__children(self);
 	VObj *obj = PkInfo2Obj(&argv[0]);
@@ -4131,11 +3652,7 @@ int meth_generic_objectListPrepend_children(self, result, argc, argv)
  * Result: cleared
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListSend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListSend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = NULL;
 	char *listName;
@@ -4160,11 +3677,7 @@ int meth_generic_objectListSend(self, result, argc, argv)
  * Result: cleared
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectListSend_children(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectListSend_children(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = GET__children(self);
 
@@ -4184,11 +3697,7 @@ int meth_generic_objectListSend_children(self, result, argc, argv)
  * Result: position (starting from 0), -1 if object is not found in list
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_objectPosition(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_objectPosition(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObjList *olist = NULL;
 	VObj *obj;
@@ -4222,11 +3731,7 @@ int meth_generic_objectPosition(self, result, argc, argv)
  * Result: loaded file
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_loadFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_loadFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp, *retStrp, *path;
 
@@ -4264,11 +3769,7 @@ int meth_generic_loadFile(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_loadSTG(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_loadSTG(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return loadSTG(PkInfo2Str(&argv[0]));
@@ -4277,11 +3778,7 @@ int meth_generic_loadSTG(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_makeTempFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_makeTempFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char tfn[200];
 	
@@ -4301,11 +3798,7 @@ int meth_generic_makeTempFile(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_not(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_not(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -4317,11 +3810,7 @@ int meth_generic_not(self, result, argc, argv)
  * Result: character range from n1 to n2
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 2) {
 		int n;
@@ -4329,7 +3818,7 @@ int meth_generic_nthChar(self, result, argc, argv)
 
 		result->type = PKT_CHR;
 		result->canFree = 0;
-		n = PkInfo2Int(&argv[1]);
+		n = (int)PkInfo2Int(&argv[1]);
 		s = PkInfo2Str(&argv[0]);
 		if (s) result->info.c = s[n];
 		else result->info.c = '\0';
@@ -4340,8 +3829,8 @@ int meth_generic_nthChar(self, result, argc, argv)
 
 		result->type = PKT_STR;
 		str = PkInfo2Str(&argv[0]);
-		n1 = PkInfo2Int(&argv[1]);
-		n2 = PkInfo2Int(&argv[2]);
+		n1 = (int)PkInfo2Int(&argv[1]);
+		n2 = (int)(int)PkInfo2Int(&argv[2]);
 		cp = (char*)malloc(sizeof(char) * (n2 - n1 + 2));
 		if (!cp) {
 			result->info.s = "";
@@ -4365,11 +3854,7 @@ int meth_generic_nthChar(self, result, argc, argv)
  * Result:  the n'th object in self's children list.
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthChild(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthChild(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i = 0, n;
 	char *listName;
@@ -4379,7 +3864,7 @@ int meth_generic_nthChild(self, result, argc, argv)
 		clearPacket(result);
 		return 0;
 	}
-	n = PkInfo2Int(&argv[0]);
+	n = (int)PkInfo2Int(&argv[0]);
 
 	olist = GET__children(self);
 
@@ -4404,11 +3889,7 @@ int meth_generic_nthChild(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthItem(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthItem(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -4423,11 +3904,7 @@ int meth_generic_nthItem(self, result, argc, argv)
  * Result: the specified line(s)
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthLine(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthLine(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int li, hi, lines, size;
 	char *str;
@@ -4436,10 +3913,10 @@ int meth_generic_nthLine(self, result, argc, argv)
 	str = PkInfo2Str(&argv[0]);
 	if (str) {
 		if (argc == 2) {
-			li = hi = PkInfo2Int(&argv[1]);
+			li = hi = (int)PkInfo2Int(&argv[1]);
 		} else if (argc == 3) {
-			li = PkInfo2Int(&argv[1]);
-			hi = PkInfo2Int(&argv[2]);
+			li = (int)PkInfo2Int(&argv[1]);
+			hi = (int)(int)PkInfo2Int(&argv[2]);
 		} else {
 			/* incorrect number of arguments */
 			result->info.s = "";
@@ -4460,11 +3937,7 @@ int meth_generic_nthLine(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthObjectInList(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthObjectInList(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i = 0, n;
 	char *listName;
@@ -4474,7 +3947,7 @@ int meth_generic_nthObjectInList(self, result, argc, argv)
 		clearPacket(result);
 		return 0;
 	}
-	n = PkInfo2Int(&argv[0]);
+	n = (int)PkInfo2Int(&argv[0]);
 	listName = PkInfo2Str(&argv[1]);
 
 	if (!STRCMP(listName, "children")) {
@@ -4501,11 +3974,7 @@ int meth_generic_nthObjectInList(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthSibling(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthSibling(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i = 0, n;
 	char *listName;
@@ -4516,7 +3985,7 @@ int meth_generic_nthSibling(self, result, argc, argv)
 		clearPacket(result);
 		return 0;
 	}
-	n = PkInfo2Int(&argv[0]);
+	n = (int)PkInfo2Int(&argv[0]);
 
 	parent = GET__parent(self);
 	if (parent) {
@@ -4541,11 +4010,7 @@ int meth_generic_nthSibling(self, result, argc, argv)
  * Result: the word string if successful, or "" if failed.n
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_nthWord(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_nthWord(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *str;
 	int n1, n2;
@@ -4560,10 +4025,10 @@ int meth_generic_nthWord(self, result, argc, argv)
 		str = SaveString(str);
 		result->type = PKT_STR;
 		if (argc == 2) {
-			n1 = n2 = PkInfo2Int(&argv[1]);
+			n1 = n2 = (int)PkInfo2Int(&argv[1]);
 		} else if (argc == 3) {
-			n1 = PkInfo2Int(&argv[1]);
-			n2 = PkInfo2Int(&argv[2]);
+			n1 = (int)PkInfo2Int(&argv[1]);
+			n2 = (int)(int)PkInfo2Int(&argv[2]);
 		} else {
 			result->info.s = "";
 			result->canFree = 0;
@@ -4582,11 +4047,7 @@ int meth_generic_nthWord(self, result, argc, argv)
  * 
  * Result: parent object
  */
-int meth_generic_parent(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_parent(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.o = GET__parent(self);
 	result->type = PKT_OBJ;
@@ -4594,11 +4055,7 @@ int meth_generic_parent(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_pipe(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_pipe(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int c;
 	FILE *fp;
@@ -4632,11 +4089,7 @@ int meth_generic_pipe(self, result, argc, argv)
  * Result:
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_prepend(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_prepend(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return 1;
 }
@@ -4649,11 +4102,7 @@ int meth_generic_prepend(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_print(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_print(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 
@@ -4667,7 +4116,7 @@ int meth_generic_print(self, result, argc, argv)
 				printf("(NULL)");
 		continue;
 		case PKT_INT:
-			printf("%d", argv[i].info.i);
+			printf("%ld", argv[i].info.i);
 		continue;
 		case PKT_FLT:
 			printf("%f", argv[i].info.f);
@@ -4686,15 +4135,15 @@ int meth_generic_print(self, result, argc, argv)
 				int n;
 				Array *array = argv[i].info.y;
 				for (n = 0; n < array->size; n++)
-					printf("%d ", array->info[n]);
+					printf("%ld ", array->info[n]);
 			}
 		continue;
 		case PKT_ATR: {
 			Attr *attrp;
 			attrp = argv[i].info.a;
 			for (; attrp; attrp = attrp->next) {
-				printf("id=%d val=%d:", 
-					attrp->id, attrp->val);
+				printf("id=%ld val=%ld:", 
+					(long)attrp->id, (long)attrp->val);
 				dumpPacket((Packet*)attrp->val);
 				printf("\n");
 			}
@@ -4717,11 +4166,7 @@ int meth_generic_print(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_printf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_printf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 
@@ -4732,7 +4177,7 @@ int meth_generic_printf(self, result, argc, argv)
 			printf("%s", GET_name(argv[i].info.o));
 		continue;
 		case PKT_INT:
-			printf("%d", argv[i].info.i);
+			printf("%ld", argv[i].info.i);
 		continue;
 		case PKT_FLT:
 			printf("%f", argv[i].info.f);
@@ -4748,7 +4193,7 @@ int meth_generic_printf(self, result, argc, argv)
 				int n;
 				Array *array = argv[i].info.y;
 				for (n = 0; n < array->size; n++)
-					printf("%d ", array->info[n]);
+					printf("%ld ", array->info[n]);
 			}
 		continue;
 		default:
@@ -4760,11 +4205,7 @@ int meth_generic_printf(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_random(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_random(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -4784,11 +4225,7 @@ int meth_generic_random(self, result, argc, argv)
 
 /* replaceChar(originalStr, charToReplace, newChar)
  */
-int meth_generic_replaceChar(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_replaceChar(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	char *inStr, patChar, repChar;
@@ -4809,11 +4246,7 @@ int meth_generic_replaceChar(self, result, argc, argv)
 
 /* replaceCharQ(originalStr, charToReplace, newChar)
  */
-int meth_generic_replaceCharQ(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_replaceCharQ(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 	char *inStr, patChar, repChar;
@@ -4833,11 +4266,7 @@ int meth_generic_replaceCharQ(self, result, argc, argv)
 
 /* replaceStr(originalStr, pattern, patternReplaceStr)
  */
-int meth_generic_replaceStr(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_replaceStr(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp, *lp;
 	char *inStr, *patStr, *repStr;
@@ -4847,9 +4276,9 @@ int meth_generic_replaceStr(self, result, argc, argv)
 	inStr = PkInfo2Str(&argv[0]);
 	patStr = PkInfo2Str(&argv[1]);
 	repStr = PkInfo2Str(&argv[3]);
-	inLength = strlen(inStr);
-	patLength = strlen(patStr);
-	repLength = strlen(repStr);
+	inLength = (int)strlen(inStr);
+	patLength = (int)strlen(patStr);
+	repLength = (int)strlen(repStr);
 
 	result->type = PKT_STR;
 	lp = inStr;
@@ -4874,11 +4303,7 @@ int meth_generic_replaceStr(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_replaceStrQ(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_replaceStrQ(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->info.s = "NOT IMPLEMENTED";
@@ -4894,11 +4319,7 @@ int meth_generic_replaceStrQ(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_saveFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_saveFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 
@@ -4927,11 +4348,7 @@ int meth_generic_saveFile(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_scan(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_scan(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	clearPacket(result);
@@ -4946,11 +4363,7 @@ int meth_generic_scan(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_scanf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_scanf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 
@@ -4961,7 +4374,7 @@ int meth_generic_scanf(self, result, argc, argv)
 			printf("%s", GET_name(argv[i].info.o));
 		continue;
 		case PKT_INT:
-			printf("%d", argv[i].info.i);
+			printf("%ld", argv[i].info.i);
 		continue;
 		case PKT_FLT:
 			printf("%f", argv[i].info.f);
@@ -4977,7 +4390,7 @@ int meth_generic_scanf(self, result, argc, argv)
 				int n;
 				Array *array = argv[i].info.y;
 				for (n = 0; n < array->size; n++)
-					printf("%d ", array->info[n]);
+					printf("%ld ", array->info[n]);
 			}
 		continue;
 		default:
@@ -4998,13 +4411,9 @@ int meth_generic_scanf(self, result, argc, argv)
  *
  * Result: mode
  */
-int meth_generic_securityMode(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_securityMode(VObj *self, Packet *result, int argc, Packet argv[])
 {
-	if (securityMode == 0) securityMode = PkInfo2Int(&argv[1]);
+	if (securityMode == 0) securityMode = (int)PkInfo2Int(&argv[1]);
 
 	clearPacket(result);
 	result->type = PKT_INT;
@@ -5017,11 +4426,7 @@ int meth_generic_securityMode(self, result, argc, argv)
  * 
  * Result: self object
  */
-int meth_generic_self(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_self(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.o = self;
 	result->type = PKT_OBJ;
@@ -5035,11 +4440,7 @@ int meth_generic_self(self, result, argc, argv)
  * Result: [0] object
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_selectionInfo(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_selectionInfo(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Packet *packet0 = makePacket();
 	Attr *attrp;
@@ -5060,9 +4461,7 @@ int meth_generic_selectionInfo(self, result, argc, argv)
 	}
 }
 
-helper_setSecurity(self, level)
-	VObj *self;
-	int level;
+void helper_setSecurity(VObj *self, int level)
 {
 	VObjList *olist;
 
@@ -5078,12 +4477,7 @@ helper_setSecurity(self, level)
  * Result: ...
  * Return: 1 if successful, 0 if error occured
  */
-int helper_generic_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_generic_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	char *str;
 
@@ -5152,8 +4546,8 @@ int helper_generic_set(self, result, argc, argv, labelID)
 	}
 
 	case STR_security:
-		result->info.i = PkInfo2Int(&argv[1]);
-		helper_setSecurity(self, result->info.i);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
+		helper_setSecurity(self, (int)result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
 		return 1;
@@ -5183,7 +4577,7 @@ int helper_generic_set(self, result, argc, argv, labelID)
 	}
 
 	case STR_active:
-		result->info.i = PkInfo2Int(&argv[1]);
+		result->info.i = (int)PkInfo2Int(&argv[1]);
 		SET_active(self, result->info.i);
 		result->type = PKT_INT;
 		result->canFree = 0;
@@ -5192,14 +4586,10 @@ int helper_generic_set(self, result, argc, argv, labelID)
 	clearPacket(result);
 	return 0;
 }
-int meth_generic_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_generic_set(self, result, argc, argv, 
-					getIdent(PkInfo2Str(argv)));
+					(int)getIdent(PkInfo2Str(argv)));
 }
 
 /* Scott */
@@ -5207,11 +4597,7 @@ int meth_generic_set(self, result, argc, argv)
  * This routine forwards a Viola script message to the program
  * interface via the MessageHandler mechanism.
  */
-int meth_generic_sendToInterface(self, result, argc, argv)
-    	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_sendToInterface(VObj *self, Packet *result, int argc, Packet argv[])
 {
     int i;
     char **arg = (char **) malloc(argc * sizeof(char *));
@@ -5226,11 +4612,7 @@ int meth_generic_sendToInterface(self, result, argc, argv)
     return 1;
 }
 
-int meth_generic_setResource(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_setResource(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	return 0; /* no can't do */
@@ -5242,11 +4624,7 @@ int meth_generic_setResource(self, result, argc, argv)
  * Result: 
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_setSelection(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_setSelection(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	GLSetSelection(self, SaveString(PkInfo2Str(&argv[0])));
 	return 1;
@@ -5258,11 +4636,7 @@ int meth_generic_setSelection(self, result, argc, argv)
  * Result: 
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_setVariable(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_setVariable(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	return 0;
@@ -5274,15 +4648,11 @@ int meth_generic_setVariable(self, result, argc, argv)
  * Result: the root offset
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_setMouse(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_setMouse(VObj *self, Packet *result, int argc, Packet argv[])
 {
-/*	Window w = PkInfo2Int(argv);*/
-	int x = PkInfo2Int(&argv[0]);
-	int y = PkInfo2Int(&argv[1]);
+/*	Window w = (int)PkInfo2Int(argv);*/
+	int x = (int)PkInfo2Int(&argv[0]);
+	int y = (int)PkInfo2Int(&argv[1]);
 /*
 	if (!w) {
 		w = rootWindow;
@@ -5302,11 +4672,7 @@ int meth_generic_setMouse(self, result, argc, argv)
  * Result: shift key state
  * Return: 1
  */
-int meth_generic_shiftKeyP(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_shiftKeyP(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->info.i = keyStat_shift;
@@ -5318,11 +4684,7 @@ int meth_generic_shiftKeyP(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_sin(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_sin(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_FLT;
 	result->info.f = sin((double)(PkInfo2Flt(&argv[0]) * 
@@ -5336,15 +4698,11 @@ int meth_generic_sin(self, result, argc, argv)
  * Result: seconds slept
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_sleep(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_sleep(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
-	result->info.i = sleep(PkInfo2Int(&argv[0]));
+	result->info.i = sleep((unsigned int)PkInfo2Int(&argv[0]));
 	return 1;
 }
 
@@ -5356,11 +4714,7 @@ int meth_generic_sleep(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_sprintf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_sprintf(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 /*XXX NOT IMPLEMENTED*/
@@ -5373,7 +4727,7 @@ int meth_generic_sprintf(self, result, argc, argv)
 			printf("%s", GET_name(argv[i].info.o));
 		continue;
 		case PKT_INT:
-			printf("%d", argv[i].info.i);
+			printf("%ld", argv[i].info.i);
 		continue;
 		case PKT_FLT:
 			printf("%f", argv[i].info.f);
@@ -5389,7 +4743,7 @@ int meth_generic_sprintf(self, result, argc, argv)
 				int n;
 				Array *array = argv[i].info.y;
 				for (n = 0; n < array->size; n++)
-					printf("%d ", array->info[n]);
+					printf("%ld ", array->info[n]);
 			}
 		continue;
 		default:
@@ -5408,11 +4762,7 @@ int meth_generic_sprintf(self, result, argc, argv)
  * Result: arguments in string type
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_str(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_str(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->info.s = PkInfos2Str(argc, argv);
@@ -5427,11 +4777,7 @@ int meth_generic_str(self, result, argc, argv)
  * Result: strlen
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_strlen(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_strlen(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	clearPacket(result);
 	result->type = PKT_INT;
@@ -5447,11 +4793,7 @@ int meth_generic_strlen(self, result, argc, argv)
  * Result: return value from system()
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_system(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_system(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 
@@ -5473,11 +4815,7 @@ int meth_generic_system(self, result, argc, argv)
  * Result: target object
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_target(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_target(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	char *cp;
 
@@ -5499,11 +4837,7 @@ int meth_generic_target(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_textWidth(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_textWidth(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = GLTextWidth(PkInfo2Int(&argv[0]), 
 				     PkInfo2Str(&argv[1]));
@@ -5512,11 +4846,7 @@ int meth_generic_textWidth(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_trimEdge(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_trimEdge(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.s = trimEdgeSpaces(SaveString(PkInfo2Str(&argv[0])));
 	result->type = PKT_STR;
@@ -5524,11 +4854,7 @@ int meth_generic_trimEdge(self, result, argc, argv)
 	return 1;
 }
 
-int meth_generic_trimEdgeQ(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_trimEdgeQ(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	/* NOTE: since the returned data isn't copied, argv can no longer
 	 * think this data may be canFree. Because, if that were so,
@@ -5554,11 +4880,7 @@ int meth_generic_trimEdgeQ(self, result, argc, argv)
  * Result: elapsed seconds since 00:00:00 GMT, January 1, 1970
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_time(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_time(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	time_t theTime;
 	result->info.i = time(&theTime);
@@ -5576,11 +4898,7 @@ int meth_generic_time(self, result, argc, argv)
  * Result: name of the selected/current tool
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_tool(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_tool(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	int i;
 	char *cp;
@@ -5606,11 +4924,7 @@ int meth_generic_tool(self, result, argc, argv)
 	return 0;
 }
 
-int meth_generic_unhash(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_unhash(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (notSecure(self)) return 0;
 	clearPacket(result);
@@ -5629,11 +4943,7 @@ int meth_generic_unhash(self, result, argc, argv)
  * Result: version string
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_version(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_version(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern char *viola_version;	/* defined in main.c */
 	result->info.s = viola_version;
@@ -5650,11 +4960,7 @@ int meth_generic_version(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_violaPath(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_violaPath(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (argc == 0) {
 		int i = 0;
@@ -5682,11 +4988,7 @@ int meth_generic_violaPath(self, result, argc, argv)
  * 
  * Result: self's x position
  */
-int meth_generic_x(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_x(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = GET_x(self);
 	result->type = PKT_INT;
@@ -5702,16 +5004,12 @@ int meth_generic_x(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_watch(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_watch(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	extern int flag_vwatch; /* defined in cexec.c */
 
 	clearPacket(result);
-	flag_vwatch = PkInfo2Int(&argv[0]);
+	flag_vwatch = (int)PkInfo2Int(&argv[0]);
 
 	return 1;
 }
@@ -5721,11 +5019,7 @@ int meth_generic_watch(self, result, argc, argv)
  * 
  * Result: self's width
  */
-int meth_generic_width(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_width(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = GET_width(self);
 	result->type = PKT_INT;
@@ -5739,11 +5033,7 @@ int meth_generic_width(self, result, argc, argv)
  * Result: unaffected
  * Return: 1 if successful, 0 if error occured
  */
-int meth_generic_writeln(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_writeln(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (meth_generic_print(self, result, argc, argv)) {
 		printf("\n");
@@ -5758,11 +5048,7 @@ int meth_generic_writeln(self, result, argc, argv)
  * 
  * Result: self's y position
  */
-int meth_generic_y(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_y(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->info.i = GET_y(self);
 	result->type = PKT_INT;
@@ -5775,11 +5061,7 @@ int meth_generic_y(self, result, argc, argv)
  * (obj)arg[0] 's __content us used to store pic list.
  * (char*)arg[1] is filepath of picture
  */
-int meth_generic_addPicFromFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_addPicFromFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *obj = PkInfo2Obj(&argv[0]);
 	int picID;
@@ -5807,11 +5089,7 @@ int meth_generic_addPicFromFile(self, result, argc, argv)
 /*
  * HTML_txt object script equivalent method
  */
-int meth_generic_code_HTML_txt(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_code_HTML_txt(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Packet *arg0 = (Packet*)((Attr*)(argv[0].info.a)->val);
 	char *mesg;
@@ -5969,13 +5247,13 @@ IS NOW: need to clean up.
 
 		SET_height(self, tf->building_vspan + tf->yUL);
 
-		if (GET_window(self)) {
-			wc.x = GET_x(self);
-			wc.y = GET_y(self);
-			wc.width = GET_width(self);
-			wc.height = GET_height(self);
-			XConfigureWindow(display, GET_window(self), 
-					CWX | CWY | CWWidth | CWHeight, 
+	if (GET_window(self)) {
+		wc.x = (int)GET_x(self);
+		wc.y = (int)GET_y(self);
+		wc.width = (int)GET_width(self);
+		wc.height = (int)GET_height(self);
+		XConfigureWindow(display, GET_window(self), 
+				CWX | CWY | CWWidth | CWHeight,
 					&wc);
 		}
 		vspan += GET_height(self) + tmi->bottom;
@@ -6047,13 +5325,13 @@ IS NOW: need to clean up.
 
 		pk = (Packet*)getVariable_id(varlist, STR_inPreP);
 		if (pk) {
-			inPreP = PkInfo2Int(pk);
+			inPreP = (int)PkInfo2Int(pk);
 		} else {
 			/* find out and set inPreP */
 			if (parent) {
 				sendMessage1_result(parent, "inPreP", 
 						    &evalResult);
-				inPreP = PkInfo2Int(&evalResult);
+				inPreP = (int)PkInfo2Int(&evalResult);
 			} else {
 				inPreP = 0;
 			}
@@ -6172,7 +5450,7 @@ XXXX INVALID
 
 		for (olist = GET__children(self); olist; olist = olist->next) {
 			sendMessage1N1str(olist->o, "gotoAnchor", anchor);
-			if (offset = PkInfo2Int(&evalResult)) break;
+			if (offset = (int)PkInfo2Int(&evalResult)) break;
 		}
 		clearPacket(&evalResult);
 		result->info.i = offset;
@@ -6215,11 +5493,7 @@ XXXX INVALID
 	return meth_cosmic_usual(self, result, 0, argv);
 }
 
-int meth_generic_code_HTML_txtAnchor(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_code_HTML_txtAnchor(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return 1;
 }
@@ -6227,11 +5501,7 @@ int meth_generic_code_HTML_txtAnchor(self, result, argc, argv)
 /*
  * HTML_header_large object script equivalent method
  */
-int meth_generic_code_HTML_header_large(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_code_HTML_header_large(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	Packet *arg0 = (Packet*)((Attr*)(argv[0].info.a)->val);
 	char *mesg;
@@ -6280,11 +5550,7 @@ int meth_generic_code_HTML_header_large(self, result, argc, argv)
 /*
  * HTML_header_medium object script equivalent method
  */
-int meth_generic_code_HTML_header_medium(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_code_HTML_header_medium(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_generic_code_HTML_header_large(self, result, argc, argv);
 }
@@ -6292,11 +5558,7 @@ int meth_generic_code_HTML_header_medium(self, result, argc, argv)
 /*
  * HTML_header_small object script equivalent method
  */
-int meth_generic_code_HTML_header_small(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_generic_code_HTML_header_small(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return meth_generic_code_HTML_header_large(self, result, argc, argv);
 }

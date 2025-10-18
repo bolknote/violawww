@@ -19,6 +19,7 @@
 */
 
 #include "HTFile.h"		/* Implemented here */
+#include <unistd.h>
 
 
 #define INFINITY 512		/* file name length @@ FIXME */

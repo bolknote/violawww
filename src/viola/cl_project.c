@@ -32,7 +32,7 @@
 #include "event.h"
 
 SlotInfo cl_project_NCSlots[] = {
-	NULL
+	{0}
 };
 SlotInfo cl_project_NPSlots[] = {
 {
@@ -46,9 +46,9 @@ SlotInfo cl_project_NPSlots[] = {
 },{
 	STR__projectIcon,	/* internalized format */
 	PTRV,
-	NULL
+	0
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_project_CSlots[] = {
@@ -57,7 +57,7 @@ SlotInfo cl_project_CSlots[] = {
 	PTRS | SLOT_RW,
 	(long)"project"
 },{
-	NULL
+	{0}
 }
 };
 SlotInfo cl_project_PSlots[] = {
@@ -66,7 +66,7 @@ SlotInfo cl_project_PSlots[] = {
 	CLSI,
 	(long)&class_project
 },{
-	NULL
+	{0}
 }
 };
 
@@ -98,7 +98,7 @@ MethodInfo meths_project[] = {
 	STR_seta,
 	meth_project_set
 },{
-	NULL
+	{0}
 }
 };
 
@@ -111,7 +111,7 @@ ClassInfo class_project = {
 	&class_field,		/* super class info		*/
 };
 
-int meth_project_config(self, result, argc, argv)
+long meth_project_config(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -121,7 +121,7 @@ int meth_project_config(self, result, argc, argv)
 	return 1;
 }
 
-int meth_project_expose(self, result, argc, argv)
+long meth_project_expose(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -130,7 +130,7 @@ int meth_project_expose(self, result, argc, argv)
 	return meth_field_render(self, result, argc, argv);
 }
 
-int helper_project_get(self, result, argc, argv, labelID)
+long helper_project_get(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -152,7 +152,7 @@ int helper_project_get(self, result, argc, argv, labelID)
 	}
 	return helper_field_get(self, result, argc, argv, labelID);
 }
-int meth_project_get(self, result, argc, argv)
+long meth_project_get(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -162,7 +162,7 @@ int meth_project_get(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_project_initialize(self, result, argc, argv)
+long meth_project_initialize(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -175,7 +175,7 @@ int meth_project_initialize(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_project_set(self, result, argc, argv, labelID)
+long helper_project_set(self, result, argc, argv, labelID)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -217,7 +217,7 @@ int helper_project_set(self, result, argc, argv, labelID)
 	}
 	return helper_field_set(self, result, argc, argv, labelID);
 }
-int meth_project_set(self, result, argc, argv)
+long meth_project_set(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;
@@ -227,7 +227,7 @@ int meth_project_set(self, result, argc, argv)
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_project_render(self, result, argc, argv)
+long meth_project_render(self, result, argc, argv)
 	VObj *self;
 	Packet *result;
 	int argc;

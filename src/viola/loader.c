@@ -1,6 +1,7 @@
 /*
  * loader.c
  */
+#include <string.h>
 #include <stdlib.h>
 #include "utils.h"
 #ifndef SEEK_SET
@@ -21,6 +22,7 @@
 #include "loader.h"
 #include "file.h"
 #include "misc.h"
+#include "cexec.h"
 
 #include "objs.h"/*XXXX for hard-coded ViolaWWW objects */
 int loadFromBuiltInCache();
@@ -254,7 +256,7 @@ int load_objects_slots(fp, slotv, slotc)
 				fprintf(stderr,
 				      "unreasonably large slot label:\"%s\"\n",
 					label);
-				return NULL;
+				return 0;
 			}
 			llc = lc; lc = c;
 		}

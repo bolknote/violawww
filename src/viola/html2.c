@@ -42,10 +42,13 @@ int http_progress_subtotal_bytes = 0;
 #include "sys.h"
 #include "hash.h"
 #include "ident.h"
+#include "scanutils.h"
 #include "obj.h"
 #include "packet.h"
 #include "membership.h"
 #include "class.h"
+#include "method.h"
+#include "cexec.h"
 #include "slotaccess.h"
 #include "classlist.h"
 #include "vlist.h"
@@ -484,10 +487,10 @@ void CB_HTML_stag(element_number, present, value, tagInfo)
 		VObjList *olist;
 		VObj *parentParent;
 
-		if (!parent_bstate->tmi->cloneMeth)
-			parent_bstate->tmi->cloneMeth = 
-			  findMeth(parent_bstate->tmi->template, STR_clone);
-		if (!parent_bstate->tmi->template) {
+	if (!parent_bstate->tmi->cloneMeth)
+		parent_bstate->tmi->cloneMeth = 
+		  (long (*)(VObj *, Packet *, int, Packet *))findMeth(parent_bstate->tmi->template, STR_clone);
+	if (!parent_bstate->tmi->template) {
 			fprintf(stderr,
 	"SGMLBuild_B: can't find clone method for template object '%s'\n",
 				parent_bstate->tmi->type);
@@ -1177,10 +1180,10 @@ VObj *HTMLBuildObj(bstate, parentWidth, tmi)
 				"...can't get template object '%s'\n",
 				bstate->tmi->type);
 		}
-		if (bstate->tmi->template) {
-			bstate->tmi->cloneMeth = 
-				findMeth(bstate->tmi->template, STR_clone);
-			if (!bstate->tmi->template) {
+	if (bstate->tmi->template) {
+		bstate->tmi->cloneMeth = 
+			(long (*)(VObj *, Packet *, int, Packet *))findMeth(bstate->tmi->template, STR_clone);
+		if (!bstate->tmi->template) {
 				fprintf(stderr,
 	"SGMLBuild_B: can't find clone method for template object '%s'\n",
 					bstate->tmi->type);
@@ -1602,7 +1605,7 @@ char *dumpHotList(mode)
 			size += strlen(hip->url) + 1;
 		list = cp = (char*)malloc(sizeof(char)*size);
 		for (hip = theHotList; hip; hip = hip->next) {
-			size = strlen(hip->url);
+			size = (int)strlen(hip->url);
 			strncpy(cp, hip->url, size);
 			cp[size] = '\n';
 			cp += size+1;
@@ -1614,7 +1617,7 @@ char *dumpHotList(mode)
 			size += strlen(hip->comment) + 1;
 		list = cp = (char*)malloc(sizeof(char)*size);
 		for (hip = theHotList; hip; hip = hip->next) {
-			size = strlen(hip->comment);
+			size = (int)strlen(hip->comment);
 			strncpy(cp, hip->comment, size);
 			cp[size] = '\n';
 			cp += size+1;
@@ -1655,7 +1658,7 @@ char *HotList_nextLine()
   for (;;) {
     if (hbuffi >= hbuffLimit) {
       hbuffi = 0;
-      hbuffLimit = fread(hbuff, sizeof(char), HBUFF_SIZE - 2, HotList_fp);
+      hbuffLimit = (int)fread(hbuff, sizeof(char), HBUFF_SIZE - 2, HotList_fp);
       hbuff[hbuffLimit] = '\0';
       if (hbuffLimit == 0) goto done;
     }

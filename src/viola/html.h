@@ -1,4 +1,5 @@
 int init_html();
+int html_backtrack();
 int html_search();
 char *html_pathSimplify();
 TFStruct *html_updateTFStruct();
@@ -13,6 +14,6 @@ char *html_headerInfo();
 char *html_WWWNameOfFile();
 int data_reader();
 void HTJustRead();
-char *html_fetchDocument();
+int html_fetchDocument();
 char *html_parseDocument();
 

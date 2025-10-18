@@ -10,6 +10,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 #ifdef VMS
 #include "sys$library:ctype.h"
 #else
@@ -32,15 +33,15 @@ LFUNC(SetImagePixels32, int, (XImage * image, unsigned int width,
 			      unsigned int height, unsigned int *pixelindex,
 			      Pixel * pixels));
 
-LFUNC(SetImagePixels16, int, (XImage * image, unsigned int width,
+LFUNC(SetImagePixels16, void, (XImage * image, unsigned int width,
 			      unsigned int height, unsigned int *pixelindex,
 			      Pixel * pixels));
 
-LFUNC(SetImagePixels8, int, (XImage * image, unsigned int width,
+LFUNC(SetImagePixels8, void, (XImage * image, unsigned int width,
 			     unsigned int height, unsigned int *pixelindex,
 			     Pixel * pixels));
 
-LFUNC(SetImagePixels1, int, (XImage * image, unsigned int width,
+LFUNC(SetImagePixels1, void, (XImage * image, unsigned int width,
 			     unsigned int height, unsigned int *pixelindex,
 			     Pixel * pixels));
 
@@ -115,7 +116,7 @@ SetColor(display, colormap, colorname, color_index,
     return(status); }
 
 
-xpmCreateImage(display, attrib, image_return, shapeimage_return, attributes)
+int xpmCreateImage(display, attrib, image_return, shapeimage_return, attributes)
     Display *display;
     xpmInternAttrib *attrib;
     XImage **image_return;
@@ -450,7 +451,7 @@ _XReverse_Bytes(bpt, nb)
 	*bpt = _reverse_byte[*bpt];
 	bpt++;
     } while (--nb > 0);
-    return;
+    return 0;
 }
 
 
@@ -482,6 +483,7 @@ xpm_xynormalizeimagebits(bp, img)
     }
     if (img->bitmap_bit_order == MSBFirst)
 	_XReverse_Bytes(bp, img->bitmap_unit >> 3);
+    return 0;
 }
 
 int
@@ -518,6 +520,7 @@ xpm_znormalizeimagebits(bp, img)
 	*(bp + 1) = c;
 	break;
     }
+    return 0;
 }
 
 static unsigned char Const _lomask[0x09] = {
@@ -525,7 +528,7 @@ static unsigned char Const _lomask[0x09] = {
 static unsigned char Const _himask[0x09] = {
 		     0xff, 0xfe, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0x00};
 
-static
+static int
 _putbits(src, dstoffset, numbits, dst)
     register char *src;			/* address of source bit string */
     int dstoffset;			/* bit offset into destination;
@@ -693,13 +696,7 @@ SetImagePixels32(image, width, height, pixelindex, pixels)
  * write pixels into a 16-bits Z image data structure
  */
 
-static int
-SetImagePixels16(image, width, height, pixelindex, pixels)
-    XImage *image;
-    unsigned int width;
-    unsigned int height;
-    unsigned int *pixelindex;
-    Pixel *pixels;
+static void SetImagePixels16(XImage *image, unsigned int width, unsigned int height, unsigned int *pixelindex, Pixel *pixels)
 {
     register unsigned char *addr;
     register unsigned int *iptr;
@@ -726,13 +723,7 @@ SetImagePixels16(image, width, height, pixelindex, pixels)
  * write pixels into a 8-bits Z image data structure
  */
 
-static int
-SetImagePixels8(image, width, height, pixelindex, pixels)
-    XImage *image;
-    unsigned int width;
-    unsigned int height;
-    unsigned int *pixelindex;
-    Pixel *pixels;
+static void SetImagePixels8(XImage *image, unsigned int width, unsigned int height, unsigned int *pixelindex, Pixel *pixels)
 {
     register unsigned int *iptr;
     register int x, y;
@@ -747,13 +738,7 @@ SetImagePixels8(image, width, height, pixelindex, pixels)
  * write pixels into a 1-bit depth image data structure and **offset null**
  */
 
-static int
-SetImagePixels1(image, width, height, pixelindex, pixels)
-    XImage *image;
-    unsigned int width;
-    unsigned int height;
-    unsigned int *pixelindex;
-    Pixel *pixels;
+static void SetImagePixels1(XImage *image, unsigned int width, unsigned int height, unsigned int *pixelindex, Pixel *pixels)
 {
     unsigned char bit;
     int xoff, yoff;

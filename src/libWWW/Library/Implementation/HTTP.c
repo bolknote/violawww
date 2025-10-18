@@ -21,6 +21,11 @@
 /* Implements:
 */
 #include "HTTP.h"
+#include <unistd.h>
+
+/* Forward declarations */
+extern void http_progress_notify();
+
 #define HTTP_VERSION	"HTTP/1.0"
 #define HTTP2				/* Version is greater than 0.9 */
 

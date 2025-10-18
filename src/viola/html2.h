@@ -1,4 +1,5 @@
 #include "hotlist.h"
+#include "sgml.h"
 
 extern int printTagDelims;
 
@@ -65,5 +66,6 @@ Bool initHotList();
 Bool addHotListItem();
 HotListItem *getNthHotListItem();
 Bool deleteHotListItem();
+int saveHotList();
 char *dumpHotList();
 char *HotList_nextLine();

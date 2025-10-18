@@ -27,6 +27,7 @@
 #include "classlist.h"
 #include "cl_HTML.h"
 #include "misc.h"
+#include "cexec.h"
 #include "glib.h"
 #include "tfed.h"
 #include "attr.h"
@@ -35,7 +36,7 @@
 #include "html2.h"
 
 SlotInfo cl_HTML_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_HTML_NPSlots[] = {
 {
@@ -65,9 +66,9 @@ SlotInfo cl_HTML_NPSlots[] = {
 },{
 	STR_HTMLStruct,
 	PTRV,
-	NULL
+	0
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_HTML_CSlots[] = {
@@ -146,12 +147,12 @@ SlotInfo cl_HTML_CSlots[] = {
 			set(\"HTMLAddress\", get(\"HTMLAddress\"));\n\
 		break;\n\
 		case \"freeSelf\":\n\
-			freeSelf();\n\
-		break;\n\
-		}\n\
-	",
+	freeSelf();\n\
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_HTML_PSlots[] = {
@@ -160,7 +161,7 @@ SlotInfo cl_HTML_PSlots[] = {
 	CLSI,
 	(long)&class_HTML
 },{
-	NULL
+	0
 }
 };
 
@@ -201,7 +202,7 @@ MethodInfo meths_HTML[] = {
 	STR_seta,
 	meth_HTML_set
 },{
-	NULL
+	0
 }
 };
 
@@ -214,11 +215,7 @@ ClassInfo class_HTML = {
 	&class_txtDisp,		/* super class info		*/
 };
 
-int meth_HTML_back(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_back(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -226,11 +223,7 @@ int meth_HTML_back(self, result, argc, argv)
 	return 1;
 }
 
-int meth_HTML_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_config(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	/* don't like this explicit naming of meth_pane_config... but...
 	 * remember to change it if meth_txtDisp_config be added 
@@ -242,12 +235,7 @@ int meth_HTML_config(self, result, argc, argv)
 	return 1;
 }
 
-int helper_HTML_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_HTML_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	char *str;
 
@@ -285,21 +273,13 @@ int helper_HTML_get(self, result, argc, argv, labelID)
 	}
 	return helper_txtDisp_get(self, result, argc, argv, labelID);
 }
-int meth_HTML_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_get(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_HTML_get(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_HTML_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_initialize(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	TFStruct *tf;
 	VObjList *objl;
@@ -322,11 +302,7 @@ int meth_HTML_initialize(self, result, argc, argv)
 	return 0;
 }
 
-int meth_HTML_pathSimplify(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_pathSimplify(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->canFree = PK_CANFREE_STR;
@@ -334,11 +310,7 @@ int meth_HTML_pathSimplify(self, result, argc, argv)
 	return 1;
 }
 
-int meth_HTML_purgeCache(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_purgeCache(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	VObj *obj;
 
@@ -352,11 +324,7 @@ int meth_HTML_purgeCache(self, result, argc, argv)
 	return 1;
 }
 
-int meth_HTML_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	if (meth_txtDisp_render(self, result, argc, argv)) {
 		TFStruct *tf = GET__TFStruct(self);
@@ -380,11 +348,7 @@ int help_HTML_shownPositionV(self, newPosition)
 	return help_txtDisp_shownPositionV(self, newPosition);
 }
 
-int meth_HTML_search(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_search(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_INT;
 	result->canFree = 0;
@@ -395,12 +359,7 @@ int meth_HTML_search(self, result, argc, argv)
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-int helper_HTML_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+long helper_HTML_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
 {
 	char *str;
 
@@ -475,21 +434,13 @@ int helper_HTML_set(self, result, argc, argv, labelID)
 	}
 	return helper_txtDisp_set(self, result, argc, argv, labelID);
 }
-int meth_HTML_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_set(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	return helper_HTML_set(self, result, argc, argv, 
 				getIdent(PkInfo2Str(argv)));
 }
 
-int meth_HTML_WWWNameOfFile(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_HTML_WWWNameOfFile(VObj *self, Packet *result, int argc, Packet argv[])
 {
 	result->type = PKT_STR;
 	result->canFree = 0;

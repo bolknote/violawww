@@ -1,3 +1,10 @@
+#pragma once
+/* Forward declarations to avoid multiple includes */
+typedef struct Packet Packet;
+typedef struct Attr Attr;
+typedef long VObj;
+union PCode;
+
 #define PCODE_IDX_SIZE 	0
 #define PCODE_IDX_REFC 	1
 #define PCODE_IDX_INSTR	2
@@ -28,11 +35,14 @@ extern int makeArgList(VObj *self, int argc);
 extern void freeArgList(VObj *self);
 
 extern long sendMessagePackets(VObj *self, Packet *packets, int packetc);
+extern long sendMessagePackets_result(VObj *self, Packet *packets, int packetc, Packet *result);
 extern long sendMessageAndInts(VObj *self, char *messg, int *intArray, int intCount);
+extern long sendMessage1(VObj *self, char *messg);
 extern long sendMessage1_result(VObj *self, char *messg, Packet *result);
 extern long sendMessage1N1str(VObj *self, char *messg, char *s1);
 extern long sendMessage1N1str_result(VObj *self, char *messg, char *s1, Packet *result);
 extern long sendMessage1N2str(VObj *self, char *messg, char *s1, char *s2);
+extern long sendMessage1N2str_result(VObj *self, char *messg, char *s1, char *s2, Packet *result);
 extern long sendMessage1N1int(VObj *self, char *messg, int i1);
 extern long sendMessage1N1int_result(VObj *self, char *messg, int i1, Packet *result);
 extern long sendMessage1N2int(VObj *self, char *messg, int i1, int i2);
@@ -57,3 +67,4 @@ extern int destroyVariable(Attr *varlist, char *name, int retp);
 
 /*extern int ASSERT();*/
 #define ASSERT(t,mesg) NULL
+

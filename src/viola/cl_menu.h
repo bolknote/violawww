@@ -5,13 +5,13 @@
 #include "cl_field.h"
 
 extern ClassInfo class_menu;
-int helper_menu_get();
-int helper_menu_set();
+long helper_menu_get();
+long helper_menu_set();
 
-int meth_menu_config();
-int meth_menu_freeSelf();
-int meth_menu_get();
-int meth_menu_initialize();
-int meth_menu_processMouseInput();
-int meth_menu_render();
-int meth_menu_set();
+long meth_menu_config();
+long meth_menu_freeSelf();
+long meth_menu_get();
+long meth_menu_initialize();
+long meth_menu_processMouseInput();
+long meth_menu_render();
+long meth_menu_set();

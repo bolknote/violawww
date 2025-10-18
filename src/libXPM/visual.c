@@ -9,8 +9,9 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 
-xpmVisualType(visual)
+int xpmVisualType(visual)
     Visual *visual;
 {
     switch (visual->class) {

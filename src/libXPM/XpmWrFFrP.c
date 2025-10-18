@@ -9,6 +9,7 @@
 \*****************************************************************************/
 
 #include "xpmP.h"
+#include <stdlib.h>
 #ifdef VMS
 #include "sys$library:string.h"
 #else

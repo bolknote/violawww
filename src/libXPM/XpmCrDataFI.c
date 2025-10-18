@@ -8,6 +8,7 @@
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
 
+#include <stdlib.h>
 #include "xpmP.h"
 #ifdef VMS
 #include "sys$library:string.h"

@@ -14,6 +14,7 @@
  */
 
 #include "xpmP.h"
+#include <stdlib.h>
 #ifdef VMS
 #include "sys$library:ctype.h"
 #include "sys$library:string.h"

@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "sys.h"
 #include <ctype.h>
+#include <string.h>
 #include <stdlib.h>  /* для правильного объявления malloc */
 #include "mystrings.h"
 
@@ -465,7 +466,7 @@ int strToVal(str)
 
   if (str == NULL) return 0;
 
-  for (i = strlen(str) - 1; i >= 0; i--) {
+  for (i = (int)strlen(str) - 1; i >= 0; i--) {
     /* fprintf(stderr, "%d %d %d %d\n",(*(str+i)-'0'), val,*(str+i),j);*/
     if (*(str+i) == '-') negate *= -1;
     if (*(str+i) == '.') {
@@ -842,7 +843,7 @@ char *deBracket(char *list)
 	break;
       }
     }
-    for (i = strlen(list); i >= 0; i--) {
+    for (i = (int)strlen(list); i >= 0; i--) {
       if (list[i] == '}') {
 	list[i] = '\0';
 	break;
@@ -910,7 +911,7 @@ int getItemVals(int li, int hi, char *itemStr)
   char c, str[32]; /* dangerous... */
 
   if (itemStr == NULL) {
-    return NULL;
+    return 0;
   }
   for (i = 0; (c = *(itemStr + i)) != '\0'; i++) {
     if (itemNum > hi) break;

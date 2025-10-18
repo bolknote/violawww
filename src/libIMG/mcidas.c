@@ -4,6 +4,7 @@
  * (davis@unidata.ucar.edu).
  */
 
+#include <stdlib.h>
 #include "xloadimage.h"
 #include "mcidas.h"
 

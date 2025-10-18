@@ -5,12 +5,12 @@
 #include "cl_field.h"
 
 extern ClassInfo class_dial;
-int helper_dial_get();
-int helper_dial_set();
+long helper_dial_get();
+long helper_dial_set();
 
-int meth_dial_config();
-int meth_dial_expose();
-int meth_dial_get();
-int meth_dial_initialize();
-int meth_dial_render();
-int meth_dial_set();
+long meth_dial_config();
+long meth_dial_expose();
+long meth_dial_get();
+long meth_dial_initialize();
+long meth_dial_render();
+long meth_dial_set();

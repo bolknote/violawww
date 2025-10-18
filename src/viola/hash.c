@@ -12,6 +12,7 @@
 /*
  * hash.c
  */
+#include <string.h>
 #include <stdlib.h>
 #include "utils.h"
 #include "mystrings.h"
@@ -92,12 +93,12 @@ HashTable *initHashTable(size, func_hash, func_cmp,
 		ht->put_replace = func_put_replace;
 		ht->remove = func_remove;
 
-		for (entryp = ht->entries, i = size - 1; i >= 0; i--) {
-			entryp->next  = NULL;
-			entryp->label = NULL;
-			entryp->val   = NULL;
-			entryp++;
-		}
+	for (entryp = ht->entries, i = size - 1; i >= 0; i--) {
+		entryp->next  = NULL;
+		entryp->label = 0;
+		entryp->val   = 0;
+		entryp++;
+	}
 	}
 	return ht;
 }
@@ -205,14 +206,14 @@ HashEntry *putHashEntry_cancelable_int(ht, label, val)
 	}
 }
 
-#define PUT_HASH_ENTRY_REPLACE(ht, key, val)\
+#define PUT_HASH_ENTRY_REPLACE(ht, key, val, lbl)\
 {\
 	HashEntry *entry, *base_entry, *new_entry;\
 	base_entry = &(ht->entries[key]);\
 \
 	if (base_entry->label) {\
 		for (entry = base_entry; entry->label; entry = entry->next) {\
-			if (entry->label == label) {\
+			if (entry->label == lbl) {\
 				/* override */\
 				entry->val = val;\
 				return base_entry;\
@@ -221,7 +222,7 @@ HashEntry *putHashEntry_cancelable_int(ht, label, val)
 		}\
 		new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));\
 		if (new_entry) {\
-			new_entry->label = label;\
+			new_entry->label = lbl;\
 			new_entry->val = val;\
 			new_entry->next = NULL;\
 		} else {\
@@ -230,7 +231,7 @@ HashEntry *putHashEntry_cancelable_int(ht, label, val)
 		entry->next = new_entry;\
 		return new_entry;\
 	} else {\
-		base_entry->label = label;\
+		base_entry->label = lbl;\
 		base_entry->val = val;\
 		base_entry->next = NULL;\
 		return base_entry;\
@@ -243,7 +244,7 @@ HashEntry *putHashEntry_replace(ht, label, val)
 	long val;
 {
 	int key = ht->func_hash(ht, label);
-	PUT_HASH_ENTRY_REPLACE(ht, key, val);
+	PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
 }
 
 HashEntry *putHashEntry_replace_int(ht, label, val)
@@ -252,7 +253,7 @@ HashEntry *putHashEntry_replace_int(ht, label, val)
 	long val;
 {
 	int key = label % ht->size;
-	PUT_HASH_ENTRY_REPLACE(ht, key, val);
+	PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
 }
 
 HashEntry *putHashEntry_replace_str(ht, label, val)
@@ -266,7 +267,7 @@ HashEntry *putHashEntry_replace_str(ht, label, val)
 	while (*str) key += *str++;
 	key = key % ht->size;
 
-	PUT_HASH_ENTRY_REPLACE(ht, key, val);
+	PUT_HASH_ENTRY_REPLACE(ht, key, val, (long)label);
 }
 
 #ifdef NOT_USED
@@ -411,8 +412,8 @@ int removeHashEntry(ht, label)
 					    entry->val = entry->next->val;
 					    entry->next = entry->next->next;
 					} else {
-					    entry->label = NULL;
-					    entry->val = NULL;
+					    entry->label = 0;
+					    entry->val = 0;
 					}
 				}
 				return 1;
@@ -451,8 +452,8 @@ int removeHashEntry_int(ht, label)
 				    entry->val = entry->next->val;
 				    entry->next = entry->next->next;
 				} else {
-				    entry->label = NULL;
-				    entry->val = NULL;
+				    entry->label = 0;
+				    entry->val = 0;
 				}
 			}
 			return 1;
@@ -495,8 +496,8 @@ int removeHashEntry_str(ht, label)
 					    entry->val = entry->next->val;
 					    entry->next = entry->next->next;
 					} else {
-					    entry->label = NULL;
-					    entry->val = NULL;
+					    entry->label = 0;
+					    entry->val = 0;
 					}
 				}
 				return 1;

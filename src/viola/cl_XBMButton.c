@@ -31,10 +31,10 @@
 #include "event.h"
 
 SlotInfo cl_XBMButton_NCSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XBMButton_NPSlots[] = {
-	NULL
+	0
 };
 SlotInfo cl_XBMButton_CSlots[] = {
 {
@@ -108,11 +108,11 @@ SlotInfo cl_XBMButton_CSlots[] = {
 			print(\"unknown message, clsss = XBMButton: args: \");\n\
 			for (i =0; i < arg[]; i++) print(arg[i], \", \");\n\
 			print(\"\\n\");\n\
-			break;\n\
-		}\n\
-	",
+	break;\n\
+	}\n\
+",
 },{
-	NULL
+	0
 }
 };
 SlotInfo cl_XBMButton_PSlots[] = {
@@ -121,7 +121,7 @@ SlotInfo cl_XBMButton_PSlots[] = {
 	CLSI,
 	(long)&class_XBMButton
 },{
-	NULL
+	0
 }
 };
 
@@ -138,7 +138,7 @@ MethodInfo meths_XBMButton[] = {
 	STR_render,
 	meth_XBMButton_render
 },{
-	NULL
+	0
 }
 };
 
@@ -151,11 +151,7 @@ ClassInfo class_XBMButton = {
 	&class_XBM,		/* super class info		*/
 };
 
-int meth_XBMButton_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+long meth_XBMButton_render(VObj *self, Packet *result, int argc, Packet argv[])
 {
   	Window w = GET_window(self);
 	int stat;

@@ -13,6 +13,8 @@
  * "kljcpyrght.h" for complete copyright information)
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include "image.h"
 #include "gif.h"
 #include "kljcpyrght.h"
@@ -468,7 +470,7 @@ static int gifin_push_string(code)
  * add a new string to the string table
  */
 
-static gifin_add_string(p, e)
+static int gifin_add_string(p, e)
      int p;
      int e;
 {
@@ -488,7 +490,7 @@ static gifin_add_string(p, e)
  * semi-graceful fatal error mechanism
  */
 
-static gifin_fatal(msg)
+static int gifin_fatal(msg)
      char *msg;
 {
   printf("Error reading GIF file: %s\n", msg);

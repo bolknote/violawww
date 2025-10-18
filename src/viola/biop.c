@@ -9,6 +9,7 @@
 #include "slotaccess.h"
 #include "biop.h"
 #include "misc.h"
+#include <string.h>
 
 char *cp, *cp1, *cp2;
 
@@ -248,7 +249,7 @@ void int2str(p)
 	extern char buff[];
 
 	p->type = PKT_STR;
-	sprintf(buff, "%d", p->info.i);
+	sprintf(buff, "%ld", p->info.i);
 	p->info.s = SaveString(buff);
 	p->canFree = PK_CANFREE_STR;
 }
@@ -257,7 +258,7 @@ void char2int(p)
 	Packet *p;
 {
 	p->type = PKT_INT;
-	p->info.i = (int)p->info.c;
+	p->info.i = (long)p->info.c;
 	p->canFree = 0;
 }
 
@@ -292,7 +293,7 @@ void float2int(p)
 	Packet *p;
 {
 	p->type = PKT_INT;
-	p->info.i = (int)p->info.f;
+	p->info.i = (long)p->info.f;
 	p->canFree = 0;
 }
 
@@ -403,7 +404,7 @@ void float_mod(p1, p2)
 	Packet *p1;
 	Packet *p2;
 {
-	p1->info.f = (int)p1->info.f % (int)p2->info.f; 	/*??*/
+	p1->info.f = (long)p1->info.f % (long)p2->info.f; 	/*??*/
 	p1->canFree = 0;
 }
 

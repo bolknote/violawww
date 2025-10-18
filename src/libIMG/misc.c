@@ -287,11 +287,11 @@ ___strstr( s1, s2 )
      char	*s1;		/* -> string to be searched */
      char	*s2;		/* -> search-pattern string */
 {
-  register cuc	*t;		/* -> text character being tested */
-  register cuc	*p;		/* -> pattern char being tested */
-  register cuc	*tx;		/* -> possible start of match */
-  register unsigned int	m;      /* length of pattern */
-  register cuc	*top;		/* -> high water mark in text */
+cuc	*t;		/* -> text character being tested */
+cuc	*p;		/* -> pattern char being tested */
+cuc	*tx;		/* -> possible start of match */
+unsigned int	m;      /* length of pattern */
+cuc	*top;		/* -> high water mark in text */
   unsigned int  shift[UCHAR_MAX + 1];	/* pattern shift table */
 
   if ( s1 == NULL || s2 == NULL )
@@ -308,7 +308,7 @@ ___strstr( s1, s2 )
     shift[(cuc)*p] = m;
 
   {
-    register unsigned char c;
+unsigned char c;
 
     c = UCHAR_MAX;
     do

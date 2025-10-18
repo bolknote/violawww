@@ -156,8 +156,8 @@ Image *macLoad(fullname, name, verbose)
   Image *image;
   BYTE *pixptr, ch;
   int	eof;
-  register int scanLine;
-  register unsigned int i, j, k;
+int scanLine;
+unsigned int i, j, k;
 
   if (! (zf = zopen(fullname)))
     return(NULL);

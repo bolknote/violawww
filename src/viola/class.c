@@ -797,7 +797,7 @@ VObj *clone(original)
 	VObj *clone;
 	ClassInfo *cip;
 	SlotInfo *sip;
-	register int i, j;
+int i, j;
 	VObj *clonep;
 	VObj *originalp;
 

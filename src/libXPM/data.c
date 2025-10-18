@@ -28,11 +28,11 @@ LFUNC(atoui, unsigned int, (char *p, unsigned int l, unsigned int *ui_return));
 
 static unsigned int
 atoui(p, l, ui_return)
-    register char *p;
+char *p;
     unsigned int l;
     unsigned int *ui_return;
 {
-    register int n, i;
+int n, i;
 
     n = 0;
     for (i = 0; i < l; i++)
@@ -92,7 +92,7 @@ int xpmGetC(mdata)
     xpmData *mdata;
 {
     int c;
-    register unsigned int n = 0, a;
+unsigned int n = 0, a;
     unsigned int notend;
 
     switch (mdata->type) {
@@ -185,7 +185,7 @@ xpmNextWord(mdata, buf)
     xpmData *mdata;
     char *buf;
 {
-    register unsigned int n = 0;
+unsigned int n = 0;
     int c;
 
     switch (mdata->type) {

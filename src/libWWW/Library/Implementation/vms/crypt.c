@@ -42,10 +42,10 @@ ufc_long *_ufc_doit(l1, l2, r1, r2, itr)
   ufc_long l1, l2, r1, r2, itr;
   { int i;
     long32 s, *k;
-    register long32 *sb0 = _ufc_sb0;
-    register long32 *sb1 = _ufc_sb1;
-    register long32 *sb2 = _ufc_sb2;
-    register long32 *sb3 = _ufc_sb3;
+long32 *sb0 = _ufc_sb0;
+long32 *sb1 = _ufc_sb1;
+long32 *sb2 = _ufc_sb2;
+long32 *sb3 = _ufc_sb3;
 
     while(itr--) {
       k = &_ufc_keytab[0][0];
@@ -89,10 +89,10 @@ ufc_long *_ufc_doit(l1, l2, r1, r2, itr)
   ufc_long l1, l2, r1, r2, itr;
   { int i;
     long64 l, r, s, *k;
-    register long64 *sb0 = _ufc_sb0;
-    register long64 *sb1 = _ufc_sb1;
-    register long64 *sb2 = _ufc_sb2;
-    register long64 *sb3 = _ufc_sb3;
+long64 *sb0 = _ufc_sb0;
+long64 *sb1 = _ufc_sb1;
+long64 *sb2 = _ufc_sb2;
+long64 *sb3 = _ufc_sb3;
 
     l = (((long64)l1) << 32) | ((long64)l2);
     r = (((long64)r1) << 32) | ((long64)r2);

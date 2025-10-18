@@ -421,7 +421,7 @@ union { short s; char c[2]; } arg;
  */
 void
 RunSetup(globals)
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -432,7 +432,7 @@ register struct sv_globals * globals;
 void
 RunSkipBlankLines(nblank, globals)
 int nblank;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -444,7 +444,7 @@ register struct sv_globals * globals;
 void
 RunSetColor(c, globals)
 int c;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -459,7 +459,7 @@ RunSkipPixels(nskip, last, wasrun, globals)
 int nskip;
 int last;
 int wasrun;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -471,7 +471,7 @@ register struct sv_globals * globals;
 void
 RunNewScanLine(flag, globals)
 int flag;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -483,7 +483,7 @@ void
 Runputdata(buf, n, globals)
 rle_pixel * buf;
 int n;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -498,7 +498,7 @@ Runputrun(color, n, last, globals)
 int color;
 int n;
 int last;
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -509,7 +509,7 @@ register struct sv_globals * globals;
  */
 void
 RunputEof( globals )
-register struct sv_globals * globals;
+struct sv_globals * globals;
 {
 }
 
@@ -577,7 +577,7 @@ int minmap;
 double gamma;
 {
     rle_pixel ** cmap, * gammap;
-    register int i, j;
+int i, j;
     int maplen, cmaplen, ncmap, nmap;
 
     if ( globals->sv_ncmap == 0 )	/* make identity map */
@@ -722,8 +722,8 @@ double gamma;
  */
 static char *
 match( n, v )
-register char *n;
-register char *v;
+char *n;
+char *v;
 {
     for ( ; *n != '\0' && *n != '=' && *n == *v; n++, v++ )
 	;
@@ -842,9 +842,9 @@ struct sv_globals * globals;
 {
     struct XtndRsetup setup;
     short magic;			/* assume 16 bits */
-    register ZFILE *infile = globals->svfb_fd;
+ZFILE *infile = globals->svfb_fd;
     rle_pixel * bg_color;
-    register int i;
+int i;
     char * comment_buf;
 
     zclearerr(infile);
@@ -904,7 +904,7 @@ struct sv_globals * globals;
     globals->sv_cmaplen = setup.h_cmaplen;
     if ( globals->sv_ncmap > 0 )
     {
-	register int maplen =
+int maplen =
 		     globals->sv_ncmap * (1 << globals->sv_cmaplen);
 	globals->sv_cmap = (rle_map *)lmalloc(
 	    (unsigned)(sizeof(rle_map) * maplen) );
@@ -928,7 +928,7 @@ struct sv_globals * globals;
     if ( setup.h_flags & H_COMMENT )
     {
 	short comlen, evenlen;
-	register char * cp;
+char * cp;
 
 	BREAD( short, comlen, sizeof comlen );	/* get comment length */
 	SWAB( comlen );
@@ -1121,9 +1121,9 @@ int rle_getrow( globals, scanline )
 struct sv_globals * globals;
 rle_pixel *scanline[];
 {
-    register rle_pixel * scanc;
-    register int nc;
-    register ZFILE *infile = globals->svfb_fd;
+rle_pixel * scanc;
+int nc;
+ZFILE *infile = globals->svfb_fd;
     int scan_x = globals->sv_xmin,	/* current X position */
 	   channel = 0;			/* current color channel */
     short word, long_data;
@@ -1240,7 +1240,7 @@ rle_pixel *scanline[];
 	    }
 	    else
 		{		/* Emulate a forward fseek */
-		    register int ii;
+int ii;
 		    for ( ii = ((nc + 1) / 2) * 2; ii > 0; ii-- )
 			(void) zgetc( infile );	/* discard it */
 		}
@@ -1410,7 +1410,7 @@ int modN[256];
 int magic[16][16];
 {
     double N;
-    register int i;
+int i;
     int levelsq, levelsc;
     int gammamap[256];
     
@@ -1471,7 +1471,7 @@ int modN[256];
 int magic[16][16];
 {
     double N;
-    register int i;
+int i;
     int gammamap[256];
     
 	make_gamma(gamma,gammamap);
@@ -1515,7 +1515,7 @@ int divN[256];
 int modN[256];
 int magic[16][16] ;
 {
-    register int i, j, k, l;
+int i, j, k, l;
     double magicfact;
 
     for ( i = 0; i < 256; i++ )
@@ -1653,7 +1653,7 @@ void make_gamma( gamma, gammamap )
 double gamma;
 int gammamap[256];
 {
-	register int i;
+int i;
 
     for ( i = 0; i < 256; i++ )
 		{

@@ -408,7 +408,7 @@ void dumpVarList(varlist)
  */
 Packet *codeExec(VObj *self, union PCode *pcode, union PCode *pcode_end, Attr **varVectorp[])
 {
-	register int currBaseIdx = stackBaseIdx;
+int currBaseIdx = stackBaseIdx;
 	union PCode *pcode_start = pcode;
 	extern char *PCodeStr[];
 	int data, code;

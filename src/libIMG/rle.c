@@ -404,10 +404,10 @@ Image *rleLoad(fullname,name,verbose)
 /* run the black and white through its map */
 void bw_m_line(dp,number)
      int number;
-     register unsigned char *dp;
+unsigned char *dp;
 {
-  register unsigned char *r;
-  register int i;
+unsigned char *r;
+int i;
   
   for(i=number,r= &scan[0][0];i>0;i--,r++,dp++)
     {
@@ -418,10 +418,10 @@ void bw_m_line(dp,number)
 /* convert a colour line with map to 8 bits per pixel */
 void c_m_line(dp,number,line)
      int number,line;
-     register unsigned char *dp;
+unsigned char *dp;
 {
-  register unsigned char *r, *g, *b;
-  register int i, col, row;
+unsigned char *r, *g, *b;
+int i, col, row;
   
   if(!bwflag)
     {		

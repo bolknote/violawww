@@ -67,7 +67,7 @@ Image *imgLoad (fullname,name,verbose)
     char *fullname, *name;
     unsigned int verbose;
 {
-	register int i;				/* Random index */
+int i;				/* Random index */
 	ZFILE *zf;				/* Input file */
 	short creps;				/* Repetition counter */
 	short ictr;				/* Secondary index counter */
@@ -187,8 +187,8 @@ static int IMG_ReadHeader (zf,h)
     ZFILE      *zf;
     IMG_Header *h;
 {
-	register int tlen;			/* total to read in */
-	register int rlen;			/* read lengths */
+int tlen;			/* total to read in */
+int rlen;			/* read lengths */
 	unsigned char junkbuffer[MAX_SCANLINE];	/* scrap buffer */
 
 	tlen = zread(zf,junkbuffer,(DEF_HLEN * 2));
@@ -277,12 +277,12 @@ static int IMG_ReadHeader (zf,h)
 static void IMG_WriteByte (c,cols,bpl)
 
     unsigned char c;
-    register int cols;
+int cols;
     unsigned int bpl;
 {
-	register int i;
-	register unsigned char *ptr;
-	register unsigned char *ptr2;
+int i;
+unsigned char *ptr;
+unsigned char *ptr2;
 
 	BitRow[ColCount] = c;
 

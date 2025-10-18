@@ -316,12 +316,12 @@ GetImagePixels(image, width, height, pmap)
     PixelsMap *pmap;
 {
     Pixel pixel, px;
-    register char *src;
-    register char *dst;
-    register int i;
+char *src;
+char *dst;
+int i;
     int bits;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     iptr = pmap->pixelindex;
     if (image->depth == 1) {
@@ -383,10 +383,10 @@ GetImagePixels32(image, width, height, pmap)
     unsigned int height;
     PixelsMap *pmap;
 {
-    register unsigned char *addr;
+unsigned char *addr;
     Pixel pixel;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     iptr = pmap->pixelindex;
 #ifndef WORD64
@@ -441,10 +441,10 @@ GetImagePixels16(image, width, height, pmap)
     unsigned int height;
     PixelsMap *pmap;
 {
-    register unsigned char *addr;
+unsigned char *addr;
     Pixel pixel;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     iptr = pmap->pixelindex;
     if (image->byte_order == MSBFirst)
@@ -482,8 +482,8 @@ GetImagePixels8(image, width, height, pmap)
     PixelsMap *pmap;
 {
     Pixel pixel;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     iptr = pmap->pixelindex;
     for (y = 0; y < height; y++)
@@ -513,8 +513,8 @@ GetImagePixels1(image, width, height, pmap, storeFunc)
     Pixel pixel;
     unsigned char bit;
     int xoff, yoff;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     if (image->byte_order != image->bitmap_bit_order)
 	return(GetImagePixels(image, width, height, pmap));

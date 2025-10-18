@@ -55,9 +55,9 @@ LFUNC(strcasecmp, int, (char *s1, char *s2));
  */
 static int
 strcasecmp(s1, s2)
-    register char *s1, *s2;
+char *s1, *s2;
 {
-    register int c1, c2;
+int c1, c2;
 
     while (*s1 && *s2) {
 	c1 = isupper(*s1) ? tolower(*s1) : *s1;
@@ -402,10 +402,10 @@ CreateXImage(display, visual, depth, width, height, image_return)
  * level. Assuming that we use only ZPixmap images. 
  */
 
-LFUNC(_putbits, int, (register char *src, int dstoffset,
-		      register int numbits, register char *dst));
+LFUNC(_putbits, int, (char *src, int dstoffset,
+int numbits, char *dst));
 
-LFUNC(_XReverse_Bytes, int, (register unsigned char *bpt, register int nb));
+LFUNC(_XReverse_Bytes, int, (unsigned char *bpt, int nb));
 
 static unsigned char Const _reverse_byte[0x100] = {
 			    0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
@@ -444,8 +444,8 @@ static unsigned char Const _reverse_byte[0x100] = {
 
 static int
 _XReverse_Bytes(bpt, nb)
-    register unsigned char *bpt;
-    register int nb;
+unsigned char *bpt;
+int nb;
 {
     do {
 	*bpt = _reverse_byte[*bpt];
@@ -457,10 +457,10 @@ _XReverse_Bytes(bpt, nb)
 
 int
 xpm_xynormalizeimagebits(bp, img)
-    register unsigned char *bp;
-    register XImage *img;
+unsigned char *bp;
+XImage *img;
 {
-    register unsigned char c;
+unsigned char c;
 
     if (img->byte_order != img->bitmap_bit_order) {
 	switch (img->bitmap_unit) {
@@ -488,10 +488,10 @@ xpm_xynormalizeimagebits(bp, img)
 
 int
 xpm_znormalizeimagebits(bp, img)
-    register unsigned char *bp;
-    register XImage *img;
+unsigned char *bp;
+XImage *img;
 {
-    register unsigned char c;
+unsigned char c;
 
     switch (img->bits_per_pixel) {
 
@@ -530,14 +530,14 @@ static unsigned char Const _himask[0x09] = {
 
 static int
 _putbits(src, dstoffset, numbits, dst)
-    register char *src;			/* address of source bit string */
+char *src;			/* address of source bit string */
     int dstoffset;			/* bit offset into destination;
 					 * range is 0-31 */
-    register int numbits;		/* number of bits to copy to
+int numbits;		/* number of bits to copy to
 					 * destination */
-    register char *dst;			/* address of destination bit string */
+char *dst;			/* address of destination bit string */
 {
-    register unsigned char chlo, chhi;
+unsigned char chlo, chhi;
     int hibits;
 
     dst = dst + (dstoffset >> 3);
@@ -586,11 +586,11 @@ SetImagePixels(image, width, height, pixelindex, pixels)
 {
     Pixel pixel;
     unsigned long px;
-    register char *src;
-    register char *dst;
+char *src;
+char *dst;
     int nbytes;
-    register unsigned int *iptr;
-    register int x, y, i;
+unsigned int *iptr;
+int x, y, i;
 
     iptr = pixelindex;
     if (image->depth == 1) {
@@ -660,9 +660,9 @@ SetImagePixels32(image, width, height, pixelindex, pixels)
     unsigned int *pixelindex;
     Pixel *pixels;
 {
-    register unsigned char *addr;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned char *addr;
+unsigned int *iptr;
+int x, y;
 
     iptr = pixelindex;
 #ifndef WORD64
@@ -698,9 +698,9 @@ SetImagePixels32(image, width, height, pixelindex, pixels)
 
 static void SetImagePixels16(XImage *image, unsigned int width, unsigned int height, unsigned int *pixelindex, Pixel *pixels)
 {
-    register unsigned char *addr;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned char *addr;
+unsigned int *iptr;
+int x, y;
 
     iptr = pixelindex;
     if (image->byte_order == MSBFirst)
@@ -725,8 +725,8 @@ static void SetImagePixels16(XImage *image, unsigned int width, unsigned int hei
 
 static void SetImagePixels8(XImage *image, unsigned int width, unsigned int height, unsigned int *pixelindex, Pixel *pixels)
 {
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     iptr = pixelindex;
     for (y = 0; y < height; y++)
@@ -742,8 +742,8 @@ static void SetImagePixels1(XImage *image, unsigned int width, unsigned int heig
 {
     unsigned char bit;
     int xoff, yoff;
-    register unsigned int *iptr;
-    register int x, y;
+unsigned int *iptr;
+int x, y;
 
     if (image->byte_order != image->bitmap_bit_order)
 	SetImagePixels(image, width, height, pixelindex, pixels);

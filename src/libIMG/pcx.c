@@ -104,7 +104,7 @@ unsigned int verbose;
 	int ymin;
 	int ymax;
 	int bytes_per_row;
-	register Image *image;
+Image *image;
 
 	/* Open input file. */
 	if ( ! (zf = zopen(fullname)))
@@ -173,7 +173,7 @@ static void PCX_LoadImage (zf,bytes_per_row,image,rows)
 	** not set, then this is the byte to write.
 	*/
 
-	register unsigned char *ptr;
+unsigned char *ptr;
 	int row = 0;
 	int bytes_this_row = 0;
 	int b, i, cnt;

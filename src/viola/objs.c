@@ -3729,7 +3729,7 @@ print(\"\\n\
 		if (isBlank(homeDoc) == 1)\n\
 			homeDoc = environVar(\"WWW_HOME\");\n\
 		if (isBlank(homeDoc) == 1) \n\
-			homeDoc = \"http://berkeley.ora.com/proj/viola/violaStartUp.html\";\n\
+			homeDoc = \"http://info.cern.ch/hypertext/WWW/TheProject.html\";\n\
 		if (nthChar(homeDoc, 0) == '/')\n\
 			homeDoc = concat(\"file:\", homeDoc);\n\
 \n\
@@ -9209,7 +9209,7 @@ static char _slotValue_mvw3[] = "\n\
 \n\
 		homeDoc = environVar(\"WWW_HOME\");\n\
 		if (isBlank(homeDoc) == 1)\n\
-			homeDoc = \"http://berkeley.ora.com/proj/viola/violaStartUp.html\";\n\
+			homeDoc = \"http://info.cern.ch/hypertext/WWW/TheProject.html\";\n\
 		if (nthChar(homeDoc, 0) == '/')\n\
 			homeDoc = concat(\"file:\", homeDoc);\n\
 \n\

@@ -10,59 +10,53 @@
  * copyright information.
  */
 
+#include "cmuwmraster.h"
 #include "copyright.h"
 #include "image.h"
-#include "cmuwmraster.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* SUPPRESS 558 */
 
 int babble(name, headerp)
-char *name;
-struct cmuwm_header *headerp;
+char* name;
+struct cmuwm_header* headerp;
 {
-    printf("%s is a %dx%d %d plane CMU WM raster\n",
-	   name,
-	   memToVal(headerp->width, sizeof(long)),
-	   memToVal(headerp->height, sizeof(long)),
-	   memToVal(headerp->depth, sizeof(short)));
+    printf("%s is a %dx%d %d plane CMU WM raster\n", name, memToVal(headerp->width, sizeof(long)),
+           memToVal(headerp->height, sizeof(long)), memToVal(headerp->depth, sizeof(short)));
 }
 
 int cmuwmIdent(fullname, name)
 char *fullname, *name;
 {
-    ZFILE *zf;
+    ZFILE* zf;
     struct cmuwm_header header;
     int r;
 
-    if (!(zf = zopen(fullname)))
-      {
-	  perror("cmuwmIdent");
-	  return(0);
-      }
+    if (!(zf = zopen(fullname))) {
+        perror("cmuwmIdent");
+        return (0);
+    }
 
-    switch (zread(zf, (byte *)&header, sizeof(struct cmuwm_header)))
-      {
-      case -1:
-	  perror("cmuwmIdent");
-	  r =0;
-	  break;
+    switch (zread(zf, (byte*)&header, sizeof(struct cmuwm_header))) {
+    case -1:
+        perror("cmuwmIdent");
+        r = 0;
+        break;
 
-      case sizeof(struct cmuwm_header):
-	if (memToVal(header.magic, sizeof(long)) != CMUWM_MAGIC)
-	  {
-	      r = 0;
-	      break;
-	  }
-	  babble(name, &header);
-	  r = 1;
-	  break;
+    case sizeof(struct cmuwm_header):
+        if (memToVal(header.magic, sizeof(long)) != CMUWM_MAGIC) {
+            r = 0;
+            break;
+        }
+        babble(name, &header);
+        r = 1;
+        break;
 
-      default:
-	  r = 0;
-	  break;
-      }
+    default:
+        r = 0;
+        break;
+    }
 
     zclose(zf);
 
@@ -73,76 +67,67 @@ Image* cmuwmLoad(fullname, name, verbose)
 char *fullname, *name;
 unsigned int verbose;
 {
-    ZFILE *zf;
+    ZFILE* zf;
     struct cmuwm_header header;
-    Image *image;
+    Image* image;
     int height, width, row, linelen, r;
-    byte *lineptr;
+    byte* lineptr;
 
-    if (!(zf= zopen(fullname))) 
-      {
-	  perror("cmuwmLoad");
-	  return(NULL);
-      }
+    if (!(zf = zopen(fullname))) {
+        perror("cmuwmLoad");
+        return (NULL);
+    }
 
-    switch (zread(zf, (byte *)&header, sizeof(struct cmuwm_header))) 
-      {
-      case -1:
-	  perror("cmuwmLoad");
-	  zclose(zf);
-	  exit(1);
+    switch (zread(zf, (byte*)&header, sizeof(struct cmuwm_header))) {
+    case -1:
+        perror("cmuwmLoad");
+        zclose(zf);
+        exit(1);
 
-      case sizeof(struct cmuwm_header):
-	  if (memToVal(header.magic, sizeof(long)) != CMUWM_MAGIC)
-	    {
-		zclose(zf);
-		return(NULL);
-	    }
-	  if (verbose) babble(name, &header);
-	  break;
+    case sizeof(struct cmuwm_header):
+        if (memToVal(header.magic, sizeof(long)) != CMUWM_MAGIC) {
+            zclose(zf);
+            return (NULL);
+        }
+        if (verbose)
+            babble(name, &header);
+        break;
 
-      default:
-	  zclose(zf);
-	  return(NULL);
-      }
+    default:
+        zclose(zf);
+        return (NULL);
+    }
 
-    if (memToVal(header.depth, sizeof(short)) != 1)
-      {
-	  fprintf(stderr,"CMU WM raster %s is of depth %d, must be 1",
-		  name,
-		  header.depth);
-	  return(NULL);
-      }
+    if (memToVal(header.depth, sizeof(short)) != 1) {
+        fprintf(stderr, "CMU WM raster %s is of depth %d, must be 1", name, header.depth);
+        return (NULL);
+    }
 
     image = newBitImage(width = memToVal(header.width, sizeof(long)),
-			height = memToVal(header.height, sizeof(long)));
+                        height = memToVal(header.height, sizeof(long)));
 
     linelen = (width / 8) + (width % 8 ? 1 : 0);
     lineptr = image->data;
 
-    for (row = 0; row < height; row++)
-      {
-	  r = zread(zf, lineptr, linelen);
+    for (row = 0; row < height; row++) {
+        r = zread(zf, lineptr, linelen);
 
-	  if (r == -1)
-	    {
-		perror("cmuwmLoad");
-		exit(1);
-	    }
-	  
-	  if (r != linelen)
-	    {
-		printf("cmuwmLoad: short raster\n");
-		exit(1);
-	    }
+        if (r == -1) {
+            perror("cmuwmLoad");
+            exit(1);
+        }
 
-	  for (r = 0; r < linelen; r++)
-	    {
-		lineptr[r] ^= 0xff;
-	    }
+        if (r != linelen) {
+            printf("cmuwmLoad: short raster\n");
+            exit(1);
+        }
 
-	  lineptr += linelen;
-      }
+        for (r = 0; r < linelen; r++) {
+            lineptr[r] ^= 0xff;
+        }
+
+        lineptr += linelen;
+    }
 
     zclose(zf);
 
@@ -150,8 +135,3 @@ unsigned int verbose;
 
     return image;
 }
-
-	  
-
-
-

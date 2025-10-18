@@ -1,7 +1,7 @@
 #include "../libStyle/libstg.h"
 
-extern STGLib *stgLib;
-extern STGGroup *stgGroup;
+extern STGLib* stgLib;
+extern STGGroup* stgGroup;
 
 int loadSTG();
 int getSTGInfo();

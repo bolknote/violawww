@@ -5,41 +5,27 @@
 #ifndef FOSI_H
 #define FOSI_H
 
-#include "HTUtils.h"
-#include "HTAnchor.h"
 #include "FOSIDTD.h"
-
+#include "HTAnchor.h"
+#include "HTUtils.h"
 
 extern CONST HTStructuredClass FOSIPresentation;
 
 /*	HTConverter to present FOSI
-*/
-PUBLIC HTStream* FOSIToPlain PARAMS((
-	HTPresentation *	pres,
-	HTParentAnchor *	anchor,	
-	HTStream *		sink));
+ */
+PUBLIC HTStream* FOSIToPlain PARAMS((HTPresentation * pres, HTParentAnchor* anchor,
+                                     HTStream* sink));
 
-PUBLIC HTStream* FOSIToC PARAMS((
-	HTPresentation *	pres,
-	HTParentAnchor *	anchor,	
-	HTStream *		sink));
+PUBLIC HTStream* FOSIToC PARAMS((HTPresentation * pres, HTParentAnchor* anchor, HTStream* sink));
 
-PUBLIC HTStream* FOSIPresent PARAMS((
-	HTPresentation *	pres,
-	HTParentAnchor *	anchor,	
-	HTStream *		sink));
+PUBLIC HTStream* FOSIPresent PARAMS((HTPresentation * pres, HTParentAnchor* anchor,
+                                     HTStream* sink));
 
-extern HTStructured* FOSI_new PARAMS((
-	HTParentAnchor * anchor,
-	HTStream *	target));
+extern HTStructured* FOSI_new PARAMS((HTParentAnchor * anchor, HTStream* target));
 
 /*	Names for selected internal representations:
-*/
-typedef enum _FOSICharacterSet {
-	FOSI_ISO_LATIN1,
-	FOSI_NEXT_CHARS,
-	FOSI_PC_CP950
-} FOSICharacterSet;
+ */
+typedef enum _FOSICharacterSet { FOSI_ISO_LATIN1, FOSI_NEXT_CHARS, FOSI_PC_CP950 } FOSICharacterSet;
 
 extern void FOSIUseCharacterSet PARAMS((FOSICharacterSet i));
 
@@ -59,9 +45,6 @@ extern void FOSIUseCharacterSet PARAMS((FOSICharacterSet i));
 **	a retrun code like HT_LOADED if object exists else < 0
 */
 
-PUBLIC int HTLoadError PARAMS((
-	HTStream * 	sink,
-	int		number,
-	CONST char *	message));
+PUBLIC int HTLoadError PARAMS((HTStream * sink, int number, CONST char* message));
 
 #endif

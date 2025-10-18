@@ -14,64 +14,47 @@
  */
 /*
  * Contributors:
- * 
+ *
  * Kurt Pires (kjpires@xcf): initial socket code.
  * Tor Lillqvist (tml@tik.vtt.fi): HP-UX compatibility.
  */
+#include "cl_socket.h"
+#include "class.h"
+#include "classlist.h"
+#include "error.h"
+#include "event.h"
+#include "glib.h"
+#include "hash.h"
+#include "ident.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
+#include "obj.h"
+#include "packet.h"
+#include "scanutils.h"
+#include "slotaccess.h"
 #include "utils.h"
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-#include "error.h"
-#include "mystrings.h"
-#include "hash.h"
-#include "ident.h"
-#include "scanutils.h"
-#include "obj.h"
-#include "packet.h"
-#include "membership.h"
-#include "class.h"
-#include "slotaccess.h"
-#include "classlist.h"
-#include "cl_socket.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
 
-#include <netdb.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 #ifdef _AIX
 #include <sys/select.h>
 #endif
 
-SlotInfo cl_socket_NCSlots[] = {
-	{0}
-};
+SlotInfo cl_socket_NCSlots[] = {{0}};
 SlotInfo cl_socket_NPSlots[] = {
-{
-	STR_host,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_port,
-	LONG | SLOT_RW,
-	0
-},{
-	{0}
-}
-};
-SlotInfo cl_socket_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"socket"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+    {STR_host, PTRS | SLOT_RW, (long)""}, {STR_port, LONG | SLOT_RW, 0}, {{0}}};
+SlotInfo cl_socket_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"socket"},
+                               {
+                                   STR_classScript,
+                                   PTRS,
+                                   (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -144,164 +127,140 @@ SlotInfo cl_socket_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	{0}
-}
-};
-SlotInfo cl_socket_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_socket
-},{
-	{0}
-}
-};
+                               },
+                               {{0}}};
+SlotInfo cl_socket_PSlots[] = {{STR__classInfo, CLSI, (long)&class_socket}, {{0}}};
 
-SlotInfo *slots_socket[] = {
-	(SlotInfo*)cl_socket_NCSlots,
-	(SlotInfo*)cl_socket_NPSlots,
-	(SlotInfo*)cl_socket_CSlots,
-	(SlotInfo*)cl_socket_PSlots
-};
+SlotInfo* slots_socket[] = {(SlotInfo*)cl_socket_NCSlots, (SlotInfo*)cl_socket_NPSlots,
+                            (SlotInfo*)cl_socket_CSlots, (SlotInfo*)cl_socket_PSlots};
 
 MethodInfo meths_socket[] = {
-	/* local methods */
-{
-	STR__startClient,
-	meth_socket__startClient
-},{
-	STR_freeSelf,
-	meth_socket_freeSelf,
-},{
-	STR_geta,
-	meth_socket_get,
-},{
-	STR_seta,
-	meth_socket_set
-},{
-	{0}
-}
-};
+    /* local methods */
+    {STR__startClient, meth_socket__startClient},
+    {
+        STR_freeSelf,
+        meth_socket_freeSelf,
+    },
+    {
+        STR_geta,
+        meth_socket_get,
+    },
+    {STR_seta, meth_socket_set},
+    {{0}}};
 
 ClassInfo class_socket = {
-	helper_socket_get,
-	helper_socket_set,
-	slots_socket,		/* class slot information	*/
-	meths_socket,		/* class methods		*/
-	STR_socket,		/* class identifier number	*/
-	&class_client,		/* super class info		*/
+    helper_socket_get, helper_socket_set, slots_socket, /* class slot information	*/
+    meths_socket,                                       /* class methods		*/
+    STR_socket,                                         /* class identifier number	*/
+    &class_client,                                      /* super class info		*/
 };
 
 long meth_socket__startClient(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	int fd;
-	int socket_open();
+    int fd;
+    int socket_open();
 
-	fd = socket_open("tcp", GET_host(self), GET_port(self));
+    fd = socket_open("tcp", GET_host(self), GET_port(self));
 
-	result->type = PKT_INT;
-	result->canFree = 0;
-	result->info.i = fd;
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = fd;
 
-	return 1;
+    return 1;
 }
 
 long helper_socket_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_pid:
-		result->type = PKT_INT;
-		result->canFree = 0;
-		result->info.i = GET_pid(self);
-		return 1;
+    switch (labelID) {
+    case STR_pid:
+        result->type = PKT_INT;
+        result->canFree = 0;
+        result->info.i = GET_pid(self);
+        return 1;
 
-	case STR_args:
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_args(self));
-		return 1;
+    case STR_args:
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_args(self));
+        return 1;
 
-	case STR_path:
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_path(self));
-		return 1;
-
-	}
-	return helper_client_get(self, result, argc, argv, labelID);
+    case STR_path:
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_path(self));
+        return 1;
+    }
+    return helper_client_get(self, result, argc, argv, labelID);
 }
 long meth_socket_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_socket_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_socket_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 long meth_socket_freeSelf(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	int fd = GET_clientFD(self);
+    int fd = GET_clientFD(self);
 
-	if (fd != -1) {
-		SET_clientFD(self, 0);
-		close(fd);
-		objFDList[fd] = NULL;
-	}
-	free(GET_host(self));
-	free(GET_port(self));
-	meth_client_freeSelf(self, result, argc, argv);
+    if (fd != -1) {
+        SET_clientFD(self, 0);
+        close(fd);
+        objFDList[fd] = NULL;
+    }
+    free(GET_host(self));
+    free(GET_port(self));
+    meth_client_freeSelf(self, result, argc, argv);
 
-	return 1;
+    return 1;
 }
 
 long helper_socket_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_host:
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_host(self, result->info.s);
-		result->type = PKT_STR;
-		result->canFree = 0;
-		return 1;
+    switch (labelID) {
+    case STR_host:
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_host(self, result->info.s);
+        result->type = PKT_STR;
+        result->canFree = 0;
+        return 1;
 
-	case STR_port:
-		result->info.i = PkInfo2Int(&argv[1]);
-		SET_port(self, result->info.i);
-		result->type = PKT_INT;
-		result->canFree = 0;
-		return 1;
-	}
-	return helper_client_set(self, result, argc, argv, labelID);
+    case STR_port:
+        result->info.i = PkInfo2Int(&argv[1]);
+        SET_port(self, result->info.i);
+        result->type = PKT_INT;
+        result->canFree = 0;
+        return 1;
+    }
+    return helper_client_set(self, result, argc, argv, labelID);
 }
 long meth_socket_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_socket_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_socket_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 /******/
@@ -309,47 +268,47 @@ long meth_socket_set(self, result, argc, argv)
  * KJ's code
  */
 int socket_open(proto, host, port)
-	char	*proto;			/* "tcp" or "udp" */
-	char	*host;			/* name or dotted quad */
-	int	port;			/* service name or number */
+char* proto; /* "tcp" or "udp" */
+char* host;  /* name or dotted quad */
+int port;    /* service name or number */
 {
-	struct	sockaddr_in	addr;
-	int			s;
-	int			stype;
+    struct sockaddr_in addr;
+    int s;
+    int stype;
 
-	if (strcmp("tcp", proto) == 0)
-		stype = SOCK_STREAM;
-	else if (strcmp("udp", proto) != 0)
-		stype = SOCK_DGRAM;
-	else
-		return -1;
+    if (strcmp("tcp", proto) == 0)
+        stype = SOCK_STREAM;
+    else if (strcmp("udp", proto) != 0)
+        stype = SOCK_DGRAM;
+    else
+        return -1;
 
-	if ((addr.sin_addr.s_addr = inet_addr(host)) != -1) {
-		addr.sin_family = AF_INET;
-	} else {
-		struct	hostent	*hp;
-		
-		if ((hp = gethostbyname(host)) == NULL)
-			return -2;
+    if ((addr.sin_addr.s_addr = inet_addr(host)) != -1) {
+        addr.sin_family = AF_INET;
+    } else {
+        struct hostent* hp;
 
-		bcopy(hp->h_addr, (char *)&addr.sin_addr, hp->h_length);
-		addr.sin_family = hp->h_addrtype;
-	}
+        if ((hp = gethostbyname(host)) == NULL)
+            return -2;
 
-	if (port) {
-		addr.sin_port = htons((in_port_t)port);
-	} else {
-		/* port must be a number, not a service name */
-		return -3;
-	}
+        bcopy(hp->h_addr, (char*)&addr.sin_addr, hp->h_length);
+        addr.sin_family = hp->h_addrtype;
+    }
 
-	if ((s = socket(addr.sin_family, stype, 0)) < 0)
-		return -4;
+    if (port) {
+        addr.sin_port = htons((in_port_t)port);
+    } else {
+        /* port must be a number, not a service name */
+        return -3;
+    }
 
-	if (connect(s, (struct sockaddr *)&addr, sizeof addr) < 0) {
-		close(s);
-		return -5;
-	}
+    if ((s = socket(addr.sin_family, stype, 0)) < 0)
+        return -4;
 
-	return s;
+    if (connect(s, (struct sockaddr*)&addr, sizeof addr) < 0) {
+        close(s);
+        return -5;
+    }
+
+    return s;
 }

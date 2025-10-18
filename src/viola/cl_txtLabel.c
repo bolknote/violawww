@@ -12,38 +12,30 @@
  * class	: txtLabel
  * superClass	: txt
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_txtLabel.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_txtLabel.h"
-#include "misc.h"
-#include "glib.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_txtLabel_NCSlots[] = {
-	{0}
-};
-SlotInfo cl_txtLabel_NPSlots[] = {
-	{0}
-};
-SlotInfo cl_txtLabel_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"txtLabel"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_txtLabel_NCSlots[] = {{0}};
+SlotInfo cl_txtLabel_NPSlots[] = {{0}};
+SlotInfo cl_txtLabel_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtLabel"},
+                                 {
+                                     STR_classScript,
+                                     PTRS,
+                                     (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -106,127 +98,88 @@ SlotInfo cl_txtLabel_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	{0}
-}
-};
-SlotInfo cl_txtLabel_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_txtLabel
-},{
-	STR_paneConfig,
- 	PTRS | SLOT_RW,
-	(long)"center"
-},{
-	{0}
-}
-};
+                                 },
+                                 {{0}}};
+SlotInfo cl_txtLabel_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txtLabel},
+                                 {STR_paneConfig, PTRS | SLOT_RW, (long)"center"},
+                                 {{0}}};
 
-SlotInfo *slots_txtLabel[] = {
-	(SlotInfo*)cl_txtLabel_NCSlots,
-	(SlotInfo*)cl_txtLabel_NPSlots,
-	(SlotInfo*)cl_txtLabel_CSlots,
-	(SlotInfo*)cl_txtLabel_PSlots
-};
+SlotInfo* slots_txtLabel[] = {(SlotInfo*)cl_txtLabel_NCSlots, (SlotInfo*)cl_txtLabel_NPSlots,
+                              (SlotInfo*)cl_txtLabel_CSlots, (SlotInfo*)cl_txtLabel_PSlots};
 
 MethodInfo meths_txtLabel[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_txtLabel_config,
-},{
-	STR_initialize,
-	meth_txtLabel_initialize
-},{
-	STR_render,
-	meth_txtLabel_render
-},{
-	{0}
-}
-};
+    /* local methods */
+    {
+        STR_config,
+        meth_txtLabel_config,
+    },
+    {STR_initialize, meth_txtLabel_initialize},
+    {STR_render, meth_txtLabel_render},
+    {{0}}};
 
 ClassInfo class_txtLabel = {
-	helper_txt_get,
-	helper_txt_set,
-	slots_txtLabel,		/* class slot information	*/
-	meths_txtLabel,		/* class methods		*/
-	STR_txtLabel,		/* class identifier number	*/
-	&class_txt,		/* super class info		*/
+    helper_txt_get, helper_txt_set, slots_txtLabel, /* class slot information	*/
+    meths_txtLabel,                                 /* class methods		*/
+    STR_txtLabel,                                   /* class identifier number	*/
+    &class_txt,                                     /* super class info		*/
 };
 
 long int meth_txtLabel_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_txt_config(self, result, argc, argv);
+    return meth_txt_config(self, result, argc, argv);
 }
 
 long int meth_txtLabel_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_txt_initialize(self, result, argc, argv);
+    return meth_txt_initialize(self, result, argc, argv);
 }
 
 long int meth_txtLabel_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	Window w;
+    Window w;
 
-	if (!meth_txt_render(self, result, argc, argv)) return 0;
+    if (!meth_txt_render(self, result, argc, argv))
+        return 0;
 
-	w = GET_window(self);
-	if (w && GET_visible(self)) {
+    w = GET_window(self);
+    if (w && GET_visible(self)) {
 
-		char *config = GET_paneConfig(self);
-		char *str = GET_label(self);
-		int fontID = GET__font(self);
+        char* config = GET_paneConfig(self);
+        char* str = GET_label(self);
+        int fontID = GET__font(self);
 
-		if (!str) return 0;
+        if (!str)
+            return 0;
 
-		if (config[0] == 'c') {			/* center */
-			GLDrawText(w, fontID, 
-			  (GET_width(self) - GLTextWidth(fontID, str)) / 2,
-			  (GET_height(self) - GLTextHeight(fontID, str)) / 2,
-			  str);
-		} else if (config[0] == 'w') {		/* westToEast */
-			GLDrawText(w, fontID, 
-			  0,
-			  (GET_height(self) - GLTextHeight(fontID, str)) / 2,
-			  str);
-		} else if (config[0] == 'e') {		/* eastToWest */
-			GLDrawText(w, fontID, 
-			  GET_width(self) - GLTextWidth(fontID, str) - 1,
-			  (GET_height(self) - GLTextHeight(fontID, str)) / 2,
-			  str);
-		} else if (config[0] == 'n') {		/* northToSouth */
-			GLDrawText(w, fontID, 
-			  (GET_width(self) - GLTextWidth(fontID, str)) / 2,
-			  0,
-			  str);
-		} else if (config[0] == 's') {		/* southToNorth */
-			GLDrawText(w, fontID, 
-			  (GET_width(self) - GLTextWidth(fontID, str)) / 2,
-			  GET_height(self) - GLTextHeight(fontID, str),
-			  str);
-		} else {				/* default northWest */
-			GLDrawText(w, fontID, 
-			  0,
- 			  0,
-			  str);
-		}
-		return 1;
-	}
-	return 0;
-	
+        if (config[0] == 'c') { /* center */
+            GLDrawText(w, fontID, (GET_width(self) - GLTextWidth(fontID, str)) / 2,
+                       (GET_height(self) - GLTextHeight(fontID, str)) / 2, str);
+        } else if (config[0] == 'w') { /* westToEast */
+            GLDrawText(w, fontID, 0, (GET_height(self) - GLTextHeight(fontID, str)) / 2, str);
+        } else if (config[0] == 'e') { /* eastToWest */
+            GLDrawText(w, fontID, GET_width(self) - GLTextWidth(fontID, str) - 1,
+                       (GET_height(self) - GLTextHeight(fontID, str)) / 2, str);
+        } else if (config[0] == 'n') { /* northToSouth */
+            GLDrawText(w, fontID, (GET_width(self) - GLTextWidth(fontID, str)) / 2, 0, str);
+        } else if (config[0] == 's') { /* southToNorth */
+            GLDrawText(w, fontID, (GET_width(self) - GLTextWidth(fontID, str)) / 2,
+                       GET_height(self) - GLTextHeight(fontID, str), str);
+        } else { /* default northWest */
+            GLDrawText(w, fontID, 0, 0, str);
+        }
+        return 1;
+    }
+    return 0;
 }
-

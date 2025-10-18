@@ -18,10 +18,8 @@
 #ifndef _HOTLIST_H_
 #define _HOTLIST_H_
 
-
 /* CONSTANTS */
 #define HOTLIST_CHUNK 256
-
 
 /* PROTOTYPES */
 void hotlistPrev();

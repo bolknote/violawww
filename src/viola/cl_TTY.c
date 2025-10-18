@@ -16,41 +16,41 @@
  */
 /*
  * Contributors:
- * 
+ *
  * Kurt Pires (kjpires@xcf): initial tty code.
  * Tor Lillqvist (tml@tik.vtt.fi): HP-UX compatibility.
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_TTY.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_TTY.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-#include <netdb.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 #ifdef _AIX
 #include <sys/select.h>
 #endif
 
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <unistd.h>
-#include <strings.h>
 #include <stdlib.h>
+#include <strings.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #ifdef SYSV
 #include <termio.h>
 #endif
@@ -59,39 +59,28 @@
 static char pty[] = "/dev/ptym/ptyXY";
 static char tty[] = "/dev/pty/ttyXY";
 #else
-static	char	pty[] = "/dev/ptyXY";
-static	char	tty[] = "/dev/ttyXY";
+static char pty[] = "/dev/ptyXY";
+static char tty[] = "/dev/ttyXY";
 #endif
 
-SlotInfo cl_TTY_NCSlots[] = {
-	0
-};
-SlotInfo cl_TTY_NPSlots[] = {
-{
-	STR_path,
-	PTRS | SLOT_RW,
-	(long)"",
-},{
-	STR_args,
-	PTRS | SLOT_RW,
-	(long)"",
-},{
-	STR_pid,
-	LONG,
-	0
-},{
-	0
-}
-};
-SlotInfo cl_TTY_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"TTY"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_TTY_NCSlots[] = {0};
+SlotInfo cl_TTY_NPSlots[] = {{
+                                 STR_path,
+                                 PTRS | SLOT_RW,
+                                 (long)"",
+                             },
+                             {
+                                 STR_args,
+                                 PTRS | SLOT_RW,
+                                 (long)"",
+                             },
+                             {STR_pid, LONG, 0},
+                             {0}};
+SlotInfo cl_TTY_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"TTY"},
+                            {
+                                STR_classScript,
+                                PTRS,
+                                (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -164,222 +153,194 @@ SlotInfo cl_TTY_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_TTY_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_TTY
-},{
-	0
-}
-};
+                            },
+                            {0}};
+SlotInfo cl_TTY_PSlots[] = {{STR__classInfo, CLSI, (long)&class_TTY}, {0}};
 
-SlotInfo *slots_TTY[] = {
-	(SlotInfo*)cl_TTY_NCSlots,
-	(SlotInfo*)cl_TTY_NPSlots,
-	(SlotInfo*)cl_TTY_CSlots,
-	(SlotInfo*)cl_TTY_PSlots
-};
+SlotInfo* slots_TTY[] = {(SlotInfo*)cl_TTY_NCSlots, (SlotInfo*)cl_TTY_NPSlots,
+                         (SlotInfo*)cl_TTY_CSlots, (SlotInfo*)cl_TTY_PSlots};
 
 MethodInfo meths_TTY[] = {
-	/* local methods */
-{
-	STR__startClient,
-	meth_TTY__startClient
-},{
-	STR_geta,
-	meth_TTY_get,
-},{
-	STR_seta,
-	meth_TTY_set
-},{
-	0
-}
-};
+    /* local methods */
+    {STR__startClient, meth_TTY__startClient},
+    {
+        STR_geta,
+        meth_TTY_get,
+    },
+    {STR_seta, meth_TTY_set},
+    {0}};
 
 ClassInfo class_TTY = {
-	helper_TTY_get,
-	helper_TTY_set,
-	slots_TTY,		/* class slot information	*/
-	meths_TTY,		/* class methods		*/
-	STR_TTY,		/* class identifier number	*/
-	&class_client,		/* super class info		*/
+    helper_TTY_get, helper_TTY_set, slots_TTY, /* class slot information	*/
+    meths_TTY,                                 /* class methods		*/
+    STR_TTY,                                   /* class identifier number	*/
+    &class_client,                             /* super class info		*/
 };
 
-long meth_TTY__startClient(VObj *self, Packet *result, int argc, Packet argv[])
-{
+long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) {
 #ifndef i386
 
-	int fd, fd_client, pid, n;
-	char *args[16];
-	char *cp, *ptymajorp, *ptyminorp, *ttymajorp, *ttyminorp;
+    int fd, fd_client, pid, n;
+    char* args[16];
+    char *cp, *ptymajorp, *ptyminorp, *ttymajorp, *ttyminorp;
 
 #ifdef SYSV
-	struct	termio b;
+    struct termio b;
 #elif !defined(__DARWIN__)
-	struct	sgttyb b;
-	struct	tchars tc;
-	struct	ltchars lc;
+    struct sgttyb b;
+    struct tchars tc;
+    struct ltchars lc;
 #ifdef TIOCGWINSZ
-	struct	winsize win;
+    struct winsize win;
 #endif
-	int lb;
-	int l;
+    int lb;
+    int l;
 #endif
 #ifdef TIOCGWINSZ
-	struct	winsize win;
+    struct winsize win;
 #endif
-	 
-	ptymajorp = index(pty, 'X');
-	ptyminorp = index(pty, 'Y');
-	ttymajorp = index(tty, 'X');
-	ttyminorp = index(tty, 'Y');
-	
-	result->type = PKT_INT;
-	result->canFree = 0;
 
-	if (ptymajorp == NULL) {
-		MERROR(self, "startClient: Out of pty's.\n");
-		result->info.i = 0;
-		return 0;
-	}
+    ptymajorp = index(pty, 'X');
+    ptyminorp = index(pty, 'Y');
+    ttymajorp = index(tty, 'X');
+    ttyminorp = index(tty, 'Y');
 
-	for (*ptymajorp = 'p'; *ptymajorp <= 'z'; *ptymajorp++) {
-		for (cp = "0123456789abcdef"; *cp; cp++) {
-			*ptyminorp = *cp;
-	
-			if ((fd = open(pty, O_RDWR)) >= 0) {
-			 	*ttymajorp = *ptymajorp;
-			 	*ttyminorp = *ptyminorp;
-	
-				if ((fd_client = open(tty, O_RDWR)) < 0) {
-					MERROR(self, "startClient: ");
-					perror(tty);
-					close(fd);
-					continue; /* Try next pty */
-				}
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (ptymajorp == NULL) {
+        MERROR(self, "startClient: Out of pty's.\n");
+        result->info.i = 0;
+        return 0;
+    }
+
+    for (*ptymajorp = 'p'; *ptymajorp <= 'z'; *ptymajorp++) {
+        for (cp = "0123456789abcdef"; *cp; cp++) {
+            *ptyminorp = *cp;
+
+            if ((fd = open(pty, O_RDWR)) >= 0) {
+                *ttymajorp = *ptymajorp;
+                *ttyminorp = *ptyminorp;
+
+                if ((fd_client = open(tty, O_RDWR)) < 0) {
+                    MERROR(self, "startClient: ");
+                    perror(tty);
+                    close(fd);
+                    continue; /* Try next pty */
+                }
 #ifdef SYSV
-		 	ioctl(0, TCGETA, (char *)&b);
-		 	b.c_cc[VMIN] = 1;
-		 	b.c_cc[VTIME] = 0;
-		 	b.c_lflag &= ~ (ICANON | ECHO);
-		 	ioctl(fd_client, TCSETA, (char *)&b);
+                ioctl(0, TCGETA, (char*)&b);
+                b.c_cc[VMIN] = 1;
+                b.c_cc[VTIME] = 0;
+                b.c_lflag &= ~(ICANON | ECHO);
+                ioctl(fd_client, TCSETA, (char*)&b);
 #elif !defined(__DARWIN__)
-			ioctl(0, TIOCGETP, (char *)&b);
-			b.sg_flags |= RAW;
-			b.sg_flags &= ~ECHO;
-			ioctl(fd_client, TIOCSETP, (char *)&b);
-			ioctl(0, TIOCGETC, (char *)&tc);
-			ioctl(fd_client, TIOCSETC, (char *)&tc);
-			ioctl(0, TIOCGETD, (char *)&l);
-			ioctl(fd_client, TIOCSLTC, (char *)&lc);
-			ioctl(0, TIOCGLTC, (char *)&lc);
-			ioctl(fd_client, TIOCLSET, (char *)&lb);
-			ioctl(0, TIOCLGET, (char *)&lb);
-			ioctl(fd_client, TIOCSETD, (char *)&l);
+                ioctl(0, TIOCGETP, (char*)&b);
+                b.sg_flags |= RAW;
+                b.sg_flags &= ~ECHO;
+                ioctl(fd_client, TIOCSETP, (char*)&b);
+                ioctl(0, TIOCGETC, (char*)&tc);
+                ioctl(fd_client, TIOCSETC, (char*)&tc);
+                ioctl(0, TIOCGETD, (char*)&l);
+                ioctl(fd_client, TIOCSLTC, (char*)&lc);
+                ioctl(0, TIOCGLTC, (char*)&lc);
+                ioctl(fd_client, TIOCLSET, (char*)&lb);
+                ioctl(0, TIOCLGET, (char*)&lb);
+                ioctl(fd_client, TIOCSETD, (char*)&l);
 #endif
-#ifdef	TIOCGWINSZ
-			ioctl(0, TIOCGWINSZ, (char *)&win);
-			ioctl(fd_client, TIOCSWINSZ, (char *)&win);
+#ifdef TIOCGWINSZ
+                ioctl(0, TIOCGWINSZ, (char*)&win);
+                ioctl(fd_client, TIOCSWINSZ, (char*)&win);
 #endif
-				args[0] = GET_path(self);
-				n = makeArgv(&args[1], GET_args(self));
-				args[n + 1] = NULL;
-	
-				switch (pid = vfork()) {
-				case -1: /* Error */
-					MERROR(self, "startClient: ");
-					perror("fork failed");
-					close(fd_client);
-					close(fd);
-					result->info.i = -1;
-					return 0;
+                args[0] = GET_path(self);
+                n = makeArgv(&args[1], GET_args(self));
+                args[n + 1] = NULL;
 
-				case 0:	/* Child */
-					close(fd);
-					if (fd_client != 0) dup2(fd_client, 0);
-					if (fd_client != 1) dup2(fd_client, 1);
-					/* ERROR to current screen */
+                switch (pid = vfork()) {
+                case -1: /* Error */
+                    MERROR(self, "startClient: ");
+                    perror("fork failed");
+                    close(fd_client);
+                    close(fd);
+                    result->info.i = -1;
+                    return 0;
 
-					/* not error */
-					if (fd_client <= 1) close(fd_client);
+                case 0: /* Child */
+                    close(fd);
+                    if (fd_client != 0)
+                        dup2(fd_client, 0);
+                    if (fd_client != 1)
+                        dup2(fd_client, 1);
+                    /* ERROR to current screen */
 
-					execv(GET_path(self), args);
-					MERROR(self, "exec: ");
-					perror(GET_path(self));
-					_exit(-1);
+                    /* not error */
+                    if (fd_client <= 1)
+                        close(fd_client);
 
-				default:
-					close(fd_client);
-					SET_pid(self, pid);
-					SET_clientFD(self, fd);
-					result->info.i = fd;
-					return 1;
-				}
-			}
-		}
-	}
+                    execv(GET_path(self), args);
+                    MERROR(self, "exec: ");
+                    perror(GET_path(self));
+                    _exit(-1);
+
+                default:
+                    close(fd_client);
+                    SET_pid(self, pid);
+                    SET_clientFD(self, fd);
+                    result->info.i = fd;
+                    return 1;
+                }
+            }
+        }
+    }
 #endif i386
-	result->info.i = 0;
-	return 0;
+    result->info.i = 0;
+    return 0;
 }
 
-long helper_TTY_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_pid:
-		result->type = PKT_INT;
-		result->canFree = 0;
-		result->info.i = GET_pid(self);
-		return 1;
+long helper_TTY_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_pid:
+        result->type = PKT_INT;
+        result->canFree = 0;
+        result->info.i = GET_pid(self);
+        return 1;
 
-	case STR_args:
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_args(self));
-		return 1;
+    case STR_args:
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_args(self));
+        return 1;
 
-	case STR_path:
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_path(self));
-		return 1;
-
-	}
-	return helper_client_get(self, result, argc, argv, labelID);
+    case STR_path:
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_path(self));
+        return 1;
+    }
+    return helper_client_get(self, result, argc, argv, labelID);
 }
-long meth_TTY_get(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_TTY_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_TTY_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_TTY_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long helper_TTY_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_args:
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_args(self, result->info.s);
-		result->type = PKT_STR;
-		result->canFree = 0;
-		return 1;
+long helper_TTY_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_args:
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_args(self, result->info.s);
+        result->type = PKT_STR;
+        result->canFree = 0;
+        return 1;
 
-	case STR_path:
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_path(self, result->info.s);
-		result->type = PKT_STR;
-		result->canFree = 0;
-		return 1;
-	}
-	return helper_client_set(self, result, argc, argv, labelID);
+    case STR_path:
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_path(self, result->info.s);
+        result->type = PKT_STR;
+        result->canFree = 0;
+        return 1;
+    }
+    return helper_client_set(self, result, argc, argv, labelID);
 }
-long meth_TTY_set(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_TTY_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_TTY_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_TTY_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
-

@@ -19,32 +19,30 @@
 
 #include "../viola/mystrings.h"
 
-#include <Xm/Xm.h>
-#include "box.h"
 #include "../viola/viola.h"
-
+#include "box.h"
+#include <Xm/Xm.h>
 
 /* --- CONSTANTS ----------------------------------------------------------- */
 #define VIOLA_OBJ_NAME "mvw"
 #define SBAR_MAGNITUDE 100
 #define GLOBE_TIME 30000
-#define TITLE_ICON_WIDTH	50
-#define TITLE_ICON_HEIGHT	50
-#define TOOLBAR_HEIGHT 		38
-#define SEARCH_HEIGHT		33
-#define FORM_SPACING		4
-#define PRINT_COMMAND		"/usr/ucb/lpr"
+#define TITLE_ICON_WIDTH 50
+#define TITLE_ICON_HEIGHT 50
+#define TOOLBAR_HEIGHT 38
+#define SEARCH_HEIGHT 33
+#define FORM_SPACING 4
+#define PRINT_COMMAND "/usr/ucb/lpr"
 
-#define MAIL_COMMAND		"/usr/ucb/mail"
-#define DEVELOPER_ADDRESS	"viola@ora.com"
-
+#define MAIL_COMMAND "/usr/ucb/mail"
+#define DEVELOPER_ADDRESS "viola@ora.com"
 
 /* --- GLOBALS ------------------------------------------------------------- */
 extern XtAppContext appCon;
 extern Widget topWidget;
 extern Pixmap globes[];
 extern Pixmap icon;
-extern char *appName;
+extern char* appName;
 extern int nshells;
 extern int toolBarHeight;
 
@@ -58,7 +56,6 @@ extern XmFontList titleFontList;
 
 extern int activeHelpLock;
 
-
 /* --- DATA TYPES ---------------------------------------------------------- */
 /*
  * Each top level shell with a browser interface is a "DocView".  Each
@@ -66,19 +63,19 @@ extern int activeHelpLock;
  * contained in the global Box "docViews".
  */
 typedef struct DocViewInfoStruct {
-    char *shellName;
-    char *docName;
-    char *URL;
-    long cloneID;  /* shell field used as cloneID ... but the
-		      first shell always has cloneID of 0. */
-    
+    char* shellName;
+    char* docName;
+    char* URL;
+    long cloneID; /* shell field used as cloneID ... but the
+                     first shell always has cloneID of 0. */
+
     Widget shell;
     Widget topMostWidget;
     Widget title;
     Widget canvas;
     Widget quitDlog;
     Widget scrollBar;
-    Widget msgLabel;		/* Label for temporary messages to user. */
+    Widget msgLabel; /* Label for temporary messages to user. */
 
     Widget titleIcon;
     XtIntervalId intervalID;
@@ -89,7 +86,7 @@ typedef struct DocViewInfoStruct {
 
     Widget historyDlog;
     Widget historyListWidget;
-    char **historyList;
+    char** historyList;
     int historySize;
     int nHistoryItems;
     int currentHistoryItem;
@@ -99,11 +96,11 @@ typedef struct DocViewInfoStruct {
     Widget editorSaveButton;
     Widget textEditor;
 
-    char *violaDocViewName;
-    char *violaDocToolsName;
+    char* violaDocViewName;
+    char* violaDocToolsName;
 
-    VObj *violaDocViewObj;
-    VObj *violaDocToolsObj;
+    VObj* violaDocViewObj;
+    VObj* violaDocToolsObj;
 
     Window violaDocViewWindow;
     Window violaDocToolsWindow;
@@ -115,27 +112,24 @@ typedef struct DocViewInfoStruct {
     int currentHotlistItem;
 
 } DocViewInfo;
-extern Box *docViews;
-
+extern Box* docViews;
 
 /*
  * For use in callbacks that require more info than is contained in the
  * DocViewInfo structure.
  */
 typedef struct ClientDataStruct {
-    void *data;
-    void *shellInfo;
+    void* data;
+    void* shellInfo;
 } ClientData;
-
 
 Boolean compareDocViewName();
 Boolean compareDocViewShell();
 void freeDocViewInfo();
 
-
 typedef struct BookmarkStruct {
-    char *name;
-    char *docName;
+    char* name;
+    char* docName;
     Widget menuButton;
 } Bookmark;
 
@@ -143,25 +137,19 @@ Boolean compareBookmarkName();
 Boolean compareBookmarkDoc();
 void freeBookmark();
 
-
 /* --- PROTOTYPES ---------------------------------------------------------- */
-DocViewInfo *makeBrowserInterface();
+DocViewInfo* makeBrowserInterface();
 void closeAppShell();
-char *makeString();
+char* makeString();
 void setHelp();
 XmString makeXMSTitle();
 void tmpMessageMH();
 
-
 /* --- MACROS -------------------------------------------------------------- */
-#define mainViewInfo() getFromBox(&docViews, \
-				  (void *) &topWidget, \
-				  compareDocViewShell, \
-				  TRUE)
-
+#define mainViewInfo() getFromBox(&docViews, (void*)&topWidget, compareDocViewShell, TRUE)
 
 /* This attempt at setting up a single FontList didn't work ... figure it out.
- * 
+ *
  * static String fallback_resources[] = {
  *   "*fontList: *cour*bold*-r-*-14-*=textFont\n\
  *   		*times*bold*-r-*-14-*=labelFont\n\
@@ -178,12 +166,10 @@ void tmpMessageMH();
  * };
  */
 
-
 struct helpStruct {
     Widget helpLabel;
-    char *helpText;
+    char* helpText;
 };
-
 
 #endif _SPIDER_H_
 

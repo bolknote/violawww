@@ -13,5 +13,3 @@ long int meth_hpane_get();
 long int meth_hpane_initialize();
 long int meth_hpane_render();
 long int meth_hpane_set();
-
-

@@ -12,44 +12,30 @@
  * class	: FCard
  * superClass	: pane
  */
-#include "utils.h"
+#include "cl_FCard.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_FCard.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
 
-SlotInfo cl_FCard_NCSlots[] = {
-	0
-};
-SlotInfo cl_FCard_NPSlots[] = {
-{
-	STR_BCard,
-	OBJP | SLOT_RW,
-	0
-},{
-	0
-}
-};
-SlotInfo cl_FCard_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"FCard"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_FCard_NCSlots[] = {0};
+SlotInfo cl_FCard_NPSlots[] = {{STR_BCard, OBJP | SLOT_RW, 0}, {0}};
+SlotInfo cl_FCard_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"FCard"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"expose\":\n\
 		case \"render\":\n\
@@ -74,106 +60,73 @@ SlotInfo cl_FCard_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
+                              },
+                              {0}};
 SlotInfo cl_FCard_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_FCard
-},{
-	STR_paneConfig,
- 	PTRS,
-	(long)"freeForm"
-},{
-	STR__paneConfig,
- 	LONG,
-	PANE_CONFIG_FREE	/* default with FREEFORM */
-},{
-	0
-}
-};
+    {STR__classInfo, CLSI, (long)&class_FCard},
+    {STR_paneConfig, PTRS, (long)"freeForm"},
+    {
+        STR__paneConfig, LONG, PANE_CONFIG_FREE /* default with FREEFORM */
+    },
+    {0}};
 
-SlotInfo *slots_FCard[] = {
-	(SlotInfo*)cl_FCard_NCSlots,
-	(SlotInfo*)cl_FCard_NPSlots,
-	(SlotInfo*)cl_FCard_CSlots,
-	(SlotInfo*)cl_FCard_PSlots
-};
+SlotInfo* slots_FCard[] = {(SlotInfo*)cl_FCard_NCSlots, (SlotInfo*)cl_FCard_NPSlots,
+                           (SlotInfo*)cl_FCard_CSlots, (SlotInfo*)cl_FCard_PSlots};
 
 MethodInfo meths_FCard[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_FCard_config
-},{
-	STR_expose,
-	meth_FCard_expose
-},{
-	STR_geta,
-	meth_FCard_get,
-},{
-	STR_initialize,
-	meth_FCard_initialize
-},{
-	STR_render,
-	meth_FCard_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_config, meth_FCard_config},
+    {STR_expose, meth_FCard_expose},
+    {
+        STR_geta,
+        meth_FCard_get,
+    },
+    {STR_initialize, meth_FCard_initialize},
+    {STR_render, meth_FCard_render},
+    {0}};
 
 ClassInfo class_FCard = {
-	helper_FCard_get,
-	helper_pane_set,
-	slots_FCard,		/* class slot information	*/
-	meths_FCard,		/* class methods		*/
-	STR_FCard,		/* class identifier number	*/
-	&class_pane,		/* super class info		*/
+    helper_FCard_get, helper_pane_set, slots_FCard, /* class slot information	*/
+    meths_FCard,                                    /* class methods		*/
+    STR_FCard,                                      /* class identifier number	*/
+    &class_pane,                                    /* super class info		*/
 };
 
-long meth_FCard_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	if (!meth_pane_config(self, result, argc, argv)) return 0;
-	return 1;
+long meth_FCard_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    if (!meth_pane_config(self, result, argc, argv))
+        return 0;
+    return 1;
 }
 
-long meth_FCard_expose(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_pane_render(self, result, argc, argv);
+long meth_FCard_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_pane_render(self, result, argc, argv);
 }
 
-long helper_FCard_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_BCard:
-		result->info.o = GET_BCard(self);
-		result->type = PKT_OBJ;
-		return 1;
-	}
-	return helper_pane_get(self, result, argc, argv, labelID);
+long helper_FCard_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_BCard:
+        result->info.o = GET_BCard(self);
+        result->type = PKT_OBJ;
+        return 1;
+    }
+    return helper_pane_get(self, result, argc, argv, labelID);
 }
-long meth_FCard_get(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_FCard_get(self, result, argc, argv,
-				getIdent(PkInfo2Str(argv)));
+long meth_FCard_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_FCard_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_FCard_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	meth_pane_initialize(self, result, argc, argv);
-	return 1;
+long meth_FCard_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    meth_pane_initialize(self, result, argc, argv);
+    return 1;
 }
 
-long meth_FCard_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
+long meth_FCard_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
 
-	if (!w) meth_pane_render(self, result, argc, argv);
-	if (!(w = GET_window(self))) return 0;
+    if (!w)
+        meth_pane_render(self, result, argc, argv);
+    if (!(w = GET_window(self)))
+        return 0;
 
-	return 1;
+    return 1;
 }
-

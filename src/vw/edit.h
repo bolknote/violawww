@@ -18,7 +18,6 @@
 #ifndef _EDIT_H_
 #define _EDIT_H_
 
-
 void showSourceCB();
 void showSourceStringMH();
 void showSourceFileMH();
@@ -30,13 +29,12 @@ void saveAsSource();
 void reloadSource();
 void uploadSource();
 
-char *readFile();
+char* readFile();
 int writeFile();
 
 #include <stdio.h>
 #ifndef SEEK_END
 #define SEEK_END 2L
 #endif
-
 
 #endif _EDIT_H_

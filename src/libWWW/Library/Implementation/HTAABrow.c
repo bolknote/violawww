@@ -47,19 +47,17 @@
 **
 */
 
-#include <string.h>		/* strchr() */
+#include <string.h> /* strchr() */
 
-#include "HTUtils.h"
+#include "HTAABrow.h" /* Implemented here		*/
+#include "HTAAUtil.h" /* AA common to both sides	*/
+#include "HTAlert.h"  /* HTConfirm(), HTPrompt()	*/
+#include "HTAssoc.h"  /* Assoc list			*/
+#include "HTList.h"   /* HTList object		*/
+#include "HTParse.h"  /* URL parsing function		*/
 #include "HTString.h"
-#include "HTParse.h"		/* URL parsing function		*/
-#include "HTList.h"		/* HTList object		*/
-#include "HTAlert.h"		/* HTConfirm(), HTPrompt()	*/
-#include "HTAAUtil.h"		/* AA common to both sides	*/
-#include "HTAssoc.h"		/* Assoc list			*/
-#include "HTAABrow.h"		/* Implemented here		*/
-#include "HTUU.h"		/* Uuencoding and uudecoding	*/
-
-
+#include "HTUU.h" /* Uuencoding and uudecoding	*/
+#include "HTUtils.h"
 
 /*
 ** Local datatype definitions
@@ -68,91 +66,78 @@
 */
 typedef struct {
 
-    char *	hostname;	/* Host's name			*/
-    int		portnumber;	/* Port number			*/
-    HTList *	setups;		/* List of protection setups	*/
-                                /* on this server; i.e. valid	*/
-                                /* authentication schemes and	*/
-                                /* templates when to use them.	*/
-                                /* This is actually a list of	*/
-                                /* HTAASetup objects.		*/
-    HTList *	realms;		/* Information about passwords	*/
+    char* hostname; /* Host's name			*/
+    int portnumber; /* Port number			*/
+    HTList* setups; /* List of protection setups	*/
+                    /* on this server; i.e. valid	*/
+                    /* authentication schemes and	*/
+                    /* templates when to use them.	*/
+                    /* This is actually a list of	*/
+                    /* HTAASetup objects.		*/
+    HTList* realms; /* Information about passwords	*/
 } HTAAServer;
-
 
 /*
 ** HTAASetup contains information about one server's one
 ** protected tree of documents.
 */
 typedef struct {
-    HTAAServer *server;		/* Which server serves this tree	     */
-    char *	template;	/* Template for this tree		     */
-    HTList *	valid_schemes;	/* Valid authentic.schemes   		     */
-    HTAssocList**scheme_specifics;/* Scheme specific params		     */
-    BOOL	retry;		/* Failed last time -- reprompt (or whatever)*/
+    HTAAServer* server;             /* Which server serves this tree	     */
+    char* template;                 /* Template for this tree		     */
+    HTList* valid_schemes;          /* Valid authentic.schemes   		     */
+    HTAssocList** scheme_specifics; /* Scheme specific params		     */
+    BOOL retry;                     /* Failed last time -- reprompt (or whatever)*/
 } HTAASetup;
-
 
 /*
 ** Information about usernames and passwords in
 ** Basic and Pubkey authentication schemes;
 */
 typedef struct {
-    char *	realmname;	/* Password domain name		*/
-    char *	username;	/* Username in that domain	*/
-    char *	password;	/* Corresponding password	*/
+    char* realmname; /* Password domain name		*/
+    char* username;  /* Username in that domain	*/
+    char* password;  /* Corresponding password	*/
 } HTAARealm;
-
-
 
 /*
 ** Module-wide global variables
 */
 
-PRIVATE HTList *server_table	= NULL;	/* Browser's info about servers	     */
-PRIVATE char *secret_key	= NULL;	/* Browser's latest secret key       */
-PRIVATE HTAASetup *current_setup= NULL;	/* The server setup we are currently */
-                                        /* talking to			     */
-PRIVATE char *current_hostname	= NULL;	/* The server's name and portnumber  */
-PRIVATE int current_portnumber	= 80;	/* where we are currently trying to  */
-                                        /* connect.			     */
-PRIVATE char *current_docname	= NULL;	/* The document's name we are        */
-                                        /* trying to access.		     */
-PRIVATE char *HTAAForwardAuth	= NULL;	/* Authorization: line to forward    */
-                                        /* (used by gateway httpds)	     */
-
+PRIVATE HTList* server_table = NULL;     /* Browser's info about servers	     */
+PRIVATE char* secret_key = NULL;         /* Browser's latest secret key       */
+PRIVATE HTAASetup* current_setup = NULL; /* The server setup we are currently */
+                                         /* talking to			     */
+PRIVATE char* current_hostname = NULL;   /* The server's name and portnumber  */
+PRIVATE int current_portnumber = 80;     /* where we are currently trying to  */
+                                         /* connect.			     */
+PRIVATE char* current_docname = NULL;    /* The document's name we are        */
+                                         /* trying to access.		     */
+PRIVATE char* HTAAForwardAuth = NULL;    /* Authorization: line to forward    */
+                                         /* (used by gateway httpds)	     */
 
 /*** HTAAForwardAuth for enabling gateway-httpds to forward Authorization ***/
 
-PUBLIC void HTAAForwardAuth_set ARGS2(CONST char *, scheme_name,
-				      CONST char *, scheme_specifics)
-{
-    int len = 20 + (scheme_name      ? strlen(scheme_name)      : 0) 
-	         + (scheme_specifics ? strlen(scheme_specifics) : 0);
+PUBLIC void HTAAForwardAuth_set ARGS2(CONST char*, scheme_name, CONST char*, scheme_specifics) {
+    int len = 20 + (scheme_name ? strlen(scheme_name) : 0) +
+              (scheme_specifics ? strlen(scheme_specifics) : 0);
 
     FREE(HTAAForwardAuth);
     if (!(HTAAForwardAuth = (char*)malloc(len)))
-	outofmem(__FILE__, "HTAAForwardAuth_set");
+        outofmem(__FILE__, "HTAAForwardAuth_set");
 
     strcpy(HTAAForwardAuth, "Authorization: ");
     if (scheme_name) {
-	strcat(HTAAForwardAuth, scheme_name);
-	strcat(HTAAForwardAuth, " ");
-	if (scheme_specifics) {
-	    strcat(HTAAForwardAuth, scheme_specifics);
-	}
+        strcat(HTAAForwardAuth, scheme_name);
+        strcat(HTAAForwardAuth, " ");
+        if (scheme_specifics) {
+            strcat(HTAAForwardAuth, scheme_specifics);
+        }
     }
 }
 
-
-PUBLIC void HTAAForwardAuth_reset NOARGS
-{
-    FREE(HTAAForwardAuth);
-}
-
+PUBLIC void HTAAForwardAuth_reset NOARGS { FREE(HTAAForwardAuth); }
 
 /**************************** HTAAServer ***********************************/
-
 
 /* PRIVATE						HTAAServer_new()
 **		ALLOCATE A NEW NODE TO HOLD SERVER INFO
@@ -169,28 +154,27 @@ PUBLIC void HTAAForwardAuth_reset NOARGS
 **			the function HTAAServer_delete(), which also
 **			frees the node itself.
 */
-PRIVATE HTAAServer *HTAAServer_new ARGS2(CONST char*,	hostname,
-					 int,		portnumber)
-{
-    HTAAServer *server;
+PRIVATE HTAAServer* HTAAServer_new ARGS2(CONST char*, hostname, int, portnumber) {
+    HTAAServer* server;
 
-    if (!(server = (HTAAServer *)malloc(sizeof(HTAAServer))))
-	outofmem(__FILE__, "HTAAServer_new");
+    if (!(server = (HTAAServer*)malloc(sizeof(HTAAServer))))
+        outofmem(__FILE__, "HTAAServer_new");
 
-    server->hostname	= NULL;
-    server->portnumber	= (portnumber > 0 ? portnumber : 80);
-    server->setups	= HTList_new();
-    server->realms	= HTList_new();
+    server->hostname = NULL;
+    server->portnumber = (portnumber > 0 ? portnumber : 80);
+    server->setups = HTList_new();
+    server->realms = HTList_new();
 
-    if (hostname) StrAllocCopy(server->hostname, hostname);
+    if (hostname)
+        StrAllocCopy(server->hostname, hostname);
 
-    if (!server_table) server_table = HTList_new();
-    
+    if (!server_table)
+        server_table = HTList_new();
+
     HTList_addObject(server_table, (void*)server);
 
     return server;
 }
-
 
 /* PRIVATE						HTAAServer_delete()
 **
@@ -204,32 +188,30 @@ PRIVATE HTAAServer *HTAAServer_new ARGS2(CONST char*,	hostname,
 **	returns		nothing.
 */
 #ifdef NOT_NEEDED_IT_SEEMS
-PRIVATE void HTAASetup_delete();	/* Forward */
-PRIVATE void HTAAServer_delete ARGS1(HTAAServer *, killme)
-{
+PRIVATE void HTAASetup_delete(); /* Forward */
+PRIVATE void HTAAServer_delete ARGS1(HTAAServer*, killme) {
     if (killme) {
-	HTList *cur1 = killme->setups;
-	HTList *cur2 = killme->realms;
-	HTAASetup *setup;
-	HTAARealm *realm;
+        HTList* cur1 = killme->setups;
+        HTList* cur2 = killme->realms;
+        HTAASetup* setup;
+        HTAARealm* realm;
 
-	while (NULL != (setup = (HTAASetup*)HTList_nextObject(cur1)))
-	    HTAASetup_delete(setup);
-	HTList_delete(killme->setups);
+        while (NULL != (setup = (HTAASetup*)HTList_nextObject(cur1)))
+            HTAASetup_delete(setup);
+        HTList_delete(killme->setups);
 
-	while (NULL != (realm = (HTAARealm*)HTList_nextObject(cur2)))
-	    ;	/* This sould free() the realm */
-	HTList_delete(killme->realms);
+        while (NULL != (realm = (HTAARealm*)HTList_nextObject(cur2)))
+            ; /* This sould free() the realm */
+        HTList_delete(killme->realms);
 
-	FREE(killme->hostname);
+        FREE(killme->hostname);
 
-	HTList_removeObject(server_table, (void*)killme);
+        HTList_removeObject(server_table, (void*)killme);
 
-	free(killme);
+        free(killme);
     }
 }
 #endif /*NOT_NEEDED_IT_SEEMS*/
-
 
 /* PRIVATE						HTAAServer_lookup()
 **		LOOK UP SERVER BY HOSTNAME AND PORTNUMBER
@@ -244,29 +226,23 @@ PRIVATE void HTAAServer_delete ARGS1(HTAAServer *, killme)
 **			representing the looked-up server.
 **			NULL, if not found.
 */
-PRIVATE HTAAServer *HTAAServer_lookup ARGS2(CONST char *, hostname,
-					    int,	  portnumber)
-{
+PRIVATE HTAAServer* HTAAServer_lookup ARGS2(CONST char*, hostname, int, portnumber) {
     if (hostname) {
-	HTList *cur = server_table;
-	HTAAServer *server;
+        HTList* cur = server_table;
+        HTAAServer* server;
 
-	if (portnumber <= 0) portnumber = 80;
+        if (portnumber <= 0)
+            portnumber = 80;
 
-	while (NULL != (server = (HTAAServer*)HTList_nextObject(cur))) {
-	    if (server->portnumber == portnumber  &&
-		0==strcmp(server->hostname, hostname))
-		return server;
-	}
+        while (NULL != (server = (HTAAServer*)HTList_nextObject(cur))) {
+            if (server->portnumber == portnumber && 0 == strcmp(server->hostname, hostname))
+                return server;
+        }
     }
-    return NULL;	/* NULL parameter, or not found */
+    return NULL; /* NULL parameter, or not found */
 }
 
-
-
-
-/*************************** HTAASetup *******************************/    
-
+/*************************** HTAASetup *******************************/
 
 /* PRIVATE						HTAASetup_lookup()
 **	FIGURE OUT WHICH AUTHENTICATION SETUP THE SERVER
@@ -287,49 +263,43 @@ PRIVATE HTAAServer *HTAAServer_lookup ARGS2(CONST char *, hostname,
 **			Otherwise, a HTAASetup structure representing
 **			the protected server setup on the corresponding
 **			document tree.
-**			
+**
 */
-PRIVATE HTAASetup *HTAASetup_lookup ARGS3(CONST char *, hostname,
-					  int,		portnumber,
-					  CONST char *, docname)
-{
-    HTAAServer *server;
-    HTAASetup *setup;
+PRIVATE HTAASetup* HTAASetup_lookup ARGS3(CONST char*, hostname, int, portnumber, CONST char*,
+                                          docname) {
+    HTAAServer* server;
+    HTAASetup* setup;
 
-    if (portnumber <= 0) portnumber = 80;
+    if (portnumber <= 0)
+        portnumber = 80;
 
     if (hostname && docname && *hostname && *docname &&
-	NULL != (server = HTAAServer_lookup(hostname, portnumber))) {
+        NULL != (server = HTAAServer_lookup(hostname, portnumber))) {
 
-	HTList *cur = server->setups;
+        HTList* cur = server->setups;
 
-	if (TRACE) fprintf(stderr, "%s (%s:%d:%s)\n",
-			   "HTAASetup_lookup: resolving setup for",
-			   hostname, portnumber, docname);
+        if (TRACE)
+            fprintf(stderr, "%s (%s:%d:%s)\n", "HTAASetup_lookup: resolving setup for", hostname,
+                    portnumber, docname);
 
-	while (NULL != (setup = (HTAASetup*)HTList_nextObject(cur))) {
-	    if (HTAA_templateMatch(setup->template, docname)) {
-		if (TRACE) fprintf(stderr, "%s `%s' %s `%s'\n",
-				   "HTAASetup_lookup:", docname,
-				   "matched template", setup->template);
-		return setup;
-	    }
-	    else if (TRACE) fprintf(stderr, "%s `%s' %s `%s'\n",
-				    "HTAASetup_lookup:", docname,
-				    "did NOT match template", setup->template);
-	} /* while setups remain */
+        while (NULL != (setup = (HTAASetup*)HTList_nextObject(cur))) {
+            if (HTAA_templateMatch(setup->template, docname)) {
+                if (TRACE)
+                    fprintf(stderr, "%s `%s' %s `%s'\n", "HTAASetup_lookup:", docname,
+                            "matched template", setup->template);
+                return setup;
+            } else if (TRACE)
+                fprintf(stderr, "%s `%s' %s `%s'\n", "HTAASetup_lookup:", docname,
+                        "did NOT match template", setup->template);
+        } /* while setups remain */
     } /* if valid parameters and server found */
 
-    if (TRACE) fprintf(stderr, "%s `%s' %s\n",
-		       "HTAASetup_lookup: No template matched",
-		       (docname ? docname : "(null)"),
-		       "(so probably not protected)");
+    if (TRACE)
+        fprintf(stderr, "%s `%s' %s\n", "HTAASetup_lookup: No template matched",
+                (docname ? docname : "(null)"), "(so probably not protected)");
 
-    return NULL;	/* NULL in parameters, or not found */
+    return NULL; /* NULL in parameters, or not found */
 }
-
-
-
 
 /* PRIVATE						HTAASetup_new()
 **			CREATE A NEW SETUP NODE
@@ -350,22 +320,21 @@ PRIVATE HTAASetup *HTAASetup_lookup ARGS3(CONST char *, hostname,
 **	returns		a new HTAASetup node, and also adds it as
 **			part of the HTAAServer given as parameter.
 */
-PRIVATE HTAASetup *HTAASetup_new ARGS4(HTAAServer *,	server,
-				       char *,		template,
-				       HTList *,	valid_schemes,
-				       HTAssocList **,	scheme_specifics)
-{
-    HTAASetup *setup;
+PRIVATE HTAASetup* HTAASetup_new ARGS4(HTAAServer*, server, char*, template, HTList*, valid_schemes,
+                                       HTAssocList**, scheme_specifics) {
+    HTAASetup* setup;
 
-    if (!server || !template || !*template) return NULL;
+    if (!server || !template || !*template)
+        return NULL;
 
     if (!(setup = (HTAASetup*)malloc(sizeof(HTAASetup))))
-	outofmem(__FILE__, "HTAASetup_new");
+        outofmem(__FILE__, "HTAASetup_new");
 
     setup->retry = NO;
     setup->server = server;
     setup->template = NULL;
-    if (template) StrAllocCopy(setup->template, template);
+    if (template)
+        StrAllocCopy(setup->template, template);
     setup->valid_schemes = valid_schemes;
     setup->scheme_specifics = scheme_specifics;
 
@@ -373,8 +342,6 @@ PRIVATE HTAASetup *HTAASetup_new ARGS4(HTAAServer *,	server,
 
     return setup;
 }
-
-
 
 /* PRIVATE						HTAASetup_delete()
 **			FREE A HTAASetup STRUCTURE
@@ -385,56 +352,49 @@ PRIVATE HTAASetup *HTAASetup_new ARGS4(HTAAServer *,	server,
 **	returns		nothing.
 */
 #ifdef NOT_NEEDED_IT_SEEMS
-PRIVATE void HTAASetup_delete ARGS1(HTAASetup *, killme)
-{
+PRIVATE void HTAASetup_delete ARGS1(HTAASetup*, killme) {
     int scheme;
 
     if (killme) {
-	if (killme->template) free(killme->template);
-	if (killme->valid_schemes)
-	    HTList_delete(killme->valid_schemes);
-	for (scheme=0; scheme < HTAA_MAX_SCHEMES; scheme++)
-	    if (killme->scheme_specifics[scheme])
-		HTAssocList_delete(killme->scheme_specifics[scheme]);
-	free(killme);
+        if (killme->template)
+            free(killme->template);
+        if (killme->valid_schemes)
+            HTList_delete(killme->valid_schemes);
+        for (scheme = 0; scheme < HTAA_MAX_SCHEMES; scheme++)
+            if (killme->scheme_specifics[scheme])
+                HTAssocList_delete(killme->scheme_specifics[scheme]);
+        free(killme);
     }
 }
 #endif /*NOT_NEEDED_IT_SEEMS*/
 
-
-
 /* PRIVATE					HTAASetup_updateSpecifics()
-*		COPY SCHEME SPECIFIC PARAMETERS
-**		TO HTAASetup STRUCTURE
-** ON ENTRY:
-**	setup		destination setup structure.
-**	specifics	string array containing scheme
-**			specific parameters for each scheme.
-**			If NULL, all the scheme specific
-**			parameters are set to NULL.
-**
-** ON EXIT:
-**	returns		nothing.
-*/
-PRIVATE void HTAASetup_updateSpecifics ARGS2(HTAASetup *,	setup,
-					     HTAssocList **,	specifics)
-{
+ *		COPY SCHEME SPECIFIC PARAMETERS
+ **		TO HTAASetup STRUCTURE
+ ** ON ENTRY:
+ **	setup		destination setup structure.
+ **	specifics	string array containing scheme
+ **			specific parameters for each scheme.
+ **			If NULL, all the scheme specific
+ **			parameters are set to NULL.
+ **
+ ** ON EXIT:
+ **	returns		nothing.
+ */
+PRIVATE void HTAASetup_updateSpecifics ARGS2(HTAASetup*, setup, HTAssocList**, specifics) {
     int scheme;
 
     if (setup) {
-	if (setup->scheme_specifics) {
-	    for (scheme=0; scheme < HTAA_MAX_SCHEMES; scheme++) {
-		if (setup->scheme_specifics[scheme])
-		    HTAssocList_delete(setup->scheme_specifics[scheme]);
-	    }
-	    free(setup->scheme_specifics);
-	}
-	setup->scheme_specifics = specifics;
+        if (setup->scheme_specifics) {
+            for (scheme = 0; scheme < HTAA_MAX_SCHEMES; scheme++) {
+                if (setup->scheme_specifics[scheme])
+                    HTAssocList_delete(setup->scheme_specifics[scheme]);
+            }
+            free(setup->scheme_specifics);
+        }
+        setup->scheme_specifics = specifics;
     }
 }
-
-
-
 
 /*************************** HTAARealm **********************************/
 
@@ -447,22 +407,18 @@ PRIVATE void HTAASetup_updateSpecifics ARGS2(HTAASetup *,	setup,
 ** ON EXIT:
 **	returns		the realm.  NULL, if not found.
 */
-PRIVATE HTAARealm *HTAARealm_lookup ARGS2(HTList *,	realm_table,
-					  CONST char *, realmname)
-{
+PRIVATE HTAARealm* HTAARealm_lookup ARGS2(HTList*, realm_table, CONST char*, realmname) {
     if (realm_table && realmname) {
-	HTList *cur = realm_table;
-	HTAARealm *realm;
-	
-	while (NULL != (realm = (HTAARealm*)HTList_nextObject(cur))) {
-	    if (0==strcmp(realm->realmname, realmname))
-		return realm;
-	}
+        HTList* cur = realm_table;
+        HTAARealm* realm;
+
+        while (NULL != (realm = (HTAARealm*)HTList_nextObject(cur))) {
+            if (0 == strcmp(realm->realmname, realmname))
+                return realm;
+        }
     }
-    return NULL;	/* No table, NULL param, or not found */
+    return NULL; /* No table, NULL param, or not found */
 }
-
-
 
 /* PRIVATE						HTAARealm_new()
 **		CREATE A NODE CONTAINING USERNAME AND
@@ -479,32 +435,29 @@ PRIVATE HTAARealm *HTAARealm_lookup ARGS2(HTList *,	realm_table,
 ** ON EXIT:
 **	returns		the created realm.
 */
-PRIVATE HTAARealm *HTAARealm_new ARGS4(HTList *,	realm_table,
-				       CONST char *,	realmname,
-				       CONST char *,	username,
-				       CONST char *,	password)
-{
-    HTAARealm *realm;
+PRIVATE HTAARealm* HTAARealm_new ARGS4(HTList*, realm_table, CONST char*, realmname, CONST char*,
+                                       username, CONST char*, password) {
+    HTAARealm* realm;
 
     realm = HTAARealm_lookup(realm_table, realmname);
 
     if (!realm) {
-	if (!(realm = (HTAARealm*)malloc(sizeof(HTAARealm))))
-	    outofmem(__FILE__, "HTAARealm_new");
-	realm->realmname = NULL;
-	realm->username = NULL;
-	realm->password = NULL;
-	StrAllocCopy(realm->realmname, realmname);
-	if (realm_table) HTList_addObject(realm_table, (void*)realm);
+        if (!(realm = (HTAARealm*)malloc(sizeof(HTAARealm))))
+            outofmem(__FILE__, "HTAARealm_new");
+        realm->realmname = NULL;
+        realm->username = NULL;
+        realm->password = NULL;
+        StrAllocCopy(realm->realmname, realmname);
+        if (realm_table)
+            HTList_addObject(realm_table, (void*)realm);
     }
-    if (username) StrAllocCopy(realm->username, username);
-    if (password) StrAllocCopy(realm->password, password);
+    if (username)
+        StrAllocCopy(realm->username, username);
+    if (password)
+        StrAllocCopy(realm->password, password);
 
     return realm;
 }
-
-
-
 
 /***************** Basic and Pubkey Authentication ************************/
 
@@ -528,115 +481,108 @@ PRIVATE HTAARealm *HTAARealm_new ARGS4(HTList *,	realm_table,
 **	returned by AA package needs to (or should) be freed.
 **
 */
-PRIVATE char *compose_auth_string ARGS2(HTAAScheme,	scheme,
-					HTAASetup *,	setup)
-{
-    static char *result = NULL;	/* Uuencoded presentation, the result */
-    char *cleartext = NULL;	/* Cleartext presentation */
-    char *ciphertext = NULL;	/* Encrypted presentation */
+PRIVATE char* compose_auth_string ARGS2(HTAAScheme, scheme, HTAASetup*, setup) {
+    static char* result = NULL; /* Uuencoded presentation, the result */
+    char* cleartext = NULL;     /* Cleartext presentation */
+    char* ciphertext = NULL;    /* Encrypted presentation */
     int len;
-    char *username;
-    char *password;
-    char *realmname;
-    HTAARealm *realm;
-    char *inet_addr = "0.0.0.0";	/* Change... @@@@ */
-    char *timestamp = "42";		/* ... these @@@@ */
-    
+    char* username;
+    char* password;
+    char* realmname;
+    HTAARealm* realm;
+    char* inet_addr = "0.0.0.0"; /* Change... @@@@ */
+    char* timestamp = "42";      /* ... these @@@@ */
 
-    FREE(result);	/* From previous call */
+    FREE(result); /* From previous call */
 
-    if ((scheme != HTAA_BASIC && scheme != HTAA_PUBKEY) || !setup ||
-	!setup->scheme_specifics || !setup->scheme_specifics[scheme] ||
-	!setup->server  ||  !setup->server->realms)
-	return NULL;
+    if ((scheme != HTAA_BASIC && scheme != HTAA_PUBKEY) || !setup || !setup->scheme_specifics ||
+        !setup->scheme_specifics[scheme] || !setup->server || !setup->server->realms)
+        return NULL;
 
     realmname = HTAssocList_lookup(setup->scheme_specifics[scheme], "realm");
-    if (!realmname) return NULL;
+    if (!realmname)
+        return NULL;
 
     realm = HTAARealm_lookup(setup->server->realms, realmname);
     if (!realm || setup->retry) {
-	char msg[100];
+        char msg[100];
 
-	if (!realm) {
-	    if (TRACE) fprintf(stderr, "%s `%s' %s\n",
-			       "compose_auth_string: realm:", realmname,
-			       "not found -- creating");
-	    realm = HTAARealm_new(setup->server->realms, realmname, NULL,NULL);
-	    sprintf(msg,
-		    "Document is protected. Enter username for %s at %s",
-		    realm->realmname,
-		    setup->server->hostname ? setup->server->hostname : "??");
-	}
-	else {
-	    sprintf(msg,"Enter username for %s at %s", realm->realmname,
-		    setup->server->hostname ? setup->server->hostname : "??");
-	}
+        if (!realm) {
+            if (TRACE)
+                fprintf(stderr, "%s `%s' %s\n", "compose_auth_string: realm:", realmname,
+                        "not found -- creating");
+            realm = HTAARealm_new(setup->server->realms, realmname, NULL, NULL);
+            sprintf(msg, "Document is protected. Enter username for %s at %s", realm->realmname,
+                    setup->server->hostname ? setup->server->hostname : "??");
+        } else {
+            sprintf(msg, "Enter username for %s at %s", realm->realmname,
+                    setup->server->hostname ? setup->server->hostname : "??");
+        }
 
-	username = realm->username;
-	password = NULL;
-	HTPromptUsernameAndPassword(msg, &username, &password);
+        username = realm->username;
+        password = NULL;
+        HTPromptUsernameAndPassword(msg, &username, &password);
 
-	FREE(realm->username);
-	FREE(realm->password);
-	realm->username = username;
-	realm->password = password;
+        FREE(realm->username);
+        FREE(realm->password);
+        realm->username = username;
+        realm->password = password;
 
-	if (!realm->username)
-	    return NULL;		/* Suggested by marca; thanks! */
+        if (!realm->username)
+            return NULL; /* Suggested by marca; thanks! */
     }
-    
+
     len = strlen(realm->username ? realm->username : "") +
-	  strlen(realm->password ? realm->password : "") + 3;
+          strlen(realm->password ? realm->password : "") + 3;
 
     if (scheme == HTAA_PUBKEY) {
 #ifdef PUBKEY
-	/* Generate new secret key */
-	StrAllocCopy(secret_key, HTAA_generateRandomKey());
+        /* Generate new secret key */
+        StrAllocCopy(secret_key, HTAA_generateRandomKey());
 #endif
-	/* Room for secret key, timestamp and inet address */
-	len += strlen(secret_key ? secret_key : "") + 30;
-    }
+        /* Room for secret key, timestamp and inet address */
+        len += strlen(secret_key ? secret_key : "") + 30;
+    } else
+        FREE(secret_key);
+
+    if (!(cleartext = (char*)calloc(len, 1)))
+        outofmem(__FILE__, "compose_auth_string");
+
+    if (realm->username)
+        strcpy(cleartext, realm->username);
     else
-	FREE(secret_key);
-
-    if (!(cleartext  = (char*)calloc(len, 1)))
-	outofmem(__FILE__, "compose_auth_string");
-
-    if (realm->username) strcpy(cleartext, realm->username);
-    else *cleartext = (char)0;
+        *cleartext = (char)0;
 
     strcat(cleartext, ":");
 
-    if (realm->password) strcat(cleartext, realm->password);
+    if (realm->password)
+        strcat(cleartext, realm->password);
 
     if (scheme == HTAA_PUBKEY) {
-	strcat(cleartext, ":");
-	strcat(cleartext, inet_addr);
-	strcat(cleartext, ":");
-	strcat(cleartext, timestamp);
-	strcat(cleartext, ":");
-	if (secret_key) strcat(cleartext, secret_key);
+        strcat(cleartext, ":");
+        strcat(cleartext, inet_addr);
+        strcat(cleartext, ":");
+        strcat(cleartext, timestamp);
+        strcat(cleartext, ":");
+        if (secret_key)
+            strcat(cleartext, secret_key);
 
-	if (!((ciphertext = (char*)malloc(2*len)) &&
-	      (result     = (char*)malloc(3*len))))
-	    outofmem(__FILE__, "compose_auth_string");
+        if (!((ciphertext = (char*)malloc(2 * len)) && (result = (char*)malloc(3 * len))))
+            outofmem(__FILE__, "compose_auth_string");
 #ifdef PUBKEY
-	HTPK_encrypt(cleartext, ciphertext, server->public_key);
-	HTUU_encode((unsigned char *)ciphertext, strlen(ciphertext), result);
+        HTPK_encrypt(cleartext, ciphertext, server->public_key);
+        HTUU_encode((unsigned char*)ciphertext, strlen(ciphertext), result);
 #endif
-	free(cleartext);
-	free(ciphertext);
-    }
-    else { /* scheme == HTAA_BASIC */
-	if (!(result = (char*)malloc(4 * ((len+2)/3) + 1)))
-	    outofmem(__FILE__, "compose_auth_string");
-	HTUU_encode((unsigned char *)cleartext, strlen(cleartext), result);
-	free(cleartext);
+        free(cleartext);
+        free(ciphertext);
+    } else { /* scheme == HTAA_BASIC */
+        if (!(result = (char*)malloc(4 * ((len + 2) / 3) + 1)))
+            outofmem(__FILE__, "compose_auth_string");
+        HTUU_encode((unsigned char*)cleartext, strlen(cleartext), result);
+        free(cleartext);
     }
     return result;
 }
-
-
 
 /* BROWSER PRIVATE					HTAA_selectScheme()
 **		SELECT THE AUTHENTICATION SCHEME TO USE
@@ -656,20 +602,16 @@ PRIVATE char *compose_auth_string ARGS2(HTAAScheme,	scheme,
 ** ON EXIT:
 **	returns	the authentication scheme to use.
 */
-PRIVATE HTAAScheme HTAA_selectScheme ARGS1(HTAASetup *, setup)
-{
+PRIVATE HTAAScheme HTAA_selectScheme ARGS1(HTAASetup*, setup) {
     HTAAScheme scheme;
 
     if (setup && setup->valid_schemes) {
-	for (scheme=HTAA_BASIC; scheme < HTAA_MAX_SCHEMES; scheme++)
-	    if (-1 < HTList_indexOf(setup->valid_schemes, (void*)scheme))
-		return scheme;
+        for (scheme = HTAA_BASIC; scheme < HTAA_MAX_SCHEMES; scheme++)
+            if (-1 < HTList_indexOf(setup->valid_schemes, (void*)scheme))
+                return scheme;
     }
     return HTAA_BASIC;
 }
-
-
-
 
 /* BROWSER PUBLIC					HTAA_composeAuth()
 **
@@ -690,12 +632,10 @@ PRIVATE HTAAScheme HTAA_selectScheme ARGS1(HTAASetup *, setup)
 **
 **		As usual, this string is automatically freed.
 */
-PUBLIC char *HTAA_composeAuth ARGS3(CONST char *,	hostname,
-				    CONST int,		portnumber,
-				    CONST char *,	docname)
-{
-    static char *result = NULL;
-    char *auth_string;
+PUBLIC char* HTAA_composeAuth ARGS3(CONST char*, hostname, CONST int, portnumber, CONST char*,
+                                    docname) {
+    static char* result = NULL;
+    char* auth_string;
     BOOL retry;
     HTAAScheme scheme;
 
@@ -709,80 +649,74 @@ PUBLIC char *HTAA_composeAuth ARGS3(CONST char *,	hostname,
     **  on server-side.  Life is hard.)
     */
     if (HTAAForwardAuth) {
-	if (TRACE) fprintf(stderr, "HTAA_composeAuth: %s\n",
-			   "Forwarding received authorization");
-	StrAllocCopy(result, HTAAForwardAuth);
-	HTAAForwardAuth_reset();	/* Just a precaution */
-	return result;
+        if (TRACE)
+            fprintf(stderr, "HTAA_composeAuth: %s\n", "Forwarding received authorization");
+        StrAllocCopy(result, HTAAForwardAuth);
+        HTAAForwardAuth_reset(); /* Just a precaution */
+        return result;
     }
 
-    FREE(result);			/* From previous call */
+    FREE(result); /* From previous call */
 
     if (TRACE)
-	fprintf(stderr, 
-		"Composing Authorization for %s:%d/%s\n",
-		hostname, portnumber, docname);
+        fprintf(stderr, "Composing Authorization for %s:%d/%s\n", hostname, portnumber, docname);
 
-    if (current_portnumber != portnumber ||
-	!current_hostname || !current_docname ||
-	!hostname         || !docname         ||
-	0 != strcmp(current_hostname, hostname) ||
-	0 != strcmp(current_docname, docname)) {
+    if (current_portnumber != portnumber || !current_hostname || !current_docname || !hostname ||
+        !docname || 0 != strcmp(current_hostname, hostname) ||
+        0 != strcmp(current_docname, docname)) {
 
-	retry = NO;
+        retry = NO;
 
-	current_portnumber = portnumber;
-	
-	if (hostname) StrAllocCopy(current_hostname, hostname);
-	else FREE(current_hostname);
+        current_portnumber = portnumber;
 
-	if (docname) StrAllocCopy(current_docname, docname);
-	else FREE(current_docname);
-    }
-    else retry = YES;
-    
+        if (hostname)
+            StrAllocCopy(current_hostname, hostname);
+        else
+            FREE(current_hostname);
+
+        if (docname)
+            StrAllocCopy(current_docname, docname);
+        else
+            FREE(current_docname);
+    } else
+        retry = YES;
+
     if (!current_setup || !retry)
-	current_setup = HTAASetup_lookup(hostname, portnumber, docname);
+        current_setup = HTAASetup_lookup(hostname, portnumber, docname);
 
     if (!current_setup)
-	return NULL;
-
+        return NULL;
 
     switch (scheme = HTAA_selectScheme(current_setup)) {
-      case HTAA_BASIC:
-      case HTAA_PUBKEY:
-	auth_string = compose_auth_string(scheme, current_setup);
-	break;
-      case HTAA_KERBEROS_V4:
-	/* OTHER AUTHENTICATION ROUTINES ARE CALLED HERE */
-      default:
-	{
-	    char msg[100];
-	    sprintf(msg, "%s %s `%s'",
-		    "This client doesn't know how to compose authentication",
-		    "information for scheme", HTAAScheme_name(scheme));
-	    HTAlert(msg);
-	    auth_string = NULL;
-	}
+    case HTAA_BASIC:
+    case HTAA_PUBKEY:
+        auth_string = compose_auth_string(scheme, current_setup);
+        break;
+    case HTAA_KERBEROS_V4:
+        /* OTHER AUTHENTICATION ROUTINES ARE CALLED HERE */
+    default: {
+        char msg[100];
+        sprintf(msg, "%s %s `%s'", "This client doesn't know how to compose authentication",
+                "information for scheme", HTAAScheme_name(scheme));
+        HTAlert(msg);
+        auth_string = NULL;
+    }
     } /* switch scheme */
 
     current_setup->retry = NO;
 
     /* Added by marca. */
     if (!auth_string)
-	return NULL;
-    
-    if (!(result = (char*)malloc(sizeof(char) * (strlen(auth_string)+40))))
-	outofmem(__FILE__, "HTAA_composeAuth");
+        return NULL;
+
+    if (!(result = (char*)malloc(sizeof(char) * (strlen(auth_string) + 40))))
+        outofmem(__FILE__, "HTAA_composeAuth");
     strcpy(result, "Authorization: ");
     strcat(result, HTAAScheme_name(scheme));
     strcat(result, " ");
     strcat(result, auth_string);
     return result;
 }
-
-
-
 
 /* BROWSER PUBLIC				HTAA_shouldRetryWithAuth()
 **
@@ -811,118 +745,106 @@ PUBLIC char *HTAA_composeAuth ARGS3(CONST char *,	hostname,
 **				  field (in function HTAA_composeAuth()).
 **			NO, otherwise.
 */
-PUBLIC BOOL HTAA_shouldRetryWithAuth ARGS3(char *, start_of_headers,
-					   int,	   length,
-					   int,	   soc)
-{
+PUBLIC BOOL HTAA_shouldRetryWithAuth ARGS3(char*, start_of_headers, int, length, int, soc) {
     HTAAScheme scheme;
-    char *line;
+    char* line;
     int num_schemes = 0;
-    HTList *valid_schemes = HTList_new();
-    HTAssocList **scheme_specifics = NULL;
-    char *template = NULL;
-
+    HTList* valid_schemes = HTList_new();
+    HTAssocList** scheme_specifics = NULL;
+    char* template = NULL;
 
     /* Read server reply header lines */
 
     if (TRACE)
-	fprintf(stderr, "Server reply header lines:\n");
+        fprintf(stderr, "Server reply header lines:\n");
 
     HTAA_setupReader(start_of_headers, length, soc);
-    while (NULL != (line = HTAA_getUnfoldedLine())  &&  *line != (char)0) {
+    while (NULL != (line = HTAA_getUnfoldedLine()) && *line != (char)0) {
 
-	if (TRACE) fprintf(stderr, "%s\n", line);
+        if (TRACE)
+            fprintf(stderr, "%s\n", line);
 
-	if (strchr(line, ':')) {	/* Valid header line */
+        if (strchr(line, ':')) { /* Valid header line */
 
-	    char *p = line;
-	    char *fieldname = HTNextField(&p);
-	    char *arg1 = HTNextField(&p);
-	    char *args = p;
-	    
-	    if (0==strcasecomp(fieldname, "WWW-Authenticate:")) {
-		if (HTAA_UNKNOWN != (scheme = HTAAScheme_enum(arg1))) {
-		    HTList_addObject(valid_schemes, (void*)scheme);
-		    if (!scheme_specifics) {
-			int i;
-			scheme_specifics = (HTAssocList**)
-			    malloc(HTAA_MAX_SCHEMES * sizeof(HTAssocList*));
-			if (!scheme_specifics)
-			    outofmem(__FILE__, "HTAA_shouldRetryWithAuth");
-			for (i=0; i < HTAA_MAX_SCHEMES; i++)
-			    scheme_specifics[i] = NULL;
-		    }
-		    scheme_specifics[scheme] = HTAA_parseArgList(args);
-		    num_schemes++;
-		}
-		else if (TRACE) {
-		    fprintf(stderr, "Unknown scheme `%s' %s\n",
-			    (arg1 ? arg1 : "(null)"),
-			    "in WWW-Authenticate: field");
-		}
-	    }
+            char* p = line;
+            char* fieldname = HTNextField(&p);
+            char* arg1 = HTNextField(&p);
+            char* args = p;
 
-	    else if (0==strcasecomp(fieldname, "WWW-Protection-Template:")) {
-		if (TRACE)
-		    fprintf(stderr, "Protection template set to `%s'\n", arg1);
-		StrAllocCopy(template, arg1);
-	    }
+            if (0 == strcasecomp(fieldname, "WWW-Authenticate:")) {
+                if (HTAA_UNKNOWN != (scheme = HTAAScheme_enum(arg1))) {
+                    HTList_addObject(valid_schemes, (void*)scheme);
+                    if (!scheme_specifics) {
+                        int i;
+                        scheme_specifics =
+                            (HTAssocList**)malloc(HTAA_MAX_SCHEMES * sizeof(HTAssocList*));
+                        if (!scheme_specifics)
+                            outofmem(__FILE__, "HTAA_shouldRetryWithAuth");
+                        for (i = 0; i < HTAA_MAX_SCHEMES; i++)
+                            scheme_specifics[i] = NULL;
+                    }
+                    scheme_specifics[scheme] = HTAA_parseArgList(args);
+                    num_schemes++;
+                } else if (TRACE) {
+                    fprintf(stderr, "Unknown scheme `%s' %s\n", (arg1 ? arg1 : "(null)"),
+                            "in WWW-Authenticate: field");
+                }
+            }
 
-	} /* if a valid header line */
-	else if (TRACE) {
-	    fprintf(stderr, "Invalid header line `%s' ignored\n", line);
-	} /* else invalid header line */
+            else if (0 == strcasecomp(fieldname, "WWW-Protection-Template:")) {
+                if (TRACE)
+                    fprintf(stderr, "Protection template set to `%s'\n", arg1);
+                StrAllocCopy(template, arg1);
+            }
+
+        } /* if a valid header line */
+        else if (TRACE) {
+            fprintf(stderr, "Invalid header line `%s' ignored\n", line);
+        } /* else invalid header line */
     } /* while header lines remain */
-
 
     /* So should we retry with authorization */
 
-    if (num_schemes == 0) {		/* No authentication valid */
-	current_setup = NULL;
-	return NO;
+    if (num_schemes == 0) { /* No authentication valid */
+        current_setup = NULL;
+        return NO;
     }
 
     if (current_setup && current_setup->server) {
-	/* So we have already tried with authorization.	*/
-	/* Either we don't have access or username or	*/
-	/* password was misspelled.			*/
-	    
-	/* Update scheme-specific parameters	*/
-	/* (in case they have expired by chance).	*/
-	HTAASetup_updateSpecifics(current_setup, scheme_specifics);
+        /* So we have already tried with authorization.	*/
+        /* Either we don't have access or username or	*/
+        /* password was misspelled.			*/
 
-	if (NO == HTConfirm("Authorization failed.  Retry?")) {
-	    current_setup = NULL;
-	    return NO;
-	} /* HTConfirm(...) == NO */
-	else { /* re-ask username+password (if misspelled) */
-	    current_setup->retry = YES;
-	    return YES;
-	} /* HTConfirm(...) == YES */
+        /* Update scheme-specific parameters	*/
+        /* (in case they have expired by chance).	*/
+        HTAASetup_updateSpecifics(current_setup, scheme_specifics);
+
+        if (NO == HTConfirm("Authorization failed.  Retry?")) {
+            current_setup = NULL;
+            return NO;
+        } /* HTConfirm(...) == NO */
+        else { /* re-ask username+password (if misspelled) */
+            current_setup->retry = YES;
+            return YES;
+        } /* HTConfirm(...) == YES */
     } /* if current_setup != NULL */
 
     else { /* current_setup == NULL, i.e. we have a	 */
-	   /* first connection to a protected server or  */
-	   /* the server serves a wider set of documents */
-	   /* than we expected so far.                   */
+           /* first connection to a protected server or  */
+           /* the server serves a wider set of documents */
+           /* than we expected so far.                   */
 
-	HTAAServer *server = HTAAServer_lookup(current_hostname,
-					       current_portnumber);
-	if (!server) {
-	    server = HTAAServer_new(current_hostname,
-				    current_portnumber);
-	}
-	if (!template)
-	    template = HTAA_makeProtectionTemplate(current_docname);
-	current_setup = HTAASetup_new(server, 
-				      template,
-				      valid_schemes,
-				      scheme_specifics);
+        HTAAServer* server = HTAAServer_lookup(current_hostname, current_portnumber);
+        if (!server) {
+            server = HTAAServer_new(current_hostname, current_portnumber);
+        }
+        if (!template)
+            template = HTAA_makeProtectionTemplate(current_docname);
+        current_setup = HTAASetup_new(server, template, valid_schemes, scheme_specifics);
 
         HTAlert("Access without authorization denied -- retrying");
-	return YES;
+        return YES;
     } /* else current_setup == NULL */
 
     /* Never reached */
 }
-

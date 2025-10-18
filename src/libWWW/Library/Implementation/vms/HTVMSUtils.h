@@ -1,10 +1,9 @@
 /*             VMS specific routines
-                                             
+
  */
 
 #ifndef HTVMSUTIL_H
 #define HTVMSUTIL_H
-
 
 /* PUBLIC							HTVMS_authSysPrv()
 **		CHECKS IF THIS PROCESS IS AUTHORIZED TO ENABLE SYSPRV
@@ -16,17 +15,15 @@
 */
 PUBLIC BOOL HTVMS_authSysPrv NOPARAMS;
 
-
 /* PUBLIC							HTVMS_enableSysPrv()
 **		ENABLES SYSPRV
 ** ON ENTRY:
 **	No arguments.
 **
 ** ON EXIT:
-**	
+**
 */
 PUBLIC void HTVMS_enableSysPrv NOPARAMS;
-
 
 /* PUBLIC							HTVMS_disableSysPrv()
 **		DISABLES SYSPRV
@@ -34,7 +31,7 @@ PUBLIC void HTVMS_enableSysPrv NOPARAMS;
 **	No arguments.
 **
 ** ON EXIT:
-**	
+**
 */
 PUBLIC void HTVMS_disableSysPrv NOPARAMS;
 
@@ -46,16 +43,13 @@ PUBLIC void HTVMS_disableSysPrv NOPARAMS;
 **
 ** ON EXIT:
 **	returns YES if access is allowed
-**	
+**
 */
-PUBLIC BOOL HTVMS_checkAccess PARAMS((
-	CONST char * FileName,
-	CONST char * UserName,
-	CONST char *Method));
-
+PUBLIC BOOL HTVMS_checkAccess PARAMS((CONST char* FileName, CONST char* UserName,
+                                      CONST char* Method));
 
 /* PUBLIC							HTVMS_wwwName()
-**		CONVERTS VMS Name into WWW Name 
+**		CONVERTS VMS Name into WWW Name
 ** ON ENTRY:
 **	vmsname		VMS file specification (NO NODE)
 **
@@ -74,13 +68,12 @@ PUBLIC BOOL HTVMS_checkAccess PARAMS((
 **	[DUNS.ECHO.--.TRANS] 		duns/echo/../../trans
 **	[.DUNS] 			duns
 **	[.DUNS.ECHO] 			duns/echo
-**	[.DUNS.ECHO]TEST.COM 		duns/echo/test.com 
+**	[.DUNS.ECHO]TEST.COM 		duns/echo/test.com
 **	TEST.COM 			test.com
 **
-**	
+**
 */
-PUBLIC char * HTVMS_wwwName PARAMS((
-	char * vmsname));
+PUBLIC char* HTVMS_wwwName PARAMS((char* vmsname));
 
 /* PUBLIC							HTVMS_name()
 **		CONVERTS WWW name into a VMS name
@@ -93,9 +86,7 @@ PUBLIC char * HTVMS_wwwName PARAMS((
 **
 ** Bug:	Returns pointer to static -- non-reentrant
 */
-PUBLIC char * HTVMS_name PARAMS((
-	CONST char * nn, 
-	CONST char * fn));
+PUBLIC char* HTVMS_name PARAMS((CONST char* nn, CONST char* fn));
 
 #endif /* not HTVMSUTIL_H */
 /*

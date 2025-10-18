@@ -3,27 +3,24 @@
  *
  * well, what can I say... we're just not there yet.
  */
-#include "utils.h"
-#include <unistd.h>
-#include "mystrings.h"
 #include "error.h"
 #include "file.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "slotaccess.h"
-#include "glib.h"
+#include "utils.h"
+#include <unistd.h>
 
-int SLBellVolume(int percent)
-{
-	XBell(display, percent);
-	return percent;
+int SLBellVolume(int percent) {
+    XBell(display, percent);
+    return percent;
 }
 
-int SLBell(void)
-{
-	XBell(display, 0);
-	XFlush(display);
-	return 0;
+int SLBell(void) {
+    XBell(display, 0);
+    XFlush(display);
+    return 0;
 }
-

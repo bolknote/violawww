@@ -12,74 +12,43 @@
  * class	: HTML
  * superClass	: txtDisp
  */
-#include "utils.h"
-#include "error.h"
-#include "mystrings.h"
-#include "sys.h"
-#include "hash.h"
-#include "ident.h"
-#include "scanutils.h"
-#include "obj.h"
-#include "packet.h"
-#include "membership.h"
-#include "class.h"
-#include "slotaccess.h"
-#include "classlist.h"
 #include "cl_HTML.h"
-#include "misc.h"
-#include "cexec.h"
-#include "glib.h"
-#include "tfed.h"
 #include "attr.h"
-#include "sgml.h"
+#include "cexec.h"
+#include "class.h"
+#include "classlist.h"
+#include "error.h"
+#include "glib.h"
+#include "hash.h"
 #include "html.h"
 #include "html2.h"
+#include "ident.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
+#include "obj.h"
+#include "packet.h"
+#include "scanutils.h"
+#include "sgml.h"
+#include "slotaccess.h"
+#include "sys.h"
+#include "tfed.h"
+#include "utils.h"
 
-SlotInfo cl_HTML_NCSlots[] = {
-	0
-};
-SlotInfo cl_HTML_NPSlots[] = {
-{
-	STR_HTMLAddress,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_HTMLAnchor,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_HTMLIsIndex,
-	LONG | SLOT_RW,
-	0
-},{
-	STR_HTMLSource,
-	PTRS,
-	(long)""
-},{
-	STR_HTMLStyle,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_HTMLTitle,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_HTMLStruct,
-	PTRV,
-	0
-},{
-	0
-}
-};
-SlotInfo cl_HTML_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"HTML"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_HTML_NCSlots[] = {0};
+SlotInfo cl_HTML_NPSlots[] = {{STR_HTMLAddress, PTRS | SLOT_RW, (long)""},
+                              {STR_HTMLAnchor, PTRS | SLOT_RW, (long)""},
+                              {STR_HTMLIsIndex, LONG | SLOT_RW, 0},
+                              {STR_HTMLSource, PTRS, (long)""},
+                              {STR_HTMLStyle, PTRS | SLOT_RW, (long)""},
+                              {STR_HTMLTitle, PTRS | SLOT_RW, (long)""},
+                              {STR_HTMLStruct, PTRV, 0},
+                              {0}};
+SlotInfo cl_HTML_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"HTML"},
+                             {
+                                 STR_classScript,
+                                 PTRS,
+                                 (long)"\n\
 		switch (arg[0]) {\n\
 		case \"keyPress\":\n\
 			insert(key());\n\
@@ -151,300 +120,250 @@ SlotInfo cl_HTML_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_HTML_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_HTML
-},{
-	0
-}
-};
+                             },
+                             {0}};
+SlotInfo cl_HTML_PSlots[] = {{STR__classInfo, CLSI, (long)&class_HTML}, {0}};
 
-SlotInfo *slots_HTML[] = {
-	(SlotInfo*)cl_HTML_NCSlots,
-	(SlotInfo*)cl_HTML_NPSlots,
-	(SlotInfo*)cl_HTML_CSlots,
-	(SlotInfo*)cl_HTML_PSlots
-};
+SlotInfo* slots_HTML[] = {(SlotInfo*)cl_HTML_NCSlots, (SlotInfo*)cl_HTML_NPSlots,
+                          (SlotInfo*)cl_HTML_CSlots, (SlotInfo*)cl_HTML_PSlots};
 
 MethodInfo meths_HTML[] = {
-	/* local methods */
-{
-	STR_pathSimplify,
-	meth_HTML_pathSimplify,
-},{
-	STR_back,
-	meth_HTML_back
-},{
-	STR_config,
-	meth_HTML_config
-},{
-	STR_geta,
-	meth_HTML_get
-},{
-	STR_initialize,
-	meth_HTML_initialize
-},{
-	STR_purgeCache,
-	meth_HTML_purgeCache
-},{
-	STR_render,
-	meth_HTML_render
-},{
-	STR_search,
-	meth_HTML_search
-},{
-	STR_seta,
-	meth_HTML_set
-},{
-	0
-}
-};
+    /* local methods */
+    {
+        STR_pathSimplify,
+        meth_HTML_pathSimplify,
+    },
+    {STR_back, meth_HTML_back},
+    {STR_config, meth_HTML_config},
+    {STR_geta, meth_HTML_get},
+    {STR_initialize, meth_HTML_initialize},
+    {STR_purgeCache, meth_HTML_purgeCache},
+    {STR_render, meth_HTML_render},
+    {STR_search, meth_HTML_search},
+    {STR_seta, meth_HTML_set},
+    {0}};
 
 ClassInfo class_HTML = {
-	helper_HTML_get,
-	helper_HTML_set,
-	slots_HTML,		/* class slot information	*/
-	meths_HTML,		/* class methods		*/
-	STR_HTML,		/* class identifier number	*/
-	&class_txtDisp,		/* super class info		*/
+    helper_HTML_get, helper_HTML_set, slots_HTML, /* class slot information	*/
+    meths_HTML,                                   /* class methods		*/
+    STR_HTML,                                     /* class identifier number	*/
+    &class_txtDisp,                               /* super class info		*/
 };
 
-long meth_HTML_back(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	result->type = PKT_INT;
-	result->canFree = 0;
-	result->info.i = html_backtrack();
-	return 1;
+long meth_HTML_back(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = html_backtrack();
+    return 1;
 }
 
-long meth_HTML_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	/* don't like this explicit naming of meth_pane_config... but...
-	 * remember to change it if meth_txtDisp_config be added 
-	 */
-	if (!meth_pane_config(self, result, argc, argv)) return 0;
-	if (!html_updateTFStruct(self, GET_HTMLAddress(self))) {
-		return 0;
-	}
-	return 1;
+long meth_HTML_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    /* don't like this explicit naming of meth_pane_config... but...
+     * remember to change it if meth_txtDisp_config be added
+     */
+    if (!meth_pane_config(self, result, argc, argv))
+        return 0;
+    if (!html_updateTFStruct(self, GET_HTMLAddress(self))) {
+        return 0;
+    }
+    return 1;
 }
 
-long helper_HTML_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	char *str;
+long helper_HTML_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    char* str;
 
-	switch (labelID) {
-	case STR_HTMLAddress: {
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_HTMLAddress(self));
-		return 1;
-	}
-	case STR_HTMLIsIndex: {
-		result->type = PKT_INT;
-		result->canFree = 0;
-		result->info.i = GET_HTMLIsIndex(self);
-		return 1;
-	}
-	case STR_HTMLSource: {
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_HTMLSource(self));
-		return 1;
-	}
-	case STR_HTMLStyle: {
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_HTMLStyle(self));
-		return 1;
-	}
-	case STR_HTMLTitle: {
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		result->info.s = SaveString(GET_HTMLTitle(self));
-		return 1;
-	}
-	}
-	return helper_txtDisp_get(self, result, argc, argv, labelID);
+    switch (labelID) {
+    case STR_HTMLAddress: {
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_HTMLAddress(self));
+        return 1;
+    }
+    case STR_HTMLIsIndex: {
+        result->type = PKT_INT;
+        result->canFree = 0;
+        result->info.i = GET_HTMLIsIndex(self);
+        return 1;
+    }
+    case STR_HTMLSource: {
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_HTMLSource(self));
+        return 1;
+    }
+    case STR_HTMLStyle: {
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_HTMLStyle(self));
+        return 1;
+    }
+    case STR_HTMLTitle: {
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        result->info.s = SaveString(GET_HTMLTitle(self));
+        return 1;
+    }
+    }
+    return helper_txtDisp_get(self, result, argc, argv, labelID);
 }
-long meth_HTML_get(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_HTML_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_HTML_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_HTML_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_HTML_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	TFStruct *tf;
-	VObjList *objl;
+long meth_HTML_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    TFStruct* tf;
+    VObjList* objl;
 
-	if (!meth_txt_initialize(self, result, argc, argv)) return 0;
-	if (tf = html_setUpTFStruct(self, NULL)) {
-		html_updateTFStruct(self, NULL);
-		scanVerticalMetrics(tf);
-		if (!helper_txtDisp_updateShownInfo(tf)) return 0;
-		for (objl = GET__shownDepend(self); objl; 
-			objl = objl->next) {
-		  	if (objl->o)
-				sendMessage1N2int(objl->o, 
-					  "shownInfoV",
-					  GET_shownPositionV(self),
-					  GET_shownSizeV(self));
-		}
-		return 1;
-	}
-	return 0;
+    if (!meth_txt_initialize(self, result, argc, argv))
+        return 0;
+    if (tf = html_setUpTFStruct(self, NULL)) {
+        html_updateTFStruct(self, NULL);
+        scanVerticalMetrics(tf);
+        if (!helper_txtDisp_updateShownInfo(tf))
+            return 0;
+        for (objl = GET__shownDepend(self); objl; objl = objl->next) {
+            if (objl->o)
+                sendMessage1N2int(objl->o, "shownInfoV", GET_shownPositionV(self),
+                                  GET_shownSizeV(self));
+        }
+        return 1;
+    }
+    return 0;
 }
 
-long meth_HTML_pathSimplify(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	result->type = PKT_STR;
-	result->canFree = PK_CANFREE_STR;
-	result->info.s = html_pathSimplify(SaveString(PkInfo2Str(&argv[1])));
-	return 1;
+long meth_HTML_pathSimplify(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_STR;
+    result->canFree = PK_CANFREE_STR;
+    result->info.s = html_pathSimplify(SaveString(PkInfo2Str(&argv[1])));
+    return 1;
 }
 
-long meth_HTML_purgeCache(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	VObj *obj;
+long meth_HTML_purgeCache(VObj* self, Packet* result, int argc, Packet argv[]) {
+    VObj* obj;
 
-	clearPacket(result);
-	if (argc == 1) {
-		obj = PkInfo2Obj(&argv[0]);
-		if (obj) html_clearCache(obj);
-	} else {
-		html_clearCache(NULL);
-	}
-	return 1;
+    clearPacket(result);
+    if (argc == 1) {
+        obj = PkInfo2Obj(&argv[0]);
+        if (obj)
+            html_clearCache(obj);
+    } else {
+        html_clearCache(NULL);
+    }
+    return 1;
 }
 
-long meth_HTML_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	if (meth_txtDisp_render(self, result, argc, argv)) {
-		TFStruct *tf = GET__TFStruct(self);
+long meth_HTML_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    if (meth_txtDisp_render(self, result, argc, argv)) {
+        TFStruct* tf = GET__TFStruct(self);
 
-		/* if the super render methods have newly opened up a window,
-		 * then update the tf structure.
-		 */
-		if (tf) 
-			if (!tf->w && GET_window(self)) {
-				tf->w = GET_window(self);
-			}
-		return 1;
-	}
-	return 0;
+        /* if the super render methods have newly opened up a window,
+         * then update the tf structure.
+         */
+        if (tf)
+            if (!tf->w && GET_window(self)) {
+                tf->w = GET_window(self);
+            }
+        return 1;
+    }
+    return 0;
 }
 
 int help_HTML_shownPositionV(self, newPosition)
-	VObj *self;
-	int newPosition;
+VObj* self;
+int newPosition;
 {
-	return help_txtDisp_shownPositionV(self, newPosition);
+    return help_txtDisp_shownPositionV(self, newPosition);
 }
 
-long meth_HTML_search(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	result->type = PKT_INT;
-	result->canFree = 0;
-	result->info.i = html_search(self, PkInfo2Str(&argv[0]));
-	return 1;
+long meth_HTML_search(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = html_search(self, PkInfo2Str(&argv[0]));
+    return 1;
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_HTML_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	char *str;
+long helper_HTML_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    char* str;
 
-	switch (labelID) {
-	case STR_HTMLAddress: {
-		VObjList *objl;
-		TFStruct *tf;
-		char *address;
-		extern SGMLBuildInfo SBI;
+    switch (labelID) {
+    case STR_HTMLAddress: {
+        VObjList* objl;
+        TFStruct* tf;
+        char* address;
+        extern SGMLBuildInfo SBI;
 
-		address = saveString(PkInfo2Str(&argv[1]));
-		SET_HTMLAddress(self, address);
-		if (!(tf = html_updateTFStruct(self, address))) {
-			result->info.i = 0;
-			result->canFree = 0;
-			result->type = PKT_INT;
-			return 0;
-		}
-/*
-		result->info.s = GET_HTMLAddress(self);
-		result->canFree = 0;
-		result->type = PKT_STR;
-*/
-		scanVerticalMetrics(tf);
-		if (!helper_txtDisp_updateShownInfo(tf)) {
-		  result->info.i = 0;
-		  result->canFree = 0;
-		  result->type = PKT_INT;
-		  return 0;
-		}
-		for (objl = GET__shownDepend(self); objl; objl = objl->next) {
-		  	if (objl->o)
-				sendMessage1N2int(objl->o, 
-					  "shownInfoV",
-					  GET_shownPositionV(self),
-					  GET_shownSizeV(self));
-		}
-		result->info.o = SBI.stack[0].obj;
-		result->canFree = 0;
-		result->type = PKT_OBJ;
+        address = saveString(PkInfo2Str(&argv[1]));
+        SET_HTMLAddress(self, address);
+        if (!(tf = html_updateTFStruct(self, address))) {
+            result->info.i = 0;
+            result->canFree = 0;
+            result->type = PKT_INT;
+            return 0;
+        }
+        /*
+                        result->info.s = GET_HTMLAddress(self);
+                        result->canFree = 0;
+                        result->type = PKT_STR;
+        */
+        scanVerticalMetrics(tf);
+        if (!helper_txtDisp_updateShownInfo(tf)) {
+            result->info.i = 0;
+            result->canFree = 0;
+            result->type = PKT_INT;
+            return 0;
+        }
+        for (objl = GET__shownDepend(self); objl; objl = objl->next) {
+            if (objl->o)
+                sendMessage1N2int(objl->o, "shownInfoV", GET_shownPositionV(self),
+                                  GET_shownSizeV(self));
+        }
+        result->info.o = SBI.stack[0].obj;
+        result->canFree = 0;
+        result->type = PKT_OBJ;
 
-		return 1;
-	}
-	case STR_HTMLIsIndex: {
-		result->type = PKT_INT;
-		result->canFree = 0;
-		result->info.i = PkInfo2Int(&argv[1]);
-		SET_HTMLIsIndex(self, result->info.i);
-		return 1;
-	}
-	case STR_HTMLSource: {
-		result->type = PKT_STR;
-		result->canFree = 0;
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_HTMLSource(self, result->info.s);
-		return 1;
-	}
-	case STR_HTMLStyle: {
-		result->type = PKT_STR;
-		result->canFree = 0;
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_HTMLStyle(self, result->info.s);
-		return 1;
-	}
-	case STR_HTMLTitle: {
-		result->type = PKT_STR;
-		result->canFree = 0;
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_HTMLTitle(self, result->info.s);
-		return 1;
-	}
-	}
-	return helper_txtDisp_set(self, result, argc, argv, labelID);
+        return 1;
+    }
+    case STR_HTMLIsIndex: {
+        result->type = PKT_INT;
+        result->canFree = 0;
+        result->info.i = PkInfo2Int(&argv[1]);
+        SET_HTMLIsIndex(self, result->info.i);
+        return 1;
+    }
+    case STR_HTMLSource: {
+        result->type = PKT_STR;
+        result->canFree = 0;
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_HTMLSource(self, result->info.s);
+        return 1;
+    }
+    case STR_HTMLStyle: {
+        result->type = PKT_STR;
+        result->canFree = 0;
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_HTMLStyle(self, result->info.s);
+        return 1;
+    }
+    case STR_HTMLTitle: {
+        result->type = PKT_STR;
+        result->canFree = 0;
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_HTMLTitle(self, result->info.s);
+        return 1;
+    }
+    }
+    return helper_txtDisp_set(self, result, argc, argv, labelID);
 }
-long meth_HTML_set(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_HTML_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_HTML_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_HTML_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_HTML_WWWNameOfFile(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	result->type = PKT_STR;
-	result->canFree = 0;
-	result->info.s = html_WWWNameOfFile(PkInfo2Str(&argv[0]));
-	return 1;
+long meth_HTML_WWWNameOfFile(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_STR;
+    result->canFree = 0;
+    result->info.s = html_WWWNameOfFile(PkInfo2Str(&argv[0]));
+    return 1;
 }
-

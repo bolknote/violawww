@@ -12,39 +12,31 @@
  * class	: dial
  * superClass	: field
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_dial.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_dial.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_dial_NCSlots[] = {
-	0
-};
-SlotInfo cl_dial_NPSlots[] = {
-	0
-};
-SlotInfo cl_dial_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"dial"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_dial_NCSlots[] = {0};
+SlotInfo cl_dial_NPSlots[] = {0};
+SlotInfo cl_dial_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"dial"},
+                             {
+                                 STR_classScript,
+                                 PTRS,
+                                 (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -117,80 +109,49 @@ SlotInfo cl_dial_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_dial_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_dial
-},{
-	0
-}
-};
+                             },
+                             {0}};
+SlotInfo cl_dial_PSlots[] = {{STR__classInfo, CLSI, (long)&class_dial}, {0}};
 
-SlotInfo *slots_dial[] = {
-	(SlotInfo*)cl_dial_NCSlots,
-	(SlotInfo*)cl_dial_NPSlots,
-	(SlotInfo*)cl_dial_CSlots,
-	(SlotInfo*)cl_dial_PSlots
-};
+SlotInfo* slots_dial[] = {(SlotInfo*)cl_dial_NCSlots, (SlotInfo*)cl_dial_NPSlots,
+                          (SlotInfo*)cl_dial_CSlots, (SlotInfo*)cl_dial_PSlots};
 
 MethodInfo meths_dial[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_dial_config
-},{
-	STR_expose,
-	meth_dial_expose
-},{
-	STR_initialize,
-	meth_dial_initialize
-},{
-	STR_render,
-	meth_dial_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_config, meth_dial_config},
+    {STR_expose, meth_dial_expose},
+    {STR_initialize, meth_dial_initialize},
+    {STR_render, meth_dial_render},
+    {0}};
 
 ClassInfo class_dial = {
-	helper_field_get,
-	helper_field_set,
-	slots_dial,		/* class slot information	*/
-	meths_dial,		/* class methods		*/
-	STR_dial,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_field_get, helper_field_set, slots_dial, /* class slot information	*/
+    meths_dial,                                     /* class methods		*/
+    STR_dial,                                       /* class identifier number	*/
+    &class_field,                                   /* super class info		*/
 };
 
-long meth_dial_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_field_config(self, result, argc, argv);
+long meth_dial_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_field_config(self, result, argc, argv);
 }
 
-long meth_dial_expose(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_field_render(self, result, argc, argv);
+long meth_dial_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_field_render(self, result, argc, argv);
 }
 
-long meth_dial_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	meth_field_initialize(self, result, argc, argv);
-	return 1;
+long meth_dial_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    meth_field_initialize(self, result, argc, argv);
+    return 1;
 }
 
-long meth_dial_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
+long meth_dial_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
 
-	if (!w) meth_field_render(self, result, argc, argv);
-	if (!(w = GET_window(self))) return 0;
-	GLDrawDial(w, GET_width(self) / 2, GET_height(self) / 2, 
-		   (int)((float)GET_width(self) / 1.8), 
-		   GET_shownPositionV(self), 0); /*XXX lame*/
-	return 1;
+    if (!w)
+        meth_field_render(self, result, argc, argv);
+    if (!(w = GET_window(self)))
+        return 0;
+    GLDrawDial(w, GET_width(self) / 2, GET_height(self) / 2, (int)((float)GET_width(self) / 1.8),
+               GET_shownPositionV(self), 0); /*XXX lame*/
+    return 1;
 }
-

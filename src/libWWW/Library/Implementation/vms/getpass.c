@@ -22,39 +22,38 @@ Cambridge, MA 02139, USA.  */
  * <getpass.c>
  */
 
-#include <stdio.h>
 #include <descrip.h>
-#include <psldef.h>
 #include <iodef.h>
+#include <psldef.h>
+#include <stdio.h>
 
-char *getpass (const char *prompt)
-{
-  static char *buf;
+char* getpass(const char* prompt) {
+    static char* buf;
 
-  int result;
-  $DESCRIPTOR(devnam,"SYS$INPUT");
-  int chan;
-  int promptlen;
-  struct {
-     short result;
-     short count;
-     int   info;
-  } iosb;
+    int result;
+    $DESCRIPTOR(devnam, "SYS$INPUT");
+    int chan;
+    int promptlen;
+    struct {
+        short result;
+        short count;
+        int info;
+    } iosb;
 
-  promptlen = strlen(prompt);
+    promptlen = strlen(prompt);
 
-  buf = malloc(256);
-  if (buf == NULL)
-     return(NULL);  
+    buf = malloc(256);
+    if (buf == NULL)
+        return (NULL);
 
-  result = SYS$ASSIGN(&devnam, &chan, PSL$C_USER, 0, 0);
+    result = SYS$ASSIGN(&devnam, &chan, PSL$C_USER, 0, 0);
 
-  result = SYS$QIOW(0, chan, IO$_READPROMPT | IO$M_PURGE |IO$M_NOECHO, &iosb, 0, 0,
-                    buf, 255, 0, 0, prompt, promptlen);
+    result = SYS$QIOW(0, chan, IO$_READPROMPT | IO$M_PURGE | IO$M_NOECHO, &iosb, 0, 0, buf, 255, 0,
+                      0, prompt, promptlen);
 
-  buf[iosb.count] = '\0';
+    buf[iosb.count] = '\0';
 
-  result = SYS$DASSGN(chan);
+    result = SYS$DASSGN(chan);
 
-  return buf;
+    return buf;
 }

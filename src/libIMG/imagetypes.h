@@ -7,21 +7,21 @@
  * jim frost 10.15.89
  */
 
-Image *facesLoad();
-Image *pbmLoad();
-Image *sunRasterLoad();
-Image *gifLoad();
-Image *rleLoad();
-Image *xwdLoad();
-Image *xbitmapLoad();
-Image *xpixmapLoad();
-Image *g3Load();
-Image *fbmLoad();
-Image *pcxLoad();
-Image *imgLoad();
-Image *macLoad();
-Image *cmuwmLoad();
-Image *mcidasLoad();
+Image* facesLoad();
+Image* pbmLoad();
+Image* sunRasterLoad();
+Image* gifLoad();
+Image* rleLoad();
+Image* xwdLoad();
+Image* xbitmapLoad();
+Image* xpixmapLoad();
+Image* g3Load();
+Image* fbmLoad();
+Image* pcxLoad();
+Image* imgLoad();
+Image* macLoad();
+Image* cmuwmLoad();
+Image* mcidasLoad();
 
 int facesIdent();
 int pbmIdent();
@@ -43,24 +43,22 @@ int mcidasIdent();
  */
 
 struct {
-  int    (*identifier)(); /* print out image info if this kind of image */
-  Image *(*loader)();     /* load image if this kind of image */
-  char  *name;            /* name of this image format */
-} ImageTypes[] = {
-  fbmIdent,       fbmLoad,       "FBM Image",
-  sunRasterIdent, sunRasterLoad, "Sun Rasterfile",
-  cmuwmIdent,     cmuwmLoad,     "CMU WM Raster",
-  pbmIdent,       pbmLoad,       "Portable Bit Map (PBM, PGM, PPM)",
-  facesIdent,     facesLoad,     "Faces Project",
-  gifIdent,       gifLoad,       "GIF Image",
-  rleIdent,       rleLoad,       "Utah RLE Image",
-  xwdIdent,       xwdLoad,       "X Window Dump",
-  mcidasIdent,    mcidasLoad,    "McIDAS areafile",
-  g3Ident,        g3Load,        "G3 FAX Image",
-  pcxIdent,       pcxLoad,       "PC Paintbrush Image",
-  imgIdent,       imgLoad,       "GEM Bit Image",
-  macIdent,       macLoad,       "MacPaint Image",
-  xpixmapIdent,   xpixmapLoad,   "X Pixmap",
-  xbitmapIdent,   xbitmapLoad,   "X Bitmap",
-  NULL,           NULL,          NULL
-};
+    int (*identifier)(); /* print out image info if this kind of image */
+    Image* (*loader)();  /* load image if this kind of image */
+    char* name;          /* name of this image format */
+} ImageTypes[] = {fbmIdent,       fbmLoad,       "FBM Image",
+                  sunRasterIdent, sunRasterLoad, "Sun Rasterfile",
+                  cmuwmIdent,     cmuwmLoad,     "CMU WM Raster",
+                  pbmIdent,       pbmLoad,       "Portable Bit Map (PBM, PGM, PPM)",
+                  facesIdent,     facesLoad,     "Faces Project",
+                  gifIdent,       gifLoad,       "GIF Image",
+                  rleIdent,       rleLoad,       "Utah RLE Image",
+                  xwdIdent,       xwdLoad,       "X Window Dump",
+                  mcidasIdent,    mcidasLoad,    "McIDAS areafile",
+                  g3Ident,        g3Load,        "G3 FAX Image",
+                  pcxIdent,       pcxLoad,       "PC Paintbrush Image",
+                  imgIdent,       imgLoad,       "GEM Bit Image",
+                  macIdent,       macLoad,       "MacPaint Image",
+                  xpixmapIdent,   xpixmapLoad,   "X Pixmap",
+                  xbitmapIdent,   xbitmapLoad,   "X Bitmap",
+                  NULL,           NULL,          NULL};

@@ -6,7 +6,7 @@
 # Tag Name	Processing Obj		| | | | hpane? 	        | | | right
 */
 
-char *HTML_stylesheet_str = "\
+char* HTML_stylesheet_str = "\
 P 		HTML_txt 		0 0 0 1 0		3 3 1 1\n\
 A 		HTML_txtAnchor	 	1 0 0 1 0		0 0 0 0\n\
 ATTR 		HTML_attr	 	1 0 0 1 0		0 0 0 0\n\

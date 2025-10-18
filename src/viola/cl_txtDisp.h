@@ -8,11 +8,11 @@ extern ClassInfo class_txtDisp;
 long int helper_txtDisp_get();
 long int helper_txtDisp_set();
 
-#define FORMAT_NONE	0
-#define FORMAT_WRAP 	1
-#define FORMAT_CENTER 	2
-#define FORMAT_LEFT 	3
-#define FORMAT_RIGHT 	4
+#define FORMAT_NONE 0
+#define FORMAT_WRAP 1
+#define FORMAT_CENTER 2
+#define FORMAT_LEFT 3
+#define FORMAT_RIGHT 4
 
 long int meth_txtDisp__getSelection();
 
@@ -63,4 +63,3 @@ long int helper_txtDisp_updateShownInfo();
 int help_txtDisp_shownPositionV();
 
 long meth_txtDisp_test4();
-

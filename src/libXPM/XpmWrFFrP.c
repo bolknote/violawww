@@ -20,16 +20,15 @@
 #endif
 #endif
 
-int
-XpmWriteFileFromPixmap(display, filename, pixmap, shapemask, attributes)
-    Display *display;
-    char *filename;
-    Pixmap pixmap;
-    Pixmap shapemask;
-    XpmAttributes *attributes;
+int XpmWriteFileFromPixmap(display, filename, pixmap, shapemask, attributes)
+Display* display;
+char* filename;
+Pixmap pixmap;
+Pixmap shapemask;
+XpmAttributes* attributes;
 {
-    XImage *image = NULL;
-    XImage *shapeimage = NULL;
+    XImage* image = NULL;
+    XImage* shapeimage = NULL;
     unsigned int width = 0;
     unsigned int height = 0;
     int ErrorStatus;
@@ -38,39 +37,34 @@ XpmWriteFileFromPixmap(display, filename, pixmap, shapemask, attributes)
     Window win;
 
     /*
-     * get geometry 
+     * get geometry
      */
     if (attributes && attributes->valuemask & XpmSize) {
-	width = attributes->width;
-	height = attributes->height;
+        width = attributes->width;
+        height = attributes->height;
     } else {
-	if (pixmap)
-	    XGetGeometry(display, pixmap, &win, &dummy, &dummy,
-			 &width, &height, &dum, &dum);
-	else if (shapemask)
-	    XGetGeometry(display, shapemask, &win, &dummy, &dummy,
-			 &width, &height, &dum, &dum);
+        if (pixmap)
+            XGetGeometry(display, pixmap, &win, &dummy, &dummy, &width, &height, &dum, &dum);
+        else if (shapemask)
+            XGetGeometry(display, shapemask, &win, &dummy, &dummy, &width, &height, &dum, &dum);
     }
 
     /*
-     * get the images 
+     * get the images
      */
     if (pixmap)
-	image = XGetImage(display, pixmap, 0, 0, width, height,
-			  AllPlanes, ZPixmap);
+        image = XGetImage(display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
     if (shapemask)
-	shapeimage = XGetImage(display, shapemask, 0, 0, width, height,
-			       AllPlanes, ZPixmap);
+        shapeimage = XGetImage(display, shapemask, 0, 0, width, height, AllPlanes, ZPixmap);
 
     /*
-     * write them out 
+     * write them out
      */
-    ErrorStatus = XpmWriteFileFromImage(display, filename, image, shapeimage,
-					attributes);
+    ErrorStatus = XpmWriteFileFromImage(display, filename, image, shapeimage, attributes);
     if (image)
-	XDestroyImage(image);
+        XDestroyImage(image);
     if (shapeimage)
-	XDestroyImage(shapeimage);
+        XDestroyImage(shapeimage);
 
     return (ErrorStatus);
 }

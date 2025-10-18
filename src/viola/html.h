@@ -1,19 +1,20 @@
+#include "tfed.h"
+
 int init_html();
 int html_backtrack();
 int html_search();
-char *html_pathSimplify();
-TFStruct *html_updateTFStruct();
-TFStruct *html_setUpTFStruct();
-TFStruct *html_clone();
-char *html_get_title();
-char *html_get_src();
+char* html_pathSimplify();
+TFStruct* html_updateTFStruct();
+TFStruct* html_setUpTFStruct();
+TFStruct* html_clone();
+char* html_get_title();
+char* html_get_src();
 int html_deleteDoc();
 int html_setCacheLimit();
 int html_clearCache();
-char *html_headerInfo();
-char *html_WWWNameOfFile();
+char* html_headerInfo();
+char* html_WWWNameOfFile();
 int data_reader();
 void HTJustRead();
 int html_fetchDocument();
-char *html_parseDocument();
-
+char* html_parseDocument();

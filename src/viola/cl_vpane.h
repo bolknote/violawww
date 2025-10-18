@@ -13,5 +13,3 @@ long int meth_vpane_get();
 long int meth_vpane_initialize();
 long int meth_vpane_render();
 long int meth_vpane_set();
-
-

@@ -1,3 +1,5 @@
+#pragma once
+
 #define PRIMSYMS (sizeof(primstuff) / sizeof(struct lexrecord))
 # define INT 257
 # define CHAR 258

@@ -13,241 +13,188 @@
  * class	: project
  * superClass	: field
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_project.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_project.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_project_NCSlots[] = {
-	{0}
-};
-SlotInfo cl_project_NPSlots[] = {
-{
-	STR_filePath,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR_projectIcon,
-	PTRS | SLOT_RW,
-	(long)""
-},{
-	STR__projectIcon,	/* internalized format */
-	PTRV,
-	0
-},{
-	{0}
-}
-};
-SlotInfo cl_project_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"project"
-},{
-	{0}
-}
-};
-SlotInfo cl_project_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_project
-},{
-	{0}
-}
-};
+SlotInfo cl_project_NCSlots[] = {{0}};
+SlotInfo cl_project_NPSlots[] = {{STR_filePath, PTRS | SLOT_RW, (long)""},
+                                 {STR_projectIcon, PTRS | SLOT_RW, (long)""},
+                                 {STR__projectIcon, /* internalized format */
+                                  PTRV, 0},
+                                 {{0}}};
+SlotInfo cl_project_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"project"}, {{0}}};
+SlotInfo cl_project_PSlots[] = {{STR__classInfo, CLSI, (long)&class_project}, {{0}}};
 
-SlotInfo *slots_project[] = {
-	(SlotInfo*)cl_project_NCSlots,
-	(SlotInfo*)cl_project_NPSlots,
-	(SlotInfo*)cl_project_CSlots,
-	(SlotInfo*)cl_project_PSlots
-};
+SlotInfo* slots_project[] = {(SlotInfo*)cl_project_NCSlots, (SlotInfo*)cl_project_NPSlots,
+                             (SlotInfo*)cl_project_CSlots, (SlotInfo*)cl_project_PSlots};
 
 MethodInfo meths_project[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_project_config
-},{
-	STR_expose,
-	meth_project_expose
-},{
-	STR_geta,
-	meth_project_get,
-},{
-	STR_initialize,
-	meth_project_initialize
-},{
-	STR_render,
-	meth_project_render
-},{
-	STR_seta,
-	meth_project_set
-},{
-	{0}
-}
-};
+    /* local methods */
+    {STR_config, meth_project_config},
+    {STR_expose, meth_project_expose},
+    {
+        STR_geta,
+        meth_project_get,
+    },
+    {STR_initialize, meth_project_initialize},
+    {STR_render, meth_project_render},
+    {STR_seta, meth_project_set},
+    {{0}}};
 
 ClassInfo class_project = {
-	helper_project_get,
-	helper_project_set,
-	slots_project,		/* class slot information	*/
-	meths_project,		/* class methods		*/
-	STR_project,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_project_get, helper_project_set, slots_project, /* class slot information	*/
+    meths_project,                                         /* class methods		*/
+    STR_project,                                           /* class identifier number	*/
+    &class_field,                                          /* super class info		*/
 };
 
 long meth_project_config(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	if (!meth_field_config(self, result, argc, argv)) return 0;
-	return 1;
+    if (!meth_field_config(self, result, argc, argv))
+        return 0;
+    return 1;
 }
 
 long meth_project_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_field_render(self, result, argc, argv);
+    return meth_field_render(self, result, argc, argv);
 }
 
 long helper_project_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_filePath:
-		result->info.s = SaveString(GET_filePath(self));
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		return 1;
+    switch (labelID) {
+    case STR_filePath:
+        result->info.s = SaveString(GET_filePath(self));
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        return 1;
 
-	case STR_projectIcon:
-		result->info.s = SaveString(GET_projectIcon(self));
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		return 1;
-	}
-	return helper_field_get(self, result, argc, argv, labelID);
+    case STR_projectIcon:
+        result->info.s = SaveString(GET_projectIcon(self));
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+    return helper_field_get(self, result, argc, argv, labelID);
 }
 long meth_project_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_project_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_project_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 long meth_project_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	meth_field_initialize(self, result, argc, argv);
-	return 1;
+    meth_field_initialize(self, result, argc, argv);
+    return 1;
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
 long helper_project_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_filePath:
-		result->type = PKT_STR;
-		result->canFree = 0;
-		result->info.s = SaveString(argv[1].info.s);
-		SET_filePath(self, result->info.s);
-		return 1;
+    switch (labelID) {
+    case STR_filePath:
+        result->type = PKT_STR;
+        result->canFree = 0;
+        result->info.s = SaveString(argv[1].info.s);
+        SET_filePath(self, result->info.s);
+        return 1;
 
-	case STR_label:
-		meth_field_set(self, result, argc, argv);
-		if (GET_window(self)) 
-			GLSetWindowName(GET_window(self), GET_label(self));
-		return 1;
+    case STR_label:
+        meth_field_set(self, result, argc, argv);
+        if (GET_window(self))
+            GLSetWindowName(GET_window(self), GET_label(self));
+        return 1;
 
-	case STR_projectIcon: {
-		Pixmap pixmap;
-		char *cp;
-		int width, height, hotx, hoty;
+    case STR_projectIcon: {
+        Pixmap pixmap;
+        char* cp;
+        int width, height, hotx, hoty;
 
-		result->type = PKT_STR;
-		result->canFree = 0;
-		if (!(result->info.s = SaveString(argv[1].info.s))) return 0;
+        result->type = PKT_STR;
+        result->canFree = 0;
+        if (!(result->info.s = SaveString(argv[1].info.s)))
+            return 0;
 
-		if (cp = GET_projectIcon(self)) free(cp);
-		SET_projectIcon(self, result->info.s);
+        if (cp = GET_projectIcon(self))
+            free(cp);
+        SET_projectIcon(self, result->info.s);
 
-		if (!(pixmap = (Pixmap)GET__projectIcon(self))) return 0;
-		pixmap = GLMakeXBMFromASCII(rootWindow, cp, &width, &height, 
-						&hotx, &hoty);
-		SET__projectIcon(self, pixmap);
-		return 1;
-		}
-	}
-	return helper_field_set(self, result, argc, argv, labelID);
+        if (!(pixmap = (Pixmap)GET__projectIcon(self)))
+            return 0;
+        pixmap = GLMakeXBMFromASCII(rootWindow, cp, &width, &height, &hotx, &hoty);
+        SET__projectIcon(self, pixmap);
+        return 1;
+    }
+    }
+    return helper_field_set(self, result, argc, argv, labelID);
 }
 long meth_project_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_project_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_project_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 long meth_project_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	Window w = GET_window(self);
-	Pixmap pixmap;
+    Window w = GET_window(self);
+    Pixmap pixmap;
 
-	if (!w) meth_field_render(self, result, argc, argv);
-	if (!(w = GET_window(self))) return 0;
+    if (!w)
+        meth_field_render(self, result, argc, argv);
+    if (!(w = GET_window(self)))
+        return 0;
 
-	GLSetWindowName(w, GET_label(self));
+    GLSetWindowName(w, GET_label(self));
 
-	return 1;
+    return 1;
 }
-
-
-
-
-
-
-
-

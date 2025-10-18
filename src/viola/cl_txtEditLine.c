@@ -12,41 +12,31 @@
  * class	: txtEditLine
  * superClass	: txtDisp
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_txtEditLine.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_txtEditLine.h"
-#include "misc.h"
-#include "glib.h"
 #include "tfed.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_txtEditLine_NCSlots[] = {
-{
-	{0}
-}
-};
-SlotInfo cl_txtEditLine_NPSlots[] = {
-	{0}
-};
-SlotInfo cl_txtEditLine_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"txtEditLine"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_txtEditLine_NCSlots[] = {{{0}}};
+SlotInfo cl_txtEditLine_NPSlots[] = {{0}};
+SlotInfo cl_txtEditLine_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtEditLine"},
+                                    {
+                                        STR_classScript,
+                                        PTRS,
+                                        (long)"\n\
 		switch (arg[0]) {\n\
 		case \"keyPress\":\n\
 			insert(key());\n\
@@ -143,100 +133,71 @@ SlotInfo cl_txtEditLine_CSlots[] = {
 			break;\n\
 		}\n\
 	",
-},{
-	{0}
-}
-};
-SlotInfo cl_txtEditLine_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_txtEditLine
-},{
-	STR_border,
-	LONG | SLOT_RW,
-	BORDER_SINK
-},{
-	{0}
-}
-};
+                                    },
+                                    {{0}}};
+SlotInfo cl_txtEditLine_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txtEditLine},
+                                    {STR_border, LONG | SLOT_RW, BORDER_SINK},
+                                    {{0}}};
 
-SlotInfo *slots_txtEditLine[] = {
-	(SlotInfo*)cl_txtEditLine_NCSlots,
-	(SlotInfo*)cl_txtEditLine_NPSlots,
-	(SlotInfo*)cl_txtEditLine_CSlots,
-	(SlotInfo*)cl_txtEditLine_PSlots
-};
+SlotInfo* slots_txtEditLine[] = {
+    (SlotInfo*)cl_txtEditLine_NCSlots, (SlotInfo*)cl_txtEditLine_NPSlots,
+    (SlotInfo*)cl_txtEditLine_CSlots, (SlotInfo*)cl_txtEditLine_PSlots};
 
 MethodInfo meths_txtEditLine[] = {
-	/* local methods */
-{
-	STR_initialize,
-	meth_txtEditLine_initialize
-},{
-	STR_expose,
-	meth_txtEditLine_expose,
-},{
-	STR_render,
-	meth_txtEditLine_render
-},{
-	{0}
-}
-};
+    /* local methods */
+    {STR_initialize, meth_txtEditLine_initialize},
+    {
+        STR_expose,
+        meth_txtEditLine_expose,
+    },
+    {STR_render, meth_txtEditLine_render},
+    {{0}}};
 
 ClassInfo class_txtEditLine = {
-	helper_txtDisp_get,
-	helper_txtDisp_set,
-	slots_txtEditLine,		/* class slot information	*/
-	meths_txtEditLine,		/* class methods		*/
-	STR_txtEditLine,		/* class identifier number	*/
-	&class_txtDisp,		/* super class info		*/
+    helper_txtDisp_get, helper_txtDisp_set, slots_txtEditLine, /* class slot information	*/
+    meths_txtEditLine,                                         /* class methods		*/
+    STR_txtEditLine,                                           /* class identifier number	*/
+    &class_txtDisp,                                            /* super class info		*/
 };
 
 long int meth_txtEditLine_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_txtDisp_initialize(self, result, argc, argv);
+    return meth_txtDisp_initialize(self, result, argc, argv);
 }
 
 long int meth_txtEditLine_expose(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	Window w = GET_window(self);
-	int stat;
-/*XXX WATCH OUT. This is cheating and not calling super methods.
-	meth_txt_expose(self, result, argc, argv);
-*/
+    Window w = GET_window(self);
+    int stat;
+    /*XXX WATCH OUT. This is cheating and not calling super methods.
+            meth_txt_expose(self, result, argc, argv);
+    */
 
-	GLPrepareObjColor(self);
-	if (argc == 0) {
-		stat = tfed_expose(self, 0, 0, 
-					GET_width(self), GET_height(self));
-	} else {
-		stat = tfed_expose(self, argv[0].info.i, argv[1].info.i, 
-				   	 argv[2].info.i, argv[3].info.i);
-	}
-	if (w && GET_visible(self)) {
-	  GLDrawBorder(w, 0, 0, 
-		       GET_width(self)-1, GET_height(self)-1,
-		       GET_border(self), 1);
-	}
-	return stat;
+    GLPrepareObjColor(self);
+    if (argc == 0) {
+        stat = tfed_expose(self, 0, 0, GET_width(self), GET_height(self));
+    } else {
+        stat = tfed_expose(self, argv[0].info.i, argv[1].info.i, argv[2].info.i, argv[3].info.i);
+    }
+    if (w && GET_visible(self)) {
+        GLDrawBorder(w, 0, 0, GET_width(self) - 1, GET_height(self) - 1, GET_border(self), 1);
+    }
+    return stat;
 }
-
 
 long int meth_txtEditLine_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_txtDisp_render(self, result, argc, argv);
+    return meth_txtDisp_render(self, result, argc, argv);
 }
-

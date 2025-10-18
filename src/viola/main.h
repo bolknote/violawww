@@ -1,1 +1,1 @@
-extern char *version;
+extern char* version;

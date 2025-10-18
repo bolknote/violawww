@@ -12,4 +12,3 @@ long int meth_AC_SGML_txt_get();
 long int meth_AC_SGML_txt_initialize();
 long int meth_AC_SGML_txt_render();
 long int meth_AC_SGML_txt_set();
-

@@ -1,19 +1,19 @@
 /*                                ACCESS CONTROL LIST ROUTINES
-                                             
+
  */
 
 #ifndef HTACL_H
 #define HTACL_H
 
-#include "HTUtils.h"
 #include "HTAAUtil.h"
 #include "HTGroup.h"
+#include "HTUtils.h"
 
 #ifdef SHORT_NAMES
-#define HTAAgAFn        HTAA_getAclFilename
-#define HTAAoACL        HTAA_openAcl
-#define HTAAcACL        HTAA_closeAcl
-#define HTAAgAEn        HTAA_getAclEntry
+#define HTAAgAFn HTAA_getAclFilename
+#define HTAAoACL HTAA_openAcl
+#define HTAAcACL HTAA_closeAcl
+#define HTAAgAEn HTAA_getAclEntry
 #endif /* SHORT_NAMES */
 
 /*
@@ -32,8 +32,7 @@ Opening Access Control List File
 **      returns         the FILE* to open ACL.
 **                      NULL, if ACL not found.
 */
-PUBLIC FILE *HTAA_openAcl PARAMS((CONST char * pathname));
-
+PUBLIC FILE* HTAA_openAcl PARAMS((CONST char* pathname));
 
 /* PUBLIC                                               HTAA_closeAcl()
 **                      CLOSE ACL FILE
@@ -95,9 +94,8 @@ Getting ACL Entry
 **      HTAA_readGroupFile()) and after that access authorization
 **      can be checked with function HTAA_userAndInetGroup().
 */
-PUBLIC GroupDef *HTAA_getAclEntry PARAMS((FILE *        acl_file,
-                                          CONST char *  pathname,
-                                          HTAAMethod    method));
+PUBLIC GroupDef* HTAA_getAclEntry PARAMS((FILE * acl_file, CONST char* pathname,
+                                          HTAAMethod method));
 /*
 
  */

@@ -15,40 +15,32 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 
-#include <Xm/Xm.h>
 #include <X11/cursorfont.h>
+#include <Xm/Xm.h>
 #include <stdio.h>
 
-#include "vw.h"
 #include "cursor.h"
-
+#include "vw.h"
 
 Cursor busyCursor;
 
-
-void initCursors(display)
-    Display *display;
+void initCursors(display) Display* display;
 {
     busyCursor = XCreateFontCursor(display, XC_watch);
 }
 
-
-void busyCursorMH(arg, argc, clientData)
-    char *arg[];
-    int argc;
-    void *clientData;
+void busyCursorMH(arg, argc, clientData) char* arg[];
+int argc;
+void* clientData;
 {
-/*    fprintf(stderr, "VW: busyCursor\n");*/
-    setBusyCursor((DocViewInfo *) clientData);
+    /*    fprintf(stderr, "VW: busyCursor\n");*/
+    setBusyCursor((DocViewInfo*)clientData);
 }
 
-
-void idleCursorMH(arg, argc, clientData)
-    char *arg[];
-    int argc;
-    void *clientData;
+void idleCursorMH(arg, argc, clientData) char* arg[];
+int argc;
+void* clientData;
 {
-/*    fprintf(stderr, "VW: idleCursor\n");*/
-    setIdleCursor((DocViewInfo *) clientData);
+    /*    fprintf(stderr, "VW: idleCursor\n");*/
+    setIdleCursor((DocViewInfo*)clientData);
 }
-

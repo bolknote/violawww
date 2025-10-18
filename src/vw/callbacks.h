@@ -18,7 +18,6 @@
 #ifndef _CALLBACKS_H_
 #define _CALLBACKS_H_
 
-
 void genericCallback();
 void okCallback();
 void quitCallback();
@@ -76,6 +75,5 @@ void scrollBarValueChanged();
 void scrollBarDrag();
 
 void printTest();
-
 
 #endif _CALLBACKS_H_

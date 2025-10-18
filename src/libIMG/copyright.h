@@ -20,7 +20,7 @@
  */
 
 #ifndef __SABER__
-static char *Copyright= "Copyright 1989, 1990, 1991 Jim Frost";
+static char* Copyright = "Copyright 1989, 1990, 1991 Jim Frost";
 #endif
 #define _JIM_COPYRIGHT_
 #endif

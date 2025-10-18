@@ -12,39 +12,31 @@
  * class	: XPMButton
  * superClass	: XPM
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_XPMButton.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_XPMButton.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_XPMButton_NCSlots[] = {
-	0
-};
-SlotInfo cl_XPMButton_NPSlots[] = {
-	0
-};
-SlotInfo cl_XPMButton_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"XPMButton"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_XPMButton_NCSlots[] = {0};
+SlotInfo cl_XPMButton_NPSlots[] = {0};
+SlotInfo cl_XPMButton_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"XPMButton"},
+                                  {
+                                      STR_classScript,
+                                      PTRS,
+                                      (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -114,55 +106,25 @@ SlotInfo cl_XPMButton_CSlots[] = {
 			break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_XPMButton_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_XPMButton
-},{
-	0
-}
-};
+                                  },
+                                  {0}};
+SlotInfo cl_XPMButton_PSlots[] = {{STR__classInfo, CLSI, (long)&class_XPMButton}, {0}};
 
-SlotInfo *slots_XPMButton[] = {
-	(SlotInfo*)cl_XPMButton_NCSlots,
-	(SlotInfo*)cl_XPMButton_NPSlots,
-	(SlotInfo*)cl_XPMButton_CSlots,
-	(SlotInfo*)cl_XPMButton_PSlots
-};
+SlotInfo* slots_XPMButton[] = {(SlotInfo*)cl_XPMButton_NCSlots, (SlotInfo*)cl_XPMButton_NPSlots,
+                               (SlotInfo*)cl_XPMButton_CSlots, (SlotInfo*)cl_XPMButton_PSlots};
 
 MethodInfo meths_XPMButton[] = {
-	/* local methods */
-{
-	STR_render,
-	meth_XPMButton_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_render, meth_XPMButton_render},
+    {0}};
 
 ClassInfo class_XPMButton = {
-	helper_XPM_get,
-	helper_XPM_set,
-	slots_XPMButton,	/* class slot information	*/
-	meths_XPMButton,	/* class methods		*/
-	STR_XPMButton,		/* class identifier number	*/
-	&class_XPM,		/* super class info		*/
+    helper_XPM_get,  helper_XPM_set, slots_XPMButton, /* class slot information	*/
+    meths_XPMButton,                                  /* class methods		*/
+    STR_XPMButton,                                    /* class identifier number	*/
+    &class_XPM,                                       /* super class info		*/
 };
 
-long meth_XPMButton_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_XPM_render(self, result, argc, argv);
+long meth_XPMButton_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_XPM_render(self, result, argc, argv);
 }
-
-
-
-
-
-
-
-

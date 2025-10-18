@@ -12,20 +12,20 @@
 #include <stdlib.h>
 
 int xpmVisualType(visual)
-    Visual *visual;
+Visual* visual;
 {
     switch (visual->class) {
     case StaticGray:
     case GrayScale:
-	switch (visual->map_entries) {
-	case 2:
-	    return (MONO);
-	case 4:
-	    return (GRAY4);
-	default:
-	    return (GRAY);
-	}
+        switch (visual->map_entries) {
+        case 2:
+            return (MONO);
+        case 4:
+            return (GRAY4);
+        default:
+            return (GRAY);
+        }
     default:
-	return (COLOR);
+        return (COLOR);
     }
 }

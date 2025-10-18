@@ -22,7 +22,7 @@
 ****/
 
 #ifndef __SABER__
-static char *MRMCopyright = "Copyright 1990 Mark Majhor";
+static char* MRMCopyright = "Copyright 1990 Mark Majhor";
 #endif
 #define _MRM_COPYRIGHT_
 #endif

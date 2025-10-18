@@ -12,41 +12,33 @@
  * class	: PS
  * superClass	: field
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_PS.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_PS.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
 #include <X11/Xmu/Atoms.h>
+#include <ctype.h>
 #include <string.h>
 
-SlotInfo cl_PS_NCSlots[] = {
-	0
-};
-SlotInfo cl_PS_NPSlots[] = {
-	0
-};
-SlotInfo cl_PS_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"PS"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_PS_NCSlots[] = {0};
+SlotInfo cl_PS_NPSlots[] = {0};
+SlotInfo cl_PS_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"PS"},
+                           {
+                               STR_classScript,
+                               PTRS,
+                               (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -80,164 +72,120 @@ SlotInfo cl_PS_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_PS_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_PS
-},{
-	0
-}
-};
+                           },
+                           {0}};
+SlotInfo cl_PS_PSlots[] = {{STR__classInfo, CLSI, (long)&class_PS}, {0}};
 
-SlotInfo *slots_PS[] = {
-	(SlotInfo*)cl_PS_NCSlots,
-	(SlotInfo*)cl_PS_NPSlots,
-	(SlotInfo*)cl_PS_CSlots,
-	(SlotInfo*)cl_PS_PSlots
-};
+SlotInfo* slots_PS[] = {(SlotInfo*)cl_PS_NCSlots, (SlotInfo*)cl_PS_NPSlots, (SlotInfo*)cl_PS_CSlots,
+                        (SlotInfo*)cl_PS_PSlots};
 
 MethodInfo meths_PS[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_PS_config
-},{
-	STR_geta,
-	meth_PS_get,
-},{
-	STR_initialize,
-	meth_PS_initialize
-},{
-	STR_render,
-	meth_PS_render
-},{
-	STR_seta,
-	meth_PS_set
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_config, meth_PS_config},
+    {
+        STR_geta,
+        meth_PS_get,
+    },
+    {STR_initialize, meth_PS_initialize},
+    {STR_render, meth_PS_render},
+    {STR_seta, meth_PS_set},
+    {0}};
 
 ClassInfo class_PS = {
-	helper_PS_get,
-	helper_PS_set,
-	slots_PS,		/* class slot information	*/
-	meths_PS,		/* class methods		*/
-	STR_PS,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_PS_get, helper_PS_set, slots_PS, /* class slot information	*/
+    meths_PS,                               /* class methods		*/
+    STR_PS,                                 /* class identifier number	*/
+    &class_field,                           /* super class info		*/
 };
 
-long meth_PS_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_field_config(self, result, argc, argv);
+long meth_PS_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_field_config(self, result, argc, argv);
 }
 
-long helper_PS_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_direction:
-		result->info.s = SaveString(GET_direction(self));
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		return 1;
-	}
-	return helper_field_get(self, result, argc, argv, labelID);
+long helper_PS_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_direction:
+        result->info.s = SaveString(GET_direction(self));
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+    return helper_field_get(self, result, argc, argv, labelID);
 }
-long meth_PS_get(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_PS_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_PS_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_PS_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_PS_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	meth_field_initialize(self, result, argc, argv);
-	return 1;
+long meth_PS_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    meth_field_initialize(self, result, argc, argv);
+    return 1;
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_PS_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_label: {
-		Window w = GET_window(self);
-		result->info.s = SaveString(PkInfo2Str(&argv[1]));
-		SET_label(self, result->info.s);
-		if (w) {
-			sprintf(buff, "%d %d %d %d %d %d %f %f %d %d %d %d",
-				0, 			/* bpixmap */
-				0,	 		/* orientation */
-				0, GET_height(self),	/* lower left */
-				0, GET_width(self),	/* upper right */
-				(float)screenDPI, (float)screenDPI,	/* resolution */
-				0, 0,		/* left, bottom */
-				0, 0);		/* top, right */
-printf("buff=>%s<\n", buff);
-			XChangeProperty(display, GET_window(self),
-				XmuInternAtom(display, 	
-					XmuMakeAtom("GHOSTVIEW")),
-				XA_STRING, 8, PropModeReplace,
-				(unsigned char *)buff, strlen(buff));
-printf("buff=>%s<\n", buff);
-			sprintf(buff, "%d", GET_window(self));
-printf("buff=>%s<\n", buff);
-/*			setenv("GHOSTVIEW", buff, True);*/
-/*			setenv("DISPLAY", itoa(display...), True);*/
-			sprintf(buff, "gs %s", GET_label(self));
-			system(buff);
+long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_label: {
+        Window w = GET_window(self);
+        result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        SET_label(self, result->info.s);
+        if (w) {
+            sprintf(buff, "%d %d %d %d %d %d %f %f %d %d %d %d", 0, /* bpixmap */
+                    0,                                              /* orientation */
+                    0, GET_height(self),                            /* lower left */
+                    0, GET_width(self),                             /* upper right */
+                    (float)screenDPI, (float)screenDPI,             /* resolution */
+                    0, 0,                                           /* left, bottom */
+                    0, 0);                                          /* top, right */
+            printf("buff=>%s<\n", buff);
+            XChangeProperty(display, GET_window(self),
+                            XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
+                            PropModeReplace, (unsigned char*)buff, strlen(buff));
+            printf("buff=>%s<\n", buff);
+            sprintf(buff, "%d", GET_window(self));
+            printf("buff=>%s<\n", buff);
+            /*			setenv("GHOSTVIEW", buff, True);*/
+            /*			setenv("DISPLAY", itoa(display...), True);*/
+            sprintf(buff, "gs %s", GET_label(self));
+            system(buff);
 
-			SET__label(self, 0);
-		} else {
-			SET__label(self, 0);
-		}
-		result->type = PKT_STR;
-		result->canFree = 0;
-		return 1;
-	}
-	}
-	return helper_field_set(self, result, argc, argv, labelID);
+            SET__label(self, 0);
+        } else {
+            SET__label(self, 0);
+        }
+        result->type = PKT_STR;
+        result->canFree = 0;
+        return 1;
+    }
+    }
+    return helper_field_set(self, result, argc, argv, labelID);
 }
-long meth_PS_set(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_PS_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_PS_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_PS_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_PS_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
-	Pixmap pixmap;
+long meth_PS_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
+    Pixmap pixmap;
 
-	if (!w) meth_field_render(self, result, argc, argv);
-	
-	if (!(w = GET_window(self))) return 0;
-	if (pixmap = (Pixmap)GET__label(self)) {
-	} else {
-		int width, height, hotx, hoty;
-		char *cp;
+    if (!w)
+        meth_field_render(self, result, argc, argv);
 
-		if (!(cp = GET_label(self))) return 0;
-		pixmap = GLMakeXPMFromASCII(w, cp, &width, &height, 
-						&hotx, &hoty);
-		SET__label(self, pixmap);
-/*		GLDisplayPS(w, 0, 0, GET_width(self), GET_height(self),
-			     pixmap);
-*/
-	}
-	return 1;
+    if (!(w = GET_window(self)))
+        return 0;
+    if (pixmap = (Pixmap)GET__label(self)) {
+    } else {
+        int width, height, hotx, hoty;
+        char* cp;
+
+        if (!(cp = GET_label(self)))
+            return 0;
+        pixmap = GLMakeXPMFromASCII(w, cp, &width, &height, &hotx, &hoty);
+        SET__label(self, pixmap);
+        /*		GLDisplayPS(w, 0, 0, GET_width(self), GET_height(self),
+                                     pixmap);
+        */
+    }
+    return 1;
 }
-
-
-
-
-
-
-
-

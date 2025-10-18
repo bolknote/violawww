@@ -1,6 +1,6 @@
 typedef struct ClassInfo ClassInfo;
 
-ClassInfo *getClassInfo();
+ClassInfo* getClassInfo();
 int init_loader();
 int load_object();
 int load_objects_slots();

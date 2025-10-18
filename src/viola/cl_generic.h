@@ -173,28 +173,28 @@ long meth_generic_width();
 long meth_generic_word();
 long meth_generic_writeln();
 long meth_generic_y();
-long meth_generic_HTTPCanonicalURL(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPCurrentDocAddr(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPCurrentDocAddrParsed(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPCurrentDocAddrSet(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPEncodeURL(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPDecodeURL(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPGet(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPGetNParse(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPPost(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPSubmit(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListAdd(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListChange(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListDelete(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListGet(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListLoad(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_HTTPHotListSave(VObj *self, Packet *result, int argc, Packet argv[]);
+long meth_generic_HTTPCanonicalURL(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPCurrentDocAddr(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPCurrentDocAddrSet(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPDecodeURL(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPGet(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPGetNParse(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPPost(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPSubmit(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListAdd(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListChange(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListDelete(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListGet(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListLoad(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_HTTPHotListSave(VObj* self, Packet* result, int argc, Packet argv[]);
 
-long meth_generic_addPicFromFile(VObj *self, Packet *result, int argc, Packet argv[]);	/* to support <IMG> */
+long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc,
+                                 Packet argv[]); /* to support <IMG> */
 
-long meth_generic_code_HTML_txt(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_code_HTML_txtAnchor(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_code_HTML_header_large(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_code_HTML_header_medium(VObj *self, Packet *result, int argc, Packet argv[]);
-long meth_generic_code_HTML_header_small(VObj *self, Packet *result, int argc, Packet argv[]);
-
+long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_code_HTML_txtAnchor(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_code_HTML_header_large(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_code_HTML_header_medium(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_code_HTML_header_small(VObj* self, Packet* result, int argc, Packet argv[]);

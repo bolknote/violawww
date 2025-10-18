@@ -16,4 +16,3 @@
 #endif /* __DARWIN__ */
 
 #endif /* DARWIN_FIX_H */
-

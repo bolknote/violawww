@@ -13,4 +13,3 @@ long meth_rubber_get();
 long meth_rubber_initialize();
 long meth_rubber_render();
 long meth_rubber_set();
-

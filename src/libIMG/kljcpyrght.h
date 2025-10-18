@@ -22,7 +22,7 @@
 ****/
 
 #ifndef __SABER__
-static char *KLJCopyright = "Copyright 1989, 1990 Kirk L. Johnson";
+static char* KLJCopyright = "Copyright 1989, 1990 Kirk L. Johnson";
 #endif
 #define _KLJ_COPYRIGHT_
 #endif

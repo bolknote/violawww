@@ -18,8 +18,8 @@
 #ifndef _CATALOG_H_
 #define _CATALOG_H_
 
-#include "vw.h"
 #include "menu.h"
+#include "vw.h"
 
 #define MAX_SELECTIONS 100
 #define ITEM_ALLOC_CHUNK 32
@@ -27,9 +27,8 @@
 /* For testing purposes ... to be removed later. */
 #define DEFAULT_CATALOG_FILE "/tmp/defaultSpiderCatalog"
 
-enum itemTypes {ITEM, FOLDER, LINK};
-enum itemStates {NONE=0, SELECTED};
-
+enum itemTypes { ITEM, FOLDER, LINK };
+enum itemStates { NONE = 0, SELECTED };
 
 typedef struct itemStruct {
     char type;
@@ -37,16 +36,15 @@ typedef struct itemStruct {
 
     Pixmap icon;
     GC gc;
-    char *iconFile;
+    char* iconFile;
     short x, y, w, h;
 
-    char *name;
+    char* name;
     XmString nameXMS;
     short nx, ny;
 
-    char *commentURL;
+    char* commentURL;
 } Item;
-
 
 typedef struct folderStruct {
     char type;
@@ -54,23 +52,22 @@ typedef struct folderStruct {
 
     Pixmap icon;
     GC gc;
-    char *iconFile;
+    char* iconFile;
     short x, y, w, h;
 
-    char *name;
+    char* name;
     XmString nameXMS;
     short nx, ny;
 
-    char *commentURL;
-    Item **items;
+    char* commentURL;
+    Item** items;
     short nItems;
     short allocedItems;
-    short cw, ch;  /* size of folder canvas area (when open) */
-   
+    short cw, ch; /* size of folder canvas area (when open) */
+
     XmString nItemsXMS;
     short numx, numy;
 } Folder;
-
 
 typedef struct linkStruct {
     char type;
@@ -78,25 +75,24 @@ typedef struct linkStruct {
 
     Pixmap icon;
     GC gc;
-    char *iconFile;
+    char* iconFile;
     short x, y, w, h;
 
-    char *name;
+    char* name;
     XmString nameXMS;
     short nx, ny;
 
-    char *commentURL;
-    char *url;
-    char *comment;
-    char *folderName;
-    Folder *folder;
+    char* commentURL;
+    char* url;
+    char* comment;
+    char* folderName;
+    Folder* folder;
 } Link;
 
-
 typedef struct catalogStruct {
-    Folder *topFolder;
-    Folder *currentFolder;
-    char *catalogFileName;
+    Folder* topFolder;
+    Folder* currentFolder;
+    char* catalogFileName;
 
     char visible;
 
@@ -104,16 +100,14 @@ typedef struct catalogStruct {
     Widget shell;
     Widget canvas;
     Widget helpLabel;
-    DocViewInfo *dvi;
+    DocViewInfo* dvi;
 } Catalog;
-
 
 typedef union ItemStruct {
     Item item;
     Link link;
     Folder folder;
 } CatalogItem;
-
 
 /* PROTOTYPES */
 void showCatalogCB();

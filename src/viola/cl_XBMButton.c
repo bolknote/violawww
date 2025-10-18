@@ -12,39 +12,31 @@
  * class	: XBMButton
  * superClass	: XBM
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_XBMButton.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_XBMButton.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_XBMButton_NCSlots[] = {
-	0
-};
-SlotInfo cl_XBMButton_NPSlots[] = {
-	0
-};
-SlotInfo cl_XBMButton_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"XBMButton"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_XBMButton_NCSlots[] = {0};
+SlotInfo cl_XBMButton_NPSlots[] = {0};
+SlotInfo cl_XBMButton_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"XBMButton"},
+                                  {
+                                      STR_classScript,
+                                      PTRS,
+                                      (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -111,64 +103,32 @@ SlotInfo cl_XBMButton_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_XBMButton_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_XBMButton
-},{
-	0
-}
-};
+                                  },
+                                  {0}};
+SlotInfo cl_XBMButton_PSlots[] = {{STR__classInfo, CLSI, (long)&class_XBMButton}, {0}};
 
-SlotInfo *slots_XBMButton[] = {
-	(SlotInfo*)cl_XBMButton_NCSlots,
-	(SlotInfo*)cl_XBMButton_NPSlots,
-	(SlotInfo*)cl_XBMButton_CSlots,
-	(SlotInfo*)cl_XBMButton_PSlots
-};
+SlotInfo* slots_XBMButton[] = {(SlotInfo*)cl_XBMButton_NCSlots, (SlotInfo*)cl_XBMButton_NPSlots,
+                               (SlotInfo*)cl_XBMButton_CSlots, (SlotInfo*)cl_XBMButton_PSlots};
 
 MethodInfo meths_XBMButton[] = {
-	/* local methods */
-{
-	STR_render,
-	meth_XBMButton_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_render, meth_XBMButton_render},
+    {0}};
 
 ClassInfo class_XBMButton = {
-	helper_XBM_get,
-	helper_XBM_set,
-	slots_XBMButton,	/* class slot information	*/
-	meths_XBMButton,	/* class methods		*/
-	STR_XBMButton,		/* class identifier number	*/
-	&class_XBM,		/* super class info		*/
+    helper_XBM_get,  helper_XBM_set, slots_XBMButton, /* class slot information	*/
+    meths_XBMButton,                                  /* class methods		*/
+    STR_XBMButton,                                    /* class identifier number	*/
+    &class_XBM,                                       /* super class info		*/
 };
 
-long meth_XBMButton_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-  	Window w = GET_window(self);
-	int stat;
+long meth_XBMButton_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
+    int stat;
 
-	stat = meth_XBM_render(self, result, argc, argv);
-	if (w && GET_visible(self)) {
-	  GLDrawBorder(w, 0, 0, 
-		       GET_width(self)-1, GET_height(self)-1,
-		       GET_border(self), 1);
-	}
-	return stat;
+    stat = meth_XBM_render(self, result, argc, argv);
+    if (w && GET_visible(self)) {
+        GLDrawBorder(w, 0, 0, GET_width(self) - 1, GET_height(self) - 1, GET_border(self), 1);
+    }
+    return stat;
 }
-
-
-
-
-
-
-
-

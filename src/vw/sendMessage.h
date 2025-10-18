@@ -15,11 +15,9 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 
-enum MsgArgType {INT, STR};
+enum MsgArgType { INT, STR };
 
 typedef struct argStruct {
     int datatype;
-    void *data;
+    void* data;
 } MsgArg;
-
-

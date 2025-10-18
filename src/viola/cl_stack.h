@@ -27,4 +27,4 @@ long meth_stack_render();
 long meth_stack_set();
 long meth_stack_setCurrentCard();
 
-VObj *findStackObj();
+VObj* findStackObj();

@@ -11,7 +11,6 @@
 #ifndef _MSGHANDLER_H_
 #define _MSGHANDLER_H_
 
-
 typedef void (*VMsgHandler)(/*
 			    char *arg[],
 			    int argc,
@@ -19,13 +18,12 @@ typedef void (*VMsgHandler)(/*
 			    */);
 
 typedef struct VMsgHandlerStruct {
-    char *msgName;
+    char* msgName;
     VMsgHandler msgHandler;
-    void *clientData;
+    void* clientData;
     long handlerID;
-    struct VMsgHandlerStruct *next;
+    struct VMsgHandlerStruct* next;
 } VMsgHandlerStruct;
-
 
 /*
  * Registers a message handler that responds to the message named in msgName.
@@ -58,8 +56,5 @@ void ViolaInvokeMessageHandler(/*
 			       int argc,
 			       long handlerID
 			       */);
-			       
 
 #endif _MSGHANDLER_H_
-
-    

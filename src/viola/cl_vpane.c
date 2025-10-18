@@ -12,38 +12,30 @@
  * class	: vpane
  * superClass	: pane
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_vpane.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_vpane.h"
-#include "misc.h"
-#include "glib.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_vpane_NCSlots[] = {
-	{0}
-};
-SlotInfo cl_vpane_NPSlots[] = {
-	{0}
-};
-SlotInfo cl_vpane_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"vpane"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_vpane_NCSlots[] = {{0}};
+SlotInfo cl_vpane_NPSlots[] = {{0}};
+SlotInfo cl_vpane_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"vpane"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -86,46 +78,25 @@ SlotInfo cl_vpane_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	{0}
-}
-};
-SlotInfo cl_vpane_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_vpane
-},{
-	STR_paneConfig,
- 	PTRS,
-	(long)"northToSouth"
-},{
-	STR__paneConfig,
- 	LONG,
-	PANE_CONFIG_N2S		/* default with N2S */
-},{
-	{0}
-}
-};
+                              },
+                              {{0}}};
+SlotInfo cl_vpane_PSlots[] = {{STR__classInfo, CLSI, (long)&class_vpane},
+                              {STR_paneConfig, PTRS, (long)"northToSouth"},
+                              {
+                                  STR__paneConfig, LONG, PANE_CONFIG_N2S /* default with N2S */
+                              },
+                              {{0}}};
 
-SlotInfo *slots_vpane[] = {
-	(SlotInfo*)cl_vpane_NCSlots,
-	(SlotInfo*)cl_vpane_NPSlots,
-	(SlotInfo*)cl_vpane_CSlots,
-	(SlotInfo*)cl_vpane_PSlots
-};
+SlotInfo* slots_vpane[] = {(SlotInfo*)cl_vpane_NCSlots, (SlotInfo*)cl_vpane_NPSlots,
+                           (SlotInfo*)cl_vpane_CSlots, (SlotInfo*)cl_vpane_PSlots};
 
 MethodInfo meths_vpane[] = {
-	/* local methods */
-	{0}
-};
+    /* local methods */
+    {0}};
 
 ClassInfo class_vpane = {
-	helper_pane_get,
-	helper_pane_set,
-	slots_vpane,		/* class slot information	*/
-	meths_vpane,		/* class methods		*/
-	STR_vpane,		/* class identifier number	*/
-	&class_pane,		/* super class info		*/
+    helper_pane_get, helper_pane_set, slots_vpane, /* class slot information	*/
+    meths_vpane,                                   /* class methods		*/
+    STR_vpane,                                     /* class identifier number	*/
+    &class_pane,                                   /* super class info		*/
 };
-

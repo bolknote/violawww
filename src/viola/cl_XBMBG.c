@@ -12,39 +12,31 @@
  * class	: XBMBG
  * superClass	: XBM
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_XBMBG.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_XBMBG.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_XBMBG_NCSlots[] = {
-	0
-};
-SlotInfo cl_XBMBG_NPSlots[] = {
-	0
-};
-SlotInfo cl_XBMBG_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"XBMBG"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_XBMBG_NCSlots[] = {0};
+SlotInfo cl_XBMBG_NPSlots[] = {0};
+SlotInfo cl_XBMBG_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"XBMBG"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -90,121 +82,87 @@ SlotInfo cl_XBMBG_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_XBMBG_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_XBMBG
-},{
-	0
-}
-};
+                              },
+                              {0}};
+SlotInfo cl_XBMBG_PSlots[] = {{STR__classInfo, CLSI, (long)&class_XBMBG}, {0}};
 
-SlotInfo *slots_XBMBG[] = {
-	(SlotInfo*)cl_XBMBG_NCSlots,
-	(SlotInfo*)cl_XBMBG_NPSlots,
-	(SlotInfo*)cl_XBMBG_CSlots,
-	(SlotInfo*)cl_XBMBG_PSlots
-};
+SlotInfo* slots_XBMBG[] = {(SlotInfo*)cl_XBMBG_NCSlots, (SlotInfo*)cl_XBMBG_NPSlots,
+                           (SlotInfo*)cl_XBMBG_CSlots, (SlotInfo*)cl_XBMBG_PSlots};
 
 MethodInfo meths_XBMBG[] = {
-	/* local methods */
-{
-	STR_expose,
-	meth_XBMBG_expose
-},{
-	STR_render,
-	meth_XBMBG_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_expose, meth_XBMBG_expose},
+    {STR_render, meth_XBMBG_render},
+    {0}};
 
 ClassInfo class_XBMBG = {
-	helper_XBM_get,
-	helper_XBM_set,
-	slots_XBMBG,		/* class slot information	*/
-	meths_XBMBG,		/* class methods		*/
-	STR_XBMBG,		/* class identifier number	*/
-	&class_XBM,		/* super class info		*/
+    helper_XBM_get, helper_XBM_set, slots_XBMBG, /* class slot information	*/
+    meths_XBMBG,                                 /* class methods		*/
+    STR_XBMBG,                                   /* class identifier number	*/
+    &class_XBM,                                  /* super class info		*/
 };
 
-long meth_XBMBG_expose(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
-	Pixmap pixmap;
-	int width, height, hotx, hoty;
+long meth_XBMBG_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
+    Pixmap pixmap;
+    int width, height, hotx, hoty;
 
-	meth_field_expose(self, result, argc, argv);
-	
-	if (!(w = GET_window(self))) return 0;
+    meth_field_expose(self, result, argc, argv);
 
-	/* until pixmap width/height can be gotten othewise, 
-	 * callGLMakeXBMFromASCII()...
-	 */
-	{
-		char *cp;
+    if (!(w = GET_window(self)))
+        return 0;
 
-		if (!(cp = GET_label(self))) return 0;
-		pixmap = GLMakeXBMFromASCII(w, cp, &width, &height, 
-					    &hotx, &hoty);
-		SET__label(self, pixmap);
-		SET_width(self, width);
-		SET_height(self, height);
+    /* until pixmap width/height can be gotten othewise,
+     * callGLMakeXBMFromASCII()...
+     */
+    {
+        char* cp;
 
-		if (pixmap && GET_visible(self)) {
-			GLDisplayXBMBG(w, 0, 0, 
-				GET_width(self), GET_height(self),
-				pixmap, width, height); 
-			GLClearWindow(w);
-			result->info.i = 1;
-			return 1;
-		}
-	}
-	result->info.i = 0;
-	return 0;
+        if (!(cp = GET_label(self)))
+            return 0;
+        pixmap = GLMakeXBMFromASCII(w, cp, &width, &height, &hotx, &hoty);
+        SET__label(self, pixmap);
+        SET_width(self, width);
+        SET_height(self, height);
+
+        if (pixmap && GET_visible(self)) {
+            GLDisplayXBMBG(w, 0, 0, GET_width(self), GET_height(self), pixmap, width, height);
+            GLClearWindow(w);
+            result->info.i = 1;
+            return 1;
+        }
+    }
+    result->info.i = 0;
+    return 0;
 }
 
-long meth_XBMBG_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
-	Pixmap pixmap;
-	int width, height;
-	char *cp;
+long meth_XBMBG_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
+    Pixmap pixmap;
+    int width, height;
+    char* cp;
 
-	if (!meth_field_render(self, result, argc, argv)) return 0;
-	
-	if (!(w = GET_window(self))) return 0;
+    if (!meth_field_render(self, result, argc, argv))
+        return 0;
 
-	if (!(cp = GET_label(self))) {
-		result->type = PKT_INT;
-		result->info.i = 0;
-		return 0;
-	}
-	pixmap = GLMakeXBMFromASCII(w, cp, &width, &height, 
-					(int*)0, (int*)0);
-	SET__label(self, pixmap);
-	SET_width(self, width);
-	SET_height(self, height);
+    if (!(w = GET_window(self)))
+        return 0;
 
-	if (pixmap && GET_visible(self)) {
-		GLDisplayXBMBG(w, 0, 0, GET_width(self), GET_height(self),
-			pixmap, width, height); 
-		result->info.i = 1;
-		return 1;
-	}
-	result->info.i = 0;
-	return 0;
+    if (!(cp = GET_label(self))) {
+        result->type = PKT_INT;
+        result->info.i = 0;
+        return 0;
+    }
+    pixmap = GLMakeXBMFromASCII(w, cp, &width, &height, (int*)0, (int*)0);
+    SET__label(self, pixmap);
+    SET_width(self, width);
+    SET_height(self, height);
+
+    if (pixmap && GET_visible(self)) {
+        GLDisplayXBMBG(w, 0, 0, GET_width(self), GET_height(self), pixmap, width, height);
+        result->info.i = 1;
+        return 1;
+    }
+    result->info.i = 0;
+    return 0;
 }
-
-
-
-
-
-
-
-

@@ -1,9 +1,9 @@
- /*
-  * selection.h
-  *
-  * Code for getting the selection and for handling selection requests.
-  *
-  */
+/*
+ * selection.h
+ *
+ * Code for getting the selection and for handling selection requests.
+ *
+ */
 /*
  * Copyright 1993 O'Reilly & Associates. All rights reserved.
  *
@@ -20,13 +20,14 @@
 
 #include <Xm/Xm.h>
 
-extern DocViewInfo *selectionOwner;
+typedef struct DocViewInfoStruct DocViewInfo;
+
+extern DocViewInfo* selectionOwner;
 
 void getTheSelection();
 void urlSelectionRequest();
 void urlSelectionClear();
 
-    
 /* Routines that use Toolkit selection mechanism: */
 Boolean urlDoSelectionRequest();
 void urlLoseSelection();

@@ -1,6 +1,6 @@
 /*                     /Net/dxcern/userd/timbl/hypertext/WWW/Library/Implementation/HTTP.html
                                 HYPERTEXT TRANFER PROTOCOL
-                                             
+
  */
 #ifndef HTTP_H
 #define HTTP_H
@@ -14,8 +14,5 @@ GLOBALREF HTProtocol HTTP;
 /*
 
    end of HTTP module definition
-   
+
     */
-
-
-

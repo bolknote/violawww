@@ -10,9 +10,9 @@
 
 #include "HTFWriter.h"
 
-#include "HTFormat.h"
 #include "HTAlert.h"
 #include "HTFile.h"
+#include "HTFormat.h"
 #include <unistd.h>
 
 /* Forward declarations */
@@ -23,14 +23,13 @@ extern void http_progress_notify();
 */
 
 struct _HTStream {
-	CONST HTStreamClass *	isa;
-	
-	FILE *			fp;
-	char * 			end_command;
-	char * 			remove_command;
-	BOOL			announce;
-};
+    CONST HTStreamClass* isa;
 
+    FILE* fp;
+    char* end_command;
+    char* remove_command;
+    BOOL announce;
+};
 
 /*_________________________________________________________________________
 **
@@ -40,52 +39,28 @@ struct _HTStream {
 **	who wanst a black hole.  These black holes don't radiate,
 **	they just absorb data.
 */
-PRIVATE void HTBlackHole_put_character ARGS2(HTStream *, me, char, c)
-{}
-PRIVATE void HTBlackHole_put_string ARGS2(HTStream *, me, CONST char*, s)
-{}
-PRIVATE void HTBlackHole_progress ARGS2(HTStream *, me, int, l)
-{}
-PRIVATE void HTBlackHole_write ARGS3(HTStream *, me, CONST char*, s, int, l)
-{}
-PRIVATE void HTBlackHole_free ARGS1(HTStream *, me)
-{}
-PRIVATE void HTBlackHole_end ARGS1(HTStream *, me)
-{}
-PRIVATE void HTBlackHole_abort ARGS2(HTStream *, me, HTError, e)
-{}
-
+PRIVATE void HTBlackHole_put_character ARGS2(HTStream*, me, char, c) {}
+PRIVATE void HTBlackHole_put_string ARGS2(HTStream*, me, CONST char*, s) {}
+PRIVATE void HTBlackHole_progress ARGS2(HTStream*, me, int, l) {}
+PRIVATE void HTBlackHole_write ARGS3(HTStream*, me, CONST char*, s, int, l) {}
+PRIVATE void HTBlackHole_free ARGS1(HTStream*, me) {}
+PRIVATE void HTBlackHole_end ARGS1(HTStream*, me) {}
+PRIVATE void HTBlackHole_abort ARGS2(HTStream*, me, HTError, e) {}
 
 /*	Black Hole stream
 **	-----------------
 */
-PRIVATE CONST HTStreamClass HTBlackHoleClass =
-{		
-	"BlackHole",
-	HTBlackHole_free,
-	HTBlackHole_end,/*PYW*/
-	HTBlackHole_abort,
-	HTBlackHole_put_character, 	HTBlackHole_put_string,
-	HTBlackHole_progress,
-	HTBlackHole_write,
-}; 
-
-PRIVATE HTStream HTBlackHoleInstance =
-{
-	&HTBlackHoleClass,
-	NULL,
-	NULL,
-	NULL,
-	NO
+PRIVATE CONST HTStreamClass HTBlackHoleClass = {
+    "BlackHole",          HTBlackHole_free,          HTBlackHole_end, /*PYW*/
+    HTBlackHole_abort,    HTBlackHole_put_character, HTBlackHole_put_string,
+    HTBlackHole_progress, HTBlackHole_write,
 };
 
-/*	Black hole craetion
-*/
-PUBLIC HTStream * HTBlackHole NOARGS
-{
-    return &HTBlackHoleInstance;
-}
+PRIVATE HTStream HTBlackHoleInstance = {&HTBlackHoleClass, NULL, NULL, NULL, NO};
 
+/*	Black hole craetion
+ */
+PUBLIC HTStream* HTBlackHole NOARGS { return &HTBlackHoleInstance; }
 
 /*_________________________________________________________________________
 **
@@ -98,44 +73,30 @@ PUBLIC HTStream * HTBlackHole NOARGS
 **	------------------
 */
 
-PRIVATE void HTFWriter_put_character ARGS2(HTStream *, me, char, c)
-{
-    putc(c, me->fp);
-}
-
-
+PRIVATE void HTFWriter_put_character ARGS2(HTStream*, me, char, c) { putc(c, me->fp); }
 
 /*	String handling
 **	---------------
 **
 **	Strings must be smaller than this buffer size.
 */
-PRIVATE void HTFWriter_put_string ARGS2(HTStream *, me, CONST char*, s)
-{
-    fputs(s, me->fp);
-}
-
+PRIVATE void HTFWriter_put_string ARGS2(HTStream*, me, CONST char*, s) { fputs(s, me->fp); }
 
 /*	Buffer write.  Buffers can (and should!) be big.
 **	------------
 */
-PRIVATE void HTFWriter_progress ARGS2(HTStream *, me, int, l)
-{
-#ifdef VIOLA  /* KLUDGE ALERT */
-  http_progress_notify(l);
+PRIVATE void HTFWriter_progress ARGS2(HTStream*, me, int, l) {
+#ifdef VIOLA /* KLUDGE ALERT */
+    http_progress_notify(l);
 #endif
 }
 
 /*	Buffer write.  Buffers can (and should!) be big.
 **	------------
 */
-PRIVATE void HTFWriter_write ARGS3(HTStream *, me, CONST char*, s, int, l)
-{
-    fwrite(s, 1, l, me->fp); 
+PRIVATE void HTFWriter_write ARGS3(HTStream*, me, CONST char*, s, int, l) {
+    fwrite(s, 1, l, me->fp);
 }
-
-
-
 
 /*	Free an HTML object
 **	-------------------
@@ -144,75 +105,63 @@ PRIVATE void HTFWriter_write ARGS3(HTStream *, me, CONST char*, s, int, l)
 **	object is not,
 **	as it takes on an existence of its own unless explicitly freed.
 */
-PRIVATE void HTFWriter_free ARGS1(HTStream *, me)
-{
+PRIVATE void HTFWriter_free ARGS1(HTStream*, me) {
     fclose(me->fp);
-    if (me->end_command) {		/* Temp file */
-        HTProgress(me->end_command);	/* Tell user what's happening */
-	system(me->end_command);
-	free (me->end_command);
-	if (me->remove_command) {
-	    system(me->remove_command);
-	    free(me->remove_command);
-	}
+    if (me->end_command) {           /* Temp file */
+        HTProgress(me->end_command); /* Tell user what's happening */
+        system(me->end_command);
+        free(me->end_command);
+        if (me->remove_command) {
+            system(me->remove_command);
+            free(me->remove_command);
+        }
     }
 
     free(me);
 }
 
-PRIVATE void HTFWriter_end ARGS1(HTStream *, me)
-{
-}
+PRIVATE void HTFWriter_end ARGS1(HTStream*, me) {}
 
 /*	End writing
-*/
+ */
 
-PRIVATE void HTFWriter_abort ARGS2(HTStream *, me, HTError, e)
-{
+PRIVATE void HTFWriter_abort ARGS2(HTStream*, me, HTError, e) {
     fclose(me->fp);
-    if (me->end_command) {		/* Temp file */
-	if (TRACE) fprintf(stderr,
-		"HTFWriter: Aborting: file not executed.\n");
-	free (me->end_command);
-	if (me->remove_command) {
-	    system(me->remove_command);
-	    free(me->remove_command);
-	}
+    if (me->end_command) { /* Temp file */
+        if (TRACE)
+            fprintf(stderr, "HTFWriter: Aborting: file not executed.\n");
+        free(me->end_command);
+        if (me->remove_command) {
+            system(me->remove_command);
+            free(me->remove_command);
+        }
     }
 
     free(me);
 }
-
-
 
 /*	Structured Object Class
 **	-----------------------
 */
 PRIVATE CONST HTStreamClass HTFWriter = /* As opposed to print etc */
-{		
-	"FileWriter",
-	HTFWriter_free,
-	HTFWriter_end,
-	HTFWriter_abort,
-	HTFWriter_put_character, 	HTFWriter_put_string,
-	HTFWriter_progress,
-	HTFWriter_write
-}; 
-
+    {"FileWriter",       HTFWriter_free,          HTFWriter_end,
+     HTFWriter_abort,    HTFWriter_put_character, HTFWriter_put_string,
+     HTFWriter_progress, HTFWriter_write};
 
 /*	Subclass-specific Methods
 **	-------------------------
 */
 
-PUBLIC HTStream* HTFWriter_new ARGS1(FILE *, fp)
-{
+PUBLIC HTStream* HTFWriter_new ARGS1(FILE*, fp) {
     HTStream* me;
-    
-    if (!fp) return NULL;
+
+    if (!fp)
+        return NULL;
 
     me = (HTStream*)malloc(sizeof(*me));
-    if (me == NULL) outofmem(__FILE__, "HTML_new");
-    me->isa = &HTFWriter;       
+    if (me == NULL)
+        outofmem(__FILE__, "HTML_new");
+    me->isa = &HTFWriter;
 
     me->fp = fp;
     me->end_command = NULL;
@@ -229,8 +178,6 @@ PUBLIC HTStream* HTFWriter_new ARGS1(FILE *, fp)
 */
 /* @@ to be written.  sprintfs will do for now.  */
 
-
-
 /*	Take action using a system command
 **	----------------------------------
 **
@@ -240,10 +187,9 @@ PUBLIC HTStream* HTFWriter_new ARGS1(FILE *, fp)
 **	in case the application is fussy, or so that a generic opener can
 **	be used.
 */
-PUBLIC HTStream* HTSaveAndExecute ARGS3(
-	HTPresentation *,	pres,
-	HTParentAnchor *,	anchor,	/* Not used */
-	HTStream *,		sink)	/* Not used */
+PUBLIC HTStream* HTSaveAndExecute ARGS3(HTPresentation*, pres, HTParentAnchor*,
+                                        anchor,          /* Not used */
+                                        HTStream*, sink) /* Not used */
 
 #ifdef unix
 #define REMOVE_COMMAND "/bin/rm -f %s\n"
@@ -254,66 +200,67 @@ PUBLIC HTStream* HTSaveAndExecute ARGS3(
 
 #ifdef REMOVE_COMMAND
 {
-    char *fnam;
-    CONST char * suffix;
-    
+    char* fnam;
+    CONST char* suffix;
+
     HTStream* me;
-    
+
     if (HTClientHost) {
         HTAlert("Can't save data to file -- please run WWW locally");
-	return HTBlackHole();
+        return HTBlackHole();
     }
-    
+
     me = (HTStream*)malloc(sizeof(*me));
-    if (me == NULL) outofmem(__FILE__, "Save and execute");
-    me->isa = &HTFWriter;  
-    
+    if (me == NULL)
+        outofmem(__FILE__, "Save and execute");
+    me->isa = &HTFWriter;
+
     /* Save the file under a suitably suffixed name */
-    
+
     suffix = HTFileSuffix(pres->rep);
 
-    fnam = (char *)malloc (L_tmpnam + 16 + strlen(suffix));
-    tmpnam (fnam);
-    if (suffix) strcat(fnam, suffix);
-    
-    me->fp = fopen (fnam, "w");
+    fnam = (char*)malloc(L_tmpnam + 16 + strlen(suffix));
+    tmpnam(fnam);
+    if (suffix)
+        strcat(fnam, suffix);
+
+    me->fp = fopen(fnam, "w");
     if (!me->fp) {
-	HTAlert("Can't open temporary file!");
+        HTAlert("Can't open temporary file!");
         free(fnam);
-	free(me);
-	return NULL;
+        free(me);
+        return NULL;
     }
 
-/*	Make command to process file
-*/
-    me->end_command = (char *)malloc (
-    			(strlen (pres->command) + 10+ 3*strlen(fnam))
-    			 * sizeof (char));
-    if (me == NULL) outofmem(__FILE__, "SaveAndExecute");
-    
-    sprintf (me->end_command, pres->command, fnam, fnam, fnam);
+    /*	Make command to process file
+     */
+    me->end_command = (char*)malloc((strlen(pres->command) + 10 + 3 * strlen(fnam)) * sizeof(char));
+    if (me == NULL)
+        outofmem(__FILE__, "SaveAndExecute");
 
-    me->remove_command = NULL;	/* If needed, put into end_command */
+    sprintf(me->end_command, pres->command, fnam, fnam, fnam);
+
+    me->remove_command = NULL; /* If needed, put into end_command */
 #ifdef NOPE
-/*	Make command to delete file
-*/ 
-    me->remove_command = (char *)malloc (
-    			(strlen (REMOVE_COMMAND) + 10+ strlen(fnam))
-    			 * sizeof (char));
-    if (me == NULL) outofmem(__FILE__, "SaveAndExecute");
-    
-    sprintf (me->remove_command, REMOVE_COMMAND, fnam);
+    /*	Make command to delete file
+     */
+    me->remove_command = (char*)malloc((strlen(REMOVE_COMMAND) + 10 + strlen(fnam)) * sizeof(char));
+    if (me == NULL)
+        outofmem(__FILE__, "SaveAndExecute");
+
+    sprintf(me->remove_command, REMOVE_COMMAND, fnam);
 #endif
 
     me->announce = NO;
-    free (fnam);
+    free(fnam);
     return me;
 }
 
-#else	/* can do remove */
-{ return NULL; }
+#else /* can do remove */
+{
+    return NULL;
+}
 #endif
-
 
 /*	Save Locally
 **	------------
@@ -322,49 +269,49 @@ PUBLIC HTStream* HTSaveAndExecute ARGS3(
 **	GUI Apps should open local Save panel here really.
 **
 */
-PUBLIC HTStream* HTSaveLocally ARGS3(
-	HTPresentation *,	pres,
-	HTParentAnchor *,	anchor,	/* Not used */
-	HTStream *,		sink)	/* Not used */
+PUBLIC HTStream* HTSaveLocally ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, /* Not used */
+                                     HTStream*, sink)                                /* Not used */
 
 {
-    char *fnam;
-    char *answer;
-    CONST char * suffix;
-    
+    char* fnam;
+    char* answer;
+    CONST char* suffix;
+
     HTStream* me;
-    
+
     if (HTClientHost) {
         HTAlert("Can't save data to file -- please run WWW locally");
-	return HTBlackHole();
+        return HTBlackHole();
     }
-    
+
     me = (HTStream*)malloc(sizeof(*me));
-    if (me == NULL) outofmem(__FILE__, "SaveLocally");
-    me->isa = &HTFWriter;  
+    if (me == NULL)
+        outofmem(__FILE__, "SaveLocally");
+    me->isa = &HTFWriter;
     me->end_command = NULL;
-    me->remove_command = NULL;	/* If needed, put into end_command */
+    me->remove_command = NULL; /* If needed, put into end_command */
     me->announce = YES;
-    
+
     /* Save the file under a suitably suffixed name */
-#ifndef VIOLA    
+#ifndef VIOLA
     suffix = HTFileSuffix(pres->rep);
 
-    fnam = (char *)malloc (L_tmpnam + 16 + strlen(suffix));
-    tmpnam (fnam);
-    if (suffix) strcat(fnam, suffix);
-    
+    fnam = (char*)malloc(L_tmpnam + 16 + strlen(suffix));
+    tmpnam(fnam);
+    if (suffix)
+        strcat(fnam, suffix);
+
     /*	Save Panel */
     answer = HTPrompt("Give name of file to save in", fnam);
-    
+
     free(fnam);
-    
-    me->fp = fopen (answer, "w");
+
+    me->fp = fopen(answer, "w");
     if (!me->fp) {
-	HTAlert("Can't open local file to write into.");
+        HTAlert("Can't open local file to write into.");
         free(answer);
-	free(me);
-	return NULL;
+        free(me);
+        return NULL;
     }
 
     free(answer);
@@ -384,8 +331,6 @@ PUBLIC HTStream* HTSaveLocally ARGS3(
 
     return me;
 }
-
-
 
 /*	Format Converter using system command
 **	-------------------------------------

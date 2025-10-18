@@ -20,33 +20,32 @@
 
 #include "vw.h"
 
-enum dlogType {INFO, WARNING, ERROR};
+enum dlogType { INFO, WARNING, ERROR };
 
 struct promptStruct {
-    int *done;
-    char *result;
+    int* done;
+    char* result;
     char *yesLabel, *noLabel, *cancelLabel;
-    DocViewInfo *dvip;
+    DocViewInfo* dvip;
 };
 
 struct lentryDlogStruct {
     Widget dlog;
     Widget lineText;
-    char *data;
-    DocViewInfo *dvi;
+    char* data;
+    DocViewInfo* dvi;
     void (*okCB)();
 };
 
-#define infoDialog(dvip, msg)  messageDialog(dvip, msg, INFO)
-#define warningDialog(dvip, msg)  messageDialog(dvip, msg, WARNING)
-#define errorDialog(dvip, msg)  messageDialog(dvip, msg, ERROR)
-
+#define infoDialog(dvip, msg) messageDialog(dvip, msg, INFO)
+#define warningDialog(dvip, msg) messageDialog(dvip, msg, WARNING)
+#define errorDialog(dvip, msg) messageDialog(dvip, msg, ERROR)
 
 void messageDialog();
 void modalErrorDialog();
-char *promptDialog();
-char *questionDialog();
-char *fileSelectionDialog();
+char* promptDialog();
+char* questionDialog();
+char* fileSelectionDialog();
 
 void infoDialogMH();
 void warningDialogMH();
@@ -61,6 +60,6 @@ void simpleOpenURLDialog();
 
 void openURLInSelectionBuffer();
 
-char *openSimpleLineEntryDialog();
+char* openSimpleLineEntryDialog();
 
 #endif _DIALOG_H_

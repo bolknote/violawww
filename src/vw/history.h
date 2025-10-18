@@ -18,10 +18,8 @@
 #ifndef _HISTORY_H_
 #define _HISTORY_H_
 
-
 /* CONSTANTS */
 #define HISTORY_CHUNK 256
-
 
 /* PROTOTYPES */
 void historyPrev();
@@ -46,6 +44,5 @@ void showHistoryCB();
 void hideHistory();
 void historySelect();
 void historySelectCB();
-
 
 #endif _HISTORY_H_

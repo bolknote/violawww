@@ -11,15 +11,13 @@
 #include "xpmP.h"
 #include <stdlib.h>
 
-int
-XpmCreatePixmapFromData(display, d, data, pixmap_return,
-			shapemask_return, attributes)
-    Display *display;
-    Drawable d;
-    char **data;
-    Pixmap *pixmap_return;
-    Pixmap *shapemask_return;
-    XpmAttributes *attributes;
+int XpmCreatePixmapFromData(display, d, data, pixmap_return, shapemask_return, attributes)
+Display* display;
+Drawable d;
+char** data;
+Pixmap* pixmap_return;
+Pixmap* shapemask_return;
+XpmAttributes* attributes;
 {
     XImage *image, **imageptr = NULL;
     XImage *shapeimage, **shapeimageptr = NULL;
@@ -28,52 +26,48 @@ XpmCreatePixmapFromData(display, d, data, pixmap_return,
     GC gc;
 
     /*
-     * initialize return values 
+     * initialize return values
      */
     if (pixmap_return) {
-	*pixmap_return = 0;
-	imageptr = &image;
+        *pixmap_return = 0;
+        imageptr = &image;
     }
     if (shapemask_return) {
-	*shapemask_return = 0;
-	shapeimageptr = &shapeimage;
+        *shapemask_return = 0;
+        shapeimageptr = &shapeimage;
     }
 
     /*
-     * create the images 
+     * create the images
      */
-    ErrorStatus = XpmCreateImageFromData(display, data, imageptr,
-					 shapeimageptr, attributes);
+    ErrorStatus = XpmCreateImageFromData(display, data, imageptr, shapeimageptr, attributes);
     if (ErrorStatus < 0)
-	return (ErrorStatus);
+        return (ErrorStatus);
 
     /*
-     * create the pixmaps 
+     * create the pixmaps
      */
     if (imageptr && image) {
-	*pixmap_return = XCreatePixmap(display, d, image->width,
-				       image->height, image->depth);
-	gcv.function = GXcopy;
-	gc = XCreateGC(display, *pixmap_return, GCFunction, &gcv);
+        *pixmap_return = XCreatePixmap(display, d, image->width, image->height, image->depth);
+        gcv.function = GXcopy;
+        gc = XCreateGC(display, *pixmap_return, GCFunction, &gcv);
 
-	XPutImage(display, *pixmap_return, gc, image, 0, 0, 0, 0,
-		  image->width, image->height);
+        XPutImage(display, *pixmap_return, gc, image, 0, 0, 0, 0, image->width, image->height);
 
-	XDestroyImage(image);
-	XFreeGC(display, gc);
+        XDestroyImage(image);
+        XFreeGC(display, gc);
     }
     if (shapeimageptr && shapeimage) {
-	*shapemask_return = XCreatePixmap(display, d, shapeimage->width,
-					  shapeimage->height,
-					  shapeimage->depth);
-	gcv.function = GXcopy;
-	gc = XCreateGC(display, *shapemask_return, GCFunction, &gcv);
+        *shapemask_return =
+            XCreatePixmap(display, d, shapeimage->width, shapeimage->height, shapeimage->depth);
+        gcv.function = GXcopy;
+        gc = XCreateGC(display, *shapemask_return, GCFunction, &gcv);
 
-	XPutImage(display, *shapemask_return, gc, shapeimage, 0, 0, 0, 0,
-		  shapeimage->width, shapeimage->height);
+        XPutImage(display, *shapemask_return, gc, shapeimage, 0, 0, 0, 0, shapeimage->width,
+                  shapeimage->height);
 
-	XDestroyImage(shapeimage);
-	XFreeGC(display, gc);
+        XDestroyImage(shapeimage);
+        XFreeGC(display, gc);
     }
     return (ErrorStatus);
 }

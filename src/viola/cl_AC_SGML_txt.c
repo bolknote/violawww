@@ -12,40 +12,30 @@
  * class	: AC_SGML_txt
  * superClass	: txtDisp
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_AC_SGML_txt.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_AC_SGML_txt.h"
-#include "misc.h"
-#include "glib.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_AC_SGML_txt_NCSlots[] = {
-{
-	0
-}
-};
-SlotInfo cl_AC_SGML_txt_NPSlots[] = {
-	0
-};
-SlotInfo cl_AC_SGML_txt_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"AC_SGML_txt"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_AC_SGML_txt_NCSlots[] = {{0}};
+SlotInfo cl_AC_SGML_txt_NPSlots[] = {0};
+SlotInfo cl_AC_SGML_txt_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"AC_SGML_txt"},
+                                    {
+                                        STR_classScript,
+                                        PTRS,
+                                        (long)"\n\
 		switch (arg[0]) {\n\
 \n\
 	case 'I': /* input */\n\
@@ -178,102 +168,65 @@ print(\"***************  ref = {\", ref, \"}\n\");\n\
 			break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_AC_SGML_txt_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_AC_SGML_txt
-},{
-	STR_width,
-	LONG,
-	100
-},{
-	STR_height,
-	LONG,
-	30
-},{
-	STR_font,		/* font identifier */
- 	PTRS | SLOT_RW,
-	(long)"normal"
-},{
-	STR_BDColor,		/* border color */
-	PTRS | SLOT_RW,
- 	(long)"LemonChiffon1"
-},{
-	STR_BGColor,		/* background color */
-	PTRS | SLOT_RW,
- 	(long)"LemonChiffon1"
-},{
-	STR_FGColor,		/* foreground color */
-	PTRS | SLOT_RW,
- 	(long)"black"
-},{
-	STR_format,
-	LONG | SLOT_RW,
-	1
-},{
-	0
-}
-};
+                                    },
+                                    {0}};
+SlotInfo cl_AC_SGML_txt_PSlots[] = {{STR__classInfo, CLSI, (long)&class_AC_SGML_txt},
+                                    {STR_width, LONG, 100},
+                                    {STR_height, LONG, 30},
+                                    {STR_font, /* font identifier */
+                                     PTRS | SLOT_RW, (long)"normal"},
+                                    {STR_BDColor, /* border color */
+                                     PTRS | SLOT_RW, (long)"LemonChiffon1"},
+                                    {STR_BGColor, /* background color */
+                                     PTRS | SLOT_RW, (long)"LemonChiffon1"},
+                                    {STR_FGColor, /* foreground color */
+                                     PTRS | SLOT_RW, (long)"black"},
+                                    {STR_format, LONG | SLOT_RW, 1},
+                                    {0}};
 
-SlotInfo *slots_AC_SGML_txt[] = {
-	(SlotInfo*)cl_AC_SGML_txt_NCSlots,
-	(SlotInfo*)cl_AC_SGML_txt_NPSlots,
-	(SlotInfo*)cl_AC_SGML_txt_CSlots,
-	(SlotInfo*)cl_AC_SGML_txt_PSlots
-};
+SlotInfo* slots_AC_SGML_txt[] = {
+    (SlotInfo*)cl_AC_SGML_txt_NCSlots, (SlotInfo*)cl_AC_SGML_txt_NPSlots,
+    (SlotInfo*)cl_AC_SGML_txt_CSlots, (SlotInfo*)cl_AC_SGML_txt_PSlots};
 
 MethodInfo meths_AC_SGML_txt[] = {
-	/* local methods */
-{
-	STR_initialize,
-	(long (*)())meth_AC_SGML_txt_initialize
-},{
-	STR_render,
-	(long (*)())meth_AC_SGML_txt_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_initialize, (long (*)())meth_AC_SGML_txt_initialize},
+    {STR_render, (long (*)())meth_AC_SGML_txt_render},
+    {0}};
 
 ClassInfo class_AC_SGML_txt = {
-	(long (*)())helper_txtDisp_get,
-	(long (*)())helper_txtDisp_set,
-	slots_AC_SGML_txt,		/* class slot information	*/
-	meths_AC_SGML_txt,		/* class methods		*/
-	STR_AC_SGML_txt,		/* class identifier number	*/
-	&class_txtDisp,		/* super class info		*/
+    (long (*)())helper_txtDisp_get,
+    (long (*)())helper_txtDisp_set,
+    slots_AC_SGML_txt, /* class slot information	*/
+    meths_AC_SGML_txt, /* class methods		*/
+    STR_AC_SGML_txt,   /* class identifier number	*/
+    &class_txtDisp,    /* super class info		*/
 };
 
 long int meth_AC_SGML_txt_initialize(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	int stat;
+    int stat;
 
-	/* special sin.. er case: use parent's color info */
-	SET__colorInfo(self, 1); /* fool into not initialze. */
+    /* special sin.. er case: use parent's color info */
+    SET__colorInfo(self, 1); /* fool into not initialze. */
 
-	stat = meth_txtDisp_initialize(self, result, argc, argv);
+    stat = meth_txtDisp_initialize(self, result, argc, argv);
 
-	if (GET__parent(self)) 
-		SET__colorInfo(self, GET__colorInfo(GET__parent(self)));
+    if (GET__parent(self))
+        SET__colorInfo(self, GET__colorInfo(GET__parent(self)));
 
-	return stat;
+    return stat;
 }
 
 long int meth_AC_SGML_txt_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return meth_txtDisp_render(self, result, argc, argv);
+    return meth_txtDisp_render(self, result, argc, argv);
 }
-

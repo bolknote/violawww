@@ -9,10 +9,10 @@
  */
 
 #include "copyright.h"
+#include "image.h"
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include "image.h"
 
 /* Forward declarations */
 extern int findImage();
@@ -26,81 +26,81 @@ extern int errno;
 /* load a named image
  */
 
-Image *loadImage(name, verbose)
-     char         *name;
-     unsigned int  verbose;
-{ char   fullname[BUFSIZ];
-  Image *image;
-  int    a;
+Image* loadImage(name, verbose)
+char* name;
+unsigned int verbose;
+{
+    char fullname[BUFSIZ];
+    Image* image;
+    int a;
 
-  if (findImage(name, fullname) < 0) {
-    if (errno == ENOENT)
-      printf("%s: image not found\n", name);
-    else
-      perror(fullname);
-    return(NULL);
-  }
-  for (a= 0; ImageTypes[a].loader; a++)
-    if (image= ImageTypes[a].loader(fullname, name, verbose)) {
-      zreset(NULL);
-      return(image);
+    if (findImage(name, fullname) < 0) {
+        if (errno == ENOENT)
+            printf("%s: image not found\n", name);
+        else
+            perror(fullname);
+        return (NULL);
     }
-  printf("%s: unknown or unsupported image type\n", fullname);
-  zreset(NULL);
-  return(NULL);
+    for (a = 0; ImageTypes[a].loader; a++)
+        if (image = ImageTypes[a].loader(fullname, name, verbose)) {
+            zreset(NULL);
+            return (image);
+        }
+    printf("%s: unknown or unsupported image type\n", fullname);
+    zreset(NULL);
+    return (NULL);
 }
 
 /* identify what kind of image a named image is
  */
 
-void identifyImage(name)
-     char *name;
-{ char fullname[BUFSIZ];
-  int  a;
+void identifyImage(name) char* name;
+{
+    char fullname[BUFSIZ];
+    int a;
 
-  if (findImage(name, fullname) < 0) {
-    if (errno == ENOENT)
-      printf("%s: image not found\n", name);
-    else
-      perror(fullname);
-    return;
-  }
-  for (a= 0; ImageTypes[a].identifier; a++) {
-    if (ImageTypes[a].identifier(fullname, name)) {
-      zreset(NULL);
-      return;
+    if (findImage(name, fullname) < 0) {
+        if (errno == ENOENT)
+            printf("%s: image not found\n", name);
+        else
+            perror(fullname);
+        return;
     }
-}
-  zreset(NULL);
-  printf("%s: unknown or unsupported image type\n", fullname);
+    for (a = 0; ImageTypes[a].identifier; a++) {
+        if (ImageTypes[a].identifier(fullname, name)) {
+            zreset(NULL);
+            return;
+        }
+    }
+    zreset(NULL);
+    printf("%s: unknown or unsupported image type\n", fullname);
 }
 
 /* tell user what image types we support
  */
 
-void supportedImageTypes()
-{ int a;
+void supportedImageTypes() {
+    int a;
 
-  printf("Image types supported:\n");
-  for (a= 0; ImageTypes[a].name; a++)
-    printf("  %s\n", ImageTypes[a].name);
+    printf("Image types supported:\n");
+    for (a = 0; ImageTypes[a].name; a++)
+        printf("  %s\n", ImageTypes[a].name);
 }
 
-void goodImage(image, func)
-     Image *image;
-     char  *func;
+void goodImage(image, func) Image* image;
+char* func;
 {
-  if (!image) {
-    printf("%s: nil image\n", func);
-    exit(0);
-  }
-  switch (image->type) {
-  case IBITMAP:
-  case IRGB:
-  case ITRUE:
-    break;
-  default:
-    printf("%s: bad destination image\n", func);
-    exit(0);
-  }
+    if (!image) {
+        printf("%s: nil image\n", func);
+        exit(0);
+    }
+    switch (image->type) {
+    case IBITMAP:
+    case IRGB:
+    case ITRUE:
+        break;
+    default:
+        printf("%s: bad destination image\n", func);
+        exit(0);
+    }
 }

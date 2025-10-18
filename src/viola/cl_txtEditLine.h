@@ -13,4 +13,3 @@ long int meth_txtEditLine_initialize();
 long int meth_txtEditLine_expose();
 long int meth_txtEditLine_render();
 long int meth_txtEditLine_set();
-

@@ -7,7 +7,7 @@
 **	MD	Mark Donszelmann    duns@vxdeop.cern.ch
 **
 ** HISTORY:
-**	 7 Nov 93 	MD 	free for crypt taken out (static data returned) 
+**	 7 Nov 93 	MD 	free for crypt taken out (static data returned)
 **
 **
 ** BUGS:
@@ -15,21 +15,17 @@
 **
 */
 
-
 #include <string.h>
 
+#include "HTAAFile.h" /* File routines	*/
+#include "HTAAUtil.h" /* Common parts of AA	*/
+#include "HTPasswd.h" /* Implemented here	*/
 #include "HTUtils.h"
-#include "HTAAUtil.h"	/* Common parts of AA	*/
-#include "HTAAFile.h"	/* File routines	*/
-#include "HTPasswd.h"	/* Implemented here	*/
-#include "tcp.h"	/* FROMASCII()		*/
+#include "tcp.h" /* FROMASCII()		*/
 
-extern char *crypt();
+extern char* crypt();
 
-
-PRIVATE char salt_chars [65] =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
-
+PRIVATE char salt_chars[65] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
 
 /* PRIVATE						next_rec()
 **		GO TO THE BEGINNING OF THE NEXT RECORD
@@ -43,21 +39,18 @@ PRIVATE char salt_chars [65] =
 **	returns	nothing. File read pointer is located at the beginning
 **		of the next record.
 */
-PRIVATE void next_rec ARGS1(FILE *, fp)
-{
+PRIVATE void next_rec ARGS1(FILE*, fp) {
     int ch = getc(fp);
 
-    while (ch != EOF  &&  ch != CR  &&  ch != LF)
-	ch = getc(fp);		/* Skip until end-of-line */
+    while (ch != EOF && ch != CR && ch != LF)
+        ch = getc(fp); /* Skip until end-of-line */
 
-    while (ch != EOF &&
-	   (ch == CR  ||  ch == LF))	/*Skip carriage returns and linefeeds*/
-	ch = getc(fp);
+    while (ch != EOF && (ch == CR || ch == LF)) /*Skip carriage returns and linefeeds*/
+        ch = getc(fp);
 
     if (ch != EOF)
-	ungetc(ch, fp);
+        ungetc(ch, fp);
 }
-
 
 /* PUBLIC						HTAA_encryptPasswd()
 **		ENCRYPT PASSWORD TO THE FORM THAT IT IS SAVED
@@ -78,40 +71,37 @@ PRIVATE void next_rec ARGS1(FILE *, fp)
 **	about the security inside the machine.
 **
 */
-PUBLIC char *HTAA_encryptPasswd ARGS1(CONST char *, password)
-{
+PUBLIC char* HTAA_encryptPasswd ARGS1(CONST char*, password) {
     char salt[3];
     char chunk[9];
-    char *result;
-    char *tmp;
-    CONST char *cur = password;
+    char* result;
+    char* tmp;
+    CONST char* cur = password;
     int len = strlen(password);
     extern time_t theTime;
-    int random = (int)theTime;	/* This is random enough */
+    int random = (int)theTime; /* This is random enough */
 
-    if (!(result = (char*)malloc(13*((strlen(password)+7)/8) + 1)))
-	outofmem(__FILE__, "HTAA_encryptPasswd");
+    if (!(result = (char*)malloc(13 * ((strlen(password) + 7) / 8) + 1)))
+        outofmem(__FILE__, "HTAA_encryptPasswd");
 
     *result = (char)0;
     while (len > 0) {
-	salt[0] = salt_chars[random%64];
-	salt[1] = salt_chars[(random/64)%64];
-	salt[2] = (char)0;
+        salt[0] = salt_chars[random % 64];
+        salt[1] = salt_chars[(random / 64) % 64];
+        salt[2] = (char)0;
 
-	strncpy(chunk, cur, 8);
-	chunk[8] = (char)0;
+        strncpy(chunk, cur, 8);
+        chunk[8] = (char)0;
 
-	tmp = crypt((char*)password, salt);  /*crypt() doesn't change its args*/
-	strcat(result, tmp);
+        tmp = crypt((char*)password, salt); /*crypt() doesn't change its args*/
+        strcat(result, tmp);
 
-	cur += 8;
-	len -= 8;
+        cur += 8;
+        len -= 8;
     } /* while */
 
     return result;
 }
-
-
 
 /* PUBLIC						HTAA_passwdMatch()
 **		VERIFY THE CORRECTNESS OF A GIVEN PASSWORD
@@ -133,63 +123,58 @@ PUBLIC char *HTAA_encryptPasswd ARGS1(CONST char *, password)
 **	This is to allow interoperation of servers and clients
 **	who have a hard-coded limit of 8 to password.
 */
-PUBLIC BOOL HTAA_passwdMatch ARGS2(CONST char *, password,
-				   CONST char *, encrypted)
-{
-    char *result;
+PUBLIC BOOL HTAA_passwdMatch ARGS2(CONST char*, password, CONST char*, encrypted) {
+    char* result;
     int len;
     int status;
 
     if (!password || !encrypted)
-	return NO;
+        return NO;
 
-    len = 13*((strlen(password)+7)/8);
+    len = 13 * ((strlen(password) + 7) / 8);
     if (len < strlen(encrypted))
-	return NO;
+        return NO;
 
     if (!(result = (char*)malloc(len + 1)))
-	outofmem(__FILE__, "HTAA_encryptPasswd");
+        outofmem(__FILE__, "HTAA_encryptPasswd");
 
     *result = (char)0;
     while (len > 0) {
-	char salt[3];
-	char chunk[9];
-	CONST char *cur1 = password;
-	CONST char *cur2 = encrypted;
-	char *tmp;
+        char salt[3];
+        char chunk[9];
+        CONST char* cur1 = password;
+        CONST char* cur2 = encrypted;
+        char* tmp;
 
-	salt[0] = *cur2;
-	salt[1] = *(cur2+1);
-	salt[2] = (char)0;
+        salt[0] = *cur2;
+        salt[1] = *(cur2 + 1);
+        salt[2] = (char)0;
 
-	strncpy(chunk, cur1, 8);
-	chunk[8] = (char)0;
+        strncpy(chunk, cur1, 8);
+        chunk[8] = (char)0;
 
-	tmp = crypt((char*)password, salt);
-	strcat(result, tmp);
+        tmp = crypt((char*)password, salt);
+        strcat(result, tmp);
 
-	cur1 += 8;
-	cur2 += 13;
-	len -= 13;
+        cur1 += 8;
+        cur2 += 13;
+        len -= 13;
     } /* while */
 
     status = strncmp(result, encrypted, strlen(encrypted));
 
     if (TRACE)
-	fprintf(stderr,
-		"%s `%s' (encrypted: `%s') with: `%s' => %s\n",
-		"HTAA_passwdMatch: Matching password:",
-		password, result, encrypted,
-		(status==0 ? "OK" : "INCORRECT"));
+        fprintf(stderr, "%s `%s' (encrypted: `%s') with: `%s' => %s\n",
+                "HTAA_passwdMatch: Matching password:", password, result, encrypted,
+                (status == 0 ? "OK" : "INCORRECT"));
 
     free(result);
 
-    if (status==0)
-	return YES;
+    if (status == 0)
+        return YES;
     else
-	return NO;
+        return NO;
 }
-
 
 /* PUBLIC					HTAAFile_readPasswdRec()
 **			READ A RECORD FROM THE PASSWORD FILE
@@ -213,29 +198,22 @@ PUBLIC BOOL HTAA_passwdMatch ARGS2(CONST char *, password,
 **	There may be whitespace (blanks or tabs) in the beginning and
 **	the end of each field. They are ignored.
 */
-PUBLIC int HTAAFile_readPasswdRec ARGS3(FILE *, fp,
-					char *, out_username,
-					char *, out_password)
-{
+PUBLIC int HTAAFile_readPasswdRec ARGS3(FILE*, fp, char*, out_username, char*, out_password) {
     char terminator;
-    
+
     terminator = HTAAFile_readField(fp, out_username, MAX_USERNAME_LEN);
 
-    if (terminator == EOF) {				/* End of file */
-	return EOF;
-    }
-    else if (terminator == CR  ||  terminator == LF) {	/* End of line */
-	next_rec(fp);
-	return 1;
-    }
-    else {
-	HTAAFile_readField(fp, out_password, MAX_PASSWORD_LEN);
-	next_rec(fp);
-	return 2;
+    if (terminator == EOF) { /* End of file */
+        return EOF;
+    } else if (terminator == CR || terminator == LF) { /* End of line */
+        next_rec(fp);
+        return 1;
+    } else {
+        HTAAFile_readField(fp, out_password, MAX_PASSWORD_LEN);
+        next_rec(fp);
+        return 2;
     }
 }
-
-
 
 /* PUBLIC						HTAA_checkPassword()
 **		CHECK A USERNAME-PASSWORD PAIR
@@ -252,49 +230,48 @@ PUBLIC int HTAAFile_readPasswdRec ARGS3(FILE *, fp,
 **	returns		YES, if the username-password pair was correct.
 **			NO, otherwise; also, if open fails.
 */
-PUBLIC BOOL HTAA_checkPassword ARGS3(CONST char *, username,
-				     CONST char *, password,
-				     CONST char *, filename)
-{
-    FILE *fp = NULL;
-    char user[MAX_USERNAME_LEN+1];
-    char pw[MAX_PASSWORD_LEN+1];
+PUBLIC BOOL HTAA_checkPassword ARGS3(CONST char*, username, CONST char*, password, CONST char*,
+                                     filename) {
+    FILE* fp = NULL;
+    char user[MAX_USERNAME_LEN + 1];
+    char pw[MAX_PASSWORD_LEN + 1];
     int status;
-    
-    if (filename && *filename)  fp = fopen(filename,"r");
-    else			fp = fopen(PASSWD_FILE,"r");
+
+    if (filename && *filename)
+        fp = fopen(filename, "r");
+    else
+        fp = fopen(PASSWD_FILE, "r");
 
     if (!fp) {
-	if (TRACE) fprintf(stderr, "%s `%s'\n",
-			   "HTAA_checkPassword: Unable to open password file",
-			   (filename && *filename ? filename : PASSWD_FILE));
-	return NO;
+        if (TRACE)
+            fprintf(stderr, "%s `%s'\n", "HTAA_checkPassword: Unable to open password file",
+                    (filename && *filename ? filename : PASSWD_FILE));
+        return NO;
     }
     do {
-	if (2 == (status = HTAAFile_readPasswdRec(fp,user,pw))) {
-	    if (TRACE)
-		fprintf(stderr,
-			"HTAAFile_validateUser: %s \"%s\" %s \"%s:%s\"\n",
-			"Matching username:", username,
-			"against passwd record:", user, pw);
-	    if (username  &&  user  &&  !strcmp(username,user)) {
-		/* User's record found */
-		if (pw) { /* So password is required for this user */
-		    if (!password ||
-			!HTAA_passwdMatch(password,pw)) /* Check the password */
-			status = EOF;	/* If wrong, indicate it with EOF */
-		}
-		break;  /* exit loop */
-	    }  /* if username found */
-	}  /* if record is ok */
+        if (2 == (status = HTAAFile_readPasswdRec(fp, user, pw))) {
+            if (TRACE)
+                fprintf(stderr, "HTAAFile_validateUser: %s \"%s\" %s \"%s:%s\"\n",
+                        "Matching username:", username, "against passwd record:", user, pw);
+            if (username && user && !strcmp(username, user)) {
+                /* User's record found */
+                if (pw) { /* So password is required for this user */
+                    if (!password || !HTAA_passwdMatch(password, pw)) /* Check the password */
+                        status = EOF; /* If wrong, indicate it with EOF */
+                }
+                break; /* exit loop */
+            } /* if username found */
+        } /* if record is ok */
     } while (status != EOF);
 
     fclose(fp);
-    
-    if (TRACE) fprintf(stderr, "HTAAFile_checkPassword: (%s,%s) %scorrect\n",
-		       username, password, ((status != EOF) ? "" : "in"));
 
-    if (status == EOF)  return NO;  /* We traversed to the end without luck */
-    else                return YES; /* The user was found */
+    if (TRACE)
+        fprintf(stderr, "HTAAFile_checkPassword: (%s,%s) %scorrect\n", username, password,
+                ((status != EOF) ? "" : "in"));
+
+    if (status == EOF)
+        return NO; /* We traversed to the end without luck */
+    else
+        return YES; /* The user was found */
 }
-

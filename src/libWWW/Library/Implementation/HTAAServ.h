@@ -1,48 +1,47 @@
 /*                          SERVER SIDE ACCESS AUTHORIZATION MODULE
-                                             
+
    This module is the server side interface to Access Authorization (AA) package. It
    contains code only for server.
-   
+
    Important to know about memory allocation:
-   
+
    Routines in this module use dynamic allocation, but free automatically all the memory
    reserved by them.
-   
+
    Therefore the caller never has to (and never should) free() any object returned by
    these functions.
-   
+
    Therefore also all the strings returned by this package are only valid until the next
    call to the same function is made. This approach is selected, because of the nature of
    access authorization: no string returned by the package needs to be valid longer than
    until the next call.
-   
+
    This also makes it easy to plug the AA package in: you don't have to ponder whether to
    free()something here or is it done somewhere else (because it is always done somewhere
    else).
-   
+
    The strings that the package needs to store are copied so the original strings given as
    parameters to AA functions may be freed or modified with no side effects.
-   
+
    Also note:The AA package does not free() anything else than what it has itself
    allocated.
-   
+
  */
 
 #ifndef HTAASERV_H
 #define HTAASERV_H
 
-#include <stdio.h>              /* FILE                 */
-#include "HTUtils.h"            /* BOOL, PARAMS, ARGS   */
-#include "HTRules.h"            /* This module interacts with rule system */
-#include "HTAAUtil.h"           /* Common parts of AA   */
-#include "HTAuth.h"             /* Authentication       */
-
+#include "HTAAUtil.h" /* Common parts of AA   */
+#include "HTAuth.h"   /* Authentication       */
+#include "HTRules.h"  /* This module interacts with rule system */
+#include "HTUtils.h"  /* BOOL, PARAMS, ARGS   */
+#include <stdio.h>    /* FILE                 */
 
 #ifdef SHORT_NAMES
-#define HTAAstMs        HTAA_statusMessage
-#define HTAAchAu        HTAA_checkAuthorization
-#define HTAAcoAH        HTAA_composeAuthHeaders
-#define HTAAsLog        HTAA_startLogging
+#define HTAAstMs HTAA_statusMessage
+#define HTAAchAu HTAA_checkAuthorization
+#define HTAAcoAH HTAA_composeAuthHeaders
+#define HTAAsLog HTAA_startLogging
 #endif /*SHORT_NAMES*/
 
 /*
@@ -50,7 +49,7 @@
 Check Access Authorization
 
    HTAA_checkAuthorization() is the main access authorization function.
-   
+
  */
 
 /* PUBLIC                                             HTAA_checkAuthorization()
@@ -79,10 +78,8 @@ Check Access Authorization
 **      file twice).
 **
 */
-PUBLIC int HTAA_checkAuthorization PARAMS((CONST char * url,
-                                           CONST char * method_name,
-                                           CONST char * scheme_name,
-                                           char *       scheme_specifics));
+PUBLIC int HTAA_checkAuthorization PARAMS((CONST char* url, CONST char* method_name,
+                                           CONST char* scheme_name, char* scheme_specifics));
 /*
 
 Compose Status Line Message
@@ -98,7 +95,7 @@ Compose Status Line Message
 **      returns a string containing the error message
 **              corresponding to internal HTAAFailReason.
 */
-PUBLIC char *HTAA_statusMessage NOPARAMS;
+PUBLIC char* HTAA_statusMessage NOPARAMS;
 /*
 
 Compose "Authenticate:" Header Lines for Server Reply
@@ -120,7 +117,7 @@ Compose "Authenticate:" Header Lines for Server Reply
 **              NULL, if authentication won't help in accessing
 **              the requested document.
 */
-PUBLIC char *HTAA_composeAuthHeaders NOPARAMS;
+PUBLIC char* HTAA_composeAuthHeaders NOPARAMS;
 /*
 
 Start Access Authorization Logging
@@ -138,7 +135,7 @@ PUBLIC void HTAA_startLogging PARAMS((FILE * fp));
 
  */
 
-#endif  /* NOT HTAASERV_H */
+#endif /* NOT HTAASERV_H */
 /*
 
    End of file HTAAServ.h.  */

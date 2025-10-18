@@ -12,37 +12,29 @@
  * class	: BCard
  * superClass	: field
  */
-#include "utils.h"
+#include "cl_BCard.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_BCard.h"
-#include "misc.h"
-#include "glib.h"
+#include "utils.h"
 
-SlotInfo cl_BCard_NCSlots[] = {
-	0
-};
-SlotInfo cl_BCard_NPSlots[] = {
-	0
-};
-SlotInfo cl_BCard_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"BCard"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_BCard_NCSlots[] = {0};
+SlotInfo cl_BCard_NPSlots[] = {0};
+SlotInfo cl_BCard_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"BCard"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -115,115 +107,72 @@ SlotInfo cl_BCard_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_BCard_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_BCard
-},{
-	0
-}
-};
+                              },
+                              {0}};
+SlotInfo cl_BCard_PSlots[] = {{STR__classInfo, CLSI, (long)&class_BCard}, {0}};
 
-SlotInfo *slots_BCard[] = {
-	(SlotInfo*)cl_BCard_NCSlots,
-	(SlotInfo*)cl_BCard_NPSlots,
-	(SlotInfo*)cl_BCard_CSlots,
-	(SlotInfo*)cl_BCard_PSlots
-};
+SlotInfo* slots_BCard[] = {(SlotInfo*)cl_BCard_NCSlots, (SlotInfo*)cl_BCard_NPSlots,
+                           (SlotInfo*)cl_BCard_CSlots, (SlotInfo*)cl_BCard_PSlots};
 
 MethodInfo meths_BCard[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_BCard_config
-},{
-	STR_expose,
-	meth_BCard_expose
-},{
-	STR_geta,
-	meth_BCard_get,
-},{
-	STR_initialize,
-	meth_BCard_initialize
-},{
-	STR_render,
-	meth_BCard_render
-},{
-	STR_seta,
-	meth_BCard_set
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_config, meth_BCard_config},
+    {STR_expose, meth_BCard_expose},
+    {
+        STR_geta,
+        meth_BCard_get,
+    },
+    {STR_initialize, meth_BCard_initialize},
+    {STR_render, meth_BCard_render},
+    {STR_seta, meth_BCard_set},
+    {0}};
 
 ClassInfo class_BCard = {
-	helper_BCard_get,
-	helper_BCard_set,
-	slots_BCard,		/* class slot information	*/
-	meths_BCard,		/* class methods		*/
-	STR_BCard,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_BCard_get, helper_BCard_set, slots_BCard, /* class slot information	*/
+    meths_BCard,                                     /* class methods		*/
+    STR_BCard,                                       /* class identifier number	*/
+    &class_field,                                    /* super class info		*/
 };
 
-long meth_BCard_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	if (!meth_field_config(self, result, argc, argv)) return 0;
-	return 1;
+long meth_BCard_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    if (!meth_field_config(self, result, argc, argv))
+        return 0;
+    return 1;
 }
 
-long meth_BCard_expose(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_field_render(self, result, argc, argv);
+long meth_BCard_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_field_render(self, result, argc, argv);
 }
 
-long helper_BCard_get(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	return helper_field_get(self, result, argc, argv, labelID);
+long helper_BCard_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    return helper_field_get(self, result, argc, argv, labelID);
 }
 
-long meth_BCard_get(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_BCard_get(self, result, argc, argv, 
-					getIdent(PkInfo2Str(argv)));
+long meth_BCard_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_BCard_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_BCard_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_field_initialize(self, result, argc, argv);
+long meth_BCard_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_field_initialize(self, result, argc, argv);
 }
 
-long meth_BCard_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
+long meth_BCard_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
 
-	if (!w) meth_field_render(self, result, argc, argv);
-	if (!(w = GET_window(self))) return 0;
-	return 1;
+    if (!w)
+        meth_field_render(self, result, argc, argv);
+    if (!(w = GET_window(self)))
+        return 0;
+    return 1;
 }
 
-long helper_BCard_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	return helper_field_set(self, result, argc, argv, labelID);
+long helper_BCard_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    return helper_field_set(self, result, argc, argv, labelID);
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long meth_BCard_set(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_BCard_set(self, result, argc, argv, 
-					getIdent(PkInfo2Str(argv)));
+long meth_BCard_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_BCard_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
-
-
-
-
-
-
-
-

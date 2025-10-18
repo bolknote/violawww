@@ -7,5 +7,3 @@
 extern ClassInfo class_radio;
 long int helper_radio_get();
 long int helper_radio_set();
-
-

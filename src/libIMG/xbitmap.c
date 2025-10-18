@@ -12,12 +12,12 @@
  * copyright information.
  */
 
-#include "mit.cpyrght"
 #include "copyright.h"
+#include "image.h"
+#include "mit.cpyrght"
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include "image.h"
-#include <ctype.h>
 
 /* SUPPRESS 560 */
 
@@ -25,13 +25,13 @@
 #include <string.h>
 #define rindex strrchr
 #else
-char *rindex();
+char* rindex();
 #endif
 
 #define MAX_SIZE 255
 
-static short        HexTable[256];  /* conversion value */
-static unsigned int Initialized= 0; /* easier to fill in at run time */
+static short HexTable[256];          /* conversion value */
+static unsigned int Initialized = 0; /* easier to fill in at run time */
 
 #define b0000 0 /* things make more sense if you see them by bit */
 #define b0001 1
@@ -52,198 +52,204 @@ static unsigned int Initialized= 0; /* easier to fill in at run time */
 
 #define HEXSTART -1
 #define HEXDELIM -2
-#define HEXBAD   -3
+#define HEXBAD -3
 
 /* build a hex digit value table with the bits inverted
  */
 
-static void initHexTable()
-{ int a;
+static void initHexTable() {
+    int a;
 
-  for (a= 0; a < 256; a++)
-    HexTable[a]= HEXBAD;
+    for (a = 0; a < 256; a++)
+        HexTable[a] = HEXBAD;
 
-  HexTable['0']= b0000;
-  HexTable['1']= b1000;
-  HexTable['2']= b0100;
-  HexTable['3']= b1100;
-  HexTable['4']= b0010;
-  HexTable['5']= b1010;
-  HexTable['6']= b0110;
-  HexTable['7']= b1110;
-  HexTable['8']= b0001;
-  HexTable['9']= b1001;
-  HexTable['A']= b0101; HexTable['a']= HexTable['A'];
-  HexTable['B']= b1101; HexTable['b']= HexTable['B'];
-  HexTable['C']= b0011; HexTable['c']= HexTable['C'];
-  HexTable['D']= b1011; HexTable['d']= HexTable['D'];
-  HexTable['E']= b0111; HexTable['e']= HexTable['E'];
-  HexTable['F']= b1111; HexTable['f']= HexTable['F'];
-  HexTable['x']= HEXSTART;
-  HexTable['\r']= HEXDELIM;
-  HexTable['\n']= HEXDELIM;
-  HexTable['\t']= HEXDELIM;
-  HexTable[' ']= HEXDELIM;
-  HexTable[',']= HEXDELIM;
-  HexTable['}']= HEXDELIM;
+    HexTable['0'] = b0000;
+    HexTable['1'] = b1000;
+    HexTable['2'] = b0100;
+    HexTable['3'] = b1100;
+    HexTable['4'] = b0010;
+    HexTable['5'] = b1010;
+    HexTable['6'] = b0110;
+    HexTable['7'] = b1110;
+    HexTable['8'] = b0001;
+    HexTable['9'] = b1001;
+    HexTable['A'] = b0101;
+    HexTable['a'] = HexTable['A'];
+    HexTable['B'] = b1101;
+    HexTable['b'] = HexTable['B'];
+    HexTable['C'] = b0011;
+    HexTable['c'] = HexTable['C'];
+    HexTable['D'] = b1011;
+    HexTable['d'] = HexTable['D'];
+    HexTable['E'] = b0111;
+    HexTable['e'] = HexTable['E'];
+    HexTable['F'] = b1111;
+    HexTable['f'] = HexTable['F'];
+    HexTable['x'] = HEXSTART;
+    HexTable['\r'] = HEXDELIM;
+    HexTable['\n'] = HEXDELIM;
+    HexTable['\t'] = HEXDELIM;
+    HexTable[' '] = HEXDELIM;
+    HexTable[','] = HEXDELIM;
+    HexTable['}'] = HEXDELIM;
 
-  Initialized = 1;
+    Initialized = 1;
 }
 
 /* read a hex value and return its value
  */
 
 static int nextInt(zf)
-     ZFILE *zf;
-{ int c;
-  int value= 0;
-  int shift= 0;
-    
-  for (;;) {
-    c= zgetc(zf);
-    if (c == EOF)
-      return(-1);
-    else {
-      c= HexTable[c & 0xff];
-      switch(c) {
-      case HEXSTART:
-	shift= 0; /* reset shift counter */
-	break;
-      case HEXDELIM:
-	if (shift)
-	  return(value);
-	break;
-      case HEXBAD:
-	return(-1);
-      default:
-	value += (c << shift);
-	shift += 4;
-      }
-    }
-  }
-}
-
-static void badFile(name)
-     char *name;
+ZFILE* zf;
 {
-  printf("%s: bad X bitmap file\n", name);
-  exit(1);
+    int c;
+    int value = 0;
+    int shift = 0;
+
+    for (;;) {
+        c = zgetc(zf);
+        if (c == EOF)
+            return (-1);
+        else {
+            c = HexTable[c & 0xff];
+            switch (c) {
+            case HEXSTART:
+                shift = 0; /* reset shift counter */
+                break;
+            case HEXDELIM:
+                if (shift)
+                    return (value);
+                break;
+            case HEXBAD:
+                return (-1);
+            default:
+                value += (c << shift);
+                shift += 4;
+            }
+        }
+    }
 }
 
-Image *xbitmapLoad(fullname, name, verbose)
-     char         *fullname, *name;
-     unsigned int  verbose;
-{ ZFILE        *zf;
-  Image        *image;
-  char          line[MAX_SIZE];
-  char          name_and_type[MAX_SIZE];
-  char         *type;
-  int           value;
-  int           v10p;
-  unsigned int  linelen, dlinelen;
-  unsigned int  x, y;
-  unsigned int  w = 0, h = 0;
-  byte         *dataptr;
+static void badFile(name) char* name;
+{
+    printf("%s: bad X bitmap file\n", name);
+    exit(1);
+}
 
-  if (!Initialized)
-    initHexTable();
+Image* xbitmapLoad(fullname, name, verbose)
+char *fullname, *name;
+unsigned int verbose;
+{
+    ZFILE* zf;
+    Image* image;
+    char line[MAX_SIZE];
+    char name_and_type[MAX_SIZE];
+    char* type;
+    int value;
+    int v10p;
+    unsigned int linelen, dlinelen;
+    unsigned int x, y;
+    unsigned int w = 0, h = 0;
+    byte* dataptr;
 
-  if (! (zf= zopen(fullname)))
-    return(NULL);
+    if (!Initialized)
+        initHexTable();
 
-  /* get width/height values */
+    if (!(zf = zopen(fullname)))
+        return (NULL);
 
-  while (zgets((byte *)line, MAX_SIZE, zf)) {
-    if (strlen(line) == MAX_SIZE-1) {
-      zclose(zf);
-      return(NULL);
+    /* get width/height values */
+
+    while (zgets((byte*)line, MAX_SIZE, zf)) {
+        if (strlen(line) == MAX_SIZE - 1) {
+            zclose(zf);
+            return (NULL);
+        }
+
+        /* width/height/hot_x/hot_y scanning
+         */
+
+        if (sscanf(line, "#define %s %d", name_and_type, &value) == 2) {
+            if (!(type = rindex(name_and_type, '_')))
+                type = name_and_type;
+            else
+                type++;
+
+            if (!strcmp("width", type))
+                w = (unsigned int)value;
+            if (!strcmp("height", type))
+                h = (unsigned int)value;
+        }
+
+        /* if start of data, determine if it's X10 or X11 data and break
+         */
+
+        if (sscanf(line, "static short %s = {", name_and_type) == 1) {
+            v10p = 1;
+            break;
+        }
+        if ((sscanf(line, "static unsigned char %s = {", name_and_type) == 1) ||
+            (sscanf(line, "static char %s = {", name_and_type) == 1)) {
+            v10p = 0;
+            break;
+        }
     }
 
-    /* width/height/hot_x/hot_y scanning
+    if (!w || !h) {
+        zclose(zf);
+        return (NULL);
+    }
+    image = newBitImage(w, h);
+
+    /* get title of bitmap if any
      */
 
-    if (sscanf(line,"#define %s %d", name_and_type, &value) == 2) {
-      if (!(type = rindex(name_and_type, '_')))
-	type = name_and_type;
-      else
-	type++;
-
-      if (!strcmp("width", type))
-	w= (unsigned int)value;
-      if (!strcmp("height", type))
-	h= (unsigned int)value;
+    if ((type = rindex(name_and_type, '_')) && !strcmp("bits[]", type + 1)) {
+        *type = '\0';
+        image->title = dupString(name_and_type);
     }
 
-    /* if start of data, determine if it's X10 or X11 data and break
+    /* read bitmap data
      */
 
-    if (sscanf(line, "static short %s = {", name_and_type) == 1) {
-      v10p = 1;
-      break;
+    linelen = (w / 8) + (w % 8 ? 1 : 0); /* internal line length */
+    if (v10p) {
+        dlinelen = (w / 8) + (w % 16 ? 2 : 0);
+        dataptr = image->data;
+        for (y = 0; y < h; y++) {
+            for (x = 0; x < dlinelen; x++) {
+                if ((value = nextInt(zf)) < 0) {
+                    freeImage(image);
+                    zclose(zf);
+                    return (NULL);
+                }
+                *(dataptr++) = value >> 8;
+                if (++x < linelen)
+                    *(dataptr++) = value & 0xff;
+            }
+        }
+    } else {
+        dataptr = image->data;
+        for (y = 0; y < h; y++)
+            for (x = 0; x < linelen; x++) {
+                if ((value = nextInt(zf)) < 0)
+                    badFile(name);
+                *(dataptr++) = value;
+            }
     }
-    if ((sscanf(line,"static unsigned char %s = {", name_and_type) == 1) ||
-	(sscanf(line, "static char %s = {", name_and_type) == 1)) {
-      v10p = 0;
-      break;
-    }
-  }
 
-  if (!w || !h) {
+    if (verbose) {
+        printf("%s is a %dx%d X", name, image->width, image->height);
+        if (v10p)
+            printf("10");
+        else
+            printf("11");
+        if (image->title)
+            printf(" bitmap file titled '%s'", image->title);
+        printf("\n");
+    }
     zclose(zf);
-    return(NULL);
-  }
-  image= newBitImage(w, h);
-
-  /* get title of bitmap if any
-   */
-
-  if ((type = rindex(name_and_type, '_')) && !strcmp("bits[]", type + 1)) {
-    *type= '\0';
-    image->title= dupString(name_and_type);
-  }
-    
-  /* read bitmap data
-   */
-
-  linelen= (w / 8) + (w % 8 ? 1 : 0); /* internal line length */
-  if (v10p) {
-    dlinelen= (w / 8) + (w % 16 ? 2 : 0);
-    dataptr= image->data;
-    for (y= 0; y < h; y++) {
-      for (x= 0; x < dlinelen; x++) {
-	if ((value= nextInt(zf)) < 0) {
-	  freeImage(image);
-	  zclose(zf);
-	  return(NULL);
-	}
-	*(dataptr++)= value >> 8;
-	if (++x < linelen)
-	  *(dataptr++)= value & 0xff;
-      }
-    }
-  }
-  else {
-    dataptr= image->data;
-    for (y= 0; y < h; y++)
-      for (x= 0; x < linelen; x++) {
-	if ((value= nextInt(zf)) < 0)
-	  badFile(name);
-	*(dataptr++)= value;
-      }
-  }
-
-  if (verbose) {
-    printf("%s is a %dx%d X", name, image->width, image->height);
-    if (v10p)
-      printf("10");
-    else
-      printf("11");
-    if (image->title)
-      printf(" bitmap file titled '%s'", image->title);
-    printf("\n");
-  }
-  zclose(zf);
-  return(image);
+    return (image);
 }
 
 /* this is the easiest way to do this.  it's not likely we'll have mondo
@@ -251,12 +257,13 @@ Image *xbitmapLoad(fullname, name, verbose)
  */
 
 int xbitmapIdent(fullname, name)
-     char         *fullname, *name;
-{ Image *image;
+char *fullname, *name;
+{
+    Image* image;
 
-  if (image= xbitmapLoad(fullname, name, (unsigned int)1)) {
-    freeImage(image);
-    return(1);
-  }
-  return(0);
+    if (image = xbitmapLoad(fullname, name, (unsigned int)1)) {
+        freeImage(image);
+        return (1);
+    }
+    return (0);
 }

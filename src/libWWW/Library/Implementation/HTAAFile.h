@@ -1,59 +1,57 @@
 /*                       FILE ROUTINES FOR ACCESS AUTHORIZATION PACKAGE
-                                             
+
    This module implements the routines used for accessing (and parsing) the files used in
    the access authorization:
-   
-      password file
-      
-      group file
-      
-      access control list (ACL) file
-      
- */
 
+      password file
+
+      group file
+
+      access control list (ACL) file
+
+ */
 
 #ifndef HTAAFILE_H
 #define HTAAFILE_H
 
-#include <stdio.h>      /* FILE */
-#include "HTUtils.h"            /* BOOL, PARAMS, ARGS */
-#include "HTList.h"             /* HTList */
+#include "HTList.h"  /* HTList */
+#include "HTUtils.h" /* BOOL, PARAMS, ARGS */
+#include <stdio.h>   /* FILE */
 
 #ifdef SHORT_NAMES
-#define HTAAFnRe        HTAAFile_nextRec
-#define HTAAFrFi        HTAAFile_readField
-#define HTAAFrLi        HTAAFile_readList
+#define HTAAFnRe HTAAFile_nextRec
+#define HTAAFrFi HTAAFile_readField
+#define HTAAFrLi HTAAFile_readList
 #endif /*SHORT_NAMES*/
-
 
 /* Used field separators */
 
-#define FIELD_SEPARATOR ':'     /* Used to separate fields              */
-#define LIST_SEPARATOR  ','     /* Used to separate items in a list     */
-                                /* in group and ALC files.              */
+#define FIELD_SEPARATOR ':' /* Used to separate fields              */
+#define LIST_SEPARATOR ','  /* Used to separate items in a list     */
+                            /* in group and ALC files.              */
 
 /*
 
 Naming conventions
 
   Record                 is an entire line in file.
-                         
+
   Field                  is an entity separated by colons and/or by end-of-line.
-                         
+
   List                   is a field in which there are items separated by commas.
-                         
+
 Record-oriented Read Routines
 
    Password, group and ACL are internally read in by the following functions:
-   
+
   HTAAFile_nextRec()      skips to the beginning of the next record (must be called even
                          after the last field of a record is read to proceed to the next
                          record).
-                         
+
   HTAAFile_readField()    reads a field (separated by colons).
-                         
+
   HTAAFile_readList()     reads a field containing a comma-separated list of items.
-                         
+
  */
 
 /* PUBLIC                                               HTAAFile_nextRec()
@@ -67,7 +65,6 @@ Record-oriented Read Routines
 **
 */
 PUBLIC void HTAAFile_nextRec PARAMS((FILE * fp));
-
 
 /* PUBLIC                                               HTAAFile_readField()
 **              READ A FIELD FROM A PASSWORD, GROUP
@@ -93,10 +90,7 @@ PUBLIC void HTAAFile_nextRec PARAMS((FILE * fp));
 **                      are ignored.  However, contents is always
 **                      null-terminated!
 */
-PUBLIC int HTAAFile_readField PARAMS((FILE * fp,
-                                      char * contents,
-                                      int    max_len));
-
+PUBLIC int HTAAFile_readField PARAMS((FILE * fp, char* contents, int max_len));
 
 /* PUBLIC                                               HTAAFile_readList()
 **
@@ -111,9 +105,7 @@ PUBLIC int HTAAFile_readField PARAMS((FILE * fp,
 **      returns         the number of items read.
 **
 */
-PUBLIC int HTAAFile_readList PARAMS((FILE *     fp,
-                                     HTList *   result,
-                                     int        max_len));
+PUBLIC int HTAAFile_readList PARAMS((FILE * fp, HTList* result, int max_len));
 /*
 
  */

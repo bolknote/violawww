@@ -22,7 +22,7 @@
 ****/
 
 #ifndef __SABER__
-static char *TGNCopyright = "Copyright (C) 1991 Tim Northrup";
+static char* TGNCopyright = "Copyright (C) 1991 Tim Northrup";
 #endif
 #define _TGN_COPYRIGHT_
 #endif

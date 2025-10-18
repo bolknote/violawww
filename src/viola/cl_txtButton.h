@@ -12,4 +12,3 @@ long int meth_txtButton_get();
 long int meth_txtButton_initialize();
 long int meth_txtButton_render();
 long int meth_txtButton_set();
-

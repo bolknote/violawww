@@ -21,27 +21,26 @@
 #ifndef HTATOM_H
 #define HTATOM_H
 
-#include "HTUtils.h"
 #include "HTList.h"
+#include "HTUtils.h"
 
 #ifdef SHORT_NAMES
-#define HTAt_for        HTAtom_for
-#define HTAt_tMa        HTAtom_templateMatches
+#define HTAt_for HTAtom_for
+#define HTAt_tMa HTAtom_templateMatches
 #endif /*SHORT_NAMES*/
 
 typedef struct _HTAtom HTAtom;
 struct _HTAtom {
-        HTAtom *        next;
-        char *          name;
+    HTAtom* next;
+    char* name;
 }; /* struct _HTAtom */
 
-
-PUBLIC HTAtom * HTAtom_for PARAMS((CONST char * string));
-PUBLIC HTList * HTAtom_templateMatches PARAMS((CONST char * templ));
+PUBLIC HTAtom* HTAtom_for PARAMS((CONST char* string));
+PUBLIC HTList* HTAtom_templateMatches PARAMS((CONST char* templ));
 
 #define HTAtom_name(a) ((a)->name)
 
-#endif  /* HTATOM_H */
+#endif /* HTATOM_H */
 /*
 
     */

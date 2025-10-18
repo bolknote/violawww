@@ -1,24 +1,17 @@
 /*
  * event.c
  */
-#include "utils.h"
-#include <ctype.h>
-#include <sys/types.h>
+#include "event.h"
 #include "hash.h"
 #include "ident.h"
 #include "obj.h"
 #include "packet.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
+#include <sys/types.h>
 
 int currentTool = ACTION_TOOL;
-char *toolID2Str[] = {
-	"action",
-	"target",
-	"move",
-	"resize",
-	"reparent",
-	{0}
-};
+char* toolID2Str[] = {"action", "target", "move", "resize", "reparent", {0}};
 
 /*
 void processPeekKeys()
@@ -43,22 +36,21 @@ int checkParam(param, resize_corner)
   if (ParamWidth(param) < 1) {
     ParamWidth(param) = 1;
     if ((resize_corner == RC_LEFT) ||
-	(resize_corner == RC_UPPER_LEFT) ||
-	(resize_corner == RC_LOWER_LEFT))
+        (resize_corner == RC_UPPER_LEFT) ||
+        (resize_corner == RC_LOWER_LEFT))
       resize_corner = RC_RIGHT;
-    else 
+    else
       resize_corner = RC_LEFT;
 
   } else if (ParamHeight(param) < 1) {
     ParamHeight(param) = 1;
     if ((resize_corner == RC_UPPER) ||
-	(resize_corner == RC_UPPER_RIGHT) ||
-	(resize_corner == RC_UPPER_LEFT))
+        (resize_corner == RC_UPPER_RIGHT) ||
+        (resize_corner == RC_UPPER_LEFT))
       resize_corner = RC_LOWER;
-    else 
+    else
       resize_corner = RC_UPPER;
   }
   return resize_corner;
 }
 */
-

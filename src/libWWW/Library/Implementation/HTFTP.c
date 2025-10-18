@@ -34,64 +34,64 @@
 **			internet address!
 **
 ** Bugs:
-**	No binary mode! Always uses ASCII! 
+**	No binary mode! Always uses ASCII!
 */
 
-#define LISTEN		/* @@@@ Test */
+#define LISTEN /* @@@@ Test */
 
 /*
 BUGS:	@@@  	Limit connection cache size!
-		Error reporting to user.
-		400 & 500 errors are acked by user with windows.
-		Use configuration file for user names
-		Prompt user for password
-		
+                Error reporting to user.
+                400 & 500 errors are acked by user with windows.
+                Use configuration file for user names
+                Prompt user for password
+
 **		Note for portablility this version does not use select() and
 **		so does not watch the control and data channels at the
 **		same time.
-*/		
+*/
 
-#include "HTFTP.h"	/* Implemented here */
+#include "HTFTP.h" /* Implemented here */
 #include <unistd.h>
 
-#define CR   FROMASCII('\015')	/* Must be converted to ^M for transmission */
-#define LF   FROMASCII('\012')	/* Must be converted to ^J for transmission */
+#define CR FROMASCII('\015') /* Must be converted to ^M for transmission */
+#define LF FROMASCII('\012') /* Must be converted to ^J for transmission */
 
-#define REPEAT_PORT	/* Give the port number for each file */
-#define REPEAT_LISTEN	/* Close each listen socket and open a new one */
+#define REPEAT_PORT   /* Give the port number for each file */
+#define REPEAT_LISTEN /* Close each listen socket and open a new one */
 
 /* define POLL_PORTS		 If allocation does not work, poll ourselves.*/
-#define LISTEN_BACKLOG 2	/* Number of pending connect requests (TCP)*/
+#define LISTEN_BACKLOG 2 /* Number of pending connect requests (TCP)*/
 
-#define FIRST_TCP_PORT	1024	/* Region to try for a listening port */
-#define LAST_TCP_PORT	5999	
+#define FIRST_TCP_PORT 1024 /* Region to try for a listening port */
+#define LAST_TCP_PORT 5999
 
 #define LINE_LENGTH 256
 #define COMMAND_LENGTH 256
 
-#include "HTParse.h"
-#include "HTUtils.h"
-#include "tcp.h"
-#include "HTTCP.h"
 #include "HTAnchor.h"
-#include "HTFile.h"	/* For HTFileFormat() */
 #include "HTBTree.h"
 #include "HTChunk.h"
+#include "HTFile.h" /* For HTFileFormat() */
+#include "HTParse.h"
+#include "HTTCP.h"
+#include "HTUtils.h"
+#include "tcp.h"
 #ifndef IPPORT_FTP
-#define IPPORT_FTP	21
+#define IPPORT_FTP 21
 #endif
 
 #ifdef REMOVED_CODE
-extern char *malloc();
+extern char* malloc();
 extern void free();
-extern char *strncpy();
+extern char* strncpy();
 #endif
 
 typedef struct _connection {
-    struct _connection *	next;	/* Link on list 	*/
-    u_long			addr;	/* IP address		*/
-    int				socket;	/* Socket number for communication */
-    BOOL			binary; /* Binary mode? */
+    struct _connection* next; /* Link on list 	*/
+    u_long addr;              /* IP address		*/
+    int socket;               /* Socket number for communication */
+    BOOL binary;              /* Binary mode? */
 } connection;
 
 #ifndef NIL
@@ -99,105 +99,100 @@ typedef struct _connection {
 #endif
 
 /*		Hypertext object building machinery
-*/
+ */
 #include "HTML.h"
 
 #define PUTC(c) (*targetClass.put_character)(target, c)
 #define PUTS(s) (*targetClass.put_string)(target, s)
 /*#define START(e) (*targetClass.start_element)(target, e, 0, 0)*/
-#define START(e) (*targetClass.start_element)(target, e, 0, 0, \
-					      &HTML_dtd.tags[e]/*PYW*/)
+#define START(e) (*targetClass.start_element)(target, e, 0, 0, &HTML_dtd.tags[e] /*PYW*/)
 #define END(e) (*targetClass.end_element)(target, e)
 #define FREE_TARGET (*targetClass.free)(target)
 struct _HTStructured {
-	CONST HTStructuredClass *	isa;
-	/* ... */
+    CONST HTStructuredClass* isa;
+    /* ... */
 };
-
 
 /*	Module-Wide Variables
 **	---------------------
 */
-PRIVATE connection * connections =0;	/* Linked list of connections */
-PRIVATE char    response_text[LINE_LENGTH+1];/* Last response from NewsHost */
-PRIVATE connection * control;		/* Current connection */
-PRIVATE int	data_soc = -1;		/* Socket for data transfer =invalid */
+PRIVATE connection* connections = 0;         /* Linked list of connections */
+PRIVATE char response_text[LINE_LENGTH + 1]; /* Last response from NewsHost */
+PRIVATE connection* control;                 /* Current connection */
+PRIVATE int data_soc = -1;                   /* Socket for data transfer =invalid */
 
 #ifdef POLL_PORTS
-PRIVATE	unsigned short	port_number = FIRST_TCP_PORT;
+PRIVATE unsigned short port_number = FIRST_TCP_PORT;
 #endif
 
 #ifdef LISTEN
-PRIVATE int     master_socket = -1;	/* Listening socket = invalid	*/
-PRIVATE char	port_command[255];	/* Command for setting the port */
-PRIVATE fd_set	open_sockets; 		/* Mask of active channels */
-PRIVATE int	num_sockets;  		/* Number of sockets to scan */
+PRIVATE int master_socket = -1; /* Listening socket = invalid	*/
+PRIVATE char port_command[255]; /* Command for setting the port */
+PRIVATE fd_set open_sockets;    /* Mask of active channels */
+PRIVATE int num_sockets;        /* Number of sockets to scan */
 #else
-PRIVATE	unsigned short	passive_port;	/* Port server specified for data */
+PRIVATE unsigned short passive_port; /* Port server specified for data */
 #endif
 
-
-#define NEXT_CHAR HTGetChararcter()	/* Use function in HTFormat.c */
+#define NEXT_CHAR HTGetChararcter() /* Use function in HTFormat.c */
 
 #define DATA_BUFFER_SIZE 2048
-PRIVATE char data_buffer[DATA_BUFFER_SIZE];		/* Input data buffer */
-PRIVATE char * data_read_pointer;
-PRIVATE char * data_write_pointer;
+PRIVATE char data_buffer[DATA_BUFFER_SIZE]; /* Input data buffer */
+PRIVATE char* data_read_pointer;
+PRIVATE char* data_write_pointer;
 #define NEXT_DATA_CHAR next_data_char()
-
 
 /*	Procedure: Read a character from the data connection
 **	----------------------------------------------------
 */
-PRIVATE char next_data_char
-NOARGS
-{
+PRIVATE char next_data_char NOARGS {
     int status;
     if (data_read_pointer >= data_write_pointer) {
-	status = NETREAD(data_soc, data_buffer, DATA_BUFFER_SIZE);
-	/* Get some more data */
-	if (status <= 0) return (char)-1;
-	data_write_pointer = data_buffer + status;
-	data_read_pointer = data_buffer;
+        status = NETREAD(data_soc, data_buffer, DATA_BUFFER_SIZE);
+        /* Get some more data */
+        if (status <= 0)
+            return (char)-1;
+        data_write_pointer = data_buffer + status;
+        data_read_pointer = data_buffer;
     }
 #ifdef NOT_ASCII
     {
         char c = *data_read_pointer++;
-	return FROMASCII(c);
+        return FROMASCII(c);
     }
 #else
     return *data_read_pointer++;
 #endif
 }
 
-
 /*	Close an individual connection
 **
 */
 #ifdef __STDC__
-PRIVATE int close_connection(connection * con)
+PRIVATE int close_connection(connection* con)
 #else
 PRIVATE int close_connection(con)
-    connection *con;
+connection* con;
 #endif
 {
-    connection * scan;
+    connection* scan;
     int status = NETCLOSE(con->socket);
-    if (TRACE) fprintf(stderr, "FTP: Closing control socket %d\n", con->socket);
-    if (connections==con) {
+    if (TRACE)
+        fprintf(stderr, "FTP: Closing control socket %d\n", con->socket);
+    if (connections == con) {
         connections = con->next;
-	return status;
+        return status;
     }
-    for(scan=connections; scan; scan=scan->next) {
+    for (scan = connections; scan; scan = scan->next) {
         if (scan->next == con) {
-	    scan->next = con->next;	/* Unlink */
-	    if (control==con) control = (connection*)0;
-	    return status;
-	} /*if */
+            scan->next = con->next; /* Unlink */
+            if (control == con)
+                control = (connection*)0;
+            return status;
+        } /*if */
     } /* for */
-    return -1;		/* very strange -- was not on list. */
+    return -1; /* very strange -- was not on list. */
 }
-
 
 /*	Execute Command and get Response
 **	--------------------------------
@@ -221,89 +216,89 @@ PRIVATE int close_connection(con)
 **		  or negative for communication failure.
 */
 #ifdef __STDC__
-PRIVATE int response(char * cmd)
+PRIVATE int response(char* cmd)
 #else
 PRIVATE int response(cmd)
-    char * cmd;
+char* cmd;
 #endif
 {
-    int result;				/* Three-digit decimal code */
-    int	continuation_response = -1;
+    int result; /* Three-digit decimal code */
+    int continuation_response = -1;
     int status;
-    
+
     if (!control) {
-          if(TRACE) fprintf(stderr, "FTP: No control connection set up!!\n");
-	  return -99;
+        if (TRACE)
+            fprintf(stderr, "FTP: No control connection set up!!\n");
+        return -99;
     }
-    
+
     if (cmd) {
-    
-	if (TRACE) fprintf(stderr, "  Tx: %s", cmd);
+
+        if (TRACE)
+            fprintf(stderr, "  Tx: %s", cmd);
 
 #ifdef NOT_ASCII
-	{
-	    char * p;
-	    for(p=cmd; *p; p++) {
-	        *p = TOASCII(*p);
-	    }
-	}
-#endif 
-	status = NETWRITE(control->socket, cmd, (int)strlen(cmd));
-	if (status<0) {
-	    if (TRACE) fprintf(stderr, 
-	    	"FTP: Error %d sending command: closing socket %d\n",
-		status, control->socket);
-	    close_connection(control);
-	    return status;
-	}
+        {
+            char* p;
+            for (p = cmd; *p; p++) {
+                *p = TOASCII(*p);
+            }
+        }
+#endif
+        status = NETWRITE(control->socket, cmd, (int)strlen(cmd));
+        if (status < 0) {
+            if (TRACE)
+                fprintf(stderr, "FTP: Error %d sending command: closing socket %d\n", status,
+                        control->socket);
+            close_connection(control);
+            return status;
+        }
     }
 
-    HTPushInputBuffer();/*PYW*/
-    HTInitInput(control->socket);/*PYW*/
+    HTPushInputBuffer();          /*PYW*/
+    HTInitInput(control->socket); /*PYW*/
 
     do {
-	char *p = response_text;
-	for(;;) {  
-	    if (((*p++=NEXT_CHAR) == LF)
-			|| (p == &response_text[LINE_LENGTH])) {
-		char continuation;
-		*p++=0;			/* Terminate the string */
-		if (TRACE) fprintf(stderr, "    Rx: %s", response_text);
-		sscanf(response_text, "%d%c", &result, &continuation);
-		if  (continuation_response == -1) {
-			if (continuation == '-')  /* start continuation */
-			    continuation_response = result;
-		} else { 	/* continuing */
-			if (continuation_response == result
-				&& continuation == ' ')
-			    continuation_response = -1;	/* ended */
-		}	
-		break;	    
-	    } /* if end of line */
-	    
-	    if (*(p-1) == (char) EOF) {
-		if(TRACE) fprintf(stderr, "Error on rx: closing socket %d\n",
-		    control->socket);
-		strcpy(response_text, "000 *** TCP read error on response\n");
-	        close_connection(control);
-		HTPopInputBuffer();/*PYW*/
-	    	return -1;	/* End of file on response */
-	    }
-	} /* Loop over characters */
+        char* p = response_text;
+        for (;;) {
+            if (((*p++ = NEXT_CHAR) == LF) || (p == &response_text[LINE_LENGTH])) {
+                char continuation;
+                *p++ = 0; /* Terminate the string */
+                if (TRACE)
+                    fprintf(stderr, "    Rx: %s", response_text);
+                sscanf(response_text, "%d%c", &result, &continuation);
+                if (continuation_response == -1) {
+                    if (continuation == '-') /* start continuation */
+                        continuation_response = result;
+                } else { /* continuing */
+                    if (continuation_response == result && continuation == ' ')
+                        continuation_response = -1; /* ended */
+                }
+                break;
+            } /* if end of line */
+
+            if (*(p - 1) == (char)EOF) {
+                if (TRACE)
+                    fprintf(stderr, "Error on rx: closing socket %d\n", control->socket);
+                strcpy(response_text, "000 *** TCP read error on response\n");
+                close_connection(control);
+                HTPopInputBuffer(); /*PYW*/
+                return -1;          /* End of file on response */
+            }
+        } /* Loop over characters */
 
     } while (continuation_response != -1);
-    
-    HTPopInputBuffer();/*PYW*/
 
-    if (result==421) {
-	if(TRACE) fprintf(stderr, "FTP: They close so we close socket %d\n",
-	    control->socket);
-	close_connection(control);
-	return -1;
+    HTPopInputBuffer(); /*PYW*/
+
+    if (result == 421) {
+        if (TRACE)
+            fprintf(stderr, "FTP: They close so we close socket %d\n", control->socket);
+        close_connection(control);
+        return -1;
     }
-    return result/100;
+    return result / 100;
 }
-
 
 /*	Get a valid connection to the host
 **	----------------------------------
@@ -320,188 +315,204 @@ PRIVATE int response(cmd)
 **	It ensures that all connections are logged in if they exist.
 **	It ensures they have the port number transferred.
 */
-PRIVATE int get_connection ARGS1 (CONST char *,arg)
-{
-    struct sockaddr_in soc_address;	/* Binary network address */
+PRIVATE int get_connection ARGS1(CONST char*, arg) {
+    struct sockaddr_in soc_address; /* Binary network address */
     struct sockaddr_in* sin = &soc_address;
 
-    char * username=0;
-    char * password=0;
-    
-    if (!arg) return -1;		/* Bad if no name sepcified	*/
-    if (!*arg) return -1;		/* Bad if name had zero length	*/
+    char* username = 0;
+    char* password = 0;
 
-/*  Set up defaults:
-*/
-    sin->sin_family = AF_INET;	    		/* Family, host order  */
-    sin->sin_port = htons(IPPORT_FTP);	    	/* Well Known Number    */
+    if (!arg)
+        return -1; /* Bad if no name sepcified	*/
+    if (!*arg)
+        return -1; /* Bad if name had zero length	*/
 
-    if (TRACE) fprintf(stderr, "FTP: Looking for %s\n", arg);
+    /*  Set up defaults:
+     */
+    sin->sin_family = AF_INET;         /* Family, host order  */
+    sin->sin_port = htons(IPPORT_FTP); /* Well Known Number    */
 
-/* Get node name:
-*/
+    if (TRACE)
+        fprintf(stderr, "FTP: Looking for %s\n", arg);
+
+    /* Get node name:
+     */
     {
-	char *p1 = HTParse(arg, "", PARSE_HOST);
-	char *p2 = strrchr(p1, '@');	/* user? */
-	char * pw;
-	if (p2) {
-	    username = p1;
-	    *p2=0;			/* terminate */
-	    p1 = p2+1;			/* point to host */
-	    pw = strchr(username, ':');
-	    if (pw) {
-	        *pw++ = 0;
-		password = pw;
-	    }
-	}
-	if (HTParseInet(sin, p1)) { free(p1); return -1;} /* TBL 920622 */
+        char* p1 = HTParse(arg, "", PARSE_HOST);
+        char* p2 = strrchr(p1, '@'); /* user? */
+        char* pw;
+        if (p2) {
+            username = p1;
+            *p2 = 0;     /* terminate */
+            p1 = p2 + 1; /* point to host */
+            pw = strchr(username, ':');
+            if (pw) {
+                *pw++ = 0;
+                password = pw;
+            }
+        }
+        if (HTParseInet(sin, p1)) {
+            free(p1);
+            return -1;
+        } /* TBL 920622 */
 
-        if (!username) free(p1);
+        if (!username)
+            free(p1);
     } /* scope of p1 */
 
-        
-/*	Now we check whether we already have a connection to that port.
-*/
+    /*	Now we check whether we already have a connection to that port.
+     */
 
     {
-	connection * scan;
-	for (scan=connections; scan; scan=scan->next) {
-	    if (sin->sin_addr.s_addr == scan->addr) {
-	  	if (TRACE) fprintf(stderr, 
-		"FTP: Already have connection for %d.%d.%d.%d.\n",
-		    (int)*((unsigned char *)(&scan->addr)+0),
-		    (int)*((unsigned char *)(&scan->addr)+1),
-		    (int)*((unsigned char *)(&scan->addr)+2),
-		    (int)*((unsigned char *)(&scan->addr)+3));
-		if (username) free(username);
-		return scan->socket;		/* Good return */
-	    } else {
-	  	if (TRACE) fprintf(stderr, 
-		"FTP: Existing connection is %d.%d.%d.%d\n",
-		    (int)*((unsigned char *)(&scan->addr)+0),
-		    (int)*((unsigned char *)(&scan->addr)+1),
-		    (int)*((unsigned char *)(&scan->addr)+2),
-		    (int)*((unsigned char *)(&scan->addr)+3));
-	    }
-	}
+        connection* scan;
+        for (scan = connections; scan; scan = scan->next) {
+            if (sin->sin_addr.s_addr == scan->addr) {
+                if (TRACE)
+                    fprintf(stderr, "FTP: Already have connection for %d.%d.%d.%d.\n",
+                            (int)*((unsigned char*)(&scan->addr) + 0),
+                            (int)*((unsigned char*)(&scan->addr) + 1),
+                            (int)*((unsigned char*)(&scan->addr) + 2),
+                            (int)*((unsigned char*)(&scan->addr) + 3));
+                if (username)
+                    free(username);
+                return scan->socket; /* Good return */
+            } else {
+                if (TRACE)
+                    fprintf(stderr, "FTP: Existing connection is %d.%d.%d.%d\n",
+                            (int)*((unsigned char*)(&scan->addr) + 0),
+                            (int)*((unsigned char*)(&scan->addr) + 1),
+                            (int)*((unsigned char*)(&scan->addr) + 2),
+                            (int)*((unsigned char*)(&scan->addr) + 3));
+            }
+        }
     }
 
-   
-/*	Now, let's get a socket set up from the server:
-*/      
+    /*	Now, let's get a socket set up from the server:
+     */
     {
         int status;
-	connection * con = (connection *)malloc(sizeof(*con));
-	if (con == NULL) outofmem(__FILE__, "get_connection");
-	con->addr = sin->sin_addr.s_addr;	/* save it */
-	con->binary = NO;
-	status = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (status<0) {
-	    (void) HTInetStatus("socket");
-	    free(con);
-	    if (username) free(username);
-	    return status;
-	}
-	con->socket = status;
+        connection* con = (connection*)malloc(sizeof(*con));
+        if (con == NULL)
+            outofmem(__FILE__, "get_connection");
+        con->addr = sin->sin_addr.s_addr; /* save it */
+        con->binary = NO;
+        status = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (status < 0) {
+            (void)HTInetStatus("socket");
+            free(con);
+            if (username)
+                free(username);
+            return status;
+        }
+        con->socket = status;
 
-    	status = connect(con->socket, (struct sockaddr*)&soc_address,
-	 sizeof(soc_address));
-        if (status<0){
-	    (void) HTInetStatus("connect");
-	    if (TRACE) fprintf(stderr, 
-	    	"FTP: Unable to connect to remote host for `%s'.\n",
-	    	arg);
-	    NETCLOSE(con->socket);
-	    free(con);
-	    if (username) free(username);
-	    return status;			/* Bad return */
-	}
-	
-	if (TRACE) fprintf(stderr, "FTP connected, socket %d\n", con->socket);
-	control = con;			/* Current control connection */
-	con->next = connections;	/* Link onto list of good ones */
-	connections = con;
+        status = connect(con->socket, (struct sockaddr*)&soc_address, sizeof(soc_address));
+        if (status < 0) {
+            (void)HTInetStatus("connect");
+            if (TRACE)
+                fprintf(stderr, "FTP: Unable to connect to remote host for `%s'.\n", arg);
+            NETCLOSE(con->socket);
+            free(con);
+            if (username)
+                free(username);
+            return status; /* Bad return */
+        }
 
-	HTPushInputBuffer();/*PYW*/
-        HTInitInput(con->socket);/* Initialise buffering for contron connection */
+        if (TRACE)
+            fprintf(stderr, "FTP connected, socket %d\n", con->socket);
+        control = con;           /* Current control connection */
+        con->next = connections; /* Link onto list of good ones */
+        connections = con;
 
+        HTPushInputBuffer();      /*PYW*/
+        HTInitInput(con->socket); /* Initialise buffering for contron connection */
 
-/*	Now we log in		Look up username, prompt for pw.
-*/
-	{
-	    int status = response(NIL);	/* Get greeting */
-	    
-	    if (status == 2) {		/* Send username */
-	        char * command;
-		if (username) {
-		    command = (char*)malloc(10+strlen(username)+2+1);
-		    if (command == NULL) outofmem(__FILE__, "get_connection");
-		    sprintf(command, "USER %s%c%c", username, CR, LF);
-		} else {
-		    command = (char*)malloc(25);
-		    if (command == NULL) outofmem(__FILE__, "get_connection");
-		    sprintf(command, "USER anonymous%c%c", CR, LF);
-	        }
-		status = response(command);
-		free(command);
-	    }
-	    if (status == 3) {		/* Send password */
-	        char * command;
-		if (password) {
-		    command = (char*)malloc(10+strlen(password)+2+1);
-		    if (command == NULL) outofmem(__FILE__, "get_connection");
-		    sprintf(command, "PASS %s%c%c", password, CR, LF);
-		} else {
-		    char * user = getenv("USER");
-		    CONST char *host = HTHostName();
-		    if (!user) user = "WWWuser";
-		    /* If not fully qualified, suppress it as ftp.uu.net
-		       prefers a blank to a bad name */
-		    if (!strchr(host, '.')) host = "";
+        /*	Now we log in		Look up username, prompt for pw.
+         */
+        {
+            int status = response(NIL); /* Get greeting */
 
-		    command = (char*)malloc(20+strlen(host)+2+1);
-		    if (command == NULL) outofmem(__FILE__, "get_connection");
-		    sprintf(command,
-		    "PASS %s@%s%c%c", user ? user : "WWWuser",
-		    host, CR, LF); /*@@*/
-	        }
-		status = response(command);
-		free(command);
-	    }
-            if (username) free(username);
+            if (status == 2) { /* Send username */
+                char* command;
+                if (username) {
+                    command = (char*)malloc(10 + strlen(username) + 2 + 1);
+                    if (command == NULL)
+                        outofmem(__FILE__, "get_connection");
+                    sprintf(command, "USER %s%c%c", username, CR, LF);
+                } else {
+                    command = (char*)malloc(25);
+                    if (command == NULL)
+                        outofmem(__FILE__, "get_connection");
+                    sprintf(command, "USER anonymous%c%c", CR, LF);
+                }
+                status = response(command);
+                free(command);
+            }
+            if (status == 3) { /* Send password */
+                char* command;
+                if (password) {
+                    command = (char*)malloc(10 + strlen(password) + 2 + 1);
+                    if (command == NULL)
+                        outofmem(__FILE__, "get_connection");
+                    sprintf(command, "PASS %s%c%c", password, CR, LF);
+                } else {
+                    char* user = getenv("USER");
+                    CONST char* host = HTHostName();
+                    if (!user)
+                        user = "WWWuser";
+                    /* If not fully qualified, suppress it as ftp.uu.net
+                       prefers a blank to a bad name */
+                    if (!strchr(host, '.'))
+                        host = "";
 
-	    if (status == 3) {
-	        char temp[80];
-		sprintf(temp, "ACCT noaccount%c%c", CR, LF);
-		status = response(temp);
-	    }
-	    if (status !=2) {
-	        if (TRACE) fprintf(stderr, "FTP: Login fail: %s", response_text);
-	    	if (control) close_connection(control);
-		HTPopInputBuffer();/*PYW*/
-	        return -1;		/* Bad return */
-	    }
-	    if (TRACE) fprintf(stderr, "FTP: Logged in.\n");
-	}
+                    command = (char*)malloc(20 + strlen(host) + 2 + 1);
+                    if (command == NULL)
+                        outofmem(__FILE__, "get_connection");
+                    sprintf(command, "PASS %s@%s%c%c", user ? user : "WWWuser", host, CR,
+                            LF); /*@@*/
+                }
+                status = response(command);
+                free(command);
+            }
+            if (username)
+                free(username);
+
+            if (status == 3) {
+                char temp[80];
+                sprintf(temp, "ACCT noaccount%c%c", CR, LF);
+                status = response(temp);
+            }
+            if (status != 2) {
+                if (TRACE)
+                    fprintf(stderr, "FTP: Login fail: %s", response_text);
+                if (control)
+                    close_connection(control);
+                HTPopInputBuffer(); /*PYW*/
+                return -1;          /* Bad return */
+            }
+            if (TRACE)
+                fprintf(stderr, "FTP: Logged in.\n");
+        }
 
 /*	Now we inform the server of the port number we will listen on
-*/
+ */
 #ifndef REPEAT_PORT
-	{
-	    int status = response(port_command);
-	    if (status !=2) {
-	    	if (control) close_connection(control);
-		HTPopInputBuffer();/*PYW*/
-	        return -status;		/* Bad return */
-	    }
-	    if (TRACE) fprintf(stderr, "FTP: Port defined.\n");
-	}
+        {
+            int status = response(port_command);
+            if (status != 2) {
+                if (control)
+                    close_connection(control);
+                HTPopInputBuffer(); /*PYW*/
+                return -status;     /* Bad return */
+            }
+            if (TRACE)
+                fprintf(stderr, "FTP: Port defined.\n");
+        }
 #endif
-	HTPopInputBuffer();/*PYW*/
-	return con->socket;			/* Good return */
+        HTPopInputBuffer(); /*PYW*/
+        return con->socket; /* Good return */
     } /* Scope of con */
 }
-
 
 #ifdef LISTEN
 
@@ -519,12 +530,14 @@ PRIVATE int close_master_socket()
     int status;
     FD_CLR(master_socket, &open_sockets);
     status = NETCLOSE(master_socket);
-    if (TRACE) fprintf(stderr, "FTP: Closed master socket %d\n", master_socket);
+    if (TRACE)
+        fprintf(stderr, "FTP: Closed master socket %d\n", master_socket);
     master_socket = -1;
-    if (status<0) return HTInetStatus("close master socket");
-    else return status;
+    if (status < 0)
+        return HTInetStatus("close master socket");
+    else
+        return status;
 }
-
 
 /*	Open a master socket for listening on
 **	-------------------------------------
@@ -546,118 +559,108 @@ PRIVATE int get_listen_socket(void)
 PRIVATE int get_listen_socket()
 #endif
 {
-    struct sockaddr_in soc_address;	/* Binary network address */
+    struct sockaddr_in soc_address; /* Binary network address */
     struct sockaddr_in* sin = &soc_address;
-    int new_socket;			/* Will be master_socket */
-    
-    
-    FD_ZERO(&open_sockets);	/* Clear our record of open sockets */
+    int new_socket; /* Will be master_socket */
+
+    FD_ZERO(&open_sockets); /* Clear our record of open sockets */
     num_sockets = 0;
-    
+
 #ifndef REPEAT_LISTEN
-    if (master_socket>=0) return master_socket;  /* Done already */
+    if (master_socket >= 0)
+        return master_socket; /* Done already */
 #endif
 
-/*  Create internet socket
-*/
+    /*  Create internet socket
+     */
     new_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	
-    if (new_socket<0)
-	return HTInetStatus("socket for master socket");
-    
-    if (TRACE) fprintf(stderr, "FTP: Opened master socket number %d\n", new_socket);
-    
-/*  Search for a free port.
-*/
-    sin->sin_family = AF_INET;	    /* Family = internet, host order  */
+
+    if (new_socket < 0)
+        return HTInetStatus("socket for master socket");
+
+    if (TRACE)
+        fprintf(stderr, "FTP: Opened master socket number %d\n", new_socket);
+
+    /*  Search for a free port.
+     */
+    sin->sin_family = AF_INET;         /* Family = internet, host order  */
     sin->sin_addr.s_addr = INADDR_ANY; /* Any peer address */
 #ifdef POLL_PORTS
     {
         unsigned short old_port_number = port_number;
-	for(port_number=old_port_number+1;;port_number++){ 
-	    int status;
-	    if (port_number > LAST_TCP_PORT)
-		port_number = FIRST_TCP_PORT;
-	    if (port_number == old_port_number) {
-		return HTInetStatus("bind");
-	    }
-	    soc_address.sin_port = htons(port_number);
-	    if ((status=bind(new_socket,
-		    (struct sockaddr*)&soc_address,
-			    /* Cast to generic sockaddr */
-		    sizeof(soc_address))) == 0)
-		break;
-	    if (TRACE) fprintf(stderr, 
-	    	"TCP bind attempt to port %d yields %d, errno=%d\n",
-		port_number, status, errno);
-	} /* for */
+        for (port_number = old_port_number + 1;; port_number++) {
+            int status;
+            if (port_number > LAST_TCP_PORT)
+                port_number = FIRST_TCP_PORT;
+            if (port_number == old_port_number) {
+                return HTInetStatus("bind");
+            }
+            soc_address.sin_port = htons(port_number);
+            if ((status = bind(new_socket, (struct sockaddr*)&soc_address,
+                               /* Cast to generic sockaddr */
+                               sizeof(soc_address))) == 0)
+                break;
+            if (TRACE)
+                fprintf(stderr, "TCP bind attempt to port %d yields %d, errno=%d\n", port_number,
+                        status, errno);
+        } /* for */
     }
 #else
     {
         int status;
-	int address_length = sizeof(soc_address);
-	status = getsockname(control->socket,
-			(struct sockaddr *)&soc_address,
-			 &address_length);
-	if (status<0) return HTInetStatus("getsockname");
-	CTRACE(tfp, "FTP: This host is %s\n",
-	    HTInetString(sin));
-	
-	soc_address.sin_port = 0;	/* Unspecified: please allocate */
-	status=bind(new_socket,
-		(struct sockaddr*)&soc_address,
-			/* Cast to generic sockaddr */
-		sizeof(soc_address));
-	if (status<0) return HTInetStatus("bind");
-	
-	address_length = sizeof(soc_address);
-	status = getsockname(new_socket,
-			(struct sockaddr*)&soc_address,
-			&address_length);
-	if (status<0) return HTInetStatus("getsockname");
-    }
-#endif    
+        int address_length = sizeof(soc_address);
+        status = getsockname(control->socket, (struct sockaddr*)&soc_address, &address_length);
+        if (status < 0)
+            return HTInetStatus("getsockname");
+        CTRACE(tfp, "FTP: This host is %s\n", HTInetString(sin));
 
-    CTRACE(tfp, "FTP: bound to port %d on %s\n",
-    		(int)ntohs(sin->sin_port),
-		HTInetString(sin));
+        soc_address.sin_port = 0; /* Unspecified: please allocate */
+        status = bind(new_socket, (struct sockaddr*)&soc_address,
+                      /* Cast to generic sockaddr */
+                      sizeof(soc_address));
+        if (status < 0)
+            return HTInetStatus("bind");
+
+        address_length = sizeof(soc_address);
+        status = getsockname(new_socket, (struct sockaddr*)&soc_address, &address_length);
+        if (status < 0)
+            return HTInetStatus("getsockname");
+    }
+#endif
+
+    CTRACE(tfp, "FTP: bound to port %d on %s\n", (int)ntohs(sin->sin_port), HTInetString(sin));
 
 #ifdef REPEAT_LISTEN
-    if (master_socket>=0)
-        (void) close_master_socket();
-#endif    
-    
+    if (master_socket >= 0)
+        (void)close_master_socket();
+#endif
+
     master_socket = new_socket;
-    
-/*	Now we must find out who we are to tell the other guy
-*/
-    (void)HTHostName(); 	/* Make address valid - doesn't work*/
-    sprintf(port_command, "PORT %d,%d,%d,%d,%d,%d%c%c",
-		    (int)*((unsigned char *)(&sin->sin_addr)+0),
-		    (int)*((unsigned char *)(&sin->sin_addr)+1),
-		    (int)*((unsigned char *)(&sin->sin_addr)+2),
-		    (int)*((unsigned char *)(&sin->sin_addr)+3),
-		    (int)*((unsigned char *)(&sin->sin_port)+0),
-		    (int)*((unsigned char *)(&sin->sin_port)+1),
-		    CR, LF);
 
+    /*	Now we must find out who we are to tell the other guy
+     */
+    (void)HTHostName(); /* Make address valid - doesn't work*/
+    sprintf(
+        port_command, "PORT %d,%d,%d,%d,%d,%d%c%c", (int)*((unsigned char*)(&sin->sin_addr) + 0),
+        (int)*((unsigned char*)(&sin->sin_addr) + 1), (int)*((unsigned char*)(&sin->sin_addr) + 2),
+        (int)*((unsigned char*)(&sin->sin_addr) + 3), (int)*((unsigned char*)(&sin->sin_port) + 0),
+        (int)*((unsigned char*)(&sin->sin_port) + 1), CR, LF);
 
-/*	Inform TCP that we will accept connections
-*/
-    if (listen(master_socket, 1)<0) {
-	master_socket = -1;
-	return HTInetStatus("listen");
+    /*	Inform TCP that we will accept connections
+     */
+    if (listen(master_socket, 1) < 0) {
+        master_socket = -1;
+        return HTInetStatus("listen");
     }
     CTRACE(tfp, "TCP: Master socket(), bind() and listen() all OK\n");
     FD_SET(master_socket, &open_sockets);
-    if ((master_socket+1) > num_sockets) num_sockets=master_socket+1;
+    if ((master_socket + 1) > num_sockets)
+        num_sockets = master_socket + 1;
 
-    return master_socket;		/* Good */
+    return master_socket; /* Good */
 
 } /* get_listen_socket */
 #endif
-
-
 
 /*	Read a directory into an hypertext object from the data socket
 **	--------------------------------------------------------------
@@ -669,95 +672,87 @@ PRIVATE int get_listen_socket()
 **	returns		HT_LOADED if OK
 **			<0 if error.
 */
-PRIVATE int read_directory
-ARGS4 (
-  HTParentAnchor *,		parent,
-  CONST char *,			address,
-  HTFormat,			format_out,
-  HTStream *,			sink )
-{
+PRIVATE int read_directory ARGS4(HTParentAnchor*, parent, CONST char*, address, HTFormat,
+                                 format_out, HTStream*, sink) {
     HTStructured* target = HTML_new(parent, format_out, sink);
     HTStructuredClass targetClass;
-    char *filename = HTParse(address, "", PARSE_PATH + PARSE_PUNCTUATION);
+    char* filename = HTParse(address, "", PARSE_PATH + PARSE_PUNCTUATION);
 
     char c = 0;
 
-    char *lastpath="";  /* prefix for link, either "" (for root) or xxx  */
-    char *entry="";   /* pointer into lastpath to bit after last slash */
+    char* lastpath = ""; /* prefix for link, either "" (for root) or xxx  */
+    char* entry = "";    /* pointer into lastpath to bit after last slash */
 
     targetClass = *(target->isa);
 
     HTDirTitles(target, (HTAnchor*)parent);
-  
+
     data_read_pointer = data_write_pointer = data_buffer;
 
-    if (*filename == 0)  /* Empty filename : use root */
-        strcpy (lastpath, "/");
-    else 
-    {
-        char * p = strrchr(filename, '/');  /* find lastslash */
+    if (*filename == 0) /* Empty filename : use root */
+        strcpy(lastpath, "/");
+    else {
+        char* p = strrchr(filename, '/'); /* find lastslash */
         lastpath = (char*)malloc(strlen(p));
-	if (!lastpath) outofmem(__FILE__, "read_directory");
-        strcpy(lastpath, p+1);    /* take slash off the beginning */
+        if (!lastpath)
+            outofmem(__FILE__, "read_directory");
+        strcpy(lastpath, p + 1); /* take slash off the beginning */
     }
-    free (filename);
+    free(filename);
 
-   
     {
-        HTBTree * bt = HTBTree_new((HTComparer)strcasecomp);
+        HTBTree* bt = HTBTree_new((HTComparer)strcasecomp);
         char c;
-	HTChunk * chunk = HTChunkCreate(128);
-	START(HTML_DIR);
-	for (c=0; c!=(char)EOF;)   /* For each entry in the directory */
-	{
-	    char * filename = NULL;
-	    char * p = entry;
-	    HTChunkClear(chunk);
-	    /*   read directory entry
-	     */
-	    for(;;) {                 /* Read in one line as filename */
-		c = NEXT_DATA_CHAR;
-		if (c == '\r' || c == LF) {    /* Terminator? */ 
-		    if (chunk->size != 0)   /* got some text */
-		      break;                /* finish getting one entry */
-		  } else if (c == (char)EOF) {
-		    break;             /* End of file */
-		  } else {
-		    HTChunkPutc(chunk, c);
-		  }
+        HTChunk* chunk = HTChunkCreate(128);
+        START(HTML_DIR);
+        for (c = 0; c != (char)EOF;) /* For each entry in the directory */
+        {
+            char* filename = NULL;
+            char* p = entry;
+            HTChunkClear(chunk);
+            /*   read directory entry
+             */
+            for (;;) { /* Read in one line as filename */
+                c = NEXT_DATA_CHAR;
+                if (c == '\r' || c == LF) { /* Terminator? */
+                    if (chunk->size != 0)   /* got some text */
+                        break;              /* finish getting one entry */
+                } else if (c == (char)EOF) {
+                    break; /* End of file */
+                } else {
+                    HTChunkPutc(chunk, c);
+                }
             }
-	    HTChunkTerminate(chunk);
-	    if (c == (char) EOF && chunk->size == 1)  /* 1 means empty: includes terminating 0 */
-	        break;
-            if(TRACE) fprintf(stderr, "HTFTP: file name in %s is %s\n", lastpath, chunk->data);
-	    StrAllocCopy(filename, chunk->data);
-	    HTBTree_add(bt,filename); /* sort filename in the tree bt */
+            HTChunkTerminate(chunk);
+            if (c == (char)EOF && chunk->size == 1) /* 1 means empty: includes terminating 0 */
+                break;
+            if (TRACE)
+                fprintf(stderr, "HTFTP: file name in %s is %s\n", lastpath, chunk->data);
+            StrAllocCopy(filename, chunk->data);
+            HTBTree_add(bt, filename); /* sort filename in the tree bt */
 
-	}  /* next entry */
+        } /* next entry */
         HTChunkFree(chunk);
 
-	/* Run through tree printing out in order 
-	 */
-	{
-	    HTBTElement * ele;
-	    for (ele = HTBTree_next(bt, NULL);
-		 ele != NULL;
-		 ele = HTBTree_next(bt, ele))
-	    {
-	        START(HTML_LI);
-		HTDirEntry(target, lastpath, (char *)HTBTree_object(ele));
-		END(HTML_LI);/*PYW*/
-	    }
-	}
-	END(HTML_DIR);
-	FREE_TARGET;
-	HTBTreeAndObject_free(bt);
+        /* Run through tree printing out in order
+         */
+        {
+            HTBTElement* ele;
+            for (ele = HTBTree_next(bt, NULL); ele != NULL; ele = HTBTree_next(bt, ele)) {
+                START(HTML_LI);
+                HTDirEntry(target, lastpath, (char*)HTBTree_object(ele));
+                END(HTML_LI); /*PYW*/
+            }
+        }
+        END(HTML_DIR);
+        FREE_TARGET;
+        HTBTreeAndObject_free(bt);
     }
 
-    if (lastpath) free(lastpath);
+    if (lastpath)
+        free(lastpath);
     return response(NIL) == 2 ? HT_LOADED : -1;
 }
-
 
 /*	Retrieve File from Server
 **	-------------------------
@@ -768,175 +763,178 @@ ARGS4 (
 **	returns		Socket number for file if good.
 **			<0 if bad.
 */
-PUBLIC int HTFTPLoad
-ARGS4 (
-  CONST char *,			name,
-  HTParentAnchor *,		anchor,
-  HTFormat,			format_out,
-  HTStream *,			sink
-)
-{
+PUBLIC int HTFTPLoad ARGS4(CONST char*, name, HTParentAnchor*, anchor, HTFormat, format_out,
+                           HTStream*, sink) {
     BOOL isDirectory = NO;
     int status;
-    int retry;			/* How many times tried? */
+    int retry; /* How many times tried? */
     HTFormat format;
-    
-    for (retry=0; retry<2; retry++) {	/* For timed out/broken connections */
-    
-	status = get_connection(name);
-	if (status<0) return status;
+
+    for (retry = 0; retry < 2; retry++) { /* For timed out/broken connections */
+
+        status = get_connection(name);
+        if (status < 0)
+            return status;
 
 #ifdef LISTEN
-	status = get_listen_socket();
-	if (status<0) return status;
-    
-#ifdef REPEAT_PORT
-/*	Inform the server of the port number we will listen on
-*/
-	{
-	    status = response(port_command);
-	    if (status !=2) {		/* Could have timed out */
-		if (status<0) continue;		/* try again - net error*/
-		return -status;			/* bad reply */
-	    }
-	    if (TRACE) fprintf(stderr, "FTP: Port defined.\n");
-	}
-#endif
-#else	/* Use PASV */
-/*	Tell the server to be passive
-*/
-	{
-	    char *p;
-	    int reply, h0, h1, h2, h3, p0, p1;	/* Parts of reply */
-	    status = response("PASV%c%c", CR, LF);
-	    if (status !=2) {
-		if (status<0) continue;		/* retry or Bad return */
-		return -status;			/* bad reply */
-	    }
-	    for(p=response_text; *p; p++)
-		if ((*p<'0')||(*p>'9')) *p = ' ';	/* Keep only digits */
-	    status = sscanf(response_text, "%d%d%d%d%d%d%d",
-		    &reply, &h0, &h1, &h2, &h3, &p0, &p1);
-	    if (status<5) {
-		if (TRACE) fprintf(stderr, "FTP: PASV reply has no inet address!\n");
-		return -99;
-	    }
-	    passive_port = (p0<<8) + p1;
-	    if (TRACE) fprintf(stderr, "FTP: Server is listening on port %d\n",
-		    passive_port);
-	}
+        status = get_listen_socket();
+        if (status < 0)
+            return status;
 
-/*	Open connection for data:
-*/
-	{
-	    struct sockaddr_in soc_address;
-	    int status = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	    if (status<0) {
-		(void) HTInetStatus("socket for data socket");
-		return status;
-	    }
-	    data_soc = status;
-	    
-	    soc_address.sin_addr.s_addr = control->addr;
-	    soc_address.sin_port = htons(passive_port);
-	    soc_address.sin_family = AF_INET;	    /* Family, host order  */
-	    if (TRACE) fprintf(stderr,  
-		"FTP: Data remote address is port %d, inet %d.%d.%d.%d\n",
-			(unsigned int)ntohs(soc_address.sin_port),
-			(int)*((unsigned char *)(&soc_address.sin_addr)+0),
-			(int)*((unsigned char *)(&soc_address.sin_addr)+1),
-			(int)*((unsigned char *)(&soc_address.sin_addr)+2),
-			(int)*((unsigned char *)(&soc_address.sin_addr)+3));
-    
-	    status = connect(data_soc, (struct sockaddr*)&soc_address,
-		    sizeof(soc_address));
-	    if (status<0){
-		(void) HTInetStatus("connect for data");
-		NETCLOSE(data_soc);
-		return status;			/* Bad return */
-	    }
-	    
-	    if (TRACE) fprintf(stderr, "FTP data connected, socket %d\n", data_soc);
-	}
+#ifdef REPEAT_PORT
+        /*	Inform the server of the port number we will listen on
+         */
+        {
+            status = response(port_command);
+            if (status != 2) { /* Could have timed out */
+                if (status < 0)
+                    continue;   /* try again - net error*/
+                return -status; /* bad reply */
+            }
+            if (TRACE)
+                fprintf(stderr, "FTP: Port defined.\n");
+        }
+#endif
+#else  /* Use PASV */
+        /*	Tell the server to be passive
+         */
+        {
+            char* p;
+            int reply, h0, h1, h2, h3, p0, p1; /* Parts of reply */
+            status = response("PASV%c%c", CR, LF);
+            if (status != 2) {
+                if (status < 0)
+                    continue;   /* retry or Bad return */
+                return -status; /* bad reply */
+            }
+            for (p = response_text; *p; p++)
+                if ((*p < '0') || (*p > '9'))
+                    *p = ' '; /* Keep only digits */
+            status = sscanf(response_text, "%d%d%d%d%d%d%d", &reply, &h0, &h1, &h2, &h3, &p0, &p1);
+            if (status < 5) {
+                if (TRACE)
+                    fprintf(stderr, "FTP: PASV reply has no inet address!\n");
+                return -99;
+            }
+            passive_port = (p0 << 8) + p1;
+            if (TRACE)
+                fprintf(stderr, "FTP: Server is listening on port %d\n", passive_port);
+        }
+
+        /*	Open connection for data:
+         */
+        {
+            struct sockaddr_in soc_address;
+            int status = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+            if (status < 0) {
+                (void)HTInetStatus("socket for data socket");
+                return status;
+            }
+            data_soc = status;
+
+            soc_address.sin_addr.s_addr = control->addr;
+            soc_address.sin_port = htons(passive_port);
+            soc_address.sin_family = AF_INET; /* Family, host order  */
+            if (TRACE)
+                fprintf(stderr, "FTP: Data remote address is port %d, inet %d.%d.%d.%d\n",
+                        (unsigned int)ntohs(soc_address.sin_port),
+                        (int)*((unsigned char*)(&soc_address.sin_addr) + 0),
+                        (int)*((unsigned char*)(&soc_address.sin_addr) + 1),
+                        (int)*((unsigned char*)(&soc_address.sin_addr) + 2),
+                        (int)*((unsigned char*)(&soc_address.sin_addr) + 3));
+
+            status = connect(data_soc, (struct sockaddr*)&soc_address, sizeof(soc_address));
+            if (status < 0) {
+                (void)HTInetStatus("connect for data");
+                NETCLOSE(data_soc);
+                return status; /* Bad return */
+            }
+
+            if (TRACE)
+                fprintf(stderr, "FTP data connected, socket %d\n", data_soc);
+        }
 #endif /* use PASV */
-	status = 0;
-        break;	/* No more retries */
+        status = 0;
+        break; /* No more retries */
 
     } /* for retries */
-    if (status<0) return status;	/* Failed with this code */
-    
-/*	Ask for the file:
-*/    
+    if (status < 0)
+        return status; /* Failed with this code */
+
+    /*	Ask for the file:
+     */
     {
-        char *filename = HTParse(name, "", PARSE_PATH + PARSE_PUNCTUATION);
-	char command[LINE_LENGTH+1];
-	BOOL binary;
-	HTAtom * encoding;
-	if (!*filename) StrAllocCopy(filename, "/");
-	format = HTFileFormat(filename, &encoding);
-	binary = (encoding != HTAtom_for("8bit")
-		  && encoding != HTAtom_for("7bit"));
+        char* filename = HTParse(name, "", PARSE_PATH + PARSE_PUNCTUATION);
+        char command[LINE_LENGTH + 1];
+        BOOL binary;
+        HTAtom* encoding;
+        if (!*filename)
+            StrAllocCopy(filename, "/");
+        format = HTFileFormat(filename, &encoding);
+        binary = (encoding != HTAtom_for("8bit") && encoding != HTAtom_for("7bit"));
         if (binary != control->binary) {
-	    char * mode = binary ? "I" : "A";
-	    sprintf(command, "TYPE %s%c%c", mode, CR, LF);
-	    status = response(command);
-	    if (status != 2) return -status;
-	    control->binary = binary;
-	}
-	sprintf(command, "RETR %s%c%c", filename, CR, LF);
-	status = response(command);
-	if (status != 1) {  /* Failed : try to CWD to it */
-	  sprintf(command, "CWD %s%c%c", filename, CR, LF);
-	  status = response(command);
-	  if (status == 2) {  /* Successed : let's NAME LIST it */
-	    isDirectory = YES;
-	    sprintf(command, "NLST%c%c", CR, LF);
-	    status = response (command);
-	  }
-	}
-	free(filename);
-	if (status != 1) return -status;		/* Action not started */
+            char* mode = binary ? "I" : "A";
+            sprintf(command, "TYPE %s%c%c", mode, CR, LF);
+            status = response(command);
+            if (status != 2)
+                return -status;
+            control->binary = binary;
+        }
+        sprintf(command, "RETR %s%c%c", filename, CR, LF);
+        status = response(command);
+        if (status != 1) { /* Failed : try to CWD to it */
+            sprintf(command, "CWD %s%c%c", filename, CR, LF);
+            status = response(command);
+            if (status == 2) { /* Successed : let's NAME LIST it */
+                isDirectory = YES;
+                sprintf(command, "NLST%c%c", CR, LF);
+                status = response(command);
+            }
+        }
+        free(filename);
+        if (status != 1)
+            return -status; /* Action not started */
     }
 
 #ifdef LISTEN
-/*	Wait for the connection
-*/
+    /*	Wait for the connection
+     */
     {
-	struct sockaddr_in soc_address;
-        int	soc_addrlen=sizeof(soc_address);
-	status = accept(master_socket,
-			(struct sockaddr *)&soc_address,
-			&soc_addrlen);
-	if (status<0)
-	    return HTInetStatus("accept");
-	CTRACE(tfp, "TCP: Accepted new socket %d\n", status);
-	data_soc = status;
+        struct sockaddr_in soc_address;
+        int soc_addrlen = sizeof(soc_address);
+        status = accept(master_socket, (struct sockaddr*)&soc_address, &soc_addrlen);
+        if (status < 0)
+            return HTInetStatus("accept");
+        CTRACE(tfp, "TCP: Accepted new socket %d\n", status);
+        data_soc = status;
     }
 #else
 /* @@ */
 #endif
     if (isDirectory) {
-	return read_directory (anchor, name, format_out, sink);
-      /* returns HT_LOADED or error */
+        return read_directory(anchor, name, format_out, sink);
+        /* returns HT_LOADED or error */
     } else {
-	HTParseSocket(format, format_out,
-		anchor, data_soc, sink);
-		
-	HTPushInputBuffer();/*PYW*/
-	HTInitInput(control->socket);
-	/* Reset buffering to control connection DD 921208 */
-    
-	status = NETCLOSE(data_soc);
-	if (TRACE) fprintf(stderr, "FTP: Closing data socket %d\n", data_soc);
-	if (status<0) (void) HTInetStatus("close");	/* Comment only */
-	data_soc = -1;	/* invalidate it */
-	
-	status = response(NIL);		/* Pick up final reply */
+        HTParseSocket(format, format_out, anchor, data_soc, sink);
 
-	HTPopInputBuffer();/*PYW*/
+        HTPushInputBuffer(); /*PYW*/
+        HTInitInput(control->socket);
+        /* Reset buffering to control connection DD 921208 */
 
-	if (status!=2) return HTLoadError(sink, 500, response_text);
+        status = NETCLOSE(data_soc);
+        if (TRACE)
+            fprintf(stderr, "FTP: Closing data socket %d\n", data_soc);
+        if (status < 0)
+            (void)HTInetStatus("close"); /* Comment only */
+        data_soc = -1;                   /* invalidate it */
 
-	return HT_LOADED;
-    }       
+        status = response(NIL); /* Pick up final reply */
+
+        HTPopInputBuffer(); /*PYW*/
+
+        if (status != 2)
+            return HTLoadError(sink, 500, response_text);
+
+        return HT_LOADED;
+    }
 } /* open_file_read */

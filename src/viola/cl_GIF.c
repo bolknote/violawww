@@ -12,57 +12,35 @@
  * class	: GIF
  * superClass	: field
  */
-#include "utils.h"
+#include "cl_GIF.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "method.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_GIF.h"
-#include "misc.h"
-#include "method.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
 
-SlotInfo cl_GIF_NCSlots[] = {
-	0
-};
-SlotInfo cl_GIF_NPSlots[] = {
-{
-	STR__baseImage,
-	PTRV,
-	0
-},{
-	STR__expImage,
-	PTRV,
-	0
-},{
-	STR_baseImageWidth,
-	LONG,
-	0
-},{
-	STR_baseImageHeight,
-	LONG,
-	0
-},{
-	0
-}
-};
-SlotInfo cl_GIF_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"GIF"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_GIF_NCSlots[] = {0};
+SlotInfo cl_GIF_NPSlots[] = {{STR__baseImage, PTRV, 0},
+                             {STR__expImage, PTRV, 0},
+                             {STR_baseImageWidth, LONG, 0},
+                             {STR_baseImageHeight, LONG, 0},
+                             {0}};
+SlotInfo cl_GIF_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"GIF"},
+                            {
+                                STR_classScript,
+                                PTRS,
+                                (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -116,226 +94,181 @@ SlotInfo cl_GIF_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	0
-}
-};
-SlotInfo cl_GIF_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_GIF
-},{
-	0
-}
-};
+                            },
+                            {0}};
+SlotInfo cl_GIF_PSlots[] = {{STR__classInfo, CLSI, (long)&class_GIF}, {0}};
 
-SlotInfo *slots_GIF[] = {
-	(SlotInfo*)cl_GIF_NCSlots,
-	(SlotInfo*)cl_GIF_NPSlots,
-	(SlotInfo*)cl_GIF_CSlots,
-	(SlotInfo*)cl_GIF_PSlots
-};
+SlotInfo* slots_GIF[] = {(SlotInfo*)cl_GIF_NCSlots, (SlotInfo*)cl_GIF_NPSlots,
+                         (SlotInfo*)cl_GIF_CSlots, (SlotInfo*)cl_GIF_PSlots};
 
 MethodInfo meths_GIF[] = {
-	/* local methods */
-{
-	STR_config,
-	meth_GIF_config
-},{
-	STR_expose,
-	meth_GIF_expose
-},{
-	STR_initialize,
-	meth_GIF_initialize
-},{
-	STR_render,
-	meth_GIF_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_config, meth_GIF_config},
+    {STR_expose, meth_GIF_expose},
+    {STR_initialize, meth_GIF_initialize},
+    {STR_render, meth_GIF_render},
+    {0}};
 
 ClassInfo class_GIF = {
-	helper_field_get,
-	helper_GIF_set,
-	slots_GIF,		/* class slot information	*/
-	meths_GIF,		/* class methods		*/
-	STR_GIF,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_field_get, helper_GIF_set, slots_GIF, /* class slot information	*/
+    meths_GIF,                                   /* class methods		*/
+    STR_GIF,                                     /* class identifier number	*/
+    &class_field,                                /* super class info		*/
 };
 
-long meth_GIF_config(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	int new_width, new_height;
-	int old_width, old_height;
-	XImage *baseImage;
-	XImage *expImage;
+long meth_GIF_config(VObj* self, Packet* result, int argc, Packet argv[]) {
+    int new_width, new_height;
+    int old_width, old_height;
+    XImage* baseImage;
+    XImage* expImage;
 
-	old_width = GET_width(self);
-	old_height = GET_height(self);
+    old_width = GET_width(self);
+    old_height = GET_height(self);
 
-	if (!meth_field_config(self, result, argc, argv)) return 0;
+    if (!meth_field_config(self, result, argc, argv))
+        return 0;
 
-	new_width = GET_width(self);
-	new_height = GET_height(self);
+    new_width = GET_width(self);
+    new_height = GET_height(self);
 
-	if (!GET__baseImage(self)) {
+    if (!GET__baseImage(self)) {
 
-		Window w;
-		int base_width, base_height;
-		char *fname;
-		 
-		w = GET_window(self);
-		fname = GET_label(self);
-		expImage = (XImage*)GET__expImage(self);
-		baseImage = (XImage*)GET__baseImage(self);
+        Window w;
+        int base_width, base_height;
+        char* fname;
 
-		/* free expImage, baseImage here */
+        w = GET_window(self);
+        fname = GET_label(self);
+        expImage = (XImage*)GET__expImage(self);
+        baseImage = (XImage*)GET__baseImage(self);
 
-		SET__expImage(self, 0);
-		SET__baseImage(self, 0);
-		expImage = NULL;
-		baseImage = NULL;
+        /* free expImage, baseImage here */
 
-		SET__expImage(self, GLGIFLoad(fname, fname, w, 
-				0, 0, new_width, new_height,
-				&base_width, &base_height,
-				&baseImage));
-		SET__baseImage(self, baseImage);
-		SET_baseImageWidth(self, base_width);
-		SET_baseImageHeight(self, base_height);
-	} else {
-		if (old_width != new_width || old_height != new_height) {
-			if (GET__baseImage(self)) {
-				expImage = GLGIFResize(GET_window(self), 
-					new_width, new_height,
-					GET_baseImageWidth(self), 
-					GET_baseImageHeight(self),
-					GET__baseImage(self),
-					GET__expImage(self));
-				SET__expImage(self, expImage);
+        SET__expImage(self, 0);
+        SET__baseImage(self, 0);
+        expImage = NULL;
+        baseImage = NULL;
 
-/*XXX*/				meth_GIF_render(self, result, argc, argv);
-			}
-		}
-	}
-	return 1;
+        SET__expImage(self, GLGIFLoad(fname, fname, w, 0, 0, new_width, new_height, &base_width,
+                                      &base_height, &baseImage));
+        SET__baseImage(self, baseImage);
+        SET_baseImageWidth(self, base_width);
+        SET_baseImageHeight(self, base_height);
+    } else {
+        if (old_width != new_width || old_height != new_height) {
+            if (GET__baseImage(self)) {
+                expImage = GLGIFResize(GET_window(self), new_width, new_height,
+                                       GET_baseImageWidth(self), GET_baseImageHeight(self),
+                                       GET__baseImage(self), GET__expImage(self));
+                SET__expImage(self, expImage);
+
+                /*XXX*/ meth_GIF_render(self, result, argc, argv);
+            }
+        }
+    }
+    return 1;
 }
 
-long meth_GIF_expose(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return meth_GIF_render(self, result, argc, argv);
+long meth_GIF_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return meth_GIF_render(self, result, argc, argv);
 }
 
-long meth_GIF_initialize(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	meth_field_initialize(self, result, argc, argv);
-	return 1;
+long meth_GIF_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
+    meth_field_initialize(self, result, argc, argv);
+    return 1;
 }
 
-long meth_GIF_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
+long meth_GIF_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
 
-	result->type = PKT_INT;
-	result->canFree = 0;
-	if (!GET_visible(self)) {
-		result->info.i = 0;
-		return 0;
-	}
-	GLPrepareObjColor(self);
-	if (!w) {
-		if (!(w = GLOpenWindow(self, GET_x(self), GET_y(self),
-			 GET_width(self), GET_height(self), 0))) {
-			return 0;
-		}
-		if (w) {
-			VObjList *olist = GET__children(self);
-			for (; olist; olist = olist->next) {
-				if (olist->o)
-					if (GET_visible(olist->o)) {
-						callMeth(olist->o, result, 
-						       argc, argv, STR_render);
-					}
-			}
-		}
-	}
-	if (!w) return 0;
-	if (GET__expImage(self)) {
-		GLGIFDraw(w, GET__expImage(self),
-			  0, 0,
-			  GET_width(self), GET_height(self));
-		GLDrawBorder(w, 0, 0, 
-			GET_width(self)-1, GET_height(self)-1,
-			GET_border(self), 1);
-	}
-	return 1;
+    result->type = PKT_INT;
+    result->canFree = 0;
+    if (!GET_visible(self)) {
+        result->info.i = 0;
+        return 0;
+    }
+    GLPrepareObjColor(self);
+    if (!w) {
+        if (!(w = GLOpenWindow(self, GET_x(self), GET_y(self), GET_width(self), GET_height(self),
+                               0))) {
+            return 0;
+        }
+        if (w) {
+            VObjList* olist = GET__children(self);
+            for (; olist; olist = olist->next) {
+                if (olist->o)
+                    if (GET_visible(olist->o)) {
+                        callMeth(olist->o, result, argc, argv, STR_render);
+                    }
+            }
+        }
+    }
+    if (!w)
+        return 0;
+    if (GET__expImage(self)) {
+        GLGIFDraw(w, GET__expImage(self), 0, 0, GET_width(self), GET_height(self));
+        GLDrawBorder(w, 0, 0, GET_width(self) - 1, GET_height(self) - 1, GET_border(self), 1);
+    }
+    return 1;
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_GIF_set(VObj *self, Packet *result, int argc, Packet argv[], int labelID)
-{
-	switch (labelID) {
-	case STR_label: {
-		Window w;
-		int x, y, width, height;
-		int base_width, base_height;
-		char *fname, *id;
-		XImage *baseImage;
-		XImage *expImage;
-		 
-		w = GET_window(self);
-		x = GET_x(self);
-		y = GET_y(self);
+long helper_GIF_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+    switch (labelID) {
+    case STR_label: {
+        Window w;
+        int x, y, width, height;
+        int base_width, base_height;
+        char *fname, *id;
+        XImage* baseImage;
+        XImage* expImage;
 
-		fname = SaveString(PkInfo2Str(&argv[1]));
-		if (GET_label(self)) free(GET_label(self));
-		SET_label(self, fname);
+        w = GET_window(self);
+        x = GET_x(self);
+        y = GET_y(self);
 
-	/*	id = SaveString(PkInfo2Str(&argv[2]));*/
-		id = SaveString(fname);
-/*XXXXX KLUDGE!!!! for until set() takes multiple arguments */
-		id = fname; 
+        fname = SaveString(PkInfo2Str(&argv[1]));
+        if (GET_label(self))
+            free(GET_label(self));
+        SET_label(self, fname);
 
-		expImage = (XImage*)GET__expImage(self);
-		baseImage = (XImage*)GET__baseImage(self);
+        /*	id = SaveString(PkInfo2Str(&argv[2]));*/
+        id = SaveString(fname);
+        /*XXXXX KLUDGE!!!! for until set() takes multiple arguments */
+        id = fname;
 
-		/* free expImage, baseImage here */
+        expImage = (XImage*)GET__expImage(self);
+        baseImage = (XImage*)GET__baseImage(self);
 
-		SET__expImage(self, 0);
-		SET__baseImage(self, 0);
-		expImage = NULL;
-		baseImage = NULL;
+        /* free expImage, baseImage here */
 
-		width = GET_width(self);
-		height = GET_height(self);
+        SET__expImage(self, 0);
+        SET__baseImage(self, 0);
+        expImage = NULL;
+        baseImage = NULL;
 
-		SET__expImage(self, GLGIFLoad(id, fname, 
-					w, x, y, width, height,
-					&base_width, &base_height,
-					&baseImage));
-		SET__baseImage(self, baseImage);
-		SET_baseImageWidth(self, base_width);
-		SET_baseImageHeight(self, base_height);
+        width = GET_width(self);
+        height = GET_height(self);
 
-		/* quite icky */
-		if (width == 0 || width == 1) SET_width(self, base_width);
-		if (height == 0 || height == 1) SET_height(self, base_height);
+        SET__expImage(self, GLGIFLoad(id, fname, w, x, y, width, height, &base_width, &base_height,
+                                      &baseImage));
+        SET__baseImage(self, baseImage);
+        SET_baseImageWidth(self, base_width);
+        SET_baseImageHeight(self, base_height);
 
-		return 1;
-		}
-	}      
-	return helper_field_set(self, result, argc, argv, labelID);
+        /* quite icky */
+        if (width == 0 || width == 1)
+            SET_width(self, base_width);
+        if (height == 0 || height == 1)
+            SET_height(self, base_height);
+
+        return 1;
+    }
+    }
+    return helper_field_set(self, result, argc, argv, labelID);
 }
-long meth_GIF_set(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	return helper_GIF_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+long meth_GIF_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return helper_GIF_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
-
-
-
-

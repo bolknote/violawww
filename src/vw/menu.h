@@ -19,13 +19,12 @@
 #ifndef _MENU_H_
 #define _MENU_H_
 
-
-#include <Xm/RowColumn.h>
-#include <Xm/MainW.h>
 #include <Xm/CascadeB.h>
 #include <Xm/CascadeBG.h>
+#include <Xm/MainW.h>
 #include <Xm/PushB.h>
 #include <Xm/PushBG.h>
+#include <Xm/RowColumn.h>
 #include <Xm/SeparatoG.h>
 
 Widget buildMenus();
@@ -33,29 +32,25 @@ Widget buildPulldownMenu();
 void genericCallback();
 void quitCallback();
 
-
 typedef struct menuItemStruct {
-    char *label;
-    WidgetClass *class;
+    char* label;
+    WidgetClass* class;
     char mnemonic;
-    char *accelerator;
-    char *accelText;
+    char* accelerator;
+    char* accelText;
     void (*callback)();
     XtPointer clientData;
-    char *helpText;
+    char* helpText;
     Boolean sensitive;
-    struct menuItemStruct *subMenu;
+    struct menuItemStruct* subMenu;
 } MenuItem;
 
-
 typedef struct menuStruct {
-    char *title;
+    char* title;
     char mnemonic;
-    MenuItem *menuItems;
+    MenuItem* menuItems;
 } Menu;
 
-
 #define BOOKMARK_MENU_NAME "Marked Documents"
-
 
 #endif _MENU_H_

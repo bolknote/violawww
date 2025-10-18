@@ -1,6 +1,6 @@
 /*                                  Network News Transfer protocol module for the WWW library
                                           HTNEWS
-                                             
+
  */
 /* History:
 **      26 Sep 90       Written TBL in Objective-C
@@ -15,12 +15,11 @@
 
 GLOBALREF HTProtocol HTNews;
 
-extern void HTSetNewsHost PARAMS((CONST char *value));
-extern CONST char * HTGetNewsHost NOPARAMS;
-extern char * HTNewsHost;
+extern void HTSetNewsHost PARAMS((CONST char* value));
+extern CONST char* HTGetNewsHost NOPARAMS;
+extern char* HTNewsHost;
 
 #endif /* HTNEWS_H */
-
 
 /*
 

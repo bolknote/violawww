@@ -1,22 +1,22 @@
 /*                                   PROTECTION SETUP FILE
-                                             
+
  */
 
 #ifndef HTAAPROT_H
 #define HTAAPROT_H
 
-#include "HTUtils.h"
-#include "HTGroup.h"
 #include "HTAssoc.h"
+#include "HTGroup.h"
+#include "HTUtils.h"
 
 #ifdef SHORT_NAMES
-#define HTAAgUid        HTAA_getUid
-#define HTAAgGid        HTAA_getGid
-#define HTAAgDPr        HTAA_setDefaultProtection
-#define HTAAsCPr        HTAA_setCurrentProtection
-#define HTAAgCPr        HTAA_getCurrentProtection
-#define HTAAgDPr        HTAA_getDefaultProtection
-#define HTAAclPr        HTAA_clearProtections
+#define HTAAgUid HTAA_getUid
+#define HTAAgGid HTAA_getGid
+#define HTAAgDPr HTAA_setDefaultProtection
+#define HTAAsCPr HTAA_setCurrentProtection
+#define HTAAgCPr HTAA_getCurrentProtection
+#define HTAAgDPr HTAA_getDefaultProtection
+#define HTAAclPr HTAA_clearProtections
 #endif /*SHORT_NAMES*/
 /*
 
@@ -25,29 +25,29 @@ Server's Representation of Document (Tree) Protections
  */
 
 typedef struct {
-    char *        template;     /* Template for this protection         */
-    char *        filename;     /* Current document file                */
-    char *        uid_name;     /* Effective uid (name of it)           */
-    char *        gid_name;     /* Effective gid (name of it)           */
-    GroupDef *    mask_group;   /* Allowed users and IP addresses       */
-    HTList *      valid_schemes;/* Valid authentication schemes         */
-    HTAssocList * values;       /* Association list for scheme specific */
-                                /* parameters.                          */
+    char* template;        /* Template for this protection         */
+    char* filename;        /* Current document file                */
+    char* uid_name;        /* Effective uid (name of it)           */
+    char* gid_name;        /* Effective gid (name of it)           */
+    GroupDef* mask_group;  /* Allowed users and IP addresses       */
+    HTList* valid_schemes; /* Valid authentication schemes         */
+    HTAssocList* values;   /* Association list for scheme specific */
+                           /* parameters.                          */
 } HTAAProt;
 /*
 
 Callbacks for rule system
 
    The following three functioncs are called by the rule system:
-   
+
       HTAA_clearProtections() when starting to translate a filename
-      
+
       HTAA_setDefaultProtection() when "defprot" rule is matched
-      
+
       HTAA_setCurrentProtection() when "protect" rule is matched
-      
+
    Protection setup files are cached by these functions.
-   
+
  */
 
 /* PUBLIC                                       HTAA_setDefaultProtection()
@@ -69,11 +69,8 @@ Callbacks for rule system
 **      returns         nothing.
 **                      Sets the module-wide variable default_prot.
 */
-PUBLIC void HTAA_setDefaultProtection PARAMS((CONST char *      cur_docname,
-                                              CONST char *      prot_filename,
-                                              CONST char *      eff_ids));
-
-
+PUBLIC void HTAA_setDefaultProtection PARAMS((CONST char* cur_docname, CONST char* prot_filename,
+                                              CONST char* eff_ids));
 
 /* PUBLIC                                       HTAA_setCurrentProtection()
 **              SET THE CURRENT PROTECTION MODE
@@ -94,10 +91,8 @@ PUBLIC void HTAA_setDefaultProtection PARAMS((CONST char *      cur_docname,
 **      returns         nothing.
 **                      Sets the module-wide variable current_prot.
 */
-PUBLIC void HTAA_setCurrentProtection PARAMS((CONST char *      cur_docname,
-                                              CONST char *      prot_filename,
-                                              CONST char *      eff_ids));
-
+PUBLIC void HTAA_setCurrentProtection PARAMS((CONST char* cur_docname, CONST char* prot_filename,
+                                              CONST char* eff_ids));
 
 /* SERVER INTERNAL                                      HTAA_clearProtections()
 **              CLEAR DOCUMENT PROTECTION MODE
@@ -117,11 +112,11 @@ Getting Protection Settings
 
       HTAA_getCurrentProtection() returns the current protection mode (if there was a
       "protect" rule). NULL, if no "protect" rule has been matched.
-      
+
       HTAA_getDefaultProtection() sets the current protection mode to what it was set to
       by "defprot" rule and also returns it (therefore after this call also
       HTAA_getCurrentProtection() returns the same structure.
-      
+
  */
 
 /* PUBLIC                                       HTAA_getCurrentProtection()
@@ -138,9 +133,7 @@ Getting Protection Settings
 **              protection setup of the HTTranslate()'d file.
 **              This must not be free()'d.
 */
-PUBLIC HTAAProt *HTAA_getCurrentProtection NOPARAMS;
-
-
+PUBLIC HTAAProt* HTAA_getCurrentProtection NOPARAMS;
 
 /* PUBLIC                                       HTAA_getDefaultProtection()
 **              GET DEFAULT PROTECTION SETUP STRUCTURE
@@ -160,7 +153,7 @@ PUBLIC HTAAProt *HTAA_getCurrentProtection NOPARAMS;
 **              protection settings).
 **              This must not be free()'d.
 */
-PUBLIC HTAAProt *HTAA_getDefaultProtection NOPARAMS;
+PUBLIC HTAAProt* HTAA_getDefaultProtection NOPARAMS;
 /*
 
 Get User and Group IDs to Which Set to
@@ -179,7 +172,6 @@ Get User and Group IDs to Which Set to
 */
 PUBLIC int HTAA_getUid NOPARAMS;
 
-
 /* PUBLIC                                                       HTAA_getGid()
 **              GET THE GROUP ID TO CHANGE THE PROCESS GID TO
 ** ON ENTRY:
@@ -194,7 +186,7 @@ PUBLIC int HTAA_getGid NOPARAMS;
 /*
 
    For VMS:
-   
+
  */
 
 #ifdef VMS
@@ -207,7 +199,7 @@ PUBLIC int HTAA_getGid NOPARAMS;
 **      returns the user name
 **              Default is "" (nobody).
 */
-PUBLIC char * HTAA_getUidName NOPARAMS;
+PUBLIC char* HTAA_getUidName NOPARAMS;
 
 /* PUBLIC                                                       HTAA_getFileName
 **              GET THE FILENAME (VMS ONLY)
@@ -217,7 +209,7 @@ PUBLIC char * HTAA_getUidName NOPARAMS;
 ** ON EXIT:
 **      returns the filename
 */
-PUBLIC char * HTAA_getFileName NOPARAMS;
+PUBLIC char* HTAA_getFileName NOPARAMS;
 #endif /* VMS */
 /*
 

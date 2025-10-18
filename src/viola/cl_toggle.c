@@ -12,49 +12,32 @@
  * class	: toggle
  * superClass	: XBM
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_toggle.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_toggle.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_toggle_NCSlots[] = {
-	{0}
-};
+SlotInfo cl_toggle_NCSlots[] = {{0}};
 SlotInfo cl_toggle_NPSlots[] = {
-{
-	STR_toggleState,
-	LONG | SLOT_RW,
-	0
-},{
-	STR_toggleStyle,
-	PTRS | SLOT_RW,
-	(long)"check"
-},{
-	{0}
-}
-};
-SlotInfo cl_toggle_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"toggle"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+    {STR_toggleState, LONG | SLOT_RW, 0}, {STR_toggleStyle, PTRS | SLOT_RW, (long)"check"}, {{0}}};
+SlotInfo cl_toggle_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"toggle"},
+                               {
+                                   STR_classScript,
+                                   PTRS,
+                                   (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -128,176 +111,162 @@ SlotInfo cl_toggle_CSlots[] = {
 	break;\n\
 	}\n\
 ",
-},{
-	{0}
-}
-};
-SlotInfo cl_toggle_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_toggle
-},{
-	{0}
-}
-};
+                               },
+                               {{0}}};
+SlotInfo cl_toggle_PSlots[] = {{STR__classInfo, CLSI, (long)&class_toggle}, {{0}}};
 
-SlotInfo *slots_toggle[] = {
-	(SlotInfo*)cl_toggle_NCSlots,
-	(SlotInfo*)cl_toggle_NPSlots,
-	(SlotInfo*)cl_toggle_CSlots,
-	(SlotInfo*)cl_toggle_PSlots
-};
+SlotInfo* slots_toggle[] = {(SlotInfo*)cl_toggle_NCSlots, (SlotInfo*)cl_toggle_NPSlots,
+                            (SlotInfo*)cl_toggle_CSlots, (SlotInfo*)cl_toggle_PSlots};
 
 MethodInfo meths_toggle[] = {
-	/* local methods */
-{
-	STR_geta,
-	meth_toggle_get,
-},{
-	STR_render,
-	meth_toggle_render
-},{
-	STR_seta,
-	meth_toggle_set
-},{
-	STR_toggle,
-	meth_toggle_toggle
-},{
-	{0}
-}
-};
+    /* local methods */
+    {
+        STR_geta,
+        meth_toggle_get,
+    },
+    {STR_render, meth_toggle_render},
+    {STR_seta, meth_toggle_set},
+    {STR_toggle, meth_toggle_toggle},
+    {{0}}};
 
 ClassInfo class_toggle = {
-	helper_toggle_get,
-	helper_toggle_set,
-	slots_toggle,		/* class slot information	*/
-	meths_toggle,		/* class methods		*/
-	STR_toggle,		/* class identifier number	*/
-	&class_XBM,		/* super class info		*/
+    helper_toggle_get, helper_toggle_set, slots_toggle, /* class slot information	*/
+    meths_toggle,                                       /* class methods		*/
+    STR_toggle,                                         /* class identifier number	*/
+    &class_XBM,                                         /* super class info		*/
 };
 
 long helper_toggle_get(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_toggleState:
-		result->info.i = GET_toggleState(self);
-		result->type = PKT_INT;
-		result->canFree = 0;
-		return 1;
+    switch (labelID) {
+    case STR_toggleState:
+        result->info.i = GET_toggleState(self);
+        result->type = PKT_INT;
+        result->canFree = 0;
+        return 1;
 
-	case STR_toggleStyle:
-		result->info.s = SaveString(GET_toggleStyle(self));
-		result->type = PKT_STR;
-		result->canFree = PK_CANFREE_STR;
-		return 1;
-	}
-	return helper_XBM_get(self, result, argc, argv, labelID);
+    case STR_toggleStyle:
+        result->info.s = SaveString(GET_toggleStyle(self));
+        result->type = PKT_STR;
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+    return helper_XBM_get(self, result, argc, argv, labelID);
 }
 
 long meth_toggle_get(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_toggle_get(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_toggle_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
 long helper_toggle_set(self, result, argc, argv, labelID)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
-	int labelID;
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
+int labelID;
 {
-	switch (labelID) {
-	case STR_toggleState:
-		SET_toggleState(self, argv[1].info.i);
-		result->type = PKT_INT;
-		result->canFree = 0;
-		if (GET_visible(self)) 
-			meth_toggle_render(self, result, argc, argv);
-		return 1;
+    switch (labelID) {
+    case STR_toggleState:
+        SET_toggleState(self, argv[1].info.i);
+        result->type = PKT_INT;
+        result->canFree = 0;
+        if (GET_visible(self))
+            meth_toggle_render(self, result, argc, argv);
+        return 1;
 
-	case STR_toggleStyle:
-		result->info.s = SaveString(argv[1].info.s);
-		SET_toggleStyle(self, result->info.s);
-		result->type = PKT_STR;
-		result->canFree = 0;
-		if (GET_visible(self))
-			meth_toggle_render(self, result, argc, argv);
-		return 1;
-	}
-	return helper_XBM_set(self, result, argc, argv, labelID);
+    case STR_toggleStyle:
+        result->info.s = SaveString(argv[1].info.s);
+        SET_toggleStyle(self, result->info.s);
+        result->type = PKT_STR;
+        result->canFree = 0;
+        if (GET_visible(self))
+            meth_toggle_render(self, result, argc, argv);
+        return 1;
+    }
+    return helper_XBM_set(self, result, argc, argv, labelID);
 }
 long meth_toggle_set(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	return helper_toggle_set(self, result, argc, argv, 
-				getIdent(PkInfo2Str(argv)));
+    return helper_toggle_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
 long meth_toggle_render(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	Window w = GET_window(self);
-	Pixmap pixmap;
+    Window w = GET_window(self);
+    Pixmap pixmap;
 
-	if (!meth_field_render(self, result, argc, argv)) return 0;
+    if (!meth_field_render(self, result, argc, argv))
+        return 0;
 
-	if (!(w = GET_window(self))) return 0;
+    if (!(w = GET_window(self)))
+        return 0;
 
-	/* button, disc, check (default) */
-	if (GET_toggleState(self)) {
-		switch (*GET_toggleStyle(self)) {
-		case 'd': 		pixmap = togglePixmap_disc1;	break;
-		case 'b':		pixmap = togglePixmap_button1;	break;
-		case 'c': default:	pixmap = togglePixmap_check1;	break;
-		}
-	} else {
-		switch (*GET_toggleStyle(self)) {
-		case 'd': 		pixmap = togglePixmap_disc0;	break;
-		case 'b':		pixmap = togglePixmap_button0;	break;
-		case 'c': default:	pixmap = togglePixmap_check0;	break;
-		}
-	}
-	GLDisplayXBM(w, 0, 0, GET_width(self), GET_height(self), pixmap); 
-	GLDrawBorder(w, 0, 0, 
-		     GET_width(self)-1, GET_height(self)-1,
-		     GET_border(self), 1);
-	return 1;
+    /* button, disc, check (default) */
+    if (GET_toggleState(self)) {
+        switch (*GET_toggleStyle(self)) {
+        case 'd':
+            pixmap = togglePixmap_disc1;
+            break;
+        case 'b':
+            pixmap = togglePixmap_button1;
+            break;
+        case 'c':
+        default:
+            pixmap = togglePixmap_check1;
+            break;
+        }
+    } else {
+        switch (*GET_toggleStyle(self)) {
+        case 'd':
+            pixmap = togglePixmap_disc0;
+            break;
+        case 'b':
+            pixmap = togglePixmap_button0;
+            break;
+        case 'c':
+        default:
+            pixmap = togglePixmap_check0;
+            break;
+        }
+    }
+    GLDisplayXBM(w, 0, 0, GET_width(self), GET_height(self), pixmap);
+    GLDrawBorder(w, 0, 0, GET_width(self) - 1, GET_height(self) - 1, GET_border(self), 1);
+    return 1;
 }
 
 long meth_toggle_toggle(self, result, argc, argv)
-	VObj *self;
-	Packet *result;
-	int argc;
-	Packet argv[];
+VObj* self;
+Packet* result;
+int argc;
+Packet argv[];
 {
-	if (GET_toggleState(self))
-		SET_toggleState(self, 0);
-	else 
-		SET_toggleState(self, 1);
+    if (GET_toggleState(self))
+        SET_toggleState(self, 0);
+    else
+        SET_toggleState(self, 1);
 
-	meth_toggle_render(self, result, argc, argv);
+    meth_toggle_render(self, result, argc, argv);
 
-	return 1;
+    return 1;
 }
-
-

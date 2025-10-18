@@ -11,22 +11,22 @@
  * be charged with express written permission of the copyright holder.
  * This software is provided ``as is'' without express or implied warranty.
  */
-#include "utils.h"
-#include "mystrings.h"
-#include "vlist.h"
 #include "attr.h"
+#include "mystrings.h"
+#include "utils.h"
+#include "vlist.h"
 
-Attr *makeAttr(id, val)
-	long id;
-	long val;
+Attr* makeAttr(id, val)
+long id;
+long val;
 {
-	Attr *attr = (Attr*)malloc(sizeof(struct Attr));
-	if (attr) {
-		attr->id = id;
-		attr->val = val;
-		attr->next = NULL;
-		return attr;
-	}
-	fprintf(stderr, "malloc() failed\n");
-	return NULL;
+    Attr* attr = (Attr*)malloc(sizeof(struct Attr));
+    if (attr) {
+        attr->id = id;
+        attr->val = val;
+        attr->next = NULL;
+        return attr;
+    }
+    fprintf(stderr, "malloc() failed\n");
+    return NULL;
 }

@@ -12,41 +12,31 @@
  * class	: glass
  * superClass	: field
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_glass.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_glass.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_glass_NCSlots[] = {
-	0
-};
-SlotInfo cl_glass_NPSlots[] = {
-{
-	0
-}
-};
-SlotInfo cl_glass_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"glass"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_glass_NCSlots[] = {0};
+SlotInfo cl_glass_NPSlots[] = {{0}};
+SlotInfo cl_glass_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"glass"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -84,45 +74,21 @@ SlotInfo cl_glass_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
+                              },
+                              {0}};
 SlotInfo cl_glass_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_glass
-},{
-	STR_border,
-	LONG | SLOT_RW,
-	BORDER_NONE
-},{
-	0
-}
-};
+    {STR__classInfo, CLSI, (long)&class_glass}, {STR_border, LONG | SLOT_RW, BORDER_NONE}, {0}};
 
-SlotInfo *slots_glass[] = {
-	(SlotInfo*)cl_glass_NCSlots,
-	(SlotInfo*)cl_glass_NPSlots,
-	(SlotInfo*)cl_glass_CSlots,
-	(SlotInfo*)cl_glass_PSlots
-};
+SlotInfo* slots_glass[] = {(SlotInfo*)cl_glass_NCSlots, (SlotInfo*)cl_glass_NPSlots,
+                           (SlotInfo*)cl_glass_CSlots, (SlotInfo*)cl_glass_PSlots};
 
 MethodInfo meths_glass[] = {
-	/* local methods */
-{
-	0
-}
-};
+    /* local methods */
+    {0}};
 
 ClassInfo class_glass = {
-	helper_field_get,
-	helper_field_set,
-	slots_glass,		/* class slot information	*/
-	meths_glass,		/* class methods		*/
-	STR_glass,		/* class identifier number	*/
-	&class_field,		/* super class info		*/
+    helper_field_get, helper_field_set, slots_glass, /* class slot information	*/
+    meths_glass,                                     /* class methods		*/
+    STR_glass,                                       /* class identifier number	*/
+    &class_field,                                    /* super class info		*/
 };
-
-

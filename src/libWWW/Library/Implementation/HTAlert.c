@@ -9,24 +9,22 @@
 **	   Sep 93 Corrected 3 bugs in HTConfirm() :-( AL
 */
 
-
 #include "HTAlert.h"
 
-#include "tcp.h"		/* for TOUPPER */
-#include <ctype.h> 		/* for toupper - should be in tcp.h */
+#include "tcp.h"   /* for TOUPPER */
+#include <ctype.h> /* for toupper - should be in tcp.h */
 
 /* Forward declarations */
 extern void user_alert();
 extern void user_message();
 extern int user_message_confirm();
 extern BOOL user_confirmation();
-extern char * user_prompt();
-extern char * user_prompt_default();
-extern char * user_prompt_password();
+extern char* user_prompt();
+extern char* user_prompt_default();
+extern char* user_prompt_password();
 extern void user_prompt_username_and_password();
 
-PUBLIC void HTAlert ARGS1(CONST char *, Msg)
-{
+PUBLIC void HTAlert ARGS1(CONST char*, Msg) {
 #ifdef NeXTStep
     NXRunAlertPanel(NULL, "%s", NULL, NULL, NULL, Msg);
 #else
@@ -35,83 +33,78 @@ PUBLIC void HTAlert ARGS1(CONST char *, Msg)
 #endif
 }
 
-
-PUBLIC void HTProgress ARGS1(CONST char *, Msg)
-{
+PUBLIC void HTProgress ARGS1(CONST char*, Msg) {
     user_message(Msg);
-/*  fprintf(stderr, "   %s ...\n", Msg);
-*/
+    /*  fprintf(stderr, "   %s ...\n", Msg);
+     */
 }
 
-
-PUBLIC BOOL HTConfirm ARGS1(CONST char *, Msg)
-{
-    if (user_message_confirm(Msg)) return YES;
-    else return NO;
+PUBLIC BOOL HTConfirm ARGS1(CONST char*, Msg) {
+    if (user_message_confirm(Msg))
+        return YES;
+    else
+        return NO;
 
 #ifdef TTYMODE
-  char Reply[4];	/* One more for terminating NULL -- AL */
-  char *URep;
+    char Reply[4]; /* One more for terminating NULL -- AL */
+    char* URep;
 
-  fprintf(stderr, "WWW: %s (y/n) ", Msg);
-                       /* (y/n) came twice -- AL */
+    fprintf(stderr, "WWW: %s (y/n) ", Msg);
+    /* (y/n) came twice -- AL */
 
-  fgets(Reply, 4, stdin); /* get reply, max 3 characters */
-  URep=Reply;
-  while (*URep) {
-    if (*URep == '\n') {
-	*URep = (char)0;	/* Overwrite newline */
-	break;
-    }
-    *URep=TOUPPER(*URep);
-    URep++;	/* This was previously embedded in the TOUPPER */
+    fgets(Reply, 4, stdin); /* get reply, max 3 characters */
+    URep = Reply;
+    while (*URep) {
+        if (*URep == '\n') {
+            *URep = (char)0; /* Overwrite newline */
+            break;
+        }
+        *URep = TOUPPER(*URep);
+        URep++; /* This was previously embedded in the TOUPPER */
                 /* call an it became evaluated twice because   */
                 /* TOUPPER is a macro -- AL */
-  }
+    }
 
-  if ((strcmp(Reply,"YES")==0) || (strcmp(Reply,"Y")==0))
-    return(YES);
-  else
-    return(NO);
+    if ((strcmp(Reply, "YES") == 0) || (strcmp(Reply, "Y") == 0))
+        return (YES);
+    else
+        return (NO);
 #endif
 }
 
 /*	Prompt for answer and get text back
-*/
-PUBLIC char * HTPrompt ARGS2(CONST char *, Msg, CONST char *, deflt)
-{
+ */
+PUBLIC char* HTPrompt ARGS2(CONST char*, Msg, CONST char*, deflt) {
     return user_prompt_default(Msg, deflt);
 
 #ifdef TTYMODE
     char Tmp[200];
-    char * rep = 0;
+    char* rep = 0;
     fprintf(stderr, "WWW: %s", Msg);
-    if (deflt) fprintf(stderr, " (RETURN for [%s]) ", deflt);
-    
+    if (deflt)
+        fprintf(stderr, " (RETURN for [%s]) ", deflt);
+
     fgets(Tmp, 200, stdin);
-    Tmp[strlen(Tmp)-1] = (char)0;	/* Overwrite newline */
-   
+    Tmp[strlen(Tmp) - 1] = (char)0; /* Overwrite newline */
+
     StrAllocCopy(rep, *Tmp ? Tmp : deflt);
     return rep;
 #endif
 }
 
-
 /*	Prompt for password without echoing the reply
-*/
-PUBLIC char * HTPromptPassword ARGS1(CONST char *, Msg)
-{
+ */
+PUBLIC char* HTPromptPassword ARGS1(CONST char*, Msg) {
     return user_prompt_password(Msg);
 
 #ifdef TTYMODE
-    char *result = NULL;
-    char *pw = (char*)getpass(Msg ? Msg : "Password: ");
+    char* result = NULL;
+    char* pw = (char*)getpass(Msg ? Msg : "Password: ");
 
     StrAllocCopy(result, pw);
     return result;
 #endif
 }
-
 
 /*	Prompt both username and password	HTPromptUsernameAndPassword()
 **	---------------------------------
@@ -130,19 +123,16 @@ PUBLIC char * HTPromptPassword ARGS1(CONST char *, Msg)
 **	*username and *password point to newly allocated
 **	strings -- original strings pointed to by them
 **	are NOT freed.
-**	
+**
 */
-PUBLIC void HTPromptUsernameAndPassword ARGS3(CONST char *,	Msg,
-					      char **,		username,
-					      char **,		password)
-{
+PUBLIC void HTPromptUsernameAndPassword ARGS3(CONST char*, Msg, char**, username, char**,
+                                              password) {
     user_prompt_username_and_password(Msg, username, password);
 
 #ifdef TTYMODE
     if (Msg)
-	fprintf(stderr, "WWW: %s\n", Msg);
+        fprintf(stderr, "WWW: %s\n", Msg);
     *username = HTPrompt("Username: ", *username);
     *password = HTPromptPassword("Password: ");
 #endif
 }
-

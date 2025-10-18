@@ -18,19 +18,15 @@
 #ifndef _FILE_IO_H_
 #define _FILE_IO_H_
 
-
 #include <Xm/Xm.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "vw.h"
-
 
 #define CANCELED 0
 #define SAVED 1
 
-
 int vwSaveAs();
-
 
 #endif _FILE_IO_H_

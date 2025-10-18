@@ -2,6 +2,9 @@
  * class        : cosmic
  * superClass	: NULL
  */
+#include "class.h"
+#include "obj.h"
+#include "packet.h"
 
 extern ClassInfo class_cosmic;
 long helper_cosmic_get();

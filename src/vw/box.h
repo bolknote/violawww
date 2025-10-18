@@ -18,19 +18,16 @@
 #ifndef _BOX_H_
 #define _BOX_H_
 
-
 typedef struct LLNode {
-    void *data;
+    void* data;
     char dataIsCopy;
-    struct LLNode *next;
+    struct LLNode* next;
 } LLNode, Box;
-
 
 #ifdef _NOBOOLEAN_
 typedef long Boolean;
-enum {FALSE=0, TRUE};
+enum { FALSE = 0, TRUE };
 #endif _NOBOOLEAN_
-
 
 /*
  * CompareFunction(void *key, void *data);
@@ -41,7 +38,6 @@ typedef Boolean (*CompareFunction)();
  * FreeFunction(void *item);
  */
 typedef void (*FreeFunction)();
-
 
 /*
  * putInBox(Box **box, void *item)
@@ -54,21 +50,21 @@ void putInBox();
  *            CompareFunction compare,
  *            Boolean findFirstOne)
  */
-void *getFromBox();
+void* getFromBox();
 
 /*
  * deleteFromBox(Box **box,
  *               void *key,
  *               CompareFunction compare,
  *               FreeFunction freeitem,
- *               Boolean deleteAllItems) 
+ *               Boolean deleteAllItems)
  */
 void deleteFromBox();
 
 /*
- * cloneBox(Box *box) 
+ * cloneBox(Box *box)
  */
-Box *cloneBox();
+Box* cloneBox();
 
 /*
  * deleteBox(Box *box,
@@ -81,5 +77,4 @@ void deleteBox();
  */
 Boolean alwaysTrue();
 
-    
 #endif _BOX_H_

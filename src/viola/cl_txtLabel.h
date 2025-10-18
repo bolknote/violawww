@@ -13,4 +13,3 @@ long int meth_txtLabel_get();
 long int meth_txtLabel_initialize();
 long int meth_txtLabel_render();
 long int meth_txtLabel_set();
-

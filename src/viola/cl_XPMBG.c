@@ -12,39 +12,31 @@
  * class	: XPMBG
  * superClass	: XPM
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_XPMBG.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "event.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_XPMBG.h"
-#include "misc.h"
-#include "glib.h"
-#include "event.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_XPMBG_NCSlots[] = {
-	0
-};
-SlotInfo cl_XPMBG_NPSlots[] = {
-	0
-};
-SlotInfo cl_XPMBG_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"XPMBG"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_XPMBG_NCSlots[] = {0};
+SlotInfo cl_XPMBG_NPSlots[] = {0};
+SlotInfo cl_XPMBG_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"XPMBG"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"mouseMove\":\n\
 		case \"enter\":\n\
@@ -92,77 +84,50 @@ SlotInfo cl_XPMBG_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_XPMBG_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_XPMBG
-},{
-	0
-}
-};
+                              },
+                              {0}};
+SlotInfo cl_XPMBG_PSlots[] = {{STR__classInfo, CLSI, (long)&class_XPMBG}, {0}};
 
-SlotInfo *slots_XPMBG[] = {
-	(SlotInfo*)cl_XPMBG_NCSlots,
-	(SlotInfo*)cl_XPMBG_NPSlots,
-	(SlotInfo*)cl_XPMBG_CSlots,
-	(SlotInfo*)cl_XPMBG_PSlots
-};
+SlotInfo* slots_XPMBG[] = {(SlotInfo*)cl_XPMBG_NCSlots, (SlotInfo*)cl_XPMBG_NPSlots,
+                           (SlotInfo*)cl_XPMBG_CSlots, (SlotInfo*)cl_XPMBG_PSlots};
 
 MethodInfo meths_XPMBG[] = {
-	/* local methods */
-{
-	STR_render,
-	meth_XPMBG_render
-},{
-	0
-}
-};
+    /* local methods */
+    {STR_render, meth_XPMBG_render},
+    {0}};
 
 ClassInfo class_XPMBG = {
-	helper_XPM_get,
-	helper_XPM_set,
-	slots_XPMBG,		/* class slot information	*/
-	meths_XPMBG,		/* class methods		*/
-	STR_XPMBG,		/* class identifier number	*/
-	&class_XPM,		/* super class info		*/
+    helper_XPM_get, helper_XPM_set, slots_XPMBG, /* class slot information	*/
+    meths_XPMBG,                                 /* class methods		*/
+    STR_XPMBG,                                   /* class identifier number	*/
+    &class_XPM,                                  /* super class info		*/
 };
 
+long meth_XPMBG_render(VObj* self, Packet* result, int argc, Packet argv[]) {
+    Window w = GET_window(self);
+    Pixmap pixmap;
 
-long meth_XPMBG_render(VObj *self, Packet *result, int argc, Packet argv[])
-{
-	Window w = GET_window(self);
-	Pixmap pixmap;
+    if (!w)
+        meth_field_render(self, result, argc, argv);
 
-	if (!w) meth_field_render(self, result, argc, argv);
-	
-	if (!(w = GET_window(self))) return 0;
-	if (pixmap = (Pixmap)GET__label(self)) {
-		GLDisplayXPMBG(w, 0, 0, GET_width(self), GET_height(self),
-				pixmap); 
-	} else {
-		int width, height, hotx, hoty;
-		char *cp;
+    if (!(w = GET_window(self)))
+        return 0;
+    if (pixmap = (Pixmap)GET__label(self)) {
+        GLDisplayXPMBG(w, 0, 0, GET_width(self), GET_height(self), pixmap);
+    } else {
+        int width, height, hotx, hoty;
+        char* cp;
 
-		if (!(cp = GET_label(self))) return 0;
-		pixmap = GLMakeXPMFromASCII(w, cp, &width, &height, 
-						&hotx, &hoty);
-		if (!pixmap) return 0;
+        if (!(cp = GET_label(self)))
+            return 0;
+        pixmap = GLMakeXPMFromASCII(w, cp, &width, &height, &hotx, &hoty);
+        if (!pixmap)
+            return 0;
 
-		SET__label(self, pixmap);
-		SET_width(self, width);
-		SET_height(self, height);
-		GLDisplayXPMBG(w, 0, 0, 
-			GET_width(self), GET_height(self), pixmap);
-	}
-	return 1;
+        SET__label(self, pixmap);
+        SET_width(self, width);
+        SET_height(self, height);
+        GLDisplayXPMBG(w, 0, 0, GET_width(self), GET_height(self), pixmap);
+    }
+    return 1;
 }
-
-
-
-
-

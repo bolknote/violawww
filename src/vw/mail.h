@@ -28,6 +28,4 @@ void mailSaveAsCB();
 void mailValueChangedCB();
 void closeMailEditorCB();
 
-
 #endif _MAIL_H_
-

@@ -12,38 +12,30 @@
  * class	: hpane
  * superClass	: pane
  */
-#include "utils.h"
-#include <ctype.h>
+#include "cl_hpane.h"
+#include "class.h"
+#include "classlist.h"
 #include "error.h"
-#include "mystrings.h"
+#include "glib.h"
 #include "hash.h"
 #include "ident.h"
-#include "scanutils.h"
+#include "membership.h"
+#include "misc.h"
+#include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "membership.h"
-#include "class.h"
+#include "scanutils.h"
 #include "slotaccess.h"
-#include "classlist.h"
-#include "cl_hpane.h"
-#include "misc.h"
-#include "glib.h"
+#include "utils.h"
+#include <ctype.h>
 
-SlotInfo cl_hpane_NCSlots[] = {
-	0
-};
-SlotInfo cl_hpane_NPSlots[] = {
-	0
-};
-SlotInfo cl_hpane_CSlots[] = {
-{
-	STR_class,
-	PTRS | SLOT_RW,
-	(long)"hpane"
-},{
-	STR_classScript,
-	PTRS,
-	(long)"\n\
+SlotInfo cl_hpane_NCSlots[] = {0};
+SlotInfo cl_hpane_NPSlots[] = {0};
+SlotInfo cl_hpane_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"hpane"},
+                              {
+                                  STR_classScript,
+                                  PTRS,
+                                  (long)"\n\
 		switch (arg[0]) {\n\
 		case \"config\":\n\
 			config(arg[1], arg[2], arg[3], arg[4]);\n\
@@ -86,45 +78,25 @@ SlotInfo cl_hpane_CSlots[] = {
 		break;\n\
 		}\n\
 	",
-},{
-	0
-}
-};
-SlotInfo cl_hpane_PSlots[] = {
-{
-	STR__classInfo,
-	CLSI,
-	(long)&class_hpane
-},{
-	STR_paneConfig,
- 	PTRS,
-	(long)"westToEast"
-},{
-	STR__paneConfig,
- 	LONG,
-	PANE_CONFIG_W2E		/* default with W2E */
-},{
-	0
-}
-};
+                              },
+                              {0}};
+SlotInfo cl_hpane_PSlots[] = {{STR__classInfo, CLSI, (long)&class_hpane},
+                              {STR_paneConfig, PTRS, (long)"westToEast"},
+                              {
+                                  STR__paneConfig, LONG, PANE_CONFIG_W2E /* default with W2E */
+                              },
+                              {0}};
 
-SlotInfo *slots_hpane[] = {
-	(SlotInfo*)cl_hpane_NCSlots,
-	(SlotInfo*)cl_hpane_NPSlots,
-	(SlotInfo*)cl_hpane_CSlots,
-	(SlotInfo*)cl_hpane_PSlots
-};
+SlotInfo* slots_hpane[] = {(SlotInfo*)cl_hpane_NCSlots, (SlotInfo*)cl_hpane_NPSlots,
+                           (SlotInfo*)cl_hpane_CSlots, (SlotInfo*)cl_hpane_PSlots};
 
 MethodInfo meths_hpane[] = {
-	/* local methods */
-	0
-};
+    /* local methods */
+    0};
 
 ClassInfo class_hpane = {
-	helper_pane_get,
-	helper_pane_set,
-	slots_hpane,		/* class slot information	*/
-	meths_hpane,		/* class methods		*/
-	STR_hpane,		/* class identifier number	*/
-	&class_pane,		/* super class info		*/
+    helper_pane_get, helper_pane_set, slots_hpane, /* class slot information	*/
+    meths_hpane,                                   /* class methods		*/
+    STR_hpane,                                     /* class identifier number	*/
+    &class_pane,                                   /* super class info		*/
 };

@@ -1,43 +1,42 @@
 /*                          BROWSER SIDE ACCESS AUTHORIZATION MODULE
-                                             
+
    This module is the browser side interface to Access Authorization (AA) package.  It
    contains code only for browser.
-   
+
    Important to know about memory allocation:
-   
+
    Routines in this module use dynamic allocation, but free automatically all the memory
    reserved by them.
-   
+
    Therefore the caller never has to (and never should) free() any object returned by
    these functions.
-   
+
    Therefore also all the strings returned by this package are only valid until the next
    call to the same function is made. This approach is selected, because of the nature of
    access authorization: no string returned by the package needs to be valid longer than
    until the next call.
-   
+
    This also makes it easy to plug the AA package in: you don't have to ponder whether to
    free()something here or is it done somewhere else (because it is always done somewhere
    else).
-   
+
    The strings that the package needs to store are copied so the original strings given as
    parameters to AA functions may be freed or modified with no side effects.
-   
+
    Also note:The AA package does not free() anything else than what it has itself
    allocated.
-   
+
  */
 
 #ifndef HTAABROW_H
 #define HTAABROW_H
 
-#include "HTUtils.h"            /* BOOL, PARAMS, ARGS */
-#include "HTAAUtil.h"           /* Common parts of AA */
-
+#include "HTAAUtil.h" /* Common parts of AA */
+#include "HTUtils.h"  /* BOOL, PARAMS, ARGS */
 
 #ifdef SHORT_NAMES
-#define HTAAcoAu        HTAA_composeAuth
-#define HTAAsRWA        HTAA_shouldRetryWithAuth
+#define HTAAcoAu HTAA_composeAuth
+#define HTAAsRWA HTAA_shouldRetryWithAuth
 #endif /*SHORT_NAMES*/
 
 /*
@@ -47,15 +46,15 @@ Routines for Browser Side Recording of AA Info
    Most of the browser-side AA is done by the following two functions (which are called
    from file HTTP.c so the browsers using libwww only need to be linked with the new
    library and not be changed at all):
-   
+
       HTAA_composeAuth() composes the Authorization: line contents, if the AA package
       thinks that the given document is protected. Otherwise this function returns NULL.
       This function also calls the functions HTPrompt(),HTPromptPassword() and HTConfirm()
       to get the username, password and some confirmation from the user.
-      
+
       HTAA_shouldRetryWithAuth() determines whether to retry the request with AA or with a
       new AA (in case username or password was misspelled).
-      
+
  */
 
 /* PUBLIC                                               HTAA_composeAuth()
@@ -76,10 +75,8 @@ Routines for Browser Side Recording of AA Info
 **
 **              As usual, this string is automatically freed.
 */
-PUBLIC char *HTAA_composeAuth PARAMS((CONST char * hostname,
-                                      CONST int   portnumber,
-                                      CONST char * docname));
-
+PUBLIC char* HTAA_composeAuth PARAMS((CONST char* hostname, CONST int portnumber,
+                                      CONST char* docname));
 
 /* BROWSER PUBLIC                               HTAA_shouldRetryWithAuth()
 **
@@ -108,9 +105,7 @@ PUBLIC char *HTAA_composeAuth PARAMS((CONST char * hostname,
 **                                field (in function HTAA_composeAuth()).
 **                      NO, otherwise.
 */
-PUBLIC BOOL HTAA_shouldRetryWithAuth PARAMS((char *     start_of_headers,
-                                             int        length,
-                                             int        soc));
+PUBLIC BOOL HTAA_shouldRetryWithAuth PARAMS((char* start_of_headers, int length, int soc));
 /*
 
 Enabling Gateway httpds to Forward Authorization
@@ -119,17 +114,16 @@ Enabling Gateway httpds to Forward Authorization
    must be called before the next request is handled to make sure that authorization
    string isn't cached in daemon so that other people can access private files using
    somebody elses previous authorization information.
-   
+
  */
 
-PUBLIC void HTAAForwardAuth_set PARAMS((CONST char * scheme_name,
-                                        CONST char * scheme_specifics));
+PUBLIC void HTAAForwardAuth_set PARAMS((CONST char* scheme_name, CONST char* scheme_specifics));
 PUBLIC void HTAAForwardAuth_reset NOPARAMS;
 /*
 
  */
 
-#endif  /* NOT HTAABROW_H */
+#endif /* NOT HTAABROW_H */
 /*
 
    End of file HTAABrow.h.  */

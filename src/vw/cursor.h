@@ -18,23 +18,16 @@
 #ifndef _CURSOR_H_
 #define _CURSOR_H_
 
-
 extern Cursor busyCursor;
 
+#define setBusyCursor(dvi)                                                                         \
+    XDefineCursor(XtDisplay((dvi)->topMostWidget), XtWindow((dvi)->topMostWidget), busyCursor)
 
-#define setBusyCursor(dvi) 			   \
-    XDefineCursor(XtDisplay((dvi)->topMostWidget),   \
-		  XtWindow((dvi)->topMostWidget),    \
-		  busyCursor)
-
-#define setIdleCursor(dvi)    			   \
-    XUndefineCursor(XtDisplay((dvi)->topMostWidget), \
-		    XtWindow((dvi)->topMostWidget))
-
+#define setIdleCursor(dvi)                                                                         \
+    XUndefineCursor(XtDisplay((dvi)->topMostWidget), XtWindow((dvi)->topMostWidget))
 
 void initCursors();
 void busyCursorMH();
 void idleCursorMH();
-
 
 #endif _CURSOR_H_

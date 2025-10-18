@@ -5,9 +5,9 @@
  */
 
 #include "copyright.h"
+#include "image.h"
 
-struct cmuwm_header
-{
+struct cmuwm_header {
     byte magic[4];
     byte width[4];
     byte height[4];

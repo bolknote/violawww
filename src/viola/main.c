@@ -7,10 +7,11 @@
 #include "hash.h"
 #include "ident.h"
 #include "obj.h"
+#include "cexec.h"
+#include "scanutils.h"
+#include "viola.h"
 
-void main(argc, argv)
-	int argc;
-	char *argv[];
+void main(int argc, char *argv[])
 {
     initViola(argc, argv, 
 	      (char*)NULL, (Display*)NULL, (Screen*)NULL, (Window)0);
@@ -18,15 +19,14 @@ void main(argc, argv)
 
 /* the libWWW calls these routines to report HTTP loading progress 
  */
-void showHelpMessageInMainWindow(message)
-    char *message;
+void showHelpMessageInMainWindow(char *message)
 {
 	extern VObj *mesgObj;
 	if (!mesgObj) mesgObj = findObject(getIdent("www.mesg.tf"));
 	if (mesgObj) sendMessage1N1str(mesgObj, "show", message);
 }
 
-void blankHelpHandlerInMainWindow()
+void blankHelpHandlerInMainWindow(void)
 {
 	extern VObj *mesgObj;
 	if (!mesgObj) mesgObj = findObject(getIdent("www.mesg.tf"));

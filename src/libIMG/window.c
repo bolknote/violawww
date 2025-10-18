@@ -909,7 +909,7 @@ return ximageinfo;/*XXX*/
 	  alarm(0);
 	cleanUpImage(disp, scrn, swa_view.cursor, pixmap,
 		     image, ximageinfo);
-	return(ret);
+	return(ximageinfo);
       }
       break;
     }

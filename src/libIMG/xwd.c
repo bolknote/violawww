@@ -15,6 +15,7 @@
 #include "copyright.h"
 #include "xloadimage.h"
 #include "xwd.h"
+#include <stdlib.h>
 
 /* SUPPRESS 558 */
 
@@ -22,12 +23,9 @@
  * an XWD file.
  */
 
-static int isXWD(name, zf, header, verbose)
-     char      *name;
-     ZFILE     *zf;
-     XWDHeader *header;
-     int        verbose;
-{ GenericXWDHeader  gh;
+static int isXWD(char *name, ZFILE *zf, XWDHeader *header, int verbose)
+{
+  GenericXWDHeader  gh;
   int               a;
 
   if (zread(zf, (byte *)&gh, sizeof(GenericXWDHeader)) != sizeof(GenericXWDHeader))
@@ -404,10 +402,9 @@ static Image *loadZPixmap(fullname, zf, header)
   return(image);
 }
 
-Image *xwdLoad(fullname, name, verbose)
-     char *fullname, *name;
-     int verbose;
-{ ZFILE     *zf;
+Image *xwdLoad(char *fullname, char *name, int verbose)
+{
+  ZFILE     *zf;
   XWDHeader  header;
   int        cmaplen;
   XWDColor  *cmap;

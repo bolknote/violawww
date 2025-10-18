@@ -36,10 +36,9 @@ static unsigned int *buildIndex(width, zoom, rwidth)
   return(index);
 }
 
-Image *zoom(oimage, xzoom, yzoom, verbose)
-     Image        *oimage;
-     unsigned int  xzoom, yzoom;
-{ char          buf[BUFSIZ];
+Image *zoom(Image *oimage, unsigned int xzoom, unsigned int yzoom, int verbose)
+{
+  char          buf[BUFSIZ];
   Image        *image;
   unsigned int *xindex, *yindex;
   unsigned int  xwidth, ywidth;

@@ -4,4 +4,4 @@
 src/viola/viola
 src/vw/vw
 .vscode/
-test/test_htcharset
+test/build/

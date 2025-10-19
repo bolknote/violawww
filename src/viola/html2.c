@@ -473,12 +473,22 @@ HTTag* tagInfo;
         if (!parent_bstate->tmi->template) {
             fprintf(stderr, "SGMLBuild_B: can't find clone method for template object '%s'\n",
                     parent_bstate->tmi->type);
+            goto skip_clone;  /* Skip cloning if no template */
         }
         argv[0].info.i = global_cloneID++;
         argv[0].type = PKT_INT;
         argv[0].canFree = 0;
-        if (parent_bstate->tmi->cloneMeth)
+        if (parent_bstate->tmi->cloneMeth) {
             parent_bstate->tmi->cloneMeth(parent_bstate->tmi->template, &scrapPk, 1, &argv[0]);
+            /* Check if clone succeeded */
+            if (!scrapPk.info.o) {
+                fprintf(stderr, "SGMLBuild_B: clone failed for template object '%s'\n",
+                        parent_bstate->tmi->type);
+                goto skip_clone;
+            }
+        } else {
+            goto skip_clone;  /* Skip cloning if no method */
+        }
 
         parentParent = GET__parent(parent_bstate->obj);
         if (parentParent) {
@@ -535,7 +545,7 @@ HTTag* tagInfo;
             /*printf("COPY (for n-2) str={%s}\n", cp);*/
 
             parent_parent_bstate = &SBI.stack[SBI.stacki - 2];
-            if (parent_parent_bstate) {
+            if (parent_parent_bstate && parent_parent_bstate->obj) {
                 if (GET_label(parent_parent_bstate->obj))
                     free(GET_label(parent_parent_bstate->obj));
                 SET_label(parent_parent_bstate->obj, cp);
@@ -543,8 +553,13 @@ HTTag* tagInfo;
                 /* in case obj needs this information */
                 SGMLBuildDoc_span = parent_parent_bstate->sub_y;
                 span = getVSpan(parent_parent_bstate->obj, STR_F);
+            } else {
+                free(cp);  /* Free allocated string if not used */
             }
         }
+    }
+    skip_clone:  /* Label for skipping failed clone operations */
+    {
 #ifdef fdlkjsdjsdfl
         /* flush n-1 level object
          */
@@ -591,6 +606,13 @@ HTTag* tagInfo;
 
     bstate->tag = tag;
     bstate->obj = HTMLBuildObj(bstate, parent_bstate->sub_width, bstate->tmi);
+
+    /* Check if object creation failed */
+    if (!bstate->obj) {
+        fprintf(stderr, "CB_HTML_stag: HTMLBuildObj failed for tag=%s\n", tag);
+        SBI.stacki--;  /* Pop the failed state from stack */
+        return;
+    }
 
     if (bstate->obj && parent_bstate->obj && bstate->obj != parent_bstate->obj) {
         SET__parent(bstate->obj, parent_bstate->obj);
@@ -678,7 +700,7 @@ HTTag* tagInfo;
         SET_width(bstate->obj, width);
     }
 
-    if (tagInfo && tagInfo->number_of_attributes && present && value) {
+    if (bstate->obj && tagInfo && tagInfo->number_of_attributes && present && value) {
         char** tagAttrNames = tagInfo->attributes;
         for (i = 0; i < tagInfo->number_of_attributes; i++) {
             if (present[i]) {
@@ -728,9 +750,13 @@ HTTag* tagInfo;
                 *cp = '\0';
             }
 
-            if (GET_label(parent_bstate->obj))
-                free(GET_label(parent_bstate->obj));
-            SET_label(parent_bstate->obj, cp);
+            if (parent_bstate->obj) {
+                if (GET_label(parent_bstate->obj))
+                    free(GET_label(parent_bstate->obj));
+                SET_label(parent_bstate->obj, cp);
+            } else {
+                free(cp);  /* Free allocated string if not used */
+            }
 
             /*
             printf("FLUSH as parent: obj=%s lidx=%d idx=%d DATA {%s}\n",
@@ -760,7 +786,8 @@ HTTag* tagInfo;
             /* Flush action might have caused object insertion,
              * and thus affected sub_y
              */
-            SET_y(bstate->obj, parent_bstate->sub_y + span + bstate->tmi->top);
+            if (bstate->obj)
+                SET_y(bstate->obj, parent_bstate->sub_y + span + bstate->tmi->top);
 
             if (span == 0) {
                 /* destroy object -- it's useless */
@@ -772,7 +799,7 @@ HTTag* tagInfo;
                 dataBuffIdx = parent_bstate->dataBuffIdx_localStart;
                 /*???*/
 
-            } else if (span != -1) {
+            } else if (span != -1 && parent_bstate->obj) {
 
                 /*			span += bstate->tmi->top + bstate->tmi->bottom;*/
 
@@ -1015,7 +1042,7 @@ void CB_HTML_etag(element_number) int element_number;
                 }
                 bstate->obj = NULL;
 
-            } else if (span != -1) {
+            } else if (span != -1 && bstate->obj) {
 
                 bstate->height = span;
                 SET_height(bstate->obj, span);
@@ -1182,16 +1209,19 @@ SGMLTagMappingInfo* tmi;
     */
     /* modify template object attributes
      */
-    if (bstate->parent) {
+    if (bstate->parent && bstate->obj) {
         if (bstate->obj == bstate->parent) {
             /* to avoid circular references possibly
-             * caused by bad markup*/
-            fprintf(stderr, "Detected illegal recursive use of tag '%s'.\n", bstate->tmi->tag);
+             * caused by bad markup - abort object creation*/
+            fprintf(stderr, "Detected illegal recursive use of tag '%s' - aborting to prevent infinite loop.\n", bstate->tmi->tag);
+            return NULL;
         } else {
             SET__parent(bstate->obj, bstate->parent);
             SET_parent(bstate->obj, GET_name(bstate->parent));
         }
     }
+
+    if (!bstate->obj) return NULL;
 
     SET_x(bstate->obj, bstate->tmi->left);
 

@@ -209,6 +209,17 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
             *me->value_pointer = 0;
             switch (me->field) {
             case CONTENT_TYPE:
+                /* Strip parameters (e.g., "; charset=UTF-8") from MIME type */
+                {
+                    char* semicolon = strchr(me->value, ';');
+                    if (semicolon) {
+                        *semicolon = '\0';  /* Truncate at semicolon */
+                        /* Trim trailing whitespace before semicolon */
+                        while (semicolon > me->value && isspace(*(semicolon-1))) {
+                            *(--semicolon) = '\0';
+                        }
+                    }
+                }
                 me->format = HTAtom_for(me->value);
                 break;
             case CONTENT_TRANSFER_ENCODING:

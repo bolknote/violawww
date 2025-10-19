@@ -347,6 +347,14 @@ PRIVATE void change_paragraph_style ARGS2(HTStructured*, me, HTStyle*, style) {
 PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 #ifdef VIOLA
 
+    if (majorBuffi >= MAJORBUFF - 1) {
+        /* Flush buffer to prevent overflow */
+        majorBuff[majorBuffi] = '\0';
+        if (majorBuffi > 0) {
+            CB_HTML_data(majorBuff, majorBuffi);
+            majorBuffi = 0;
+        }
+    }
     majorBuff[majorBuffi++] = c;
 #else
 
@@ -396,8 +404,17 @@ PRIVATE void HTML_put_string ARGS2(HTStructured*, me, CONST char*, s) {
 #ifdef VIOLA
 
     char* cp;
-    for (cp = s; *cp; cp++)
+    for (cp = s; *cp; cp++) {
+        if (majorBuffi >= MAJORBUFF - 1) {
+            /* Flush buffer to prevent overflow */
+            majorBuff[majorBuffi] = '\0';
+            if (majorBuffi > 0) {
+                CB_HTML_data(majorBuff, majorBuffi);
+                majorBuffi = 0;
+            }
+        }
         majorBuff[majorBuffi++] = *cp;
+    }
 
 #else
 
@@ -724,6 +741,14 @@ PRIVATE void HTML_put_entity ARGS2(HTStructured*, me, int, entity_number) {
         CB_HTML_special_entity(entity_number, majorBuff, majorBuffi);
         majorBuffi = 0;
     } else {
+        if (majorBuffi >= MAJORBUFF - 2) {
+            /* Flush buffer to prevent overflow (need space for 2 chars) */
+            majorBuff[majorBuffi] = '\0';
+            if (majorBuffi > 0) {
+                CB_HTML_data(majorBuff, majorBuffi);
+                majorBuffi = 0;
+            }
+        }
         majorBuff[majorBuffi++] = *ISO_Latin1[entity_number];
         if (ISO_Latin1[entity_number][1])
             majorBuff[majorBuffi++] = ISO_Latin1[entity_number][1];

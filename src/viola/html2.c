@@ -5,8 +5,12 @@
  */
 #include "utils.h"
 #include <ctype.h>
+#include <string.h>
 
 #include "HTFont.h"
+#include "../libWWW/Library/Implementation/HTCharset.h"
+
+#define convert_utf8_buffer(str, size) HTCharset_utf8_to_ascii_buffer(str, size)
 
 char* HTAppName = "ViolaWWW";
 char* HTAppVersion = "3.1";
@@ -335,10 +339,22 @@ void CB_HTML_data(str, size) char* str;
 int size;
 {
     SGMLBuildInfoState* bstate = &SBI.stack[SBI.stacki];
+    char tempbuf[8192];
+    int converted_size;
 
     if (bstate->obj) {
         /*		fprintf(stderr, "@@@@ DATA(%d) -%s\n", size, str);
          */
+        
+        /* Convert UTF-8 to Latin1 */
+        if (size < sizeof(tempbuf)) {
+            memcpy(tempbuf, str, size);
+            tempbuf[size] = '\0';
+            converted_size = convert_utf8_buffer(tempbuf, size);
+            str = tempbuf;
+            size = converted_size;
+        }
+        
         strncpy(&dataBuff[dataBuffIdx], str, size);
 
         dataBuff[dataBuffIdx + size] = '\0';

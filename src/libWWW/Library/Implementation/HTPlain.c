@@ -14,6 +14,8 @@
 #include "HTStyle.h"
 #include "HTUtils.h"
 #include "HText.h"
+#include <string.h>
+#include "HTCharset.h"
 
 extern HTStyleSheet* styleSheet;
 
@@ -26,6 +28,9 @@ struct _HTStream {
 
     HText* text;
 };
+
+/* Forward declaration */
+PRIVATE void HTPlain_write ARGS3(HTStream*, me, CONST char*, s, int, l);
 
 /*	Write the buffer out to the socket
 **	----------------------------------
@@ -49,7 +54,8 @@ PRIVATE void HTPlain_put_character ARGS2(HTStream*, me, char, c) {
 **
 */
 PRIVATE void HTPlain_put_string ARGS2(HTStream*, me, CONST char*, s) {
-    HText_appendText(me->text, s);
+    /* Use HTPlain_write for conversion */
+    HTPlain_write(me, s, strlen(s));
 }
 
 PRIVATE void HTPlain_progress ARGS2(HTStream*, me, int, l) {}
@@ -57,6 +63,26 @@ PRIVATE void HTPlain_progress ARGS2(HTStream*, me, int, l) {}
 PRIVATE void HTPlain_write ARGS3(HTStream*, me, CONST char*, s, int, l) {
     CONST char* p;
     CONST char* e = s + l;
+    char tempbuf[8192];
+    int converted_len;
+    int i;
+    
+    if (l < sizeof(tempbuf)) {
+        /* Try UTF-8 to ASCII conversion */
+        memcpy(tempbuf, s, l);
+        tempbuf[l] = '\0';
+        converted_len = HTCharset_utf8_to_ascii_buffer(tempbuf, l);
+        
+        if (converted_len != l || memcmp(s, tempbuf, l) != 0) {
+            /* Conversion happened, use converted text */
+            for (i = 0; i < converted_len; i++) {
+                HText_appendCharacter(me->text, tempbuf[i]);
+            }
+            return;
+        }
+    }
+    
+    /* Use original text */
     for (p = s; p < e; p++)
         HText_appendCharacter(me->text, *p);
 }

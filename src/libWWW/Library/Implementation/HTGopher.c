@@ -39,10 +39,14 @@
 #include "HTUtils.h" /* Coding convention macros */
 #include "tcp.h"
 #include <ctype.h>
+#include <string.h>
 
 #include "HTFormat.h"
 #include "HTParse.h"
 #include "HTTCP.h"
+#include "HTCharset.h"
+
+#define convert_utf8(s) HTCharset_utf8_to_ascii(s)
 
 /*		Hypertext object building machinery
  */
@@ -200,7 +204,7 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
             } /* gtype and name ok */
 
             if (gtype == GOPHER_WWW) { /* Gopher pointer to W3 */
-                write_anchor(name, selector);
+                write_anchor(convert_utf8(name), selector);
 
             } else if (gtype == GOPHER_HTML) { /* HTML/hweb URL link */
                 /* Selector format: "URL:http://example.com/" */
@@ -208,11 +212,11 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
                 if (strncmp(selector, "URL:", 4) == 0) {
                     url = selector + 4; /* Skip "URL:" prefix */
                 }
-                write_anchor(name, url);
+                write_anchor(convert_utf8(name), url);
 
             } else if (gtype == GOPHER_INFO) { /* Informational text, not a link */
                 PUTS("        "); /* Prettier JW/TBL */
-                PUTS(name);
+                PUTS(convert_utf8(name));
                 PUTS("\n");
 
             } else if (port) { /* Other types need port */
@@ -247,7 +251,7 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
                     *q++ = 0; /* terminate address */
                 }
                 PUTS("        "); /* Prettier JW/TBL */
-                write_anchor(name, address);
+                write_anchor(convert_utf8(name), address);
                 PUTS("\n");
             } else { /* parse error */
                 if (TRACE)

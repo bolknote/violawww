@@ -9,12 +9,27 @@ RANLIB = ranlib
 # Auto-detect Homebrew paths
 BREW_PREFIX := $(shell brew --prefix 2>/dev/null || echo /opt/homebrew)
 OPENMOTIF_PREFIX := $(shell brew --prefix openmotif 2>/dev/null || echo $(BREW_PREFIX)/opt/openmotif)
+ICU_PREFIX := $(shell brew --prefix icu4c 2>/dev/null)
+
+# Check if ICU is available
+ICU_AVAILABLE := $(shell test -d "$(ICU_PREFIX)/include" && echo yes || echo no)
 
 # Compiler flags
 ARCH_FLAGS = -arch arm64
 CFLAGS = -Os $(ARCH_FLAGS) -std=gnu89 -Wno-everything -D__DARWIN__
 CFLAGS_LIBS = -Os $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common \
               -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED
+
+# Add ICU support if available
+ifeq ($(ICU_AVAILABLE),yes)
+CFLAGS += -DUSE_ICU
+CFLAGS_LIBS += -DUSE_ICU
+ICU_INCLUDES = -I$(ICU_PREFIX)/include
+ICU_LIBS = -L$(ICU_PREFIX)/lib -licui18n -licuuc -licudata -liconv
+else
+ICU_INCLUDES =
+ICU_LIBS =
+endif
 
 # 64-bit migration warning flags (use with: make WARN_64BIT=1)
 ifdef WARN_64BIT
@@ -25,6 +40,7 @@ CFLAGS_LIBS += -Wshorten-64-to-32 -Wconversion -Wformat -Wpointer-to-int-cast
 endif
 INCLUDES = -I$(BREW_PREFIX)/include \
            -I$(OPENMOTIF_PREFIX)/include \
+           $(ICU_INCLUDES) \
            -I/opt/X11/include
 
 # Dependency generation flags
@@ -34,7 +50,7 @@ DEPFLAGS = -MMD -MP
 LDFLAGS = $(ARCH_FLAGS) -L$(BREW_PREFIX)/lib \
           -L$(OPENMOTIF_PREFIX)/lib \
           -L/opt/X11/lib
-LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lm
+LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lm $(ICU_LIBS)
 
 # Source directories
 SRC_DIR = src
@@ -60,7 +76,16 @@ VW = $(VW_DIR)/vw
 
 # Default target
 .PHONY: all
-all: $(VW) $(VIOLA)
+all: config_info $(VW) $(VIOLA)
+
+.PHONY: config_info
+config_info:
+ifeq ($(ICU_AVAILABLE),yes)
+	@echo "=== Building with ICU transliteration support ==="
+else
+	@echo "=== Building without ICU (UTF-8 will not be transliterated) ==="
+endif
+	@echo ""
 
 # Help target
 .PHONY: help
@@ -94,7 +119,7 @@ LIBWWW_SRCS = $(LIBWWW_DIR)/HTParse.c $(LIBWWW_DIR)/HTAccess.c $(LIBWWW_DIR)/HTT
               $(LIBWWW_DIR)/HTString.c $(LIBWWW_DIR)/HTAlert.c $(LIBWWW_DIR)/HTRules.c \
               $(LIBWWW_DIR)/HTFormat.c $(LIBWWW_DIR)/HTInit.c $(LIBWWW_DIR)/HTMIME.c \
               $(LIBWWW_DIR)/HTHistory.c $(LIBWWW_DIR)/HTNews.c $(LIBWWW_DIR)/HTGopher.c \
-              $(LIBWWW_DIR)/HTTelnet.c $(LIBWWW_DIR)/HTWSRC.c \
+              $(LIBWWW_DIR)/HTTelnet.c $(LIBWWW_DIR)/HTWSRC.c $(LIBWWW_DIR)/HTCharset.c \
               $(LIBWWW_DIR)/HTBTree.c $(LIBWWW_DIR)/HTAABrow.c $(LIBWWW_DIR)/HTAAUtil.c \
               $(LIBWWW_DIR)/HTAssoc.c $(LIBWWW_DIR)/HTUU.c $(LIBWWW_DIR)/HTAAProt.c \
               $(LIBWWW_DIR)/HTAAServ.c $(LIBWWW_DIR)/FOSI.c $(LIBWWW_DIR)/FOSIDTD.c \
@@ -111,7 +136,7 @@ $(LIBWWW): $(LIBWWW_OBJS)
 
 $(LIBWWW_DARWIN)/%.o: $(LIBWWW_DIR)/%.c
 	@mkdir -p $(LIBWWW_DARWIN)
-	$(CC) $(CFLAGS) -I$(LIBWWW_DIR) -DACCESS_AUTH -DVIOLA -c $< -o $@
+	$(CC) $(CFLAGS) -I$(LIBWWW_DIR) $(ICU_INCLUDES) -DACCESS_AUTH -DVIOLA -c $< -o $@
 
 # libXPM (XPM image support)
 LIBXPM_SRCS = $(LIBXPM_DIR)/data.c $(LIBXPM_DIR)/create.c $(LIBXPM_DIR)/visual.c \

@@ -75,6 +75,7 @@ void doViolaIdle(XtPointer clientData);
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch);
 
 void scrollBarValueChanged(Widget sbar, XtPointer clientData, XtPointer callData);
+void mouseWheelScrollEH(Widget w, XtPointer clientData, XEvent* evt, Boolean* cont);
 void scrollBarDrag(Widget sbar, XtPointer clientData, XtPointer callData);
 
 void printTest(void);

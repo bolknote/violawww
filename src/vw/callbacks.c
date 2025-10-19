@@ -247,6 +247,7 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     setHelp(violaCanvas, helpLabel,
             "Clicking on links in this document will cause the main window to display the result "
             "of the link.");
+    XtAddEventHandler(violaCanvas, ButtonPressMask, FALSE, mouseWheelScrollEH, (XtPointer)localDocViewInfo);
 
     XmMainWindowSetAreas(form, menuBar, (Widget)NULL, (Widget)NULL, (Widget)NULL, frame);
 
@@ -816,6 +817,68 @@ void scrollBarValueChanged(Widget sbar, XtPointer clientData, XtPointer callData
 }
 
 /*
+ * Mouse wheel scroll event handler
+ * Button 4 = scroll up, Button 5 = scroll down
+ */
+void mouseWheelScrollEH(Widget w, XtPointer clientData, XEvent* evt, Boolean* cont) {
+    DocViewInfo* dvi = (DocViewInfo*)clientData;
+    XButtonEvent* buttonEvt = (XButtonEvent*)evt;
+    int value, sliderSize, maximum, increment, newValue, percent;
+    
+    if (evt->type != ButtonPress)
+        return;
+    
+    /* Button 4 = scroll up, Button 5 = scroll down - only handle these */
+    if (buttonEvt->button != 4 && buttonEvt->button != 5)
+        return;
+    
+    /* Stop event propagation for wheel events */
+    if (cont)
+        *cont = False;
+    
+    if (!dvi || !dvi->scrollBar || !dvi->violaDocViewObj)
+        return;
+    
+    /* Get current scrollbar values */
+    XtVaGetValues(dvi->scrollBar, 
+                  XmNvalue, &value,
+                  XmNsliderSize, &sliderSize,
+                  XmNmaximum, &maximum,
+                  NULL);
+    
+    /* Calculate scroll increment (about 5% of scrollbar range) */
+    increment = maximum / 20;
+    if (increment < 1)
+        increment = 1;
+    
+    /* Calculate new position */
+    if (buttonEvt->button == 4) {
+        /* Scroll up */
+        newValue = value - increment;
+        if (newValue < 0)
+            newValue = 0;
+    } else {
+        /* Scroll down */
+        newValue = value + increment;
+        if (newValue > maximum - sliderSize)
+            newValue = maximum - sliderSize;
+    }
+    
+    /* Calculate percentage for Viola (0-100 scale) */
+    if (maximum > sliderSize) {
+        percent = (SBAR_MAGNITUDE * newValue) / (maximum - sliderSize);
+    } else {
+        percent = 0;
+    }
+    
+    /* Notify Viola about the position change */
+    sendTokenMessageN1int(dvi->violaDocViewObj, STR_shownPositionV, percent);
+    
+    /* Update scrollbar position */
+    XtVaSetValues(dvi->scrollBar, XmNvalue, newValue, NULL);
+}
+
+/*
  * titleIcon
  */
 void flipGlobe(XtPointer clientData, XtIntervalId* intervalID) {
@@ -827,6 +890,7 @@ void flipGlobe(XtPointer clientData, XtIntervalId* intervalID) {
 }
 
 void doViolaEvent(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
+    /* Mouse wheel events (buttons 4 and 5) are handled in main loop, not here */
     violaProcessEvent(event);
 }
 

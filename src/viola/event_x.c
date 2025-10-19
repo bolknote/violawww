@@ -432,6 +432,18 @@ int eventLoop() {
         } else {
             XNextEvent(display, &e);
 
+            /* Handle mouse wheel events (buttons 4 and 5) specially */
+            /* In standalone Viola, just ignore them since scrolling is complex */
+            /* and not critical for standalone use */
+            if (e.type == ButtonPress) {
+                XButtonEvent* buttonEvt = (XButtonEvent*)&e;
+                if (buttonEvt->button == 4 || buttonEvt->button == 5) {
+                    /* Mouse wheel events - ignore in standalone Viola */
+                    /* (VW browser handles these properly) */
+                    continue;
+                }
+            }
+
             /* super hack */
             /*
                                     if (e.type == MapNotify) {
@@ -813,7 +825,15 @@ int *from_x, *from_y;
     }
 
     mouseButtonPressedState |= 1 << (ep->button);
-    /*printf("press button#=%d\n", ep->button);*/
+
+    /* Handle mouse wheel scrolling (buttons 4 and 5) */
+    if (ep->button == 4 || ep->button == 5) {
+        /* Button 4 = scroll up, Button 5 = scroll down
+         * Don't handle this in Viola - handled by VW scrollbar instead
+         */
+        mouseButtonPressedState &= ~(1 << (ep->button));
+        return 0;
+    }
 
     /* only the combination of control-key & middle mouse button
      * will get you the CLI

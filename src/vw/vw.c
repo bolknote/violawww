@@ -311,6 +311,23 @@ char* argv[];
 
     while (1) {
         XtAppNextEvent(appCon, &event);
+        
+        /* Handle mouse wheel events (buttons 4 and 5) specially */
+        /* Don't pass them to Viola, let VW scrollbar handle them */
+        if (event.type == ButtonPress || event.type == ButtonRelease) {
+            XButtonEvent* buttonEvt = (XButtonEvent*)&event;
+            if (buttonEvt->button == 4 || buttonEvt->button == 5) {
+                /* Call mouseWheelScrollEH directly since events are on Viola's window, not canvas */
+                DocViewInfo* dvi = (DocViewInfo*)mainViewInfo();
+                if (dvi) {
+                    Boolean cont = True;
+                    mouseWheelScrollEH(dvi->canvas, (XtPointer)dvi, &event, &cont);
+                }
+                /* Don't pass wheel events to Viola */
+                continue;
+            }
+        }
+        
         violaProcessEvent(&event);
         XtDispatchEvent(&event);
     }
@@ -511,6 +528,8 @@ char* argv[];
         XmATTACH_WIDGET, XmNrightWidget, scrollBar, XmNwidth, 600, XmNheight, 650, XmNtraversalOn,
         TRUE, NULL);
 
+    /* Register for button press events for mouse wheel scrolling */
+    XtAddEventHandler(violaCanvas, ButtonPressMask, FALSE, mouseWheelScrollEH, (XtPointer)docViewInfo);
     XtAddEventHandler(violaCanvas, VIOLA_EVENT_MASK, TRUE, doViolaEvent, NULL);
 
     /* Menubar. */

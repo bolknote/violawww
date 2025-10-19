@@ -54,28 +54,28 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 ### Modern Enhancements (v4.0 - 2025)
 
-#### 🖥️ 64-bit Architecture Port
+#### 64-bit Architecture Port
 - Full compatibility with modern 64-bit systems (x86_64, ARM64)
 - Fixed pointer size issues (32-bit → 64-bit)
 - Updated integer types for proper memory addressing
 - Tested on macOS (Apple Silicon M3)
 - Maintained backward compatibility with build system
 
-#### 🔒 HTTPS/TLS Support
+#### HTTPS/TLS Support
 - Native SSL/TLS via OpenSSL 3.x
 - TLS 1.0+ with SNI (Server Name Indication)
 - Automatic protocol detection for `https://` URLs
 - Secure connections to modern websites
 - **Files**: `HTSSL.h`, `HTSSL.c`, `HTTPS.h`, `HTTPS.c`
 
-#### 🔄 HTTP Redirect Handling
+#### HTTP Redirect Handling
 - Automatic following of redirects: 301, 302, 303, 307, 308
 - Cross-protocol redirects (HTTP ↔ HTTPS)
 - Loop prevention (max 10 hops)
 - Relative URL resolution
 - **Files**: `HTTP.c`, `HTTPS.c`
 
-#### 🏛️ Internet Archive Integration
+#### Internet Archive Integration
 - Automatic fallback to Wayback Machine for unavailable domains
 - DNS failure detection triggers archive search
 - CDX API integration for earliest snapshots
@@ -83,7 +83,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `HTWayback.h`, `HTWayback.c`
 - **Test**: `test/test_wayback.c`
 
-#### 🌍 UTF-8 Transliteration Support
+#### UTF-8 Transliteration Support
 - Automatic UTF-8 to Latin/ASCII conversion via ICU library
 - Two-pass transliteration: Any-Latin → ISO-8859-1
 - Converts Cyrillic → Latin (яфй → âfj)
@@ -92,7 +92,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `HTCharset.h`, `HTCharset.c`
 - **Test**: `test/test_htcharset.c` (German, Polish, Russian)
 
-#### ⚙️ Infrastructure Improvements
+#### Infrastructure Improvements
 - 64-bit architecture support (from 32-bit original)
 - Socket timeouts (30s for HTTP/HTTPS, 5s for Wayback API)
 - Parallel compilation support (`make -j`)
@@ -390,25 +390,6 @@ ViolaWWW is provided as-is for educational and research purposes. The original s
 - Developer: Evgeny Stepanischev
 - Email: imbolk@gmail.com
 - Repository: [Project URL]
-
----
-
-## Technical Resources
-
-### Documentation
-- Original ViolaWWW: http://berkeley.ora.com/proj/viola/violaHome.html (historical)
-- Beta Testers: http://xcf.berkeley.edu/ht/projects/viola/betaTesters.html (historical)
-
-### Standards & APIs
-- Internet Archive CDX API: https://web.archive.org/cdx/search/cdx
-- OpenSSL Documentation: https://www.openssl.org/docs/
-- W3C HTML 3.0: https://www.w3.org/MarkUp/html3/
-
-### Testing Sites
-- https://example.com - Simple HTTPS test
-- https://info.cern.ch - First website (now with HTTPS)
-- http://www.hackzone.ru/ - Tests Web Archive fallback
-- https://httpbin.org - HTTP testing service
 
 ---
 

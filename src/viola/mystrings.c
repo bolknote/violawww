@@ -496,14 +496,15 @@ char* str;
 int strToVal(str)
 char* str;
 {
-    int i, j = 1, val = 0, negate = 1;
+    long i;
+    int j = 1, val = 0, negate = 1;
     size_t len;
 
     if (str == NULL)
         return 0;
 
     len = strlen(str);
-    for (i = (int)len - 1; i >= 0; i--) {
+    for (i = len - 1; i >= 0; i--) {
         /* fprintf(stderr, "%d %d %d %d\n",(*(str+i)-'0'), val,*(str+i),j);*/
         if (*(str + i) == '-')
             negate *= -1;
@@ -876,7 +877,7 @@ char* deBracket(char* list) {
     if (!list[0]) {
         return list;
     } else {
-        int i;
+        long i;
         char c;
         size_t len;
 
@@ -887,7 +888,7 @@ char* deBracket(char* list) {
             }
         }
         len = strlen(list);
-        for (i = (int)len; i >= 0; i--) {
+        for (i = len; i >= 0; i--) {
             if (list[i] == '}') {
                 list[i] = '\0';
                 break;

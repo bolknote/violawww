@@ -28,7 +28,7 @@ VObj* VPrevObj;
 HashTable* objID2Obj;
 HashTable* objObj2ExistP;
 
-int securityMode = 0;
+long securityMode = 0;
 
 /* temporary way to know not to free heap, but just X resources */
 int exitingViola = 0;

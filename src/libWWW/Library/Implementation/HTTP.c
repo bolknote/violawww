@@ -716,8 +716,12 @@ copy:
         }
     }
 wheee:
-    (*target->isa->put_block)(target, binary_buffer + (start_of_data - text_buffer) + offset,
-                              (int)(length - (start_of_data - text_buffer) - offset));
+    {
+        ptrdiff_t data_offset = start_of_data - text_buffer;
+        ptrdiff_t remaining_length = length - data_offset - offset;
+        (*target->isa->put_block)(target, binary_buffer + data_offset + offset,
+                                  (int)remaining_length);
+    }
     HTCopy(s, target);
     (*target->isa->free)(target);
     status = HT_LOADED;

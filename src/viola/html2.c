@@ -1531,7 +1531,7 @@ char* dumpHotList(mode)
 int mode;
 {
     HotListItem* hip;
-    int size = 1; /*for last char*/
+    size_t size = 1; /*for last char*/
     char *list, *cp;
 
     if (mode == 0) {
@@ -1539,7 +1539,7 @@ int mode;
             size += strlen(hip->url) + 1;
         list = cp = (char*)malloc(sizeof(char) * size);
         for (hip = theHotList; hip; hip = hip->next) {
-            size = (int)strlen(hip->url);
+            size = strlen(hip->url);
             strncpy(cp, hip->url, size);
             cp[size] = '\n';
             cp += size + 1;
@@ -1551,7 +1551,7 @@ int mode;
             size += strlen(hip->comment) + 1;
         list = cp = (char*)malloc(sizeof(char) * size);
         for (hip = theHotList; hip; hip = hip->next) {
-            size = (int)strlen(hip->comment);
+            size = strlen(hip->comment);
             strncpy(cp, hip->comment, size);
             cp[size] = '\n';
             cp += size + 1;

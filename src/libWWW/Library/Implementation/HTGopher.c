@@ -594,7 +594,7 @@ PUBLIC int HTLoadGopher ARGS4(CONST char*, arg, HTParentAnchor*, anAnchor, HTFor
     }
 #endif
 
-    status = NETWRITE(s, command, (int)strlen(command));
+    status = NETWRITE(s, command, strlen(command));
     free(command);
     if (status < 0) {
         if (TRACE)

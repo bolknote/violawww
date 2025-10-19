@@ -245,7 +245,7 @@ char* cmd;
             }
         }
 #endif
-        status = NETWRITE(control->socket, cmd, (int)strlen(cmd));
+        status = NETWRITE(control->socket, cmd, strlen(cmd));
         if (status < 0) {
             if (TRACE)
                 fprintf(stderr, "FTP: Error %d sending command: closing socket %d\n", status,

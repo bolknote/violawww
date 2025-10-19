@@ -21,7 +21,7 @@ extern VObj* VCurrentObj;      /* refers to the current object context */
 extern VObj* VTargetObj;       /* refers to the marked object		*/
 extern VObj* VPrevObj;         /* refers to the previous object	*/
 
-extern int securityMode;
+extern long securityMode;
 
 /*
  * scans and return the VObjList node objentified by obj

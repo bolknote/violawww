@@ -55,7 +55,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 ### Modern Enhancements (v4.0 - 2025)
 
 #### 64-bit Architecture Port
-- Full compatibility with modern 64-bit systems (x86_64, ARM64)
+- Full compatibility with modern 64-bit ARM64 systems (Apple Silicon)
 - Fixed pointer size issues (32-bit → 64-bit)
 - Updated integer types for proper memory addressing
 - Tested on macOS (Apple Silicon M3)
@@ -371,7 +371,7 @@ Contributions are welcome! Areas of interest:
 **Developer**: Evgeny Stepanischev (imbolk@gmail.com)
 
 **Contributions**:
-- Ported to 64-bit architectures (x86_64, ARM64/Apple Silicon)
+- Ported to 64-bit ARM64 architecture (Apple Silicon)
 - HTTPS/TLS support with OpenSSL integration
 - HTTP redirect handling (3xx status codes)
 - Internet Archive (Wayback Machine) integration

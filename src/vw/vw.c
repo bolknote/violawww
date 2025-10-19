@@ -140,7 +140,7 @@ static MenuItem fileMenuItems[] = {
      "Open a document by file browser.", TRUE, (MenuItem*)NULL},
     {"Open URL", &xmPushButtonWidgetClass, 'U', "Ctrl<Key>U", "Ctrl-U", simpleOpenURLDialog,
      "Open URL", "Open a document by typing in URL.", TRUE, (MenuItem*)NULL},
-    {"Open URL in Selection Buffer", &xmPushButtonWidgetClass, 0, NULL, NULL,
+    {"Open URL in Selection Buffer", &xmPushButtonWidgetClass, 'B', NULL, NULL,
      openURLInSelectionBuffer, "Open URL in Selection Buffer",
      "Follow the URL in the X selection/cut buffer.", TRUE, (MenuItem*)NULL},
     {"", &xmSeparatorGadgetClass, (char)0, NULL, NULL, NULL, NULL, NULL, TRUE, (MenuItem*)NULL},
@@ -155,10 +155,9 @@ static MenuItem fileMenuItems[] = {
           FALSE,
           (MenuItem *) NULL},
     */
-    {"Show Source", &xmPushButtonWidgetClass, 0, "Ctrl<Key>S", "Ctrl-S", showSourceCB, "showSource",
+    {"Show Source", &xmPushButtonWidgetClass, 'S', "Ctrl<Key>S", "Ctrl-S", showSourceCB, "showSource",
      "Show the document source.", TRUE, (MenuItem*)NULL},
-    {"Save As", &xmPushButtonWidgetClass, 0, NULL, NULL,
-     /*'A', "Ctrl<Key>A", "Ctrl-A",*/
+    {"Save As", &xmPushButtonWidgetClass, 'A', NULL, NULL,
      vwSaveAsCB, NULL, "Save the current document to a new local file.", TRUE, (MenuItem*)NULL},
     {"", &xmSeparatorGadgetClass, (char)0, NULL, NULL, NULL, NULL, NULL, TRUE, (MenuItem*)NULL},
     {"Quit", &xmPushButtonWidgetClass, 'Q', "Ctrl<Key>Q", "Ctrl-Q", quitCallback, NULL,
@@ -175,21 +174,17 @@ static MenuItem editMenuItems[] = {
 };
 
 static MenuItem navigationMenuItems[] = {
-    {"Home", &xmPushButtonWidgetClass, 0, NULL, NULL,
-     /*'H', "Ctrl<Key>H", "Ctrl-H",*/
+    {"Home", &xmPushButtonWidgetClass, 'o', NULL, NULL,
      navigateHome, "Home", "Go to the HOME page document.", TRUE, (MenuItem*)NULL},
-    {"Back Up", &xmPushButtonWidgetClass, 0, NULL, NULL,
-     /*'B', "Ctrl<Key>B", "Ctrl-B",*/
+    {"Back Up", &xmPushButtonWidgetClass, 'B', NULL, NULL,
      navigateBackUp, "Back Up",
      "Backup to the previous document, removing the current document from memory.", TRUE,
      (MenuItem*)NULL},
-    {"Previous", &xmPushButtonWidgetClass, 0, NULL, NULL,
-     /*'P', "Ctrl<Key>P", "Ctrl-P",*/
+    {"Previous", &xmPushButtonWidgetClass, 'P', NULL, NULL,
      navigatePrev, "Previous",
      "Go the the previous document but keep the current document in memory.", TRUE,
      (MenuItem*)NULL},
-    {"Next", &xmPushButtonWidgetClass, 0, NULL, NULL,
-     /*'N', "Ctrl<Key>N", "Ctrl-N",*/
+    {"Next", &xmPushButtonWidgetClass, 'N', NULL, NULL,
      navigateNext, "Next", "Go to the next document in history list.", TRUE, (MenuItem*)NULL},
     {"", &xmSeparatorGadgetClass, (char)0, NULL, NULL, NULL, NULL, NULL, TRUE, (MenuItem*)NULL},
     {"History List", &xmPushButtonWidgetClass, 'L', "Ctrl<Key>L", "Ctrl-L", showHistoryCB,
@@ -197,7 +192,7 @@ static MenuItem navigationMenuItems[] = {
     {"", &xmSeparatorGadgetClass, (char)0, NULL, NULL, NULL, NULL, NULL, TRUE, (MenuItem*)NULL},
     {"Hot List", &xmPushButtonWidgetClass, 'H', "Ctrl<Key>H", "Ctrl-H", showHotlistCB, "Hot List",
      "Show list of saved URL links.", TRUE, (MenuItem*)NULL},
-    {"Add to Hot List", &xmPushButtonWidgetClass, 0, NULL, NULL, addToHotlistCB, "Add To Hot List",
+    {"Add to Hot List", &xmPushButtonWidgetClass, 't', NULL, NULL, addToHotlistCB, "Add To Hot List",
      "Add current document to Hot List.", TRUE, (MenuItem*)NULL},
     NULL,
 };
@@ -236,11 +231,11 @@ MenuItem testMenuItems[] = {
 */
 
 MenuItem helpMenuItems[] = {
-    {"About ViolaWWW", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB,
+    {"About ViolaWWW", &xmPushButtonWidgetClass, 'A', NULL, NULL, oneWordMessageCB,
      "get_infoOnViolaWWW", "Information on Viola WWW.", TRUE, (MenuItem*)NULL},
-    {"Help...", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB, "get_helpOnViolaWWW",
+    {"Help...", &xmPushButtonWidgetClass, 'H', NULL, NULL, oneWordMessageCB, "get_helpOnViolaWWW",
      "General help on Viola.", TRUE, (MenuItem*)NULL},
-    {"Demos...", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB,
+    {"Demos...", &xmPushButtonWidgetClass, 'D', NULL, NULL, oneWordMessageCB,
      "get_demoForViolaWWW", "Demonstration documents.", TRUE, (MenuItem*)NULL},
     /*
         { "Info on browser version", &xmPushButtonWidgetClass,
@@ -252,17 +247,17 @@ MenuItem helpMenuItems[] = {
               (MenuItem *) NULL},
     */
     {"", &xmSeparatorGadgetClass, (char)0, NULL, NULL, NULL, NULL, NULL, TRUE, (MenuItem*)NULL},
-    {"Send Email to Developers", &xmPushButtonWidgetClass, '\0', NULL, NULL, showMailEditor, "",
+    {"Send Email to Developers", &xmPushButtonWidgetClass, 'E', NULL, NULL, showMailEditor, "",
      "Send mail to developers at viola@ora.com.", TRUE, (MenuItem*)NULL},
     NULL,
 };
 
 MenuItem serversMenuItems[] = {
-    {"GNN's Whole Internet Catalog", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB,
+    {"GNN's Whole Internet Catalog", &xmPushButtonWidgetClass, 'G', NULL, NULL, oneWordMessageCB,
      "get_gnnWIC", "Link to O'Reilly & Associates Resource Listing.", TRUE, (MenuItem*)NULL},
-    {"W3O's Web Servers Catalog", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB,
+    {"W3O's Web Servers Catalog", &xmPushButtonWidgetClass, 'W', NULL, NULL, oneWordMessageCB,
      "get_cern", "Link to WWW Organization's List of Servers.", TRUE, (MenuItem*)NULL},
-    {"More Meta Centers", &xmPushButtonWidgetClass, '\0', NULL, NULL, oneWordMessageCB,
+    {"More Meta Centers", &xmPushButtonWidgetClass, 'M', NULL, NULL, oneWordMessageCB,
      "get_moreServers", "More servers...", TRUE, (MenuItem*)NULL},
     NULL,
 };

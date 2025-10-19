@@ -100,48 +100,9 @@ char *s1, *s2;
  ** spaces around the word is trimed.
  *
  * PreCondition: i <= strlen(linep);
- *               *wordp must be large enough to hold any argument in *linep.
- * PostCondition: *wordp contains an argument string from *linep.
- */
-int NextWord(linep, i, wordp)
-char* linep;
-int i;
-char* wordp;
-{
-    int j = 0;
-
-    for (;;) {
-        if (!linep[i]) {
-            wordp[j] = '\0';
-            return i;
-        }
-        if (!ISSPACE(linep[i]))
-            break;
-        ++i;
-    }
-
-    for (;;) {
-        if (!linep[i])
-            break;
-        if (ISSPACE(linep[i]))
-            break;
-        wordp[j++] = linep[i++];
-    }
-    wordp[j] = '\0';
-
-    return i;
-}
-
-/*
- ** Safe version of NextWord with bounds checking.
- ** Stores the next word in linep in *wordp. Current postion in line is
- ** pointed to by index i.
- ** spaces around the word is trimed.
- *
- * PreCondition: i <= strlen(linep);
  * PostCondition: *wordp contains an argument string from *linep, truncated if necessary.
  */
-int NextWordSafe(char* linep, int i, char* wordp, int maxlen)
+int NextWord(char* linep, int i, char* wordp, int maxlen)
 {
     int j = 0;
 

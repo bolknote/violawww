@@ -98,7 +98,7 @@ char* newPathStr;
 
     for (i = 0, stri = 0; i < VIOLA_PATH_ARRAY_SIZE; i++) {
         SkipBlanks(newPathStr, &stri);
-        stri = NextWord(newPathStr, stri, pathStr);
+        stri = NextWord(newPathStr, stri, pathStr, sizeof(pathStr));
         if (AllBlank(pathStr)) {
             viola_path[i] = NULL;
             return i;

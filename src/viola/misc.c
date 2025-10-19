@@ -90,7 +90,7 @@ VObjList* strOListToOList(char* str)
     for (;;) {
         while (ISSPACE(str[i]))
             i++;
-        i = NextWordSafe(str, i, name, sizeof(name));
+        i = NextWord(str, i, name, sizeof(name));
         if (AllBlank(name))
             break;
         obj = findObject(getIdent(name));
@@ -169,7 +169,7 @@ char* argline;
 
     do {
         j = i;
-        i = NextWord(argline, i, buff);
+        i = NextWord(argline, i, buff, BUFF_SIZE);
         if (*buff)
             argv[argc++] = SaveString(buff);
     } while (i != j);

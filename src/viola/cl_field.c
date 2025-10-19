@@ -880,7 +880,7 @@ long meth_field_eventMask(VObj* self, Packet* result, int argc, Packet argv[]) {
         do {
             j = i;
             SkipBlanks(str, &i);
-            i = NextWordSafe(str, i, lbuff, sizeof(lbuff));
+            i = NextWord(str, i, lbuff, sizeof(lbuff));
             if (AllBlank(lbuff))
                 break;
             for (k = 0; eventMaskName[k].mask; k++) {

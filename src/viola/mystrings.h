@@ -70,15 +70,9 @@ int noCaseStrCmp(char *s1, char *s2);
  ** spaces around the word is trimed.
  *
  * PreCondition: i <= strlen(linep);
- *               *wordp must be large enough to hold any argument in *linep.
- * PostCondition: *wordp contains an argument string from *linep.
+ * PostCondition: *wordp contains an argument string from *linep, truncated if necessary.
  */
-int NextWord(char* linep, int i, char* wordp);
-
-/*
- ** Safe version of NextWord with bounds checking.
- */
-int NextWordSafe(char* linep, int i, char* wordp, int maxlen);
+int NextWord(char* linep, int i, char* wordp, int maxlen);
 
 /*
  ** Skips the next word linep in *wordp. Current postion in line is

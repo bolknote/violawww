@@ -76,6 +76,11 @@ int noCaseStrCmp(char *s1, char *s2);
 int NextWord(char* linep, int i, char* wordp);
 
 /*
+ ** Safe version of NextWord with bounds checking.
+ */
+int NextWordSafe(char* linep, int i, char* wordp, int maxlen);
+
+/*
  ** Skips the next word linep in *wordp. Current postion in line is
  ** pointed to by index i.
  ** will skip over spaces around the word.

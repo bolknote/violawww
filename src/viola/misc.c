@@ -83,7 +83,7 @@ int intBuff[];
 VObjList* strOListToOList(str)
 char* str;
 {
-    char name[100];
+    char name[1024];
     int i = 0;
     VObj* obj;
     VObjList* objl = NULL;
@@ -91,7 +91,7 @@ char* str;
     for (;;) {
         while (ISSPACE(str[i]))
             i++;
-        i = NextWord(str, i, name);
+        i = NextWordSafe(str, i, name, sizeof(name));
         if (AllBlank(name))
             break;
         obj = findObject(getIdent(name));

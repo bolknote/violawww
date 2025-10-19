@@ -29,6 +29,7 @@
 #define GOPHER_BINARY '9'
 #define GOPHER_GIF 'g'
 #define GOPHER_HTML 'h' /* HTML */
+#define GOPHER_INFO 'i' /* Informational message */
 #define GOPHER_SOUND 's'
 #define GOPHER_WWW 'w' /* W3 address */
 #define GOPHER_IMAGE 'I'
@@ -200,6 +201,11 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
             if (gtype == GOPHER_WWW) { /* Gopher pointer to W3 */
                 write_anchor(name, selector);
 
+            } else if (gtype == GOPHER_INFO) { /* Informational text, not a link */
+                PUTS("        "); /* Prettier JW/TBL */
+                PUTS(name);
+                PUTS("\n");
+
             } else if (port) { /* Other types need port */
                 if (gtype == GOPHER_TELNET) {
                     if (*selector)
@@ -228,12 +234,7 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
                     *q++ = 0; /* terminate address */
                 }
                 PUTS("        "); /* Prettier JW/TBL */
-                /* Error response from Gopher doesn't deserve to
-                   be a hyperlink. */
-                if (strcmp(address, "gopher://error.host:1/0"))
-                    write_anchor(name, address);
-                else
-                    PUTS(name);
+                write_anchor(name, address);
                 PUTS("\n");
             } else { /* parse error */
                 if (TRACE)

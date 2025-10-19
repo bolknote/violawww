@@ -133,6 +133,53 @@ char* wordp;
 }
 
 /*
+ ** Safe version of NextWord with bounds checking.
+ ** Stores the next word in linep in *wordp. Current postion in line is
+ ** pointed to by index i.
+ ** spaces around the word is trimed.
+ *
+ * PreCondition: i <= strlen(linep);
+ * PostCondition: *wordp contains an argument string from *linep, truncated if necessary.
+ */
+int NextWordSafe(linep, i, wordp, maxlen)
+char* linep;
+int i;
+char* wordp;
+int maxlen;
+{
+    int j = 0;
+
+    if (maxlen <= 0) {
+        if (maxlen == 0 && wordp)
+            wordp[0] = '\0';
+        return i;
+    }
+
+    for (;;) {
+        if (!linep[i]) {
+            wordp[j] = '\0';
+            return i;
+        }
+        if (!ISSPACE(linep[i]))
+            break;
+        ++i;
+    }
+
+    for (;;) {
+        if (!linep[i])
+            break;
+        if (ISSPACE(linep[i]))
+            break;
+        if (j < maxlen - 1)
+            wordp[j++] = linep[i];
+        ++i;
+    }
+    wordp[j] = '\0';
+
+    return i;
+}
+
+/*
  ** Skips the next word linep in *wordp. Current postion in line is
  ** pointed to by index i.
  ** will skip over spaces around the word.

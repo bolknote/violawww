@@ -145,7 +145,8 @@ LIBWWW_SRCS = $(LIBWWW_DIR)/HTParse.c $(LIBWWW_DIR)/HTAccess.c $(LIBWWW_DIR)/HTT
               $(LIBWWW_DIR)/HTAAServ.c $(LIBWWW_DIR)/FOSI.c $(LIBWWW_DIR)/FOSIDTD.c \
               $(LIBWWW_DIR)/HTLex.c $(LIBWWW_DIR)/HTGroup.c $(LIBWWW_DIR)/HTACL.c \
               $(LIBWWW_DIR)/HTPasswd.c $(LIBWWW_DIR)/HTAuth.c $(LIBWWW_DIR)/HTAAFile.c \
-              $(LIBWWW_DIR)/HTSSL.c $(LIBWWW_DIR)/HTTPS.c $(LIBWWW_DIR)/HTWayback.c
+              $(LIBWWW_DIR)/HTSSL.c $(LIBWWW_DIR)/HTTPS.c $(LIBWWW_DIR)/HTWayback.c \
+              $(LIBWWW_DIR)/HTKeepAlive.c
 LIBWWW_OBJS = $(patsubst $(LIBWWW_DIR)/%.c,$(LIBWWW_DARWIN)/%.o,$(LIBWWW_SRCS))
 
 $(LIBWWW): $(LIBWWW_OBJS)
@@ -321,8 +322,7 @@ $(VW_DIR)/%.o: $(VW_DIR)/%.c
 .PHONY: clean
 clean:
 	@echo "=== Cleaning object files and dependencies ==="
-	find $(SRC_DIR) -name '*.o' -delete
-	find $(SRC_DIR) -name '*.d' -delete
+	find $(SRC_DIR) \( -name '*.o' -o -name '*.d' \) -delete
 	@echo "Done"
 
 .PHONY: distclean

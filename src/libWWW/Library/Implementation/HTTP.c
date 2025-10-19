@@ -25,8 +25,10 @@
  */
 #include "HTTP.h"
 #include "HTWayback.h"
+#include "HTKeepAlive.h"
 #include <stddef.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 /* Forward declarations */
 extern void http_progress_notify();
@@ -137,6 +139,19 @@ PUBLIC int HTLoadHTTP ARGS4(CONST char*, arg,
     int tries = 0;
     static int redirect_count = 0;  /* Track redirect depth */
     #define MAX_REDIRECTS 10
+    
+    HTConnection* pooled_conn = NULL;  /* Connection from pool */
+    BOOL connection_from_pool = NO;
+    BOOL keep_alive = NO;  /* Server supports keep-alive */
+    char* hostname = NULL;
+    int port = 80;  /* Default HTTP port */
+    
+    /* Performance monitoring */
+    struct timeval start_time, end_time, connect_time;
+    long connect_ms = 0, total_ms = 0;
+    int bytes_received = 0;
+    
+    gettimeofday(&start_time, NULL);
 
     extern int http_progress_expected_total_bytes; /*PYW*/
     extern int http_progress_subtotal_bytes;
@@ -181,8 +196,20 @@ PUBLIC int HTLoadHTTP ARGS4(CONST char*, arg,
     {
         char* p1 = HTParse(gate ? gate : arg, "", PARSE_HOST);
         int status = HTParseInet(sin, p1); /* TBL 920622 */
+        
+        /* Extract hostname and port for connection pooling */
+        if (p1) {
+            char* colon = strchr(p1, ':');
+            if (colon) {
+                *colon = '\0';
+                port = atoi(colon + 1);
+            }
+            hostname = strdup(p1);
+        }
+        
         free(p1);
         if (status) {
+            if (hostname) free(hostname);
             return status; /* No such host - let caller handle Wayback */
         }
     }
@@ -235,40 +262,61 @@ retry:
 }
 #endif /* ACCESS_AUTH */
 
-    /*	Now, let's get a socket set up from the server for the data:
-     */
+    /* Try to get connection from pool */
+    pooled_conn = HTKeepAlive_getConnection(hostname, port, NO);
+    
+    if (pooled_conn) {
+        /* Reuse existing connection */
+        s = pooled_conn->socket;
+        connection_from_pool = YES;
+        
+        fprintf(stderr, "*** HTTP: REUSING keep-alive connection to %s:%d (saved TCP handshake!)\n", hostname, port);
+        gettimeofday(&connect_time, NULL);
+        connect_ms = 0; /* No connection time for reused connections */
+    } else {
+        /*	Now, let's get a socket set up from the server for the data:
+         */
 #ifdef DECNET
-    s = socket(AF_DECnet, SOCK_STREAM, 0);
+        s = socket(AF_DECnet, SOCK_STREAM, 0);
 #else
-    s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 #endif
-    
-    /* Set socket timeouts to prevent hanging on unresponsive servers */
-    {
-        struct timeval timeout;
-        timeout.tv_sec = 30;  /* 30 seconds timeout */
-        timeout.tv_usec = 0;
-        setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-        setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
-    }
-    
-    if (TRACE) {
-        char* p1 = HTParse(gate ? gate : arg, "", PARSE_HOST);
-        fprintf(stderr, "HTTP: Connecting to %s...\n", p1);
-        free(p1);
-    }
-    
-    status = connect(s, (struct sockaddr*)&soc_address, sizeof(soc_address));
-    if (status < 0) {
-        if (TRACE) {
-            fprintf(stderr, "HTTP: Connection failed (errno=%d)\n", errno);
+        
+        /* Set socket timeouts to prevent hanging on unresponsive servers */
+        {
+            struct timeval timeout;
+            /* Connect/Send timeout: 30 seconds */
+            timeout.tv_sec = 30;
+            timeout.tv_usec = 0;
+            setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+            
+            /* Initial read timeout: 60 seconds (like modern browsers) */
+            timeout.tv_sec = 60;
+            timeout.tv_usec = 0;
+            setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+            
+            fprintf(stderr, "⏱️  HTTP: Timeouts set: connect=30s, read=60s\n");
         }
-        /* free(command);   BUG OUT TBL 921121 */
-        return HTInetStatus("connect");
-    }
-    
-    if (TRACE) {
-        fprintf(stderr, "HTTP: Connected successfully\n");
+        
+        if (TRACE) {
+            fprintf(stderr, "HTTP: Connecting to %s:%d...\n", hostname, port);
+        }
+        
+        status = connect(s, (struct sockaddr*)&soc_address, sizeof(soc_address));
+        if (status < 0) {
+            if (TRACE) {
+                fprintf(stderr, "HTTP: Connection failed (errno=%d)\n", errno);
+            }
+            if (hostname) free(hostname);
+            /* free(command);   BUG OUT TBL 921121 */
+            return HTInetStatus("connect");
+        }
+        
+        gettimeofday(&connect_time, NULL);
+        connect_ms = (connect_time.tv_sec - start_time.tv_sec) * 1000 + 
+                     (connect_time.tv_usec - start_time.tv_usec) / 1000;
+        fprintf(stderr, "*** HTTP: NEW connection to %s:%d (TCP handshake took %ld ms)\n", 
+                hostname, port, connect_ms);
     }
 
     /*	Ask that node for the document,
@@ -349,6 +397,10 @@ retry:
             if (hostname)
                 free(hostname);
         }
+
+        /* Add Connection: Keep-Alive header */
+        sprintf(line, "Connection: Keep-Alive%s", crlf);
+        StrAllocCat(command, line);
 
 #ifdef ACCESS_AUTH
         if (auth != NULL) {
@@ -446,9 +498,13 @@ retry:
                 NETCLOSE(s);
                 return status;
             }
+            
+            if (status > 0) {
+                bytes_received += status;
+            }
 
             if (TRACE)
-                fprintf(stderr, "HTTP: read returned %d bytes.\n", status);
+                fprintf(stderr, "HTTP: read returned %d bytes (total: %d).\n", status, bytes_received);
 
 #ifdef VIOLA /* KLUDGE ALERT */
             http_progress_notify(status);
@@ -559,6 +615,32 @@ retry:
 
             format_in = HTAtom_for("www/mime");
             start_of_data = eol ? eol + 1 : text_buffer + length;
+
+            /* Check if server supports keep-alive */
+            {
+                char* conn_header = find_header(start_of_data, "Connection");
+                if (conn_header) {
+                    char* p = conn_header + 11; /* Skip "Connection:" */
+                    while (*p == ' ' || *p == '\t') p++;
+                    if (strncasecmp(p, "Keep-Alive", 10) == 0 || 
+                        strncasecmp(p, "keep-alive", 10) == 0) {
+                        /* Server claims to support keep-alive */
+                        /* But in HTTP/1.0 we NEED Content-Length for keep-alive to work! */
+                        char* cl_check = find_header(start_of_data, "Content-Length");
+                        if (cl_check) {
+                            keep_alive = YES;
+                            fprintf(stderr, "+++ HTTP: Server %s:%d SUPPORTS keep-alive (has Content-Length)!\n", hostname, port);
+                        } else {
+                            keep_alive = NO;
+                            fprintf(stderr, "--- HTTP: Server says Keep-Alive but NO Content-Length (HTTP/1.0 violation) - ignoring\n");
+                        }
+                    } else {
+                        fprintf(stderr, "--- HTTP: Server %s:%d does NOT support keep-alive\n", hostname, port);
+                    }
+                } else {
+                    fprintf(stderr, "--- HTTP: No Connection header from %s:%d - will close\n", hostname, port);
+                }
+            }
 
             switch (server_status / 100) {
 
@@ -715,16 +797,32 @@ copy:
         target = HTNetToText(target); /* Pipe through CR stripper */
     }
 
-    if (http_progress_reporter_level == 1) {
-        cp = strstr(binary_buffer, "Content-length: ");
-        if (!cp)
-            cp = strstr(binary_buffer, "Content-Length: ");
-        if (cp) {
-            cp += strlen("Content-length: ");
-            for (buffp = buff; *cp != '\n'; buffp++, cp++)
-                *buffp = *cp;
+    /* Parse Content-Length - CRITICAL for keep-alive! */
+    /* MUST parse ALWAYS, not just when http_progress_reporter_level == 1 */
+    int content_length = -1;  /* -1 means unknown */
+    {
+        char* cl_header = find_header(start_of_data, "Content-Length");
+        if (cl_header) {
+            char* p = cl_header + 15;  /* Skip "Content-Length:" */
+            while (*p == ' ' || *p == '\t') p++;  /* Skip whitespace */
+            
+            /* Read number */
+            for (buffp = buff; *p && *p != '\r' && *p != '\n'; buffp++, p++)
+                *buffp = *p;
             *buffp = '\0';
-            http_progress_expected_total_bytes = atoi(buff);
+            
+            content_length = atoi(buff);
+            if (http_progress_reporter_level == 1) {
+                http_progress_expected_total_bytes = content_length;
+            }
+            fprintf(stderr, "📦 HTTP: Content-Length = %d bytes (progress_level=%d)\n", 
+                    content_length, http_progress_reporter_level);
+        } else {
+            fprintf(stderr, "⚠️  HTTP: No Content-Length header - will hang 30s waiting for EOF!\n");
+            if (keep_alive) {
+                fprintf(stderr, "    ⚠️  Server claims Keep-Alive but no Content-Length - disabling keep-alive!\n");
+                keep_alive = NO;
+            }
         }
         foundContentLength = 1;
     }
@@ -836,10 +934,53 @@ wheee:
     {
         ptrdiff_t data_offset = start_of_data - text_buffer;
         ptrdiff_t remaining_length = length - data_offset - offset;
-        (*target->isa->put_block)(target, binary_buffer + data_offset + offset,
-                                  (int)remaining_length);
+        int initial_data = (int)remaining_length;
+        (*target->isa->put_block)(target, binary_buffer + data_offset + offset, initial_data);
+        
+        fprintf(stderr, "📨 HTTP: Initial data block = %d bytes\n", initial_data);
     }
-    HTCopy(s, target);
+    
+    /* Copy remaining data - use Content-Length if available */
+    if (content_length >= 0) {
+        /* We know exact length - read only what's needed */
+        ptrdiff_t data_offset = start_of_data - text_buffer;
+        ptrdiff_t remaining_length = length - data_offset - offset;
+        int bytes_to_read = content_length - (int)remaining_length;
+        int bytes_read_so_far = 0;
+        
+        fprintf(stderr, "📥 HTTP: Need to read %d more bytes (Content-Length=%d, already have %d)\n",
+                bytes_to_read, content_length, (int)remaining_length);
+        
+        /* Keep 60s timeout for Content-Length reads */
+        
+        while (bytes_read_so_far < bytes_to_read) {
+            int to_read = (bytes_to_read - bytes_read_so_far);
+            if (to_read > buffer_length - 1) {
+                to_read = buffer_length - 1;
+            }
+            
+            status = NETREAD(s, binary_buffer, to_read);
+            if (status <= 0) {
+                fprintf(stderr, "⚠️  HTTP: Read returned %d (expected %d more bytes)\n", 
+                        status, bytes_to_read - bytes_read_so_far);
+                break;
+            }
+            
+            bytes_received += status;
+            bytes_read_so_far += status;
+            (*target->isa->put_block)(target, binary_buffer, status);
+            
+            fprintf(stderr, "📥 HTTP: Read %d bytes (%d/%d total)\n", 
+                    status, bytes_read_so_far, bytes_to_read);
+        }
+        
+        fprintf(stderr, "✅ HTTP: Finished reading Content-Length data (exact bytes)\n");
+    } else {
+        /* No Content-Length - read until EOF with 60s timeout */
+        fprintf(stderr, "📥 HTTP: No Content-Length - reading until EOF or timeout (60s)...\n");
+        HTCopy(s, target);
+    }
+    
     (*target->isa->free)(target);
     status = HT_LOADED;
 
@@ -862,9 +1003,73 @@ clean_up:
     if (text_buffer)
         free(text_buffer);
 
+    /* Calculate total time */
+    gettimeofday(&end_time, NULL);
+    total_ms = (end_time.tv_sec - start_time.tv_sec) * 1000 + 
+               (end_time.tv_usec - start_time.tv_usec) / 1000;
+    
+    fprintf(stderr, "⏱  HTTP: Downloaded %d bytes in %ld ms (%.1f KB/s, connect: %ld ms)\n",
+            bytes_received, total_ms, 
+            total_ms > 0 ? (bytes_received / 1024.0) / (total_ms / 1000.0) : 0.0,
+            connect_ms);
+
     if (TRACE)
-        fprintf(stderr, "HTTP: close socket %d.\n", s);
-    (void)NETCLOSE(s);
+        fprintf(stderr, "HTTP: %s connection.\n", 
+                keep_alive ? "Returning to pool" : "Closing");
+    
+    /* Return connection to pool if keep-alive, otherwise close */
+    /* ВАЖНО: делаем это ДО освобождения hostname! */
+    if (keep_alive && status == HT_LOADED && s >= 0 && hostname) {
+        if (connection_from_pool && pooled_conn) {
+            /* Reuse the same pooled_conn object - just update timestamp and stats */
+            time_t now = time(NULL);
+            long reuse_delay = now - pooled_conn->last_used;
+            pooled_conn->last_used = now;
+            pooled_conn->total_requests++;
+            pooled_conn->total_bytes += bytes_received;
+            
+            HTKeepAlive_returnConnection(pooled_conn);
+            
+            fprintf(stderr, "<<< Keep-Alive: Returned REUSED connection to pool (was idle %ld sec)\n", reuse_delay);
+            fprintf(stderr, "    This request: %d bytes in %ld ms\n", bytes_received, total_ms);
+        } else {
+            /* Create a new pool entry for a new connection */
+            HTConnection* conn_entry = (HTConnection*)malloc(sizeof(HTConnection));
+            if (conn_entry) {
+                conn_entry->hostname = strdup(hostname);
+                conn_entry->port = port;
+                conn_entry->socket = s;
+                conn_entry->is_ssl = NO;
+#ifdef USE_SSL
+                conn_entry->ssl_conn = NULL;
+#endif
+                conn_entry->created = time(NULL);
+                conn_entry->last_used = conn_entry->created;
+                conn_entry->reuse_count = 0;
+                conn_entry->total_bytes = bytes_received;
+                conn_entry->total_requests = 1;
+                conn_entry->next = NULL;
+                
+                /* Return to pool */
+                HTKeepAlive_returnConnection(conn_entry);
+                fprintf(stderr, "    Initial request: %d bytes in %ld ms\n", bytes_received, total_ms);
+            } else {
+                /* Failed to create pool entry, close connection */
+                (void)NETCLOSE(s);
+            }
+        }
+    } else {
+        /* Close connection */
+        (void)NETCLOSE(s);
+        if (pooled_conn) {
+            /* Connection came from pool but we're not reusing it */
+            free(pooled_conn);
+        }
+    }
+    
+    /* Free hostname AFTER using it for conn_entry */
+    if (hostname)
+        free(hostname);
 
     redirect_count = 0;  /* Reset redirect counter on successful completion */
     return status; /* Good return */

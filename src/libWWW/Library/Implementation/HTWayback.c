@@ -11,10 +11,93 @@
 #include "HTUtils.h"
 #include "tcp.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
+
+/* External UI function - defined in viola code */
+extern void showHelpMessageInMainWindow(char* message) __attribute__((weak));
+
+/* Parse chunked encoding from buffer (not from socket!) */
+PRIVATE char* parse_chunked_body ARGS2(char*, chunked_data, int*, out_len) {
+    char* result = (char*)malloc(8192);
+    char* src = chunked_data;
+    int total = 0;
+    
+    if (!result) {
+        *out_len = 0;
+        return NULL;
+    }
+    
+    if (TRACE) fprintf(stderr, "Wayback: Parsing chunked body from buffer\n");
+    
+    while (*src) {
+        /* Read chunk size (hex) until \r\n */
+        char size_str[32];
+        int i = 0;
+        while (*src && *src != '\r' && i < 31) {
+            size_str[i++] = *src++;
+        }
+        size_str[i] = '\0';
+        
+        /* Skip \r\n */
+        if (*src == '\r') src++;
+        if (*src == '\n') src++;
+        
+        /* Parse hex size */
+        int chunk_size = (int)strtol(size_str, NULL, 16);
+        if (TRACE) fprintf(stderr, "Wayback: Chunk size: %d (0x%s)\n", chunk_size, size_str);
+        
+        if (chunk_size == 0) {
+            if (TRACE) fprintf(stderr, "Wayback: Got final chunk\n");
+            break;  /* Last chunk */
+        }
+        
+        /* Copy chunk data */
+        if (total + chunk_size < 8192) {
+            memcpy(result + total, src, chunk_size);
+            total += chunk_size;
+            src += chunk_size;
+        } else {
+            if (TRACE) fprintf(stderr, "Wayback: Chunk too large, buffer full\n");
+            break;
+        }
+        
+        /* Skip trailing \r\n after chunk data */
+        if (*src == '\r') src++;
+        if (*src == '\n') src++;
+    }
+    
+    result[total] = '\0';
+    *out_len = total;
+    if (TRACE) fprintf(stderr, "Wayback: Total dechunked data: %d bytes\n", total);
+    return result;
+}
+
+/* Helper to safely call UI update function (same way as html2.c does) */
+PRIVATE void safe_show_message(const char* message) {
+#ifdef VIOLA
+    extern void* mesgObj;  /* VObj* but we don't want to include viola.h */
+    if (!mesgObj) {
+        /* Try to find message object */
+        extern void* findObject(int);
+        extern int getIdent(const char*);
+        mesgObj = findObject(getIdent("www.mesg.tf"));
+    }
+    if (mesgObj) {
+        extern int sendMessage1N1str(void*, const char*, char*);
+        sendMessage1N1str(mesgObj, "show", (char*)message);
+    }
+#else
+    /* Fallback for non-Viola builds */
+    if (showHelpMessageInMainWindow) {
+        showHelpMessageInMainWindow((char*)message);
+    }
+#endif
+}
 
 #define WAYBACK_API_HOST "web.archive.org"
 #define WAYBACK_API_PORT 80
@@ -45,9 +128,10 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
         return NULL;
     }
 
-    if (TRACE) {
-        fprintf(stderr, "Wayback: Checking %s\n", url);
-    }
+    if (TRACE) fprintf(stderr, "Wayback: Checking URL: %s\n", url);
+    
+    /* Show status message */
+    safe_show_message("Searching in Web Archive...");
 
     /* CDX API accepts full URLs as-is: url=http://www.example.com/path
     ** We only need to URL-encode characters that would break the query string
@@ -88,46 +172,59 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
     /* Resolve archive.org hostname */
     {
         struct hostent* phost;
+        char msg[256];
+        
+        sprintf(msg, "DNS resolve: %s", WAYBACK_API_HOST);
+        safe_show_message(msg);
+        
         phost = gethostbyname(WAYBACK_API_HOST);
         if (!phost) {
-            if (TRACE) {
-                fprintf(stderr, "Wayback: Cannot resolve %s\n", WAYBACK_API_HOST);
-            }
+            if (TRACE) fprintf(stderr, "Wayback: DNS resolution failed\n");
+            safe_show_message("Web Archive: DNS resolution failed");
             free(url_encoded);
             return NULL;
         }
+        if (TRACE) fprintf(stderr, "Wayback: Resolved to IP\n");
         memcpy(&sin->sin_addr, phost->h_addr, phost->h_length);
     }
 
-    /* Create socket */
+    /* Create socket - EXPLICITLY in blocking mode */
     s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (s < 0) {
-        if (TRACE) {
-            fprintf(stderr, "Wayback: Cannot create socket (errno=%d)\n", errno);
-        }
+        if (TRACE) fprintf(stderr, "Wayback: Cannot create socket (errno=%d)\n", errno);
         free(url_encoded);
         return NULL;
     }
-
-    /* Set socket timeout */
+    
+    /* Ensure socket is in BLOCKING mode */
+    {
+        int flags = fcntl(s, F_GETFL, 0);
+        if (flags & O_NONBLOCK) {
+            fcntl(s, F_SETFL, flags & ~O_NONBLOCK);
+        }
+    }
+    
+    /* Set socket timeout - CDX API can take 20+ seconds to respond */
     {
         struct timeval timeout;
-        timeout.tv_sec = WAYBACK_API_TIMEOUT;
+        timeout.tv_sec = 30;  /* CDX API needs ~20 seconds */
         timeout.tv_usec = 0;
         setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
         setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
     }
 
     /* Connect to archive.org */
+    safe_show_message("Connecting to Web Archive...");
+    
     status = connect(s, (struct sockaddr*)sin, sizeof(*sin));
     if (status < 0) {
-        if (TRACE) {
-            fprintf(stderr, "Wayback: Cannot connect to %s (errno=%d)\n", WAYBACK_API_HOST, errno);
-        }
+        if (TRACE) fprintf(stderr, "Wayback: Connection failed (errno=%d)\n", errno);
+        safe_show_message("Web Archive: Connection failed");
         close(s);
         free(url_encoded);
         return NULL;
     }
+    if (TRACE) fprintf(stderr, "Wayback: Connected to %s:%d\n", WAYBACK_API_HOST, WAYBACK_API_PORT);
 
     /* Build HTTP request for Wayback CDX API (get EARLIEST snapshot) */
     request =
@@ -146,20 +243,27 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
             "\r\n",
             url_encoded, WAYBACK_API_HOST);
 
-    free(url_encoded);
-
     /* Send request */
+    safe_show_message("Querying Web Archive database...");
+    
+    if (TRACE) {
+        fprintf(stderr, "Wayback: Querying CDX API for %s\n", url_encoded);
+    }
+    
     status = NETWRITE(s, request, strlen(request));
     free(request);
+    free(url_encoded);
     if (status < 0) {
-        if (TRACE) {
-            fprintf(stderr, "Wayback: Failed to send request (status=%d)\n", status);
-        }
+        if (TRACE) fprintf(stderr, "Wayback: Query failed (status=%d)\n", status);
+        safe_show_message("Web Archive: Query failed");
         close(s);
         return NULL;
     }
+    if (TRACE) fprintf(stderr, "Wayback: Query sent\n");
 
     /* Read response */
+    safe_show_message("Reading Web Archive response...");
+    
     response_buffer = (char*)malloc(8192); /* Should be enough for JSON response */
     if (!response_buffer) {
         close(s);
@@ -167,23 +271,30 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
     }
 
     total_read = 0;
+    int read_attempts = 0;
     while (total_read < 8191) {
         response_len = NETREAD(s, response_buffer + total_read, 8191 - total_read);
-        if (response_len <= 0) {
+        read_attempts++;
+        
+        if (response_len < 0) {
+            if (TRACE) fprintf(stderr, "Wayback: Read error: errno=%d (%s)\n", errno, strerror(errno));
             break;
         }
+        if (response_len == 0) {
+            break;  /* EOF */
+        }
+        
         total_read += response_len;
     }
     response_buffer[total_read] = '\0';
     close(s);
 
     if (total_read == 0) {
-        if (TRACE) {
-            fprintf(stderr, "Wayback: No response received\n");
-        }
+        if (TRACE) fprintf(stderr, "Wayback: No response received\n");
         free(response_buffer);
         return NULL;
     }
+    if (TRACE) fprintf(stderr, "Wayback: Received %d bytes\n", total_read);
 
     /* Parse CDX text response to get EARLIEST snapshot
     ** CDX returns simple space-separated format (default, not JSON):
@@ -194,39 +305,46 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
     ** We need fields [1]=timestamp and [2]=original
     */
 
+    /* Check if response uses chunked encoding */
+    BOOL is_chunked = NO;
+    if (strstr(response_buffer, "Transfer-Encoding: chunked") || 
+        strstr(response_buffer, "transfer-encoding: chunked")) {
+        is_chunked = YES;
+        if (TRACE) fprintf(stderr, "Wayback: Response uses chunked encoding\n");
+    }
+    
     /* Skip HTTP headers - find empty line (double newline) */
+    char* body = NULL;
     {
-        char*         body = strstr(response_buffer, "\r\n\r\n");
+        body = strstr(response_buffer, "\r\n\r\n");
         if (!body) {
             body = strstr(response_buffer, "\n\n");
         }
         if (!body) {
-            if (TRACE) {
-                fprintf(stderr, "Wayback: Cannot find response body\n");
-            }
+            if (TRACE) fprintf(stderr, "Wayback: Cannot find end of HTTP headers\n");
             free(response_buffer);
             return NULL;
         }
         body += 4; /* Skip past \r\n\r\n */
         if (*body == '\n') body++; /* Skip extra newline if present */
+    }
+    
+    /* If chunked, parse the chunks from the buffer we already read */
+    if (is_chunked) {
+        int dechunked_len = 0;
+        char* dechunked_body = parse_chunked_body(body, &dechunked_len);
         
-        /* Check for chunked encoding and skip chunk size if present */
-        if (strstr(response_buffer, "Transfer-Encoding: chunked") || 
-            strstr(response_buffer, "transfer-encoding: chunked")) {
-            /* Skip chunk size line (hex number like "6b" followed by \r\n) */
-            char* chunk_data = body;
-            /* Skip to end of hex size line */
-            while (*chunk_data && *chunk_data != '\r' && *chunk_data != '\n') {
-                chunk_data++;
-            }
-            /* Skip \r\n */
-            if (*chunk_data == '\r') chunk_data++;
-            if (*chunk_data == '\n') chunk_data++;
-            body = chunk_data;
-            if (TRACE) {
-                fprintf(stderr, "Wayback: Detected chunked encoding, skipped chunk size\n");
-            }
+        if (!dechunked_body || dechunked_len == 0) {
+            if (TRACE) fprintf(stderr, "Wayback: Failed to parse chunked body\n");
+            free(response_buffer);
+            if (dechunked_body) free(dechunked_body);
+            return NULL;
         }
+        
+        /* Replace response_buffer with dechunked data */
+        free(response_buffer);
+        response_buffer = dechunked_body;
+        body = response_buffer;
         
         /* Parse space-separated fields */
         {
@@ -274,12 +392,13 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
 
             /* Check if we got both timestamp and original URL */
             if (timestamp[0] == '\0' || original_url[0] == '\0') {
-                if (TRACE) {
-                    fprintf(stderr, "Wayback: No snapshots found\n");
-                }
+                if (TRACE) fprintf(stderr, "Wayback: No snapshots found in response\n");
+                safe_show_message("Web Archive: No archived versions found");
                 free(response_buffer);
                 return NULL;
             }
+            
+            if (TRACE) fprintf(stderr, "Wayback: Found snapshot: %s for %s\n", timestamp, original_url);
 
             /* Construct Wayback URL with EARLIEST timestamp */
             wayback_url = (char*)malloc(strlen(original_url) + 128);
@@ -288,14 +407,26 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
                 return NULL;
             }
             sprintf(wayback_url, "https://web.archive.org/web/%s/%s", timestamp, original_url);
+            
+            /* Show success message with date */
+            {
+                char msg[256];
+                char date_str[32];
+                /* Format timestamp YYYYMMDDHHMMSS to readable format */
+                if (strlen(timestamp) >= 8) {
+                    sprintf(date_str, "%.4s-%.2s-%.2s", timestamp, timestamp+4, timestamp+6);
+                    sprintf(msg, "Found in Web Archive (snapshot from %s)", date_str);
+                } else {
+                    sprintf(msg, "Found in Web Archive, loading...");
+                }
+                safe_show_message(msg);
+            }
         }
     }
 
     free(response_buffer);
 
-    if (TRACE) {
-        fprintf(stderr, "Wayback: Redirecting to archived snapshot: %s\n", wayback_url);
-    }
+    if (TRACE) fprintf(stderr, "Wayback: Generated URL: %s\n", wayback_url);
 
     return wayback_url;
 }

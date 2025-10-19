@@ -34,6 +34,7 @@
 #include "y.tab.h"
 #include <stdlib.h>
 #include <string.h>
+#include <X11/Xlib.h>
 
 #ifdef hpux
 #include <time.h>
@@ -2680,14 +2681,11 @@ char* messg;
     return 1;
 }
 
-long sendMessage1N1str(self, messg, s1)
-VObj* self;
-char* messg;
-char* s1;
+long sendMessage1N1str(VObj* self, char* messg, char* s1)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
-
+    
     CLEAR_REG1();
 
     PUSH_STACK_STR(messg);
@@ -2699,6 +2697,20 @@ char* s1;
     execObjScript(self);
 
     FREE_ARGLIST();
+    
+    /* Force UI update immediately - important during loading */
+    if (messg && strcmp(messg, "show") == 0) {
+        extern Display* display;
+        if (display) {
+            XEvent event;
+            XFlush(display);
+            /* Process pending expose events to actually show the message */
+            while (XCheckMaskEvent(display, ExposureMask, &event)) {
+                XtDispatchEvent(&event);
+            }
+            XSync(display, False);
+        }
+    }
 
     stackExecIdx = save_stackExecIdx;
     clearPacket(&execStack[++stackExecIdx]);

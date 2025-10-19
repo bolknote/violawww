@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <sys/stat.h>
@@ -215,6 +216,17 @@ Window parentWindow;
         }
     }
 #endif
+
+    /* Initialize HTTP/HTTPS keep-alive connection pool */
+    {
+        extern void HTKeepAlive_init(void);
+        extern void HTKeepAlive_cleanup(void);
+        HTKeepAlive_init();
+        atexit(HTKeepAlive_cleanup);
+        if (verbose) {
+            fprintf(stderr, "HTTP/HTTPS keep-alive connection pool initialized.\n");
+        }
+    }
 
     if (violaPath) {
         if (init_loader(violaPath)) {

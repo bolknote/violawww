@@ -13,6 +13,19 @@
 #include "../src/libWWW/Library/Implementation/HTWayback.h"
 #include "../src/libWWW/Library/Implementation/HTUtils.h"
 
+/* Stubs for UI functions (not used in tests) */
+void showHelpMessageInMainWindow(char* message) {
+    (void)message;  /* Do nothing in tests */
+}
+
+void* mesgObj = NULL;
+void* findObject(int id) { (void)id; return NULL; }
+int getIdent(const char* name) { (void)name; return 0; }
+int sendMessage1N1str(void* obj, const char* msg, char* str) { 
+    (void)obj; (void)msg; (void)str; 
+    return 0; 
+}
+
 /* Test case structure */
 typedef struct {
     const char* input_url;

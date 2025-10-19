@@ -287,8 +287,16 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
 
     /* If load failed, try Wayback Machine */
     if (status < 0) {
+        if (TRACE) {
+            fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 
+                    status, full_address);
+        }
+        
         char* wayback_url = HTWaybackCheck(full_address);
+        
         if (wayback_url) {
+            if (TRACE) fprintf(stderr, "HTAccess: Found archived version at %s\n", wayback_url);
+            
             /* Update current_addr so relative links resolve correctly */
             /* This is a Viola global variable used as base URL for parsing */
             extern char* current_addr;
@@ -300,7 +308,17 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
             /* Load Wayback URL as a completely new document */
             status = HTLoadAbsolute(wayback_url) ? HT_LOADED : HT_NO_DATA;
             
+            if (TRACE) {
+                if (status == HT_LOADED) {
+                    fprintf(stderr, "HTAccess: Successfully loaded archived version\n");
+                } else {
+                    fprintf(stderr, "HTAccess: Failed to load archived version (status=%d)\n", status);
+                }
+            }
+            
             free(wayback_url);
+        } else {
+            if (TRACE) fprintf(stderr, "HTAccess: No archived version found\n");
         }
     }
 

@@ -107,10 +107,18 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 ### Requirements
 
-- **System**: Unix/Linux/macOS with X11
-- **Display**: X11R5 or later (XQuartz on macOS)
-- **Optional**: Motif toolkit for enhanced GUI
-- **For HTTPS**: OpenSSL 3.x (`brew install openssl@3` on macOS)
+#### Required Dependencies
+
+- **X11**: XQuartz on macOS (`brew install --cask xquartz`)
+- **OpenMotif**: Motif toolkit (`brew install openmotif`)
+- **Byacc**: Berkeley Yacc parser generator (`brew install byacc`)
+
+#### Optional Dependencies
+
+- **OpenSSL 3.x**: For HTTPS support (`brew install openssl@3`)
+- **ICU4C**: For UTF-8 transliteration (`brew install icu4c`)
+
+**Note**: Without OpenMotif, only the pure X11 version (`viola`) will be built. The Motif version (`vw`) requires OpenMotif.
 
 ### Building
 
@@ -120,7 +128,9 @@ git clone https://github.com/bolknote/violawww.git
 cd violawww
 
 # Install dependencies (macOS)
-brew install openssl@3
+brew install --cask xquartz    # X11 window system
+brew install openmotif byacc   # Required for building
+brew install openssl@3 icu4c   # Optional (HTTPS + UTF-8)
 
 # Compile (parallel build)
 make clean

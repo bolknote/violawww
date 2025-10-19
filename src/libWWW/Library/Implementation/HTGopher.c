@@ -201,6 +201,14 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
             if (gtype == GOPHER_WWW) { /* Gopher pointer to W3 */
                 write_anchor(name, selector);
 
+            } else if (gtype == GOPHER_HTML) { /* HTML/hweb URL link */
+                /* Selector format: "URL:http://example.com/" */
+                char* url = selector;
+                if (strncmp(selector, "URL:", 4) == 0) {
+                    url = selector + 4; /* Skip "URL:" prefix */
+                }
+                write_anchor(name, url);
+
             } else if (gtype == GOPHER_INFO) { /* Informational text, not a link */
                 PUTS("        "); /* Prettier JW/TBL */
                 PUTS(name);

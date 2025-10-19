@@ -40,9 +40,18 @@ void* shellInfo;
     pullDown = XmCreatePulldownMenu(parent, menuTitle, NULL, 0);
 
     str = XmStringCreateSimple(menuTitle);
-    cascade = XtVaCreateManagedWidget(menuTitle, xmCascadeButtonWidgetClass, parent, XmNsubMenuId,
-                                      pullDown, XmNlabelString, str, XmNmnemonic,
-                                      menuMnemonic ? *menuMnemonic : 0, NULL);
+    if (menuMnemonic && *menuMnemonic != '\0') {
+        cascade = XtVaCreateManagedWidget(menuTitle, xmCascadeButtonWidgetClass, parent,
+                                          XmNsubMenuId, pullDown,
+                                          XmNlabelString, str,
+                                          XmNmnemonic, (KeySym)*menuMnemonic,
+                                          NULL);
+    } else {
+        cascade = XtVaCreateManagedWidget(menuTitle, xmCascadeButtonWidgetClass, parent,
+                                          XmNsubMenuId, pullDown,
+                                          XmNlabelString, str,
+                                          NULL);
+    }
     XmStringFree(str);
 
     for (i = 0; items[i].label != NULL; i++) {
@@ -55,8 +64,8 @@ void* shellInfo;
         if (!items[i].sensitive)
             XtVaSetValues(widget, XmNsensitive, FALSE, NULL);
 
-        if (items[i].mnemonic)
-            XtVaSetValues(widget, XmNmnemonic, items[i].mnemonic, NULL);
+        if (items[i].mnemonic != '\0')
+            XtVaSetValues(widget, XmNmnemonic, (KeySym)items[i].mnemonic, NULL);
 
         if (items[i].accelerator) {
             str = XmStringCreateSimple(items[i].accelText);

@@ -285,40 +285,54 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
 
     status = HTLoad(full_address, anchor, format_out, sink);
 
-    /* If load failed, try Wayback Machine */
+    /* If load failed, try Wayback Machine (but not if already loading from archive) */
     if (status < 0) {
-        if (TRACE) {
-            fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 
-                    status, full_address);
+        /* Extract hostname to check if we're already on web.archive.org */
+        char* hostname = HTParse(full_address, "", PARSE_HOST);
+        int is_archive = 0;
+        
+        if (hostname) {
+            /* Check if hostname is web.archive.org */
+            if (strcmp(hostname, WAYBACK_API_HOST) == 0) {
+                is_archive = 1;
+            }
+            free(hostname);
         }
         
-        char* wayback_url = HTWaybackCheck(full_address);
-        
-        if (wayback_url) {
-            if (TRACE) fprintf(stderr, "HTAccess: Found archived version at %s\n", wayback_url);
-            
-            /* Update current_addr so relative links resolve correctly */
-            /* This is a Viola global variable used as base URL for parsing */
-            extern char* current_addr;
-            if (current_addr) {
-                free(current_addr);
-            }
-            current_addr = strdup(wayback_url);
-            
-            /* Load Wayback URL as a completely new document */
-            status = HTLoadAbsolute(wayback_url) ? HT_LOADED : HT_NO_DATA;
-            
+        if (!is_archive) {
             if (TRACE) {
-                if (status == HT_LOADED) {
-                    fprintf(stderr, "HTAccess: Successfully loaded archived version\n");
-                } else {
-                    fprintf(stderr, "HTAccess: Failed to load archived version (status=%d)\n", status);
-                }
+                fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 
+                        status, full_address);
             }
             
-            free(wayback_url);
-        } else {
-            if (TRACE) fprintf(stderr, "HTAccess: No archived version found\n");
+            char* wayback_url = HTWaybackCheck(full_address);
+            
+            if (wayback_url) {
+                if (TRACE) fprintf(stderr, "HTAccess: Found archived version at %s\n", wayback_url);
+                
+                /* Update current_addr so relative links resolve correctly */
+                /* This is a Viola global variable used as base URL for parsing */
+                extern char* current_addr;
+                if (current_addr) {
+                    free(current_addr);
+                }
+                current_addr = strdup(wayback_url);
+                
+                /* Load Wayback URL as a completely new document */
+                status = HTLoadAbsolute(wayback_url) ? HT_LOADED : HT_NO_DATA;
+                
+                if (TRACE) {
+                    if (status == HT_LOADED) {
+                        fprintf(stderr, "HTAccess: Successfully loaded archived version\n");
+                    } else {
+                        fprintf(stderr, "HTAccess: Failed to load archived version (status=%d)\n", status);
+                    }
+                }
+                
+                free(wayback_url);
+            } else {
+                if (TRACE) fprintf(stderr, "HTAccess: No archived version found\n");
+            }
         }
     }
 

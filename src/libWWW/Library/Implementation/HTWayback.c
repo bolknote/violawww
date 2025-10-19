@@ -99,7 +99,7 @@ PRIVATE void safe_show_message(const char* message) {
 #endif
 }
 
-#define WAYBACK_API_HOST "web.archive.org"
+/* WAYBACK_API_HOST is defined in HTWayback.h */
 #define WAYBACK_API_PORT 80
 #define WAYBACK_API_TIMEOUT 5 /* seconds */
 
@@ -334,10 +334,17 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
         int dechunked_len = 0;
         char* dechunked_body = parse_chunked_body(body, &dechunked_len);
         
-        if (!dechunked_body || dechunked_len == 0) {
-            if (TRACE) fprintf(stderr, "Wayback: Failed to parse chunked body\n");
+        if (!dechunked_body) {
+            if (TRACE) fprintf(stderr, "Wayback: Failed to allocate buffer for chunked body\n");
             free(response_buffer);
-            if (dechunked_body) free(dechunked_body);
+            return NULL;
+        }
+        
+        /* Empty response (0 bytes) means no snapshot found - this is OK */
+        if (dechunked_len == 0) {
+            if (TRACE) fprintf(stderr, "Wayback: CDX API returned no results (empty response)\n");
+            free(response_buffer);
+            free(dechunked_body);
             return NULL;
         }
         

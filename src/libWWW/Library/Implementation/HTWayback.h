@@ -10,6 +10,10 @@
 
 #include "HTUtils.h"
 
+/*	Wayback Machine API configuration
+*/
+#define WAYBACK_API_HOST "web.archive.org"
+
 /*	Check if URL is available in Wayback Machine
 **	---------------------------------------------
 **

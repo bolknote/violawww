@@ -187,12 +187,13 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
                         port = strchr(host, TAB);
                         if (port) {
                             char* junk;
-                            port[0] = ':'; /* delimit host a la W3 */
+                            *port++ = 0; /* Terminate host, port now points to port number */
                             junk = strchr(port, TAB);
                             if (junk)
                                 *junk++ = 0; /* Chop port */
-                            if ((port[1] == '0') && (!port[2]))
-                                port[0] = 0; /* 0 means none */
+                            /* If port is "0", clear it (default port) */
+                            if ((port[0] == '0') && (!port[1]))
+                                port = NULL;
                         } /* no port */
                     } /* host ok */
                 } /* selector ok */
@@ -228,7 +229,11 @@ PRIVATE void parse_menu ARGS2(CONST char*, arg, HTParentAnchor*, anAnchor) {
                 } else { /* If parsed ok */
                     char* q;
                     char* p;
-                    sprintf(address, "gopher://%s%s/%c", host, port, gtype);
+                    /* port now contains just the port number (e.g. "70"), not ":70" */
+                    if (port)
+                        sprintf(address, "gopher://%s:%s/%c", host, port, gtype);
+                    else
+                        sprintf(address, "gopher://%s/%c", host, gtype);
                     q = address + strlen(address);
                     for (p = selector; *p; p++) { /* Encode selector string */
                         if (acceptable[*p])

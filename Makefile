@@ -80,12 +80,10 @@ all: config_info $(VW) $(VIOLA)
 
 .PHONY: config_info
 config_info:
-ifeq ($(ICU_AVAILABLE),yes)
-	@echo "=== Building with ICU transliteration support ==="
-else
-	@echo "=== Building without ICU (UTF-8 will not be transliterated) ==="
-endif
+ifeq ($(ICU_AVAILABLE),no)
+	@echo "⚠ Building without ICU (UTF-8 will not be transliterated)"
 	@echo ""
+endif
 
 # Help target
 .PHONY: help

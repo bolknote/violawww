@@ -116,8 +116,8 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd violawww2
+git clone https://github.com/bolknote/violawww.git
+cd violawww
 
 # Install dependencies (macOS)
 brew install openssl@3

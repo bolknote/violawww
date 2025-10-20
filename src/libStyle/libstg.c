@@ -6,7 +6,6 @@
  * + Caching mechanism in $LIBSTG_CACHE
  * + Take input from file desc.
  * + Cache lookups.
- * + Avoid unnecessary strcpy'ing by switching stgInfo_str and stack_str.
  * + Deal with "minors", ie: distinction between <EM role="WARNING"> and
  *   <EM role="NOTE">.
  */
@@ -18,6 +17,9 @@ extern void* malloc(unsigned long);
 extern void free(void*);
 extern char* strcpy(char*, const char*);
 extern char* saveString();
+extern int WWW_TraceFlag;
+
+#define TRACE (WWW_TraceFlag)
 
 #define ISSPACE(c) (c == ' ' || c == '\t' || c == '\n')
 #define ISTOKEN(c) (c == '=' || c == ',' || c == '(' || c == ')' || c == '{' || c == '}')
@@ -41,14 +43,18 @@ typedef struct STGInfo {
     } info;
 } STGInfo;
 
+/* Parser context - recursion-safe double buffering */
+typedef struct ParseContext {
+    char buff_a[1000];
+    char buff_b[1000];
+    char* stgInfo_buff;  /* pointer to current buffer for new token */
+    char* stack_str;     /* pointer to previous token buffer */
+    int stgInfo_buffIdx;
+    char stack_op;
+} ParseContext;
+
 STGInfo stgInfo;
-
-char stgInfo_buff[1000];
-int stgInfo_buffIdx;
-
-char stack_str[1000];
 char stack_char = '\0';
-char stack_op = '\0';
 
 int (*stg_tagNameCmp)();
 int (*stg_tagName2ID)();
@@ -56,6 +62,23 @@ char* (*stg_tagID2Name)();
 int (*stg_tagAttrNameCmp)();
 int (*stg_tagAttrName2ID)();
 char* (*stg_tagAttrID2Name)();
+
+/* Initialize parser context */
+static inline void init_parse_context(ParseContext* ctx) {
+    ctx->stgInfo_buff = ctx->buff_a;
+    ctx->stack_str = ctx->buff_b;
+    ctx->buff_a[0] = '\0';
+    ctx->buff_b[0] = '\0';
+    ctx->stgInfo_buffIdx = 0;
+    ctx->stack_op = '\0';
+}
+
+/* Swap buffers in context */
+static inline void swap_buffers(ParseContext* ctx) {
+    char* tmp = ctx->stgInfo_buff;
+    ctx->stgInfo_buff = ctx->stack_str;
+    ctx->stack_str = tmp;
+}
 
 STGLib* STG_init(tagNameCmp_f, tagName2ID_f, tagID2Name_f, tagAttrNameCmp_f, tagAttrName2ID_f,
                  tagAttrID2Name_f) int (*tagNameCmp_f)();
@@ -193,6 +216,7 @@ STGMajor* parseMajor(superMajor, s)
 STGMajor* superMajor;
 char** s;
 {
+    ParseContext ctx;  /* Local context - recursion-safe */
     STGMajor* major = (STGMajor*)malloc(sizeof(struct STGMajor));
 
     if (!major) {
@@ -207,10 +231,10 @@ char** s;
     major->firstMajorChild = NULL;
     major->firstMinorChild = NULL;
 
-    stack_str[0] = '\0';
-    stack_op = '(';
+    init_parse_context(&ctx);
+    ctx.stack_op = '(';
 
-    while (nextToken(s)) {
+    while (nextToken(&ctx, s)) {
         if (stgInfo.type == STG_INFO_TOKEN) {
             if (stgInfo.info.t == '(') {
                 addMajor(&(major->firstMajorChild), parseMajor(major, s));
@@ -220,10 +244,10 @@ char** s;
             } else if (stgInfo.info.t == '{') {
                 addMinor(&(major->firstMinorChild), parseMinor(s, major));
             } else if (stgInfo.info.t == ',') {
-                stack_op = stgInfo.info.t;
+                ctx.stack_op = stgInfo.info.t;
             } else if (stgInfo.info.t == '=') {
-                stack_op = stgInfo.info.t;
-                if (stack_str[0]) {
+                ctx.stack_op = stgInfo.info.t;
+                if (ctx.stack_str[0]) {
                     /*				     printf("### major: attn: %s = <expect>\n",
                                                                     stack_str);
                     */
@@ -233,15 +257,15 @@ char** s;
                 }
             }
         } else if (stgInfo.type == STG_INFO_STR) {
-            if (stack_op == '=') {
+            if (ctx.stack_op == '=') {
                 /*
                                                 printf("### major: assert: %s = %s\n",
-                                                        stack_str, stgInfo.info.s);
+                                                        ctx.stack_str, stgInfo.info.s);
                 */
-                assertAttr(&major->firstAssert, stack_str, stgInfo.info.s);
+                assertAttr(&major->firstAssert, ctx.stack_str, stgInfo.info.s);
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
-            } else if (stack_op == '(') {
+            } else if (ctx.stack_op == '(') {
                 /*				printf("### major: add(1): %s\n",
                                                 stgInfo.info.s);
                 */
@@ -249,7 +273,7 @@ char** s;
 
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
-            } else if (stack_op == ',') {
+            } else if (ctx.stack_op == ',') {
                 /*				printf("### major: add: %s\n",
                                                 stgInfo.info.s);
                 */
@@ -257,21 +281,21 @@ char** s;
 
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
-            } else if (stack_op == '\0') {
-                if (stack_str[0]) {
+            } else if (ctx.stack_op == '\0') {
+                if (ctx.stack_str[0]) {
                     /*					printf("@@@ major: flag: %s\n",
-                                                                    stack_str);
+                                                                    ctx.stack_str);
                     */
-                    assertAttr(&major->firstAssert, stack_str, NULL);
+                    assertAttr(&major->firstAssert, ctx.stack_str, NULL);
                 }
             } else {
                 printf("libstg: major: unable to apply word.\n");
-                stack_str[0] = '\0';
-                stack_op = '\0';
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
                 return major;
             }
-            stack_str[0] = '\0';
-            stack_op = '\0';
+            ctx.stack_str[0] = '\0';
+            ctx.stack_op = '\0';
         } else {
             printf("libstg: major: parse error (unknown type).\n");
             return major;
@@ -284,6 +308,7 @@ STGMinor* parseMinor(s, major)
 char** s;
 STGMajor* major;
 {
+    ParseContext ctx;  /* Local context - recursion-safe */
     STGMinor* minor = (STGMinor*)malloc(sizeof(struct STGMinor));
 
     if (!major) {
@@ -295,7 +320,9 @@ STGMajor* major;
     minor->firstAssert = NULL;
     minor->super = NULL;
 
-    while (nextToken(s)) {
+    init_parse_context(&ctx);
+
+    while (nextToken(&ctx, s)) {
         if (stgInfo.type == STG_INFO_TOKEN) {
             if (stgInfo.info.t == '}') {
                 return minor;
@@ -305,25 +332,25 @@ STGMajor* major;
                 return NULL;
             }
         } else if (stgInfo.type == STG_INFO_STR) {
-            if (stack_op == '=') {
+            if (ctx.stack_op == '=') {
                 /*				printf("### minor: assert: %s = %s\n",
-                                                        stack_str, stgInfo.info.s);
+                                                        ctx.stack_str, stgInfo.info.s);
                 */
-                assertAttr(&minor->firstAssert, stack_str, stgInfo.info.s);
-            } else if (stack_op == '{') {
-                printf("### minor: add(1): %s\n", stgInfo.info.s);
-            } else if (stack_op == ',') {
-                printf("### minor: add: %s\n", stgInfo.info.s);
-            } else if (stack_op == '\0') {
-                printf("### minor: flag: %s\n", stgInfo.info.s);
+                assertAttr(&minor->firstAssert, ctx.stack_str, stgInfo.info.s);
+            } else if (ctx.stack_op == '{') {
+                if (TRACE) printf("### minor: add(1): %s\n", stgInfo.info.s);
+            } else if (ctx.stack_op == ',') {
+                if (TRACE) printf("### minor: add: %s\n", stgInfo.info.s);
+            } else if (ctx.stack_op == '\0') {
+                if (TRACE) printf("### minor: flag: %s\n", stgInfo.info.s);
             } else {
                 printf("libstg: unable to apply word.\n");
-                stack_str[0] = '\0';
-                stack_op = '\0';
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
                 return NULL;
             }
-            stack_str[0] = '\0';
-            stack_op = '\0';
+            ctx.stack_str[0] = '\0';
+            ctx.stack_op = '\0';
         } else {
             printf("libstg: parse error (unknown type).\n");
             return NULL;
@@ -573,7 +600,11 @@ char* val;
     return new;
 }
 
-int nextToken(s)
+/* Forward declarations for memory management */
+static void free_major_tree(STGMajor* major);
+
+int nextToken(ctx, s)
+ParseContext* ctx;
 char** s;
 {
 zoro:
@@ -592,9 +623,9 @@ zoro:
     case '{':
     case '}':
         if (stgInfo.type == STG_INFO_STR)
-            strcpy(stack_str, stgInfo.info.s);
+            swap_buffers(ctx);  /* swap instead of strcpy */
         else if (stgInfo.type == STG_INFO_TOKEN)
-            stack_op = stgInfo.info.t;
+            ctx->stack_op = stgInfo.info.t;
 
         stgInfo.type = STG_INFO_TOKEN;
         stgInfo.info.t = **s;
@@ -607,19 +638,19 @@ zoro:
         char* cp = *s;
 
         if (stgInfo.type == STG_INFO_STR)
-            strcpy(stack_str, stgInfo.info.s);
+            swap_buffers(ctx);  /* swap instead of strcpy */
         else if (stgInfo.type == STG_INFO_TOKEN)
-            stack_op = stgInfo.info.t;
+            ctx->stack_op = stgInfo.info.t;
 
-        stgInfo_buffIdx = 0;
+        ctx->stgInfo_buffIdx = 0;
         while (!ISSPACE(*cp) && !ISTOKEN(*cp) && *cp) {
-            stgInfo_buff[stgInfo_buffIdx++] = *cp;
+            ctx->stgInfo_buff[ctx->stgInfo_buffIdx++] = *cp;
             ++cp;
         }
-        stgInfo_buff[stgInfo_buffIdx] = '\0';
+        ctx->stgInfo_buff[ctx->stgInfo_buffIdx] = '\0';
         *s = cp;
         stgInfo.type = STG_INFO_STR;
-        stgInfo.info.s = stgInfo_buff;
+        stgInfo.info.s = ctx->stgInfo_buff;
 
         /*printf("### TOKEN str    [%s]\n", stgInfo.info.s);*/
 
@@ -662,7 +693,11 @@ int freeGroup(STGLib* lib, STGGroup** group) {
                 lgp->next = gp->next;
             else
                 lib->first = NULL;
-            free(gp); /*XXX LEAK*/
+            
+            /* Free all content before freeing the group itself */
+            free_major_tree(gp->first);
+            free(gp);
+            
             *group = NULL;
             return 1;
         }
@@ -671,8 +706,64 @@ int freeGroup(STGLib* lib, STGGroup** group) {
     return 0;
 }
 
+/* Internal recursive memory freeing functions */
+
+static void free_assert_list(STGAssert* assert) {
+    while (assert) {
+        STGAssert* next = assert->next;
+        /* Note: name and val are from saveString() - should have global free */
+        free(assert);
+        assert = next;
+    }
+}
+
+static void free_str_list(STGStrList* list) {
+    while (list) {
+        STGStrList* next = list->next;
+        /* Note: val is stored as (char*)(long)tagID, not allocated */
+        free(list);
+        list = next;
+    }
+}
+
+static void free_minor_list(STGMinor* minor) {
+    while (minor) {
+        STGMinor* next = minor->next;
+        free_assert_list(minor->firstAssert);
+        free_str_list(minor->IDList);
+        free(minor);
+        minor = next;
+    }
+}
+
+static void free_major_tree(STGMajor* major) {
+    while (major) {
+        STGMajor* next = major->next;
+        free_assert_list(major->firstAssert);
+        free_str_list(major->IDList);
+        free_major_tree(major->firstMajorChild);  /* recursive */
+        free_minor_list(major->firstMinorChild);
+        free(major);
+        major = next;
+    }
+}
+
+static void free_group_list(STGGroup* group) {
+    while (group) {
+        STGGroup* next = group->next;
+        free_major_tree(group->first);
+        /* Note: DTD is not allocated in current code */
+        free(group);
+        group = next;
+    }
+}
+
+/* Free entire library - properly plugs memory leak */
 int freeLib(STGLib* lib) {
-    lib = NULL; /*!!*/
-    /* leak to be plugged up */
-    return 0;
+    if (!lib)
+        return 0;
+    
+    free_group_list(lib->first);
+    free(lib);
+    return 1;
 }

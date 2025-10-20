@@ -112,6 +112,17 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 ---
 
+## Screenshots
+
+### ViolaWWW Motif Frontend (vw)
+
+*Modern web browsing with the classic Motif interface*
+
+<img src=https://github.com/user-attachments/assets/006bc02f-c674-4f3f-b3b0-93033dc2364d width=636 height=785>
+
+---
+
+
 ## Quick Start
 
 ### Requirements

@@ -103,8 +103,8 @@ typedef struct TFCBuildInfo {
     int breaki;
     int px;
     int makeLinep;
-    int format;
-    int verbatim;
+    long format;
+    long verbatim;
     TFPic* pics;
     int spaceWidth;
 } TFCBuildInfo;

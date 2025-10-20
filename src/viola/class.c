@@ -77,12 +77,12 @@ int section;
         dumpSlotInfo(cip->superClass, section);
     for (i = 0, sip = cip->slots[section]; sip[i].id; i++) {
         printf("idx = %d\n", i);
-        printf("\tid = %d \"%s\"\n", sip[i].id, (char*)symID2Str->get(symID2Str, sip[i].id)->val);
+        printf("\tid = %ld \"%s\"\n", sip[i].id, (char*)symID2Str->get(symID2Str, sip[i].id)->val);
         printf("\ttype = %d\n", sip[i].flags & SLOT_MASK_TYPE);
-        printf("\tval = %d\n", sip[i].val);
+        printf("\tval = %ld\n", sip[i].val);
         printf("\toffset = %d\n", sip[i].offset);
         printf("\tsection = %d\n", sip[i].section);
-        printf("\ttmp = %d\n", sip[i].tmp);
+        printf("\ttmp = %ld\n", sip[i].tmp);
     }
 }
 
@@ -93,12 +93,12 @@ int size;
 
     for (i = 0; i < size; i++) {
         printf("idx = %d\n", i);
-        printf("\tid = %d \"%s\"\n", sip[i]->id, (char*)symID2Str->get(symID2Str, sip[i]->id)->val);
+        printf("\tid = %ld \"%s\"\n", sip[i]->id, (char*)symID2Str->get(symID2Str, sip[i]->id)->val);
         printf("\ttype = %d\n", sip[i]->flags & SLOT_MASK_TYPE);
-        printf("\tval = %d\n", sip[i]->val);
+        printf("\tval = %ld\n", sip[i]->val);
         printf("\toffset = %d\n", sip[i]->offset);
         printf("\tsection = %d\n", sip[i]->section);
-        printf("\ttmp = %d\n", sip[i]->tmp);
+        printf("\ttmp = %ld\n", sip[i]->tmp);
     }
 }
 

@@ -103,7 +103,7 @@ void dumpPacket(packet) Packet* packet;
     switch (packet->type) {
 
     case PKT_INT:
-        printf("%d", packet->info.i);
+        printf("%ld", packet->info.i);
         break;
 
     case PKT_FLT:
@@ -129,15 +129,15 @@ void dumpPacket(packet) Packet* packet;
         break;
 
     case PKT_PKT:
-        printf("%x", packet->info.p);
+        printf("%p", (void*)packet->info.p);
         break;
 
     case PKT_ATR:
-        printf("%x", packet->info.a);
+        printf("%p", (void*)packet->info.a);
         break;
 
     case PKT_VLT:
-        printf("%x", packet->info.l);
+        printf("%p", (void*)packet->info.l);
         break;
 
     case PKT_ARY:
@@ -145,7 +145,7 @@ void dumpPacket(packet) Packet* packet;
             int i;
             printf("size=%d: ", packet->info.y->size);
             for (i = 0; i < packet->info.y->size; i++) {
-                printf("%d ", packet->info.y->info[i]);
+                printf("%ld ", packet->info.y->info[i]);
             }
         }
         break;
@@ -162,7 +162,7 @@ void dumpPacket(packet) Packet* packet;
                 break;
         */
     default:
-        printf("(%d)", packet->info.i);
+        printf("(%ld)", packet->info.i);
         break;
     }
 }

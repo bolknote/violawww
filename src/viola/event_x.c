@@ -928,7 +928,7 @@ int *from_x, *from_y;
 #endif
 
         printf("*	from %d,%d\n", *from_x, *from_y);
-        printf("	 x,y %d,%d\n", GET_x(*dragObjp), GET_y(*dragObjp));
+        printf("	 x,y %ld,%ld\n", GET_x(*dragObjp), GET_y(*dragObjp));
 
     } break;
 
@@ -1211,7 +1211,7 @@ int *from_x, *from_y;
             SET_y(*dragObjp, root_y - *from_y);
 
             printf("*from %d,%d\n", *from_x, *from_y);
-            printf(" param %d,%d\n", GET_x(*dragObjp), GET_y(*dragObjp));
+            printf(" param %ld,%ld\n", GET_x(*dragObjp), GET_y(*dragObjp));
 
             attrs.override_redirect = True;
             XChangeWindowAttributes(display, w, CWOverrideRedirect, &attrs);
@@ -1250,23 +1250,23 @@ int *from_x, *from_y;
                 SET_y(*dragObjp, GET_y(*dragObjp) + dy);
                 SET_height(*dragObjp, GET_height(*dragObjp) - dy);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveResizeWindow(display, w, GET_x(*dragObjp), GET_y(*dragObjp),
-                                  GET_width(*dragObjp), GET_height(*dragObjp));
+                XMoveResizeWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp),
+                                  (unsigned int)GET_width(*dragObjp), (unsigned int)GET_height(*dragObjp));
                 break;
 
             case RC_LOWER:
                 SET_height(*dragObjp, GET_height(*dragObjp) + dy);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveResizeWindow(display, w, GET_x(*dragObjp), GET_y(*dragObjp),
-                                  GET_width(*dragObjp), GET_height(*dragObjp));
+                XMoveResizeWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp),
+                                  (unsigned int)GET_width(*dragObjp), (unsigned int)GET_height(*dragObjp));
                 break;
 
             case RC_LEFT:
                 SET_x(*dragObjp, GET_x(*dragObjp) + dx);
                 SET_width(*dragObjp, GET_width(*dragObjp) - dx);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveResizeWindow(display, w, GET_x(*dragObjp), GET_y(*dragObjp),
-                                  GET_width(*dragObjp), GET_height(*dragObjp));
+                XMoveResizeWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp),
+                                  (unsigned int)GET_width(*dragObjp), (unsigned int)GET_height(*dragObjp));
                 break;
 
             case RC_RIGHT:
@@ -1281,8 +1281,8 @@ int *from_x, *from_y;
                 SET_width(*dragObjp, GET_width(*dragObjp) - dx);
                 SET_height(*dragObjp, GET_height(*dragObjp) - dy);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveResizeWindow(display, w, GET_x(*dragObjp), GET_y(*dragObjp),
-                                  GET_width(*dragObjp), GET_height(*dragObjp));
+                XMoveResizeWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp),
+                                  (unsigned int)GET_width(*dragObjp), (unsigned int)GET_height(*dragObjp));
                 break;
 
             case RC_LOWER_LEFT:
@@ -1291,8 +1291,8 @@ int *from_x, *from_y;
                 SET_width(*dragObjp, GET_width(*dragObjp) - dx);
                 SET_height(*dragObjp, GET_height(*dragObjp) + dy);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveResizeWindow(display, w, GET_x(*dragObjp), GET_y(*dragObjp),
-                                  GET_width(*dragObjp), GET_height(*dragObjp));
+                XMoveResizeWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp),
+                                  (unsigned int)GET_width(*dragObjp), (unsigned int)GET_height(*dragObjp));
                 break;
 
             case RC_UPPER_RIGHT:
@@ -1301,7 +1301,7 @@ int *from_x, *from_y;
                 SET_width(*dragObjp, GET_width(*dragObjp) + dx);
                 SET_height(*dragObjp, GET_height(*dragObjp) - dy);
                 *resize_corner = checkParam(*dragObjp, *resize_corner);
-                XMoveWindow(display, w, (int)GET_x(*dragObjp), GET_y(*dragObjp));
+                XMoveWindow(display, w, (int)GET_x(*dragObjp), (int)GET_y(*dragObjp));
                 XResizeWindow(display, w, (int)GET_width(*dragObjp), GET_height(*dragObjp));
                 break;
 
@@ -1385,7 +1385,7 @@ XKeyEvent* e;
     XLookupString(e, keybuf, KEYBUFSIZE, &ks, NULL);
 
     if (ks != NoSymbol) {
-        /* printf("e=%ld, key[0]='%c'\n", (long)e, keybuf[0]);*/
+        /* printf("e=%p, key[0]='%c'\n", (void*)e, keybuf[0]);*/
 
         switch (ks) {
         case XK_Shift_L:
@@ -1578,10 +1578,10 @@ void dumpSchedule() {
     int i;
 
     gettimeofday(&time, (struct timezone*)NULL);
-    printf("%d,%d now\n", time.tv_sec, time.tv_usec);
+    printf("%ld,%d now\n", (long)time.tv_sec, time.tv_usec);
 
     for (tip = firstTimeInfo; tip; tip = tip->next) {
-        printf("%d,%d: obj=%s \t", tip->time.tv_sec, tip->time.tv_usec, GET_name(tip->obj));
+        printf("%ld,%d: obj=%s \t", (long)tip->time.tv_sec, tip->time.tv_usec, GET_name(tip->obj));
         for (i = 0; i < tip->argc; i++) {
             dumpPacket(&(tip->argv[i]));
         }

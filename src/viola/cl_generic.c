@@ -416,7 +416,7 @@ long meth_generic_GB_copy(VObj* self, Packet* result, int argc, Packet argv[]) {
     bufferID = PkInfo2Int(&argv[0]);
     if (bufferID >= numOfGBuffs) {
         /* unknown buffer */
-        fprintf(stderr, "unknown Global Buffer. id=%d\n", bufferID);
+        fprintf(stderr, "unknown Global Buffer. id=%ld\n", bufferID);
         result->info.s = "";
         result->canFree = 0;
         return 0;
@@ -444,7 +444,7 @@ long meth_generic_GB_data(VObj* self, Packet* result, int argc, Packet argv[]) {
     result->type = PKT_STR;
     if (bufferID >= numOfGBuffs) {
         /* unknown buffer */
-        fprintf(stderr, "unknown Global Buffer. id=%d\n", bufferID);
+        fprintf(stderr, "unknown Global Buffer. id=%ld\n", bufferID);
         result->info.s = "";
         result->canFree = 0;
         return 0;
@@ -479,7 +479,7 @@ long meth_generic_GB_char(VObj* self, Packet* result, int argc, Packet argv[]) {
     bufferID = PkInfo2Int(&argv[0]);
     if (bufferID >= numOfGBuffs) {
         /* unknown buffer */
-        fprintf(stderr, "unknown Global Buffer. id=%d\n", bufferID);
+        fprintf(stderr, "unknown Global Buffer. id=%ld\n", bufferID);
         result->info.c = '\0';
         return 0;
     }

@@ -1117,7 +1117,7 @@ void printPCode(union PCode* pcode, int* pc, long size) {
             case CODE_CALL2_C << 16:
                 fprintf(stderr, "%d\t%s, %d (argc)\n", (*pc - 1),
                         PCodeStr[(code & 0x0fff0000) >> 16], data);
-                fprintf(stderr, "%d\t%d (id)\n", *pc, pcode[*pc].i);
+                fprintf(stderr, "%d\t%ld (id)\n", *pc, pcode[*pc].i);
                 (*pc)++;
                 break;
             }
@@ -1126,7 +1126,7 @@ void printPCode(union PCode* pcode, int* pc, long size) {
 
             switch (code) {
             case CODE_PUSH_REFP:
-                fprintf(stderr, "%d\t%i (%s)\n", *pc, pcode[*pc].i,
+                fprintf(stderr, "%d\t%li (%s)\n", *pc, pcode[*pc].i,
                         (char*)((symID2Str->get)(symID2Str, pcode[*pc].i)->val));
                 (*pc)++;
                 break;
@@ -1137,7 +1137,7 @@ void printPCode(union PCode* pcode, int* pc, long size) {
                 fprintf(stderr, "%d\tcount=%d\n", *pc, n);
                 (*pc)++;
                 while (n--) {
-                    fprintf(stderr, "%d\t%i (%s)\n", *pc, pcode[*pc].i,
+                    fprintf(stderr, "%d\t%li (%s)\n", *pc, pcode[*pc].i,
                             (char*)symID2Str->get(symID2Str, pcode[*pc].i)->val);
                     (*pc)++;
                 }
@@ -1230,7 +1230,7 @@ void printPCode(union PCode* pcode, int* pc, long size) {
             case CODE_NE:
             case CODE_EQ:
 
-                fprintf(stderr, "%d\t%d\n", *pc, pcode[*pc].i);
+                fprintf(stderr, "%d\t%ld\n", *pc, pcode[*pc].i);
                 (*pc)++;
                 break;
 
@@ -1318,7 +1318,7 @@ void printPCode(union PCode* pcode, int* pc, long size) {
                 break;
 
             default:
-                fprintf(stderr, "pc=%d, unknown pcode=%d\n", *pc - 1, pcode[*pc - 1].x);
+                fprintf(stderr, "pc=%d, unknown pcode=%ld\n", *pc - 1, pcode[*pc - 1].x);
                 break;
             }
         }

@@ -184,11 +184,7 @@ void catalogButtonDownEH(Widget widget, XtPointer clientData, XEvent* event, Boo
      */
 }
 
-void catalogButtonUpEH(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
-{
+void catalogButtonUpEH(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont) {
     /*
      * If in drag or delta-drag mode:
      *    - Clear mode.
@@ -203,11 +199,7 @@ Boolean* cont;
      */
 }
 
-void catalogButtonMotionEH(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
-{
+void catalogButtonMotionEH(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont) {
     /*
      * If in drag mode:
      *    If mouse has moved beyond delta of original click position

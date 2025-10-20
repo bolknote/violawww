@@ -602,8 +602,8 @@ int funny_evt(XEvent* evt) {
     extern int verbose;
 
     if (verbose) {
-        fprintf(stderr, "Funny event: evt = %ld type=%d evt->w=%d\n", (long)evt, eventType(*evt),
-                eventWindow(*evt));
+        fprintf(stderr, "Funny event: evt = %p type=%d evt->w=%lx\n", (void*)evt, eventType(*evt),
+                (unsigned long)eventWindow(*evt));
     }
     switch (eventType(*evt)) {
     case MotionNotify:
@@ -635,7 +635,7 @@ int funny_evt(XEvent* evt) {
     case EnterNotify:
     default:
         if (verbose) {
-            fprintf(stderr, "** Funny event: evt = %ld type=%d\n", (long)evt, eventType(*evt));
+            fprintf(stderr, "** Funny event: evt = %p type=%d\n", (void*)evt, eventType(*evt));
         }
         return 0;
     }

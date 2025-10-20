@@ -1724,7 +1724,7 @@ VObj* self;
                 obj = htext->tfstruct->self;
                 if (self == obj) {
                     printf("1Purging object text: %s\n", GET_name(obj));
-                    printf("htext=%x\n", htext);
+                    printf("htext=%p\n", (void*)htext);
                     tf = GET__TFStruct(obj);
                     if (tf->firstp) {
                         freeNodeLines(tf);

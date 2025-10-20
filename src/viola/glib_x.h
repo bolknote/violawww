@@ -89,7 +89,7 @@ extern Screen* screen;
 int displayWidth;
 int displayHeight;
 
-extern int FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
+extern unsigned long FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
 extern GC gc;
 extern GC gc_fg;
 extern GC gc_bg;

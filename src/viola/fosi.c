@@ -35,7 +35,7 @@ HTTag* tagInfo;
     char* tag = FOSI_dtd.tags[element_number].name;
 
     printf("CB_FOSI_stag() called\n");
-    fprintf(stderr, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FOSI\t(%s\n", tag);
+    fprintf(stderr, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FOSI\t(%s)\n", tag);
 
     switch (element_number) {
     case FOSI_E_I_C:

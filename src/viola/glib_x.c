@@ -169,7 +169,7 @@ int fontID_symbol_largest = -1;
  */
 Colormap colormap;
 int numOfDisplayColors;
-int FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
+unsigned long FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
 int DefaultFGPixel, DefaultBGPixel, DefaultBDPixel, DefaultCRPixel;
 int DefaultFGPixel_lighter, DefaultFGPixel_darker, DefaultFGPixel_darkest;
 int DefaultBGPixel_lighter, DefaultBGPixel_darker, DefaultBGPixel_darkest;

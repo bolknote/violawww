@@ -218,7 +218,7 @@ char** s;
                 ++(*s);
                 return major;
             } else if (stgInfo.info.t == '{') {
-                addMinor(&(major->firstMinorChild), parseMinor(&s, major));
+                addMinor(&(major->firstMinorChild), parseMinor(s, major));
             } else if (stgInfo.info.t == ',') {
                 stack_op = stgInfo.info.t;
             } else if (stgInfo.info.t == '=') {

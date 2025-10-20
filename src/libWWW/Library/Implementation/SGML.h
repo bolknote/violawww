@@ -23,6 +23,9 @@
 #include "HTStream.h"
 #include "HTUtils.h"
 
+/* Forward declarations */
+typedef struct _HTParentAnchor HTParentAnchor;
+
 /*
 
 SGML content types
@@ -159,7 +162,7 @@ Create an SGML parser
 **              The default tag starter has been processed.
 */
 
-extern HTStream* SGML_new PARAMS((CONST SGML_dtd * dtd, HTStructured* target));
+extern HTStream* SGML_new PARAMS((CONST SGML_dtd * dtd, HTStructured* target, HTParentAnchor* anchor));
 
 extern CONST HTStreamClass SGMLParser;
 

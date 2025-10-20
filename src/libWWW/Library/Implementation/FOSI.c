@@ -578,6 +578,6 @@ PUBLIC HTStructured* FOSI_new ARGS2(HTParentAnchor*, anchor, HTStream*, stream) 
 #ifndef GUI
 PUBLIC HTStream* FOSIPresent ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, HTStream*,
                                    sink) {
-    return SGML_new(&FOSI_dtd, FOSI_new(anchor, NULL));
+    return SGML_new(&FOSI_dtd, FOSI_new(anchor, NULL), anchor);
 }
 #endif

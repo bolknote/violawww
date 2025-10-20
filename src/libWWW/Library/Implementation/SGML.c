@@ -15,9 +15,13 @@
 
 #include "HTChunk.h"
 #include "HTUtils.h"
+#include "HTAnchor.h"
+#include "HTCharset.h"
 #include "tcp.h" /* For FROMASCII */
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
+#include <strings.h>
 
 /* Forward declarations */
 extern void http_progress_notify();
@@ -53,6 +57,7 @@ struct _HTStream {
     CONST SGML_dtd* dtd;
     HTStructuredClass* actions; /* target class  */
     HTStructured* target;       /* target object */
+    HTParentAnchor* anchor;     /* anchor for charset info */
 
     HTTag* current_tag;
     int current_attribute_number;
@@ -814,6 +819,27 @@ PUBLIC void SGML_progress ARGS2(HTStream*, context, int, l) {
 PUBLIC void SGML_write ARGS3(HTStream*, context, CONST char*, str, int, l) {
     CONST char* p;
     CONST char* e = str + l;
+    char outbuf[65536];
+    int converted_len;
+    char* charset;
+    
+    /* Check if we need to convert from non-UTF-8 encoding */
+    charset = context->anchor ? HTAnchor_charset(context->anchor) : NULL;
+    
+    if (charset && strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0 && l < sizeof(outbuf) / 8) {
+        /* Convert from specified encoding to ASCII */
+        converted_len = HTCharset_convert_to_ascii(charset, str, l, outbuf, sizeof(outbuf));
+        
+        if (converted_len > 0) {
+            /* Use converted text */
+            e = outbuf + converted_len;
+            for (p = outbuf; p < e; p++)
+                SGML_character(context, *p);
+            return;
+        }
+    }
+    
+    /* Use original text */
     for (p = str; p < e; p++)
         SGML_character(context, *p);
 }
@@ -836,7 +862,7 @@ PUBLIC CONST HTStreamClass SGMLParser = {"SGMLParser",   SGML_free,   SGML_end, 
 **
 */
 
-PUBLIC HTStream* SGML_new ARGS2(CONST SGML_dtd*, dtd, HTStructured*, target) {
+PUBLIC HTStream* SGML_new ARGS3(CONST SGML_dtd*, dtd, HTStructured*, target, HTParentAnchor*, anchor) {
     int i;
     HTStream* context = (HTStream*)malloc(sizeof(*context));
     if (!context)
@@ -846,6 +872,7 @@ PUBLIC HTStream* SGML_new ARGS2(CONST SGML_dtd*, dtd, HTStructured*, target) {
     context->string = HTChunkCreate(128); /* Grow by this much */
     context->dtd = dtd;
     context->target = target;
+    context->anchor = anchor;
     context->actions = (HTStructuredClass*)(((HTStream*)target)->isa);
     /* Ugh: no OO */
     context->state = S_text;

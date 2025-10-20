@@ -445,3 +445,13 @@ PUBLIC char* HTAnchor_physical ARGS1(HTParentAnchor*, me) { return me->physical;
 PUBLIC void HTAnchor_setPhysical ARGS2(HTParentAnchor*, me, char*, physical) {
     StrAllocCopy(me->physical, physical);
 }
+
+/*	Character Encoding
+**	------------------
+*/
+
+PUBLIC char* HTAnchor_charset ARGS1(HTParentAnchor*, me) { return me->charset; }
+
+PUBLIC void HTAnchor_setCharset ARGS2(HTParentAnchor*, me, CONST char*, charset) {
+    StrAllocCopy(me->charset, charset);
+}

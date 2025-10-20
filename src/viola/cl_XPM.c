@@ -140,7 +140,7 @@ long meth_XPM_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_XPM_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_XPM_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_direction:
         result->info.s = SaveString(GET_direction(self));
@@ -162,7 +162,7 @@ long meth_XPM_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_XPM_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_XPM_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_label: {
         Window w = GET_window(self);

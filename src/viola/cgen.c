@@ -290,9 +290,9 @@ char tempc;
 /* this routine is called from gram.y, must set varArrayIdx=0 before
  * entering parser
  */
-void regRef(ast) AST* ast;
+void regRef(AST* ast)
 {
-    int id = ast->attribute.info.i;
+    long id = ast->attribute.info.i;
     /*
       if (id)
     printf("REG REF: varArray[%d] ast=%x sym='%s'\n",
@@ -310,9 +310,10 @@ void regRef(ast) AST* ast;
 }
 #endif
 
-void regListRef(ast) AST* ast;
+void regListRef(AST* ast)
 {
-    int i, id;
+    int i;
+    long id;
     RefInfo *lfap, *lfap_end;
 
     id = ast->attribute.info.i;
@@ -351,12 +352,11 @@ void regListRef(ast) AST* ast;
  *
  * XXX This algorithm sucks. rewrite.
  */
-int assignReferences(ast, pcode, pc)
-AST* ast;
-union PCode* pcode;
-int* pc;
+int assignReferences(AST* ast, union PCode* pcode, int* pc)
 {
-    int i, j, top, bottom, *ip, id, refID = 0;
+    int i, j, top, bottom;
+    long *ip;
+    long id, refID = 0;
     int pcodePC_varCount, varCount = 0;
     RefInfo *vap, *vap_end, *refArrayp;
     AST* vastp;
@@ -459,11 +459,7 @@ int* pc;
     return 1;
 }
 
-int biopHelper(ast, type, pcode, pc)
-AST* ast;
-int type;
-union PCode* pcode;
-int* pc;
+int biopHelper(AST* ast, int type, union PCode* pcode, int* pc)
 {
     switch (type) {
     case AST_INTEGER:
@@ -553,10 +549,7 @@ int* pc;
 
 char tokenBuff[2] = {'\0', '\0'};
 
-int switchHelper(ast, pcode, pc)
-AST* ast;
-union PCode* pcode;
-int* pc;
+int switchHelper(AST* ast, union PCode* pcode, int* pc)
 {
     int br2bodyPatch[128], br2bodyPatchi = 0;
     int br2endPatch[128], br2endPatchi = 0;
@@ -625,12 +618,12 @@ int* pc;
                      */
                     astp2 = castp->children;
                     if (astp2->type == AST_STRING) {
-                        tempi = tokenize(astp2->attribute.info.s);
+                        tempi = (int)tokenize(astp2->attribute.info.s);
                     } else if (astp2->type == AST_INTEGER) {
-                        tempi = astp2->attribute.info.i;
+                        tempi = (int)astp2->attribute.info.i;
                     } else if (astp2->type == AST_CHAR) {
                         tokenBuff[0] = astp2->attribute.info.c;
-                        tempi = tokenize(tokenBuff);
+                        tempi = (int)tokenize(tokenBuff);
                     } else {
                         print("ERROR: switch()'s case value must be integer or string or char.\n");
                         tempi = 0;
@@ -672,10 +665,7 @@ int* pc;
     return 1;
 }
 
-int codeGen(ast, pcode, pc)
-AST* ast;
-union PCode* pcode;
-int* pc;
+int codeGen(AST* ast, union PCode* pcode, int* pc)
 {
     /*	fprintf(stderr, "pc=%d [%d]\n", *pc, ast->type);*/
 
@@ -789,7 +779,7 @@ int* pc;
         if (ast->children) {
             char* slotName = ast->children->attribute.info.s;
             if (slotName) {
-                int slotSymID = getIdent(slotName);
+                long slotSymID = getIdent(slotName);
                 if (slotSymID) {
                     /*
                     XEMIT(CODE_GET);
@@ -809,7 +799,7 @@ int* pc;
         if (ast->children) {
             char* slotName = ast->children->attribute.info.s;
             if (slotName) {
-                int slotSymID = getIdent(slotName);
+                long slotSymID = getIdent(slotName);
                 if (slotSymID) {
                     codeGen(ast->children->next, pcode, pc);
                     /*
@@ -997,7 +987,7 @@ int* pc;
         break;
 
     case AST_INTEGER:
-        tempi = ast->attribute.info.i;
+        tempi = (int)ast->attribute.info.i;
         if (tempi < 0) {
             /* negative integer --
              *  don't fiddle with neg bit, for now
@@ -1016,7 +1006,7 @@ int* pc;
         break;
 
     case AST_CHAR:
-        IEMIT(0xe0000000 | CODE_CHAR << 16 | ast->attribute.info.c);
+        IEMIT(0xe0000000 | CODE_CHAR << 16 | (unsigned char)ast->attribute.info.c);
         /*
                         XEMIT(CODE_CHAR);
                         CEMIT(ast->attribute.info.c);
@@ -1069,12 +1059,12 @@ int* pc;
     return 0;
 }
 
-void printPCode(union PCode* pcode, int* pc, long size) {
+void printPCode(union PCode* pcode, long* pc, long size) {
     int code, data;
 
     while (*pc < size) {
 
-        code = pcode[(*pc)++].x;
+        code = (int)pcode[(*pc)++].x;
         if (code & 0xe0000000) {
             data = code & 0x0000ffff;
             switch (code & 0x0fff0000) {

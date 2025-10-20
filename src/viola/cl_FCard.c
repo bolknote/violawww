@@ -102,7 +102,7 @@ long meth_FCard_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
     return meth_pane_render(self, result, argc, argv);
 }
 
-long helper_FCard_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_FCard_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_BCard:
         result->info.o = GET_BCard(self);

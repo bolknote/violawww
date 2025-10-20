@@ -511,9 +511,9 @@ Packet argv[];
     /*XXX optimize */
     tf = updateEStrUser(self);
     if (tf) {
-        tf->height = GET_height(self);
+        tf->height = (int)GET_height(self);
         tf->yLR = tf->height - 2;
-        tf->width = GET_width(self);
+        tf->width = (int)GET_width(self);
         tf->xLR = tf->width - 2;
 
         if (tf->firstp) {
@@ -656,8 +656,8 @@ int argc;
 Packet argv[];
 {
     TFStruct* tf = updateEStrUser(self);
-    int ln = PkInfo2Int(&argv[0]);
-    int cn = PkInfo2Int(&argv[1]);
+    int ln = (int)PkInfo2Int(&argv[0]);
+    int cn = (int)PkInfo2Int(&argv[1]);
 
     lineFlagSet(tf, ln, cn, MASK_REVERSE, -1);
     if ((ln >= tf->screen_row_offset) && (ln < tf->screen_row_offset + tf->num_of_lines)) {
@@ -723,12 +723,7 @@ Packet argv[];
     return 1;
 }
 
-long int helper_txtDisp_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long int helper_txtDisp_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     char* str;
     extern TFLineNode* theEditLN;
@@ -790,8 +785,8 @@ int argc;
 Packet argv[];
 {
     TFStruct* tf = updateEStrUser(self);
-    int ln = PkInfo2Int(&argv[0]);
-    int cn = PkInfo2Int(&argv[1]);
+    int ln = (int)PkInfo2Int(&argv[0]);
+    int cn = (int)PkInfo2Int(&argv[1]);
 
     lineFlagSet(tf, ln, cn, MASK_REVERSE, 1);
     if ((ln >= tf->screen_row_offset) && (ln < tf->screen_row_offset + tf->num_of_lines)) {
@@ -1154,12 +1149,7 @@ int newPosition;
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long int helper_txtDisp_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long int helper_txtDisp_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     char* str;
 
@@ -1170,7 +1160,7 @@ int labelID;
             return 0;
         tf = updateEStrUser(self);
         if (tf) {
-            tf->height = GET_height(self);
+            tf->height = (int)GET_height(self);
             tf->yLR = tf->height - 2;
         }
         return 1;
@@ -1181,13 +1171,13 @@ int labelID;
             return 0;
         tf = updateEStrUser(self);
         if (tf) {
-            tf->width = GET_width(self);
+            tf->width = (int)GET_width(self);
             tf->xLR = tf->width - 2;
         }
         return 1;
     }
     case STR_shownPositionV:
-        return help_txtDisp_shownPositionV(self, PkInfo2Int(&argv[1]));
+        return help_txtDisp_shownPositionV(self, (int)PkInfo2Int(&argv[1]));
 
     case STR_content: {
         VObjList* objl;
@@ -1256,7 +1246,7 @@ int labelID;
         if (helper_pane_set(self, result, argc, argv, labelID)) {
             TFStruct* tf = GET__TFStruct(self);
             if (tf)
-                tf->align = GET__paneConfig(self);
+                tf->align = (int)GET__paneConfig(self);
             return 1;
         } else {
             return 0;

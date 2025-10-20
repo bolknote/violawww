@@ -173,12 +173,7 @@ Packet argv[];
     return 1;
 }
 
-long helper_socket_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_socket_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_pid:
@@ -230,12 +225,7 @@ Packet argv[];
     return 1;
 }
 
-long helper_socket_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_socket_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_host:

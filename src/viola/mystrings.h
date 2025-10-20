@@ -170,7 +170,7 @@ char* listSum2Str(int list1[], int list2[], int listLength, char* str);
 void insertChar(char* str, int i, char ch);
 int shiftStr(char* strp, int starti, int shift);
 
-char* getLines(int low, int high, char* text, int* size);
+char* getLines(long low, long high, char* text, long* size);
 char* enQuote(char* str);
 char* enBracket(char* str);
 char* deBracket(char* str);

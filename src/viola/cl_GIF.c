@@ -117,8 +117,8 @@ ClassInfo class_GIF = {
 };
 
 long meth_GIF_config(VObj* self, Packet* result, int argc, Packet argv[]) {
-    int new_width, new_height;
-    int old_width, old_height;
+    long new_width, new_height;
+    long old_width, old_height;
     XImage* baseImage;
     XImage* expImage;
 
@@ -215,7 +215,7 @@ long meth_GIF_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_GIF_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_GIF_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_label: {
         Window w;
@@ -226,8 +226,8 @@ long helper_GIF_set(VObj* self, Packet* result, int argc, Packet argv[], int lab
         XImage* expImage;
 
         w = GET_window(self);
-        x = GET_x(self);
-        y = GET_y(self);
+        x = (int)GET_x(self);
+        y = (int)GET_y(self);
 
         fname = SaveString(PkInfo2Str(&argv[1]));
         if (GET_label(self))
@@ -249,8 +249,8 @@ long helper_GIF_set(VObj* self, Packet* result, int argc, Packet argv[], int lab
         expImage = NULL;
         baseImage = NULL;
 
-        width = GET_width(self);
-        height = GET_height(self);
+        width = (int)GET_width(self);
+        height = (int)GET_height(self);
 
         SET__expImage(self, GLGIFLoad(id, fname, w, x, y, width, height, &base_width, &base_height,
                                       &baseImage));

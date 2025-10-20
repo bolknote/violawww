@@ -144,7 +144,7 @@ long meth_BCard_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
     return meth_field_render(self, result, argc, argv);
 }
 
-long helper_BCard_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_BCard_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     return helper_field_get(self, result, argc, argv, labelID);
 }
 
@@ -166,7 +166,7 @@ long meth_BCard_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_BCard_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_BCard_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     return helper_field_set(self, result, argc, argv, labelID);
 }
 

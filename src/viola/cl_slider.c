@@ -219,12 +219,7 @@ Packet argv[];
     return 1;
 }
 
-long helper_slider_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_slider_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_direction:
@@ -257,12 +252,7 @@ Packet argv[];
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_slider_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_slider_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_direction:
@@ -318,15 +308,15 @@ Packet argv[];
         if (HORIZONTAL_DIR(dirc)) {
             thumbSize = GET_shownSizeH(self);
             thumbPosition = GET_shownPositionH(self);
-            paramExtent = GET_width(self) - 2;
-            paramD = GET_width(self) - 1;
-            barThickness = GET_height(self) - 2;
+            paramExtent = (int)GET_width(self) - 2;
+            paramD = (int)GET_width(self) - 1;
+            barThickness = (int)GET_height(self) - 2;
         } else {
             thumbSize = GET_shownSizeV(self);
             thumbPosition = GET_shownPositionV(self);
-            paramExtent = GET_height(self) - 2;
-            paramD = GET_height(self) - 1;
-            barThickness = GET_width(self) - 2;
+            paramExtent = (int)GET_height(self) - 2;
+            paramD = (int)GET_height(self) - 1;
+            barThickness = (int)GET_width(self) - 2;
         }
         thumbSizePixels = ((float)thumbSize / 100.0) * (float)(paramExtent);
 
@@ -376,7 +366,8 @@ Packet argv[];
     char orientation, dirc = *GET_direction(self), *mesg;
     int thumbPos, oldThumbPos = 0;
     int thumbPixels, thumbSize, thumbStart, thumbEnd, mousePos;
-    int paramExtent, delta, z;
+    int paramExtent;
+    int delta, z;
     int os = -1, s = 0;
     int reverse = 0;
     int rootx, rooty, wx, wy;
@@ -397,14 +388,14 @@ Packet argv[];
         orientation = 'h';
         thumbSize = GET_shownSizeH(self);
         thumbPos = GET_shownPositionH(self);
-        paramExtent = GET_width(self) - 2;
+        paramExtent = (int)GET_width(self) - 2;
         mousePos = wx;
         mesg = "_shownPositionH";
     } else {
         orientation = 'v';
         thumbSize = GET_shownSizeV(self);
         thumbPos = GET_shownPositionV(self);
-        paramExtent = GET_height(self) - 2;
+        paramExtent = (int)GET_height(self) - 2;
         mousePos = wy;
         mesg = "_shownPositionV";
     }
@@ -425,7 +416,7 @@ Packet argv[];
         delta = 0;
     }
     if (d > 0.0)
-        thumbPos = abs((long)((float)(mousePos - delta) / d * 100.0));
+        thumbPos = abs((int)((float)(mousePos - delta) / d * 100.0));
     else
         thumbPos = 0;
 

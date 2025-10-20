@@ -815,11 +815,11 @@ int shiftStr(char* strp, int starti, int shift) {
  *
  * Up to the user to free returned data.
  */
-char* getLines(int low, int high, char* text, int* size) {
+char* getLines(long low, long high, char* text, long* size) {
     char* cp;
     char* begin = text;
     char* end;
-    int i = 0;
+    long i = 0;
 
     if (i < low)
         for (; *begin; begin++)
@@ -839,7 +839,7 @@ char* getLines(int low, int high, char* text, int* size) {
     *size = end - begin;
     if (*size > 0) {
         cp = (char*)malloc(sizeof(char) * (*size + 1));
-        strncpy(cp, begin, *size);
+        strncpy(cp, begin, (size_t)*size);
         cp[*size] = '\0';
     } else {
         cp = (char*)malloc(sizeof(char));

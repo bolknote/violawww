@@ -144,7 +144,7 @@ int argc;
 Packet argv[];
 {
     if (meth_txt_render(self, result, argc, argv)) {
-        int fontID = GET__font(self);
+        long fontID = GET__font(self);
         char* str = GET_label(self);
         Window w = GET_window(self);
 

@@ -228,12 +228,7 @@ Packet argv[];
     return 0;
 }
 
-long helper_stack_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_stack_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_BCardList:
@@ -438,12 +433,7 @@ Packet argv[];
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_stack_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_stack_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_currentCard:

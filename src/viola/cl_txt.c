@@ -197,12 +197,7 @@ Packet argv[];
     return 1;
 }
 
-long helper_txt_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_txt_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_font:
@@ -269,12 +264,7 @@ Packet argv[];
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_txt_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_txt_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     char* cp;
     int i;

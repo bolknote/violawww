@@ -297,7 +297,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     return 0;
 }
 
-long helper_TTY_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_TTY_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_pid:
         result->type = PKT_INT;
@@ -323,7 +323,7 @@ long meth_TTY_get(VObj* self, Packet* result, int argc, Packet argv[]) {
     return helper_TTY_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long helper_TTY_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_TTY_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_args:
         result->info.s = SaveString(PkInfo2Str(&argv[1]));

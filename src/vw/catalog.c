@@ -296,14 +296,14 @@ XtPointer clientData, callData;
     newfolder->nameXMS = XmStringCreateLtoR("New Folder", "folderFont");
     width = XmStringWidth(bogusList, newfolder->nameXMS);
     height = XmStringHeight(bogusList, newfolder->nameXMS);
-    newfolder->ny = newfolder->y + 1.2 * newfolder->h + height;
-    newfolder->nx = newfolder->w / 2 - width / 2;
+    newfolder->ny = (short)(newfolder->y + 1.2 * newfolder->h + height);
+    newfolder->nx = (short)(newfolder->w / 2 - width / 2);
 
     newfolder->nItemsXMS = XmStringCreateLtoR("0", "folderFont");
     width = XmStringWidth(bogusList, newfolder->nItemsXMS);
     height = XmStringHeight(bogusList, newfolder->nItemsXMS);
-    newfolder->numx = newfolder->w / 2 - width / 2;
-    newfolder->numy = newfolder->h / 2 - height / 2;
+    newfolder->numx = (short)(newfolder->w / 2 - width / 2);
+    newfolder->numy = (short)(newfolder->h / 2 - height / 2);
 
     catalog->currentFolder->items[catalog->currentFolder->nItems] = (Item*)newfolder;
 

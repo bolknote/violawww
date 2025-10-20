@@ -52,27 +52,27 @@ ClassInfo class_rubber = {
     &class_field,                                     /* super class info		*/
 };
 
-void helper_rubber_config(VObj* self, int oldWidth, int oldHeight) {
+void helper_rubber_config(VObj* self, long oldWidth, long oldHeight) {
     float xratio, yratio;
     int x, y, width, height;
     VObjList *olist, *children = GET__children(self);
     Window w;
 
-    xratio = GET_width(self) / oldWidth;
-    yratio = GET_height(self) / oldHeight;
+    xratio = (float)GET_width(self) / (float)oldWidth;
+    yratio = (float)GET_height(self) / (float)oldHeight;
 
     for (olist = children; olist; olist = olist->next) {
-        x = xratio * (float)GET_x(olist->o);
-        y = yratio * (float)GET_y(olist->o);
-        width = xratio * (float)GET_width(olist->o);
-        height = yratio * (float)GET_height(olist->o);
+        x = (int)(xratio * (float)GET_x(olist->o));
+        y = (int)(yratio * (float)GET_y(olist->o));
+        width = (int)(xratio * (float)GET_width(olist->o));
+        height = (int)(yratio * (float)GET_height(olist->o));
         if (GET_window(self) && GET_visible(self))
             GLUpdateGeometry(0, GET_window(olist->o), x, y, width, height);
     }
 }
 
 long meth_rubber_config(VObj* self, Packet* result, int argc, Packet argv[]) {
-    int oldWidth, oldHeight;
+    long oldWidth, oldHeight;
 
     oldWidth = GET_width(self);
     oldHeight = GET_height(self);

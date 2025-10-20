@@ -225,7 +225,7 @@ long meth_cosmic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
         *sp1++ = *sp2++;
     *sp1++ = '\0';
 
-    SET_name(cloneObj, saveStringN(newName, sp1 - newName));
+    SET_name(cloneObj, saveStringN(newName, (int)(sp1 - newName)));
 
     objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(cloneObj))), (long)cloneObj);
 
@@ -320,15 +320,15 @@ long meth_cosmic_debug(VObj* self, Packet* result, int argc, Packet argv[]) {
     clearPacket(result);
     if (!STRCMP(PkInfo2Str(&argv[0]), "pa")) {
         extern int flag_printAST;
-        flag_printAST = PkInfo2Int(&argv[1]);
+        flag_printAST = (int)PkInfo2Int(&argv[1]);
     } else if (!STRCMP(PkInfo2Str(&argv[0]), "pc")) {
         extern int flag_printPCode;
-        flag_printPCode = PkInfo2Int(&argv[1]);
+        flag_printPCode = (int)PkInfo2Int(&argv[1]);
     } else if (!STRCMP(PkInfo2Str(&argv[0]), "pe")) {
         extern int flag_printExec;
-        flag_printExec = PkInfo2Int(&argv[1]);
+        flag_printExec = (int)PkInfo2Int(&argv[1]);
     } else if (!STRCMP(PkInfo2Str(&argv[0]), "dumpPCode")) {
-        int pc = 0;
+        long pc = 0;
         union PCode* pcode = GET__script(self);
 
         printPCode(&pcode[PCODE_IDX_INSTR], &pc, pcode[PCODE_IDX_SIZE].i);
@@ -364,7 +364,7 @@ long meth_cosmic_exit(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (notSecure(self))
         return 0;
 
-    exit(PkInfo2Int(&argv[0]));
+    exit((int)PkInfo2Int(&argv[0]));
 }
 
 /*
@@ -830,7 +830,8 @@ long meth_cosmic_test4(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_cosmic_tweak(VObj* self, Packet* result, int argc, Packet argv[]) {
     VObj* obj;
-    int i, len;
+    int i;
+    size_t len;
     char *cp, *script;
 
     if (notSecure(self))

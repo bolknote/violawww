@@ -136,12 +136,7 @@ ClassInfo class_toggle = {
     &class_XBM,                                         /* super class info		*/
 };
 
-long helper_toggle_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_toggle_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_toggleState:
@@ -171,12 +166,7 @@ Packet argv[];
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_toggle_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_toggle_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_toggleState:

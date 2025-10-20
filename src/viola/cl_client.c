@@ -211,7 +211,7 @@ long meth_client_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_client_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_client_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
 
     switch (labelID) {
     case STR_clientFD:
@@ -275,13 +275,15 @@ long meth_client_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 long meth_client_input(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     int fd = GET_clientFD(self);
-    int c, cc, i = 0, n;
+    int c, i = 0, n;
+    ssize_t cc;
     char* inDelimStr1 = GET_inDelimStr1(self);
     char* inDelimStr2 = GET_inDelimStr2(self);
-    int mode = 0;
+    long mode = 0;
     char cbuff[2];
-    int mi = 0, mstrlen = strlen(inDelimStr1);
-    int mi2 = 0, mstrlen2 = strlen(inDelimStr2);
+    size_t mstrlen = strlen(inDelimStr1);
+    size_t mstrlen2 = strlen(inDelimStr2);
+    int mi = 0, mi2 = 0;
 
     if (fd == -1) {
         MERROR(self, "client input: fd is -1");
@@ -380,7 +382,9 @@ long meth_client_input(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_client_inputn(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     int fd = GET_clientFD(self);
-    int cc, i = 0, n;
+    ssize_t cc;
+    int i = 0;
+    long n;
 
     if (fd == -1) {
         MERROR(self, "client inputn: fd is -1");
@@ -415,9 +419,11 @@ long meth_client_inputn(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_client_output(VObj* self, Packet* result, int argc, Packet argv[]) {
 
-    int i, res;
+    int i;
+    ssize_t res;
     int fd = GET_clientFD(self);
-    char *data, length, *outDelimStr = GET_outDelimStr(self);
+    char *data, *outDelimStr = GET_outDelimStr(self);
+    size_t length;
 
     length = 0;
     result->info.i = 0;
@@ -433,7 +439,7 @@ long meth_client_output(VObj* self, Packet* result, int argc, Packet argv[]) {
             return 0;
         }
         data = PkInfo2Str(&argv[0]);
-        length = strlen(data);
+        length = (unsigned char)strlen(data);
         result->info.i += length;
         res = write(fd, data, length);
         if (res < 0) {
@@ -453,6 +459,7 @@ long meth_client_output(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_client_startClient(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     int fd = GET_clientFD(self);
+    long newfd;
 
     result->type = PKT_INT;
     result->canFree = 0;
@@ -470,20 +477,20 @@ long meth_client_startClient(VObj* self, Packet* result, int argc, Packet argv[]
         result->info.i = 0;
         return 0;
     }
-    fd = result->info.i;
+    newfd = result->info.i;
 
-    if (fd < 0) {
+    if (newfd < 0) {
         MERROR(self, "startClient: failed to start");
         return 0;
     } else {
-        SET_clientFD(self, fd);
-        objFDList[fd] = self;
+        SET_clientFD(self, (int)newfd);
+        objFDList[(int)newfd] = self;
         FD_SET(fd, &read_mask);
         return 1;
     }
 }
 
-long helper_client_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_client_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
 
     switch (labelID) {
     case STR_inDelimStr1:

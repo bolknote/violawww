@@ -960,7 +960,7 @@ long meth_field_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_field_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_field_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_BDColor: {
         ColorInfo* ci = GET__colorInfo(self);
@@ -1778,12 +1778,12 @@ long meth_field_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     char* cp;
 
     switch (labelID) {
     case STR_x:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_x(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
@@ -1792,7 +1792,7 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], int l
         return 1;
 
     case STR_y:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_y(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
@@ -1801,7 +1801,7 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], int l
         return 1;
 
     case STR_width:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         if (result->info.i <= 0)
             result->info.i = 1;
         SET_width(self, result->info.i);
@@ -1826,7 +1826,7 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], int l
         return 1;
 
     case STR_height:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         if (result->info.i <= 0)
             result->info.i = 1;
         SET_height(self, result->info.i);
@@ -1903,56 +1903,56 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], int l
         return 1;
 
     case STR_lock:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_lock(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_border:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_border(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_minWidth:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_minWidth(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_minHeight:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_minHeight(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_maxWidth:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_maxWidth(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_maxHeight:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_maxHeight(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_gapH:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_gapH(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
 
     case STR_gapV:
-        result->info.i = (int)PkInfo2Int(&argv[1]);
+        result->info.i = PkInfo2Int(&argv[1]);
         SET_gapV(self, result->info.i);
         result->type = PKT_INT;
         result->canFree = 0;

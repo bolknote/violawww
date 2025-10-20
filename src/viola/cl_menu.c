@@ -168,7 +168,7 @@ long meth_menu_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_menu_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_menu_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_menuConfig:
         result->info.s = GET_menuConfig(self);
@@ -203,7 +203,7 @@ long meth_menu_processMouseInput(VObj* self, Packet* result, int argc, Packet ar
         return result->info.i = 0; /* indicates error */
     }
     GLRootPosition(GET_window(self), &root_x, &root_y);
-    menu_resultn = xpa_moded(menup, root_x, root_y + GET_height(self) + 10, 0, (int*)0, 0,
+    menu_resultn = xpa_moded(menup, root_x, root_y + (int)GET_height(self) + 10, 0, (int*)0, 0,
                              funny_evt, &menu_result);
     if (menu_resultn < 0) {
         return 0;
@@ -226,13 +226,13 @@ long meth_menu_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     if (w = GET_window(self)) {
         char* str = GET_label(self);
-        int fontID = GET__font(self);
+        long fontID = GET__font(self);
         int x, y;
 
         if (!str)
             str = "Unlabeled";
-        x = (GET_width(self) - GLTextWidth(fontID, str) - menuPixmap_width) / 2;
-        y = (GET_height(self) - GLTextHeight(fontID, str)) / 2;
+        x = (int)((GET_width(self) - GLTextWidth(fontID, str) - menuPixmap_width) / 2);
+        y = (int)((GET_height(self) - GLTextHeight(fontID, str)) / 2);
         /*		GLDrawText(w, fontID, x + menuPixmap_width, y, str);
          */
         GLDrawText(w, fontID, 6 + menuPixmap_width, y, str);
@@ -245,7 +245,7 @@ long meth_menu_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_menu_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_menu_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_menuConfig:
         result->type = PKT_INT;

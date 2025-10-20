@@ -209,7 +209,7 @@ Packet* result;
 int argc;
 Packet argv[];
 {
-    int stat;
+    long stat;
 
     /* special sin.. er case: use parent's color info */
     SET__colorInfo(self, 1); /* fool into not initialze. */

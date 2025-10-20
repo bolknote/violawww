@@ -83,12 +83,7 @@ Packet argv[];
     return meth_field_render(self, result, argc, argv);
 }
 
-long helper_project_get(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_project_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_filePath:
@@ -127,12 +122,7 @@ Packet argv[];
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_project_set(self, result, argc, argv, labelID)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int labelID;
+long helper_project_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID)
 {
     switch (labelID) {
     case STR_filePath:

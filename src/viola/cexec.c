@@ -427,7 +427,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                         free(reg1.info.s);
                     reg1.info.s = NULL;
                 }
-                reg1.info.c = data;
+                reg1.info.c = (char)data;
                 reg1.type = PKT_CHR;
                 reg1.canFree = 0;
                 continue;
@@ -2178,7 +2178,7 @@ VObj* obj;
         */
     }
     if (flag_printPCode) {
-        int pc = 0;
+        long pc = 0;
         printPCode(&pcode[PCODE_IDX_INSTR], &pc, pcode[PCODE_IDX_SIZE].i);
     }
     codeExec(obj, &pcode[PCODE_IDX_INSTR], &pcode[PCODE_IDX_INSTR] + pcode[PCODE_IDX_SIZE].i,
@@ -2282,7 +2282,7 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
         */
     }
     if (flag_printPCode) {
-        int pc = 0;
+        long pc = 0;
         printPCode(&pcode[PCODE_IDX_INSTR], &pc, pcode[PCODE_IDX_SIZE].i);
     }
     codeExec(obj, &pcode[PCODE_IDX_INSTR], &pcode[PCODE_IDX_INSTR] + pcode[PCODE_IDX_SIZE].i,
@@ -2365,7 +2365,7 @@ char* script;
     bcopy(pcode_buff, pcode, size);
 
     if (flag_printPCode) {
-        int pc = 0;
+        long pc = 0;
         printPCode(&pcode[PCODE_IDX_INSTR], &pc, pcode[PCODE_IDX_SIZE].i);
     }
     codeExec(obj, &pcode[PCODE_IDX_INSTR], &pcode[PCODE_IDX_INSTR] + pcode[PCODE_IDX_SIZE].i,
@@ -3093,14 +3093,14 @@ Attr* setVariable_STR(Attr* varlist, char* name, char* valp, int canFree) {
                 pk = (Packet*)(varlist->val);
                 pk->info.s = valp;
                 pk->type = PKT_STR;
-                pk->canFree = canFree;
+                pk->canFree = (char)canFree;
                 return head;
             }
         }
         pk = makePacket();
         pk->info.s = valp;
         pk->type = PKT_STR;
-        pk->canFree = canFree;
+        pk->canFree = (char)canFree;
         prependAttr(&head, makeAttr(varid, (long)pk));
     }
     return head;
@@ -3115,14 +3115,14 @@ Attr* setVariable_id_STR(Attr* attrp, int varid, char* valp, int canFree) {
             pk = (Packet*)(attrp->val);
             pk->info.s = valp;
             pk->type = PKT_STR;
-            pk->canFree = canFree;
+            pk->canFree = (char)canFree;
             return head;
         }
     }
     pk = makePacket();
     pk->info.s = valp;
     pk->type = PKT_STR;
-    pk->canFree = canFree;
+    pk->canFree = (char)canFree;
 
     attrp = makeAttr(varid, (long)pk);
     if (head)

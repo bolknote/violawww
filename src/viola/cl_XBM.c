@@ -168,7 +168,7 @@ long meth_XBM_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_XBM_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_XBM_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     return helper_field_get(self, result, argc, argv, labelID);
 }
 long meth_XBM_get(VObj* self, Packet* result, int argc, Packet argv[]) {
@@ -182,7 +182,7 @@ long meth_XBM_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_XBM_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_XBM_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_label: {
         Pixmap pixmap;

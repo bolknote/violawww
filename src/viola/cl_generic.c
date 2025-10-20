@@ -886,7 +886,8 @@ long meth_generic_GB_moveToChar(VObj* self, Packet* result, int argc, Packet arg
         result->canFree = 0;
         return 0;
     }
-    result->info.i = GBuffIdx[bufferID] = PkInfo2Int(&argv[1]);
+    GBuffIdx[bufferID] = (int)PkInfo2Int(&argv[1]);
+    result->info.i = GBuffIdx[bufferID];
     result->canFree = 0;
     return 1;
 }
@@ -914,7 +915,8 @@ long meth_generic_GB_moveToLine(VObj* self, Packet* result, int argc, Packet arg
         result->info.i = -1;
         return 0;
     }
-    result->info.i = GBuffIdx[bufferID] = PkInfo2Int(&argv[1]);
+    GBuffIdx[bufferID] = (int)PkInfo2Int(&argv[1]);
+    result->info.i = GBuffIdx[bufferID];
 
     GBuffIdx[bufferID] = 0;
     n = PkInfo2Int(&argv[1]);
@@ -994,7 +996,8 @@ long meth_generic_GB_nthChar(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_GB_nthLine(VObj* self, Packet* result, int argc, Packet argv[]) {
     long bufferID = PkInfo2Int(&argv[0]);
     long li, hi;
-    int lines, size;
+    int lines;
+    long size;
     char *cp, *str;
 
     result->type = PKT_STR;
@@ -1979,7 +1982,8 @@ long meth_generic_clear(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_generic_cli(VObj* self, Packet* result, int argc, Packet argv[]) {
 #define LINE_LENGTH 300
-    char c, cmdLine[LINE_LENGTH];
+    int c;
+    char cmdLine[LINE_LENGTH];
     int i, balance, finish = 0;
 
     if (notSecure(self))
@@ -1995,8 +1999,8 @@ long meth_generic_cli(VObj* self, Packet* result, int argc, Packet argv[]) {
         for (;;) {
             c = getchar();
             if (i < LINE_LENGTH - 1) {
+                cmdLine[i++] = (char)c;
             }
-            cmdLine[i++] = c;
             if (c == ';' && (balance == 0)) {
                 cmdLine[i] = '\0';
                 break;
@@ -3446,7 +3450,8 @@ long meth_generic_nthItem(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_generic_nthLine(VObj* self, Packet* result, int argc, Packet argv[]) {
     long li, hi;
-    int lines, size;
+    int lines;
+    long size;
     char* str;
 
     result->type = PKT_STR;
@@ -3573,7 +3578,7 @@ long meth_generic_nthWord(VObj* self, Packet* result, int argc, Packet argv[]) {
             result->canFree = 0;
             return 0;
         }
-        extractWord(str, n1, n2, buff);
+        extractWord(str, (int)n1, (int)n2, buff);
         result->info.s = SaveString(buff);
         result->canFree = PK_CANFREE_STR;
         free(str); /* argh! */
@@ -3606,7 +3611,7 @@ long meth_generic_pipe(VObj* self, Packet* result, int argc, Packet argv[]) {
     } else {
         buffp = buff;
         while ((c = fgetc(fp)) != EOF) {
-            *buffp = c;
+            *buffp = (char)c;
             buffp++;
         }
         *buffp = '\0';

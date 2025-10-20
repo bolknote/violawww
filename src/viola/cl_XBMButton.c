@@ -124,7 +124,7 @@ ClassInfo class_XBMButton = {
 
 long meth_XBMButton_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     Window w = GET_window(self);
-    int stat;
+    long stat;
 
     stat = meth_XBM_render(self, result, argc, argv);
     if (w && GET_visible(self)) {

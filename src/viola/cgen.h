@@ -207,7 +207,7 @@ enum PCodeTypes {
 extern int flag_printPCode;
 extern int flag_printAST;
 
-void printPCode(union PCode* pcode, int* pc, long size);
+void printPCode(union PCode* pcode, long* pc, long size);
 int assignReferences(AST* ast, union PCode* pcode, int* pc);
 int codeGen(AST* ast, union PCode* pcode, int* pc);
 

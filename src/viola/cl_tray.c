@@ -52,22 +52,21 @@ ClassInfo class_tray = {
     &class_field,                                   /* super class info		*/
 };
 
-helper_tray_config(self, oldWidth, oldHeight) VObj* self;
-int oldWidth, oldHeight;
+helper_tray_config(VObj* self, long oldWidth, long oldHeight)
 {
     VObjList *olist, *children = GET__children(self);
     float xratio, yratio;
     Window w;
     int x, y, width, height;
 
-    xratio = GET_width(self) / oldWidth;
-    yratio = GET_height(self) / oldHeight;
+    xratio = (float)GET_width(self) / (float)oldWidth;
+    yratio = (float)GET_height(self) / (float)oldHeight;
 
     for (olist = children; olist; olist = olist->next) {
-        x = xratio * (float)GET_x(olist->o);
-        y = yratio * (float)GET_y(olist->o);
-        width = xratio * (float)GET_width(olist->o);
-        height = yratio * (float)GET_height(olist->o);
+        x = (int)(xratio * (float)GET_x(olist->o));
+        y = (int)(yratio * (float)GET_y(olist->o));
+        width = (int)(xratio * (float)GET_width(olist->o));
+        height = (int)(yratio * (float)GET_height(olist->o));
         if (GET_window(self) && GET_visible(self))
             GLUpdateGeometry(0, GET_window(olist->o), x, y, width, height);
     }
@@ -79,7 +78,7 @@ Packet* result;
 int argc;
 Packet argv[];
 {
-    int oldWidth, oldHeight;
+    long oldWidth, oldHeight;
 
     oldWidth = GET_width(self);
     oldHeight = GET_height(self);

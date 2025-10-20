@@ -102,7 +102,7 @@ long meth_PS_config(VObj* self, Packet* result, int argc, Packet argv[]) {
     return meth_field_config(self, result, argc, argv);
 }
 
-long helper_PS_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_PS_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_direction:
         result->info.s = SaveString(GET_direction(self));
@@ -124,7 +124,7 @@ long meth_PS_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_label: {
         Window w = GET_window(self);
@@ -141,7 +141,7 @@ long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], int labe
             printf("buff=>%s<\n", buff);
             XChangeProperty(display, GET_window(self),
                             XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
-                            PropModeReplace, (unsigned char*)buff, strlen(buff));
+                            PropModeReplace, (unsigned char*)buff, (int)strlen(buff));
             printf("buff=>%s<\n", buff);
             sprintf(buff, "%lx", (unsigned long)GET_window(self));
             printf("buff=>%s<\n", buff);

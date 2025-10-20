@@ -175,7 +175,7 @@ helper_pane_config(self) VObj* self;
     int posIdx, spanIdx, minIdx, maxIdx;
     int spanOtherIdx, spanOtherIdxMax;
     int gapIdx, gapOtherIdx;
-    static int geomBuff[CHILD_MAX][5];
+    static long geomBuff[CHILD_MAX][5];
 
     /* printf("GM self=%s **************\n", GET_name(self));*/
 
@@ -236,10 +236,12 @@ helper_pane_config(self) VObj* self;
     }
 
     if (doit) {
-        int nchildren = 0, span, position = 0, bd;
-        int nmarked = 0, markedsum = 0;
+        int nchildren = 0, bd;
+        long span, position = 0;
+        int nmarked = 0;
+        long markedsum = 0;
         int pbd = borderStyleThickness[GET_border(self)] * 2;
-        int gap, gap2, gapOther;
+        long gap, gap2, gapOther;
 
         /* 0 indicates undetermined value */
         for (olist = children; olist; olist = olist->next) {
@@ -256,7 +258,7 @@ helper_pane_config(self) VObj* self;
                 /*printf("pane config error\n");*/
                 break;
             }
-            span = (int)((self[spanIdx] - markedsum) / (nchildren - nmarked));
+            span = (self[spanIdx] - markedsum) / (nchildren - nmarked);
             i = 0;
 
             /*printf("GM lookbreak=%d\n", loopbreak);*/
@@ -269,18 +271,18 @@ helper_pane_config(self) VObj* self;
                 /*printf("GM cobj=%s\t\n", GET_name(olist->o));*/
                 bd = borderStyleThickness[GET_border(olist->o)];
 
-                CHILD_GAP(i) = (int)olist->o[gapIdx];
-                CHILD_GAPO(i) = (int)olist->o[gapOtherIdx];
+                CHILD_GAP(i) = olist->o[gapIdx];
+                CHILD_GAPO(i) = olist->o[gapOtherIdx];
                 gap2 = CHILD_GAP(i) * 2;
 
                 if (!CHILD_SPAN(i)) {
                     if (span <= olist->o[minIdx] + bd + gap2) {
-                        CHILD_SPAN(i) = (int)olist->o[minIdx];
+                        CHILD_SPAN(i) = olist->o[minIdx];
                         markedsum += CHILD_SPAN(i) + bd + gap2;
                         ++nmarked;
                         goto escape;
                     } else if (span >= olist->o[maxIdx] + bd + gap2) {
-                        CHILD_SPAN(i) = (int)olist->o[maxIdx];
+                        CHILD_SPAN(i) = olist->o[maxIdx];
                         markedsum += CHILD_SPAN(i) + bd + gap2;
                         ++nmarked;
                         goto escape;
@@ -403,7 +405,7 @@ long meth_pane_config(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long helper_pane_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_pane_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_paneConfig:
         result->info.s = SaveString(GET_paneConfig(self));
@@ -459,7 +461,7 @@ long meth_pane_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 /*
  * returns non-zero if set operation succeded, zero otherwise.
  */
-long helper_pane_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_pane_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     switch (labelID) {
     case STR_paneConfig: {
         int i;

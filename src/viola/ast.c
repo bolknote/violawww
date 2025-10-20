@@ -13,6 +13,7 @@
  */
 /*#include <stdio.h>*/
 #include "utils.h"
+#include <limits.h>
 #include <string.h>
 #ifdef SVR4
 #include <strings.h>
@@ -97,7 +98,12 @@ int max_size;
 {
     int n;
     size_t l = strlen(yyscript + yyscriptidx);
-    n = (max_size < (int)l) ? max_size : (int)l;
+    /* Безопасное сравнение: если l > INT_MAX, берём max_size */
+    if (l > (size_t)INT_MAX || max_size < (int)l) {
+        n = max_size;
+    } else {
+        n = (int)l;
+    }
     if (n > 0) {
         memcpy(buf, yyscript + yyscriptidx, n);
         yyscriptidx += n;

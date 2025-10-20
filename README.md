@@ -21,7 +21,7 @@ ViolaWWW is an extensible World Wide Web hypermedia browser, originally created 
 - HTTPS/TLS support via OpenSSL
 - HTTP redirect handling (301, 302, 303, 307, 308)
 - Internet Archive (Wayback Machine) integration
-- UTF-8 transliteration to Latin/ASCII (Cyrillic, German, Polish → readable text)
+- Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII)
 - Socket timeouts and improved error handling
 - Modern build system with parallel compilation
 
@@ -92,14 +92,18 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `HTWayback.h`, `HTWayback.c`
 - **Test**: `test/test_wayback.c`
 
-#### UTF-8 Transliteration Support
-- Automatic UTF-8 to Latin/ASCII conversion via ICU library
-- Two-pass transliteration: Any-Latin → ISO-8859-1
-- Converts Cyrillic → Latin (яфй → âfj)
-- Converts special characters (• → o, — → -)
+#### Multi-Encoding Transliteration Support
+- Automatic character encoding detection from HTTP headers (`x-archive-guessed-charset`, `Content-Type`)
+- Support for multiple encodings: UTF-8, Windows-1251, KOI8-R, ISO-8859-1, and more
+- Three-pass conversion pipeline:
+  1. Source encoding → UTF-8 (via iconv with //IGNORE for mixed bytes)
+  2. Any-Latin transliteration (Cyrillic, Greek, Chinese → Latin via ICU)
+  3. UTF-8 → ISO-8859-1//TRANSLIT for ASCII compatibility
+- Converts Cyrillic → Latin (Привет → Privet, яфй → âfj)
+- Converts special characters (• → *, → → ->, — → -)
 - Preserves Latin diacritics (ö, ß, Ł, ó, ź, ś)
-- **Files**: `HTCharset.h`, `HTCharset.c`
-- **Test**: `test/test_htcharset.c` (German, Polish, Russian)
+- **Files**: `HTCharset.h`, `HTCharset.c`, `HTAnchor.h`, `HTAnchor.c`, `HTMIME.c`, `SGML.c`
+- **Test**: `test/test_htcharset.c` (German, Polish, Russian, Windows-1251, KOI8-R)
 
 #### Infrastructure Improvements
 - 64-bit architecture support (from 32-bit original)
@@ -490,7 +494,8 @@ Contributions are welcome! Areas of interest:
 - HTTPS/TLS support with OpenSSL integration
 - HTTP redirect handling (3xx status codes)
 - Internet Archive (Wayback Machine) integration
-- UTF-8 transliteration to Latin/ASCII (ICU-based)
+- Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII via iconv + ICU)
+- Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
 - Socket timeouts and error handling
 - Modern build system improvements
 - Comprehensive test suite

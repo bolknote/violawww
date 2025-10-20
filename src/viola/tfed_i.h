@@ -1,5 +1,8 @@
 /* tfed internal decls */
 
+#include <limits.h>  /* for INT_MAX */
+#include <string.h>  /* for strlen */
+
 extern int MSTAT_tfed;
 extern int MSTAT_tfed_convertNodeLinesToStr;
 
@@ -77,7 +80,14 @@ extern XTextItem xcharitem; /* used by drawChar() */
         (tfcTo)->flags = (tfcFrom)->flags;                                                         \
     }
 
-#define textPixelWidth(fontID, FontFont) XTextWidth(FontFont(fontID), str, (int)strlen(str))
+/* Safe strlen for X11 - strings displayed on screen are always reasonable length */
+static inline int safe_strlen_for_x11(const char* str) {
+    size_t len = strlen(str);
+    /* X11 text functions expect int; screen text is always < INT_MAX */
+    return (len > INT_MAX) ? INT_MAX : (int)len;
+}
+
+#define textPixelWidth(fontID, FontFont) XTextWidth(FontFont(fontID), str, safe_strlen_for_x11(str))
 
 #define TBUFFSIZE 1024 /*XXX maximum line length. Used by tfed_buildLines() */
 
@@ -116,8 +126,8 @@ int TFCstrlen();
 int TFCstrcat();
 int str2EBuff();
 int TFC2StrStrcpy();
-int TFCstrcpy();
-int TFCstrncpy();
+ptrdiff_t TFCstrcpy();
+ptrdiff_t TFCstrncpy();
 
 int translateCol2Px();
 int translatePx2Col();

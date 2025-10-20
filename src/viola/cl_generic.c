@@ -3578,7 +3578,7 @@ long meth_generic_nthWord(VObj* self, Packet* result, int argc, Packet argv[]) {
             result->canFree = 0;
             return 0;
         }
-        extractWord(str, (int)n1, (int)n2, buff);
+        extractWord(str, n1, n2, buff);
         result->info.s = SaveString(buff);
         result->canFree = PK_CANFREE_STR;
         free(str); /* argh! */

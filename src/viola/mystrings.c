@@ -989,8 +989,9 @@ int getItemVals(int li, int hi, char* itemStr) {
     return ai;
 }
 
-char* extractWord(char* text, int li, int hi, char* retStr) {
-    int bi = 0, i = 0, itemNum = 1;
+char* extractWord(char* text, long li, long hi, char* retStr) {
+    int bi = 0, i = 0;
+    long itemNum = 1;
     char c;
 
     if (!isalnum(*text))

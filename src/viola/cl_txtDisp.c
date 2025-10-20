@@ -656,8 +656,8 @@ int argc;
 Packet argv[];
 {
     TFStruct* tf = updateEStrUser(self);
-    int ln = (int)PkInfo2Int(&argv[0]);
-    int cn = (int)PkInfo2Int(&argv[1]);
+    long ln = PkInfo2Int(&argv[0]);
+    long cn = PkInfo2Int(&argv[1]);
 
     lineFlagSet(tf, ln, cn, MASK_REVERSE, -1);
     if ((ln >= tf->screen_row_offset) && (ln < tf->screen_row_offset + tf->num_of_lines)) {
@@ -785,8 +785,8 @@ int argc;
 Packet argv[];
 {
     TFStruct* tf = updateEStrUser(self);
-    int ln = (int)PkInfo2Int(&argv[0]);
-    int cn = (int)PkInfo2Int(&argv[1]);
+    long ln = PkInfo2Int(&argv[0]);
+    long cn = PkInfo2Int(&argv[1]);
 
     lineFlagSet(tf, ln, cn, MASK_REVERSE, 1);
     if ((ln >= tf->screen_row_offset) && (ln < tf->screen_row_offset + tf->num_of_lines)) {

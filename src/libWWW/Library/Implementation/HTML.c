@@ -919,7 +919,7 @@ PUBLIC HTStructured* HTML_new ARGS3(HTParentAnchor*, anchor, HTFormat, format_ou
 */
 PUBLIC HTStream* HTMLToPlain ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, HTStream*,
                                    sink) {
-    return SGML_new(&HTML_dtd, HTML_new(anchor, pres->rep_out, sink));
+    return SGML_new(&HTML_dtd, HTML_new(anchor, pres->rep_out, sink), anchor);
 }
 
 /*	HTConverter for HTML to C code
@@ -938,7 +938,7 @@ PUBLIC HTStream* HTMLToC ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, H
     html->comment_start = "/* ";
     html->comment_end = " */\n"; /* Must start in col 1 for cpp */
                                  /*    HTML_put_string(html,html->comment_start); */
-    return SGML_new(&HTML_dtd, html);
+    return SGML_new(&HTML_dtd, html, anchor);
 }
 
 /*	Presenter for HTML
@@ -951,7 +951,7 @@ PUBLIC HTStream* HTMLToC ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, H
 #ifndef GUI
 PUBLIC HTStream* HTMLPresent ARGS3(HTPresentation*, pres, HTParentAnchor*, anchor, HTStream*,
                                    sink) {
-    return SGML_new(&HTML_dtd, HTML_new(anchor, WWW_PRESENT, sink));
+    return SGML_new(&HTML_dtd, HTML_new(anchor, WWW_PRESENT, sink), anchor);
 }
 #endif
 

@@ -14,7 +14,9 @@
 #include "HTStyle.h"
 #include "HTUtils.h"
 #include "HText.h"
+#include "HTAnchor.h"
 #include <string.h>
+#include <strings.h>
 #include "HTCharset.h"
 
 extern HTStyleSheet* styleSheet;
@@ -27,6 +29,7 @@ struct _HTStream {
     CONST HTStreamClass* isa;
 
     HText* text;
+    HTParentAnchor* anchor; /* To access charset information */
 };
 
 /* Forward declaration */
@@ -63,22 +66,44 @@ PRIVATE void HTPlain_progress ARGS2(HTStream*, me, int, l) {}
 PRIVATE void HTPlain_write ARGS3(HTStream*, me, CONST char*, s, int, l) {
     CONST char* p;
     CONST char* e = s + l;
-    char tempbuf[8192];
+    char outbuf[65536]; /* 8x buffer for encoding expansion + transliteration */
     int converted_len;
     int i;
+    char* charset;
     
-    if (l < sizeof(tempbuf)) {
-        /* Try UTF-8 to ASCII conversion */
-        memcpy(tempbuf, s, l);
-        tempbuf[l] = '\0';
-        converted_len = HTCharset_utf8_to_ascii_buffer(tempbuf, l);
-        
-        if (converted_len != l || memcmp(s, tempbuf, l) != 0) {
-            /* Conversion happened, use converted text */
-            for (i = 0; i < converted_len; i++) {
-                HText_appendCharacter(me->text, tempbuf[i]);
+    /* Get charset from anchor */
+    charset = me->anchor ? HTAnchor_charset(me->anchor) : NULL;
+    
+    if (l < sizeof(outbuf) / 8) {
+        if (charset && strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0) {
+            /* Convert from specified encoding to ASCII */
+            if (TRACE)
+                fprintf(stderr, "HTPlain: Converting from charset '%s' to ASCII\n", charset);
+            converted_len = HTCharset_convert_to_ascii(charset, s, l, outbuf, sizeof(outbuf));
+            
+            if (converted_len > 0) {
+                /* Conversion succeeded */
+                for (i = 0; i < converted_len; i++) {
+                    HText_appendCharacter(me->text, outbuf[i]);
+                }
+                return;
             }
-            return;
+            /* If conversion failed, fall through to try UTF-8 path */
+        }
+        
+        /* Try UTF-8 to ASCII conversion (also handles no-charset case) */
+        if (l < sizeof(outbuf) / 2) {
+            memcpy(outbuf, s, l);
+            outbuf[l] = '\0';
+            converted_len = HTCharset_utf8_to_ascii_buffer(outbuf, l);
+            
+            if (converted_len != l || memcmp(s, outbuf, l) != 0) {
+                /* Conversion happened, use converted text */
+                for (i = 0; i < converted_len; i++) {
+                    HText_appendCharacter(me->text, outbuf[i]);
+                }
+                return;
+            }
         }
     }
     
@@ -120,6 +145,7 @@ PUBLIC HTStream* HTPlainPresent ARGS3(HTPresentation*, pres, HTParentAnchor*, an
     if (me == NULL)
         outofmem(__FILE__, "HTPlain_new");
     me->isa = &HTPlain;
+    me->anchor = anchor;
 
     me->text = HText_new(anchor);
     HText_setStyle(me->text, HTStyleNamed(styleSheet, "Example"));

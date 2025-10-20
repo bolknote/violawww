@@ -1,12 +1,15 @@
-/*  HTCharset.c - UTF-8 to ISO-8859-1 transliteration
+/*  HTCharset.c - Character encoding conversion and transliteration
 **
-**  Two-pass conversion:
-**    1. ICU: Any-Latin (Cyrillic → Latin, Greek → Latin, Chinese → Pinyin)
-**    2. iconv: UTF-8 → ISO-8859-1//TRANSLIT (• → *, " → ", keeps é ü ñ)
+**  Three-pass conversion:
+**    1. iconv: Source encoding → UTF-8 (e.g., windows-1251 → UTF-8)
+**    2. ICU: Any-Latin (Cyrillic → Latin, Greek → Latin, Chinese → Pinyin)
+**    3. iconv: UTF-8 → ISO-8859-1//TRANSLIT (• → *, " → ", keeps é ü ñ)
 */
 
 #include "HTCharset.h"
+#include "HTUtils.h"
 #include <string.h>
+#include <strings.h>
 
 #ifdef USE_ICU
 #include <unicode/utrans.h>
@@ -70,11 +73,13 @@ char* HTCharset_utf8_to_ascii(const char* utf8_str) {
 
 /* Convert UTF-8 buffer to ISO-8859-1 in-place, returns new size
 ** Two-pass: 1) ICU Any-Latin  2) iconv UTF-8 → ISO-8859-1//TRANSLIT
+** WARNING: Output may be up to 2x larger than input due to transliteration
+**          Caller must ensure str buffer has enough space
 */
 int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
-    char tempbuf[8192];
-    char outbuf[8192];
-    UChar ubuf[4096];
+    char tempbuf[16384];
+    char outbuf[16384];
+    UChar ubuf[8192];
     int32_t ulen;
     int32_t capacity;
     UErrorCode status;
@@ -84,7 +89,7 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     size_t inleft;
     size_t outleft;
     
-    if (!str || size <= 0 || size >= sizeof(tempbuf))
+    if (!str || size <= 0 || size >= sizeof(tempbuf) / 2)
         return size;
     
     init_converters();
@@ -98,7 +103,7 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     if (U_FAILURE(status))
         return size;
     
-    capacity = ulen + 50;
+    capacity = ulen + 100;
     if (capacity > sizeof(ubuf)/sizeof(UChar))
         capacity = sizeof(ubuf)/sizeof(UChar);
     
@@ -132,6 +137,76 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     return outlen;
 }
 
+/* Convert from arbitrary encoding to ASCII with transliteration
+** Three-pass conversion:
+**   1. iconv: Source encoding → UTF-8
+**   2. ICU: Any-Latin
+**   3. iconv: UTF-8 → ISO-8859-1//TRANSLIT
+*/
+int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insize,
+                                 char* outbuf, int outsize) {
+    char utf8buf[32768];
+    char* inptr;
+    char* outptr;
+    size_t inleft;
+    size_t outleft;
+    iconv_t cd;
+    int utf8_size;
+    int result;
+    
+    if (!inbuf || insize <= 0 || !outbuf || outsize <= 0)
+        return -1;
+    
+    /* If already UTF-8 or no charset specified, skip to transliteration */
+    if (!charset || strcasecmp(charset, "UTF-8") == 0 || strcasecmp(charset, "utf8") == 0) {
+        if (insize >= outsize)
+            return -1;
+        memcpy(outbuf, inbuf, insize);
+        outbuf[insize] = '\0';
+        return HTCharset_utf8_to_ascii_buffer(outbuf, insize);
+    }
+    
+    /* === PASS 0: Convert from source encoding to UTF-8 (IGNORE invalid/mixed bytes) === */
+    cd = iconv_open("UTF-8//IGNORE", charset);
+    if (cd == (iconv_t)-1) {
+        if (TRACE)
+            fprintf(stderr, "HTCharset: Cannot convert from %s to UTF-8\n", charset);
+        return -1;
+    }
+    
+    inptr = (char*)inbuf;
+    outptr = utf8buf;
+    inleft = insize;
+    outleft = sizeof(utf8buf) - 1;
+    
+    if (iconv(cd, &inptr, &inleft, &outptr, &outleft) == (size_t)-1) {
+        if (TRACE)
+            fprintf(stderr, "HTCharset: Conversion from %s to UTF-8 failed: %s\n", 
+                    charset, strerror(errno));
+        iconv_close(cd);
+        return -1;
+    }
+    
+    *outptr = '\0';
+    utf8_size = outptr - utf8buf;
+    iconv_close(cd);
+    
+    if (TRACE)
+        fprintf(stderr, "HTCharset: Converted %d bytes from %s to %d bytes UTF-8\n",
+                insize, charset, utf8_size);
+    
+    /* === PASS 1-2: UTF-8 → Transliterated ASCII === */
+    if (utf8_size >= outsize)
+        return -1;
+    
+    memcpy(outbuf, utf8buf, utf8_size);
+    outbuf[utf8_size] = '\0';
+    
+    result = HTCharset_utf8_to_ascii_buffer(outbuf, utf8_size);
+    
+    return result;
+}
+
 #else
 /* No ICU/iconv - pass through unchanged */
 char* HTCharset_utf8_to_ascii(const char* utf8_str) {
@@ -140,6 +215,16 @@ char* HTCharset_utf8_to_ascii(const char* utf8_str) {
 
 int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     return size;
+}
+
+int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insize,
+                                 char* outbuf, int outsize) {
+    /* No ICU/iconv support - just copy */
+    if (insize >= outsize)
+        return -1;
+    memcpy(outbuf, inbuf, insize);
+    outbuf[insize] = '\0';
+    return insize;
 }
 #endif
 

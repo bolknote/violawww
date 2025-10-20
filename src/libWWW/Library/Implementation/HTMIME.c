@@ -13,6 +13,8 @@
 */
 #include "HTMIME.h" /* Implemented here */
 #include "HTAlert.h"
+#include <string.h>
+#include <strings.h>
 
 /* Forward declarations */
 extern void http_progress_notify();
@@ -27,6 +29,7 @@ typedef enum _MIME_state {
     CONTENT_T,
     CONTENT_TRANSFER_ENCODING,
     CONTENT_TYPE,
+    X_ARCHIVE_GUESSED_CHARSET,
     SKIP_GET_VALUE, /* Skip space then get value */
     GET_VALUE,      /* Get value till white space */
     JUNK_LINE,      /* Ignore the rest of this folded line */
@@ -68,6 +71,58 @@ struct _HTStream {
 **
 **			A C T I O N 	R O U T I N E S
 */
+
+/*	Extract charset from Content-Type parameters
+**	-------------------------------------------
+**
+**	Looks for "charset=value" in the string after semicolon
+**	Returns pointer to charset value or NULL if not found
+*/
+PRIVATE char* extract_charset ARGS1(char*, content_type) {
+    char* semicolon;
+    char* charset_param;
+    char* equals;
+    char* end;
+    static char charset_buf[64];
+    
+    semicolon = strchr(content_type, ';');
+    if (!semicolon)
+        return NULL;
+    
+    /* Look for "charset=" in parameters */
+    charset_param = semicolon + 1;
+    while (*charset_param && WHITE(*charset_param))
+        charset_param++;
+    
+    /* Case-insensitive search for "charset=" */
+    while (*charset_param) {
+        if (strncasecmp(charset_param, "charset=", 8) == 0) {
+            charset_param += 8;
+            /* Skip quotes if present */
+            if (*charset_param == '"')
+                charset_param++;
+            
+            /* Copy charset value */
+            end = charset_buf;
+            while (*charset_param && !WHITE(*charset_param) && 
+                   *charset_param != ';' && *charset_param != '"' &&
+                   (end - charset_buf) < sizeof(charset_buf) - 1) {
+                *end++ = *charset_param++;
+            }
+            *end = '\0';
+            return charset_buf;
+        }
+        /* Skip to next parameter */
+        charset_param = strchr(charset_param, ';');
+        if (!charset_param)
+            break;
+        charset_param++;
+        while (*charset_param && WHITE(*charset_param))
+            charset_param++;
+    }
+    
+    return NULL;
+}
 
 /*	Character handling
 **	------------------
@@ -124,6 +179,14 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
             me->if_ok = CONTENT_T;
             me->state = CHECK;
             break;
+        case 'x':
+        case 'X':
+            if (TRACE)
+                fprintf(stderr, "HTMIME: Found 'x' or 'X', checking for x-archive-guessed-charset\n");
+            me->check_pointer = "-archive-guessed-charset:";
+            me->if_ok = X_ARCHIVE_GUESSED_CHARSET;
+            me->state = CHECK;
+            break;
         case '\n': /* Blank line: End of Header! */
         {
             if (TRACE)
@@ -154,8 +217,11 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
 
     case CHECK: /* Check against string */
         if (TOLOWER(c) == *(me->check_pointer)++) {
-            if (!*me->check_pointer)
+            if (!*me->check_pointer) {
+                if (TRACE && me->if_ok == X_ARCHIVE_GUESSED_CHARSET)
+                    fprintf(stderr, "HTMIME: Successfully matched x-archive-guessed-charset header\n");
                 me->state = me->if_ok;
+            }
         } else { /* Error */
             if (TRACE)
                 fprintf(stderr, "HTMIME: Bad character `%c' found where `%s' expected\n", c,
@@ -188,6 +254,7 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
 
     case CONTENT_TYPE:
     case CONTENT_TRANSFER_ENCODING:
+    case X_ARCHIVE_GUESSED_CHARSET:
         me->field = me->state; /* remember it */
         me->state = SKIP_GET_VALUE;
         /* Fall through! */
@@ -209,8 +276,23 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
             *me->value_pointer = 0;
             switch (me->field) {
             case CONTENT_TYPE:
-                /* Strip parameters (e.g., "; charset=UTF-8") from MIME type */
+                /* Extract charset parameter before stripping, but only if not already set by X-Archive-Guessed-Charset */
                 {
+                    char* charset = extract_charset(me->value);
+                    if (charset && me->anchor) {
+                        char* existing_charset = HTAnchor_charset(me->anchor);
+                        if (!existing_charset) {
+                            /* Only set if no charset was set by X-Archive-Guessed-Charset */
+                            HTAnchor_setCharset(me->anchor, charset);
+                            if (TRACE)
+                                fprintf(stderr, "HTMIME: Charset from Content-Type: %s\n", charset);
+                        } else {
+                            if (TRACE)
+                                fprintf(stderr, "HTMIME: Skipping Content-Type charset (%s) - already set by X-Archive-Guessed-Charset (%s)\n", charset, existing_charset);
+                        }
+                    }
+                    
+                    /* Strip parameters (e.g., "; charset=UTF-8") from MIME type */
                     char* semicolon = strchr(me->value, ';');
                     if (semicolon) {
                         *semicolon = '\0';  /* Truncate at semicolon */
@@ -224,6 +306,14 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
                 break;
             case CONTENT_TRANSFER_ENCODING:
                 me->encoding = HTAtom_for(me->value);
+                break;
+            case X_ARCHIVE_GUESSED_CHARSET:
+                /* X-Archive-Guessed-Charset takes priority - always set */
+                if (me->anchor) {
+                    HTAnchor_setCharset(me->anchor, me->value);
+                    if (TRACE)
+                        fprintf(stderr, "HTMIME: Charset from X-Archive-Guessed-Charset: %s (PRIORITY)\n", me->value);
+                }
                 break;
             default: /* Should never get here */
                 break;

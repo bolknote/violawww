@@ -87,6 +87,7 @@ struct _HTParentAnchor {
     HTFormat format;    /* Pointer to node format descriptor */
     BOOL isIndex;       /* Acceptance of a keyword search */
     char* title;        /* Title of document */
+    char* charset;      /* Character encoding (e.g., "UTF-8", "windows-1251") */
 
     HTList* methods; /* Methods available as HTAtoms */
     void* protocol;  /* Protocol object */
@@ -225,6 +226,12 @@ extern void HTAnchor_setProtocol PARAMS((HTParentAnchor * me, void* protocol));
 */
 extern char* HTAnchor_physical PARAMS((HTParentAnchor * me));
 extern void HTAnchor_setPhysical PARAMS((HTParentAnchor * me, char* protocol));
+
+/*      Character encoding
+**      ------------------
+*/
+extern char* HTAnchor_charset PARAMS((HTParentAnchor * me));
+extern void HTAnchor_setCharset PARAMS((HTParentAnchor * me, CONST char* charset));
 
 #endif /* HTANCHOR_H */
 

@@ -68,6 +68,15 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - Secure connections to modern websites
 - **Files**: `HTSSL.h`, `HTSSL.c`, `HTTPS.h`, `HTTPS.c`
 
+#### HTTP Keep-Alive Connection Manager
+- Connection pooling and reuse for improved performance
+- Automatic keep-alive detection via HTTP headers
+- Connection pool (max 6 concurrent connections)
+- Configurable timeout (default 30 seconds)
+- Automatic cleanup of stale connections
+- Reduces latency for multiple requests to same host
+- **Files**: `HTKeepAlive.h`, `HTKeepAlive.c`
+
 #### HTTP Redirect Handling
 - Automatic following of redirects: 301, 302, 303, 307, 308
 - Cross-protocol redirects (HTTP ↔ HTTPS)
@@ -370,6 +379,11 @@ HTAccess.c (protocol dispatcher)
   ↓
 HTTPS.c (HTTPS protocol handler)
   ↓
+HTKeepAlive.c (connection manager)
+  ├─ Check for existing connection
+  ├─ Reuse if available & valid
+  └─ Create new if needed
+  ↓
 socket() + connect() (TCP)
   ↓
 HTSSL_connect() (TLS handshake)
@@ -377,6 +391,9 @@ HTSSL_connect() (TLS handshake)
 HTSSL_write() (HTTP request over TLS)
   ↓
 HTSSL_read() (HTTP response over TLS)
+  ↓
+Connection returned to pool (keep-alive)
+or closed (Connection: close)
   ↓
 Parse & Render
 ```

@@ -1955,7 +1955,7 @@ endHTML() { /*	--dataBuffIdxStackIdx;*/ }
 SGMLDocMappingInfo* loadStyleSheet(dtd)
 char* dtd;
 {
-    char* stylesheetFN[128];
+    char stylesheetFN[128];
     SGMLDocMappingInfo* dmi = NULL;
 
     sprintf(stylesheetFN, "%s/styles/%s.style", sgmlPath, dtd);

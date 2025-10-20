@@ -40,7 +40,7 @@ enum sv_dispatch { RUN_DISPATCH };
  * are considered BIGENDIAN machines.
  */
 
-#define SWAB(val) (val = memToValLSB((byte*)&val, sizeof(val)))
+#define SWAB(val) (val = (__typeof__(val))memToValLSB((byte*)&val, sizeof(val)))
 
 /* fix up some bezerklysims */
 #if !defined(bzero) && !defined(__APPLE__)

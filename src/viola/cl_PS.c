@@ -131,7 +131,7 @@ long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], int labe
         result->info.s = SaveString(PkInfo2Str(&argv[1]));
         SET_label(self, result->info.s);
         if (w) {
-            sprintf(buff, "%d %d %d %d %d %d %f %f %d %d %d %d", 0, /* bpixmap */
+            sprintf(buff, "%d %d %d %ld %d %ld %f %f %d %d %d %d", 0, /* bpixmap */
                     0,                                              /* orientation */
                     0, GET_height(self),                            /* lower left */
                     0, GET_width(self),                             /* upper right */
@@ -143,7 +143,7 @@ long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], int labe
                             XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
                             PropModeReplace, (unsigned char*)buff, strlen(buff));
             printf("buff=>%s<\n", buff);
-            sprintf(buff, "%d", GET_window(self));
+            sprintf(buff, "%lx", (unsigned long)GET_window(self));
             printf("buff=>%s<\n", buff);
             /*			setenv("GHOSTVIEW", buff, True);*/
             /*			setenv("DISPLAY", itoa(display...), True);*/

@@ -726,7 +726,7 @@ VObj* self;
     XEvent e;
     int stat;
     int initColor = 1;
-    int doHighLighting;
+    long doHighLighting;
 
     if (!tf)
         return 0;
@@ -860,7 +860,7 @@ int mx, my;
 {
     TFStruct* tf = updateEStrUser(self);
     TFChar* tfcp;
-    int doDrawCursor = GET_cursor(self);
+    long doDrawCursor = GET_cursor(self);
 
     if (!tf) {
         /*		printf("Internal error: tfed_placeCursor(): tf == NULL\n");*/
@@ -923,8 +923,8 @@ Window w;
 char c;
 {
     TFStruct* tf = updateEStrUser(self);
-    int doDrawCursor = GET_cursor(self);
-    int stat;
+    long doDrawCursor = GET_cursor(self);
+    long stat;
 
     if (!w)
         doDrawCursor = 0;
@@ -2273,7 +2273,7 @@ TFChar* tfcArrayFrom;
     }
     TFCClear(tfcArrayTo);
 
-    return tfcArrayTo - tfcArrayTo_orig;
+    return (int)(tfcArrayTo - tfcArrayTo_orig);
 }
 
 int TFCstrncpy(tfcArrayTo, tfcArrayFrom, n)
@@ -2288,7 +2288,7 @@ int n;
         ++tfcArrayFrom;
         ++tfcArrayTo;
     }
-    return tfcArrayTo - tfcArrayTo_orig;
+    return (int)(tfcArrayTo - tfcArrayTo_orig);
 }
 
 int joinLine(tf)
@@ -2346,7 +2346,7 @@ TFLineNode* source;
     for (tfcp = source->linep; c = TFCChar(tfcp); tfcp++)
         if (c == '\n' || c == '\r')
             break;
-    j = tfcp - source->linep;
+    j = (int)(tfcp - source->linep);
 
     /* append first source-line to the left half of the edit-line
      */
@@ -2423,7 +2423,7 @@ TFLineNode* source;
             for (tfcp = source->linep + i; c = TFCChar(tfcp); tfcp++)
                 if (c == '\n' || c == '\r')
                     break;
-            j = tfcp - source->linep;
+            j = (int)(tfcp - source->linep);
 
 #ifdef VERBOSE_INSERTSTR
             fprintf(stderr, "**** i=%d j=%d \n", i, j);
@@ -2785,7 +2785,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -2838,7 +2838,7 @@ TFLineNode* source;
         case 'o':
             if (*(++(buildInfo->str)) == STAG_OPEN) {
                 VObj* inset;
-                int insetHeight;
+                long insetHeight;
                 int xLR = GET__TFStruct(buildInfo->self)->xLR - 2; /* 2=fudgeFactor*/
 
                 s = probeTagBody(buildInfo->str);
@@ -2846,7 +2846,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 cp = (char*)Rmalloc(sizeof(char) * length + 1);
                 strncpy(cp, buildInfo->str + 1, length);
                 cp[length] = '\0';
@@ -2902,8 +2902,8 @@ TFLineNode* source;
                 SET_x(inset, buildInfo->px);
                 SET_y(inset, buildInfo->vspan);
 
-                buildInfo->px += GET_width(inset) + 2;
-                insetHeight = GET_height(inset) + 2;
+                buildInfo->px += (int)GET_width(inset) + 2;
+                insetHeight = (int)GET_height(inset) + 2;
 
                 if (buildInfo->maxFontHeight < insetHeight)
                     buildInfo->maxFontHeight = insetHeight;
@@ -2936,7 +2936,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -2992,7 +2992,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 /*			cp = (char*)Vmalloc(GET__TFStruct(buildInfo->self)->mg,
                                                                 sizeof(char) * length + 1);
                 */
@@ -3072,7 +3072,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 1;
+                length = (int)(s - buildInfo->str - 1);
                 cp = (char*)Rmalloc(sizeof(char) * (length + 1));
                 if (!cp) {
                     fprintf(stderr, "malloc failed\n");
@@ -3122,7 +3122,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -3156,7 +3156,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 cp = buildInfo->str + 1;
                 buildInfo->flags |= MASK_REVERSE;
                 while (length--) {
@@ -3188,7 +3188,7 @@ TFLineNode* source;
                                             printf("tag error.\n");
                                             break;
                                     }
-                                    length = s - buildInfo->str - 2;
+                                    length = (int)(s - buildInfo->str - 2);
                                     cp = buildInfo->str + 1;
                                     buildInfo->flags |= MASK_UNDER;
                                     while (length--) {
@@ -3222,7 +3222,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = s - buildInfo->str - 2;
+                length = (int)(s - buildInfo->str - 2);
                 cp = buildInfo->str + 1;
                 buildInfo->flags |= MASK_ITALIC;
                 while (length--) {
@@ -3863,7 +3863,7 @@ TFLineNode* source;
                     if (insetName) {
                         inset = getObject(insetName);
                         if (inset) {
-                            insetHeight = GET_height(inset) + 2;
+                            insetHeight = (int)GET_height(inset) + 2;
                             if (buildInfo->maxFontHeight < insetHeight)
                                 buildInfo->maxFontHeight = insetHeight;
                             /* make sure this object is stuck within self.
@@ -4970,7 +4970,7 @@ TFLineNode* source;
         fontyoffset = *yoffset + currentp->maxFontHeight - currentp->maxFontDescent;
 
         if (verbose)
-            fprintf(stdout, "tfed: 4 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL, *yoffset,
+            fprintf(stdout, "tfed: 4 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL, *yoffset,
                     tf->width, *yoffset + currentp->maxFontHeight * currentp->breakc - 1);
 
         XClearArea(display, TFWINDOW, tf->xUL, *yoffset, tf->width,
@@ -5098,7 +5098,7 @@ TFLineNode* source;
              */
             if (*buff) {
                 item.font = FontFont(TFCFontID(segheadtfcp));
-                item.nchars = tfcp - segheadtfcp;
+                item.nchars = (int)(tfcp - segheadtfcp);
 
                 flags = TFCFlags(segheadtfcp);
                 if (!flags) {
@@ -5213,7 +5213,7 @@ TFLineNode* source;
                             inset = getObject(insetName);
 
                             if (inset) {
-                                int x = GET_x(inset), y = GET_y(inset);
+                                long x = GET_x(inset), y = GET_y(inset);
                                 if (x != segpx || y != localYOffset) {
                                     SET_x(inset, segpx);
                                     SET_y(inset, localYOffset);
@@ -5399,7 +5399,7 @@ TFLineNode* source;
 
         if (clearBG && tf->isRenderAble) {
             /*
-            fprintf(stdout, "tfed: 5 XClearArea w=%x %d %d %d %d\n", TFWINDOW,
+            fprintf(stdout, "tfed: 5 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW,
                     tf->xUL, yoffset, tf->width,
                     currentp->maxFontHeight * currentp->breakc);
             */
@@ -5504,8 +5504,8 @@ TFLineNode* source;
                         if (insetName) {
                             inset = getObject(insetName);
                             if (inset) {
-                                segpx += GET_width(inset) + 2;
-                                insetHeight = GET_height(inset) + 2;
+                                segpx += (int)GET_width(inset) + 2;
+                                insetHeight = (int)GET_height(inset) + 2;
                                 if (maxFontHeight < insetHeight)
                                     maxFontHeight = insetHeight;
                             }
@@ -5591,7 +5591,7 @@ TFLineNode* source;
         XCopyArea(display, TFWINDOW, TFWINDOW, gc_copy, tf->xUL, tf->yUL + upper, tf->width,
                   tf->height - upper - span, tf->xUL, tf->yUL + upper + span);
         if (verbose)
-            fprintf(stdout, "tfed: 6 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+            fprintf(stdout, "tfed: 6 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                     tf->yUL + upper, tf->width, span, False);
         XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, span, False);
         return 1;
@@ -5614,7 +5614,7 @@ TFLineNode* source;
         XCopyArea(display, TFWINDOW, TFWINDOW, gc_copy, tf->xUL, tf->yUL + upper, tf->width,
                   tf->height - upper - span, tf->xUL, tf->yUL + upper + span);
         if (verbose)
-            fprintf(stdout, "tfed: 7 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+            fprintf(stdout, "tfed: 7 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                     tf->yUL + upper, tf->width, span, False);
         XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, span, False);
         return 1;
@@ -5641,12 +5641,12 @@ TFLineNode* source;
                           tf->width, safety, tf->xUL, tf->yUL + upper);
             }
             if (verbose)
-                fprintf(stdout, "tfed: 8 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+                fprintf(stdout, "tfed: 8 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                         tf->yLR - span, tf->width, span);
             XClearArea(display, TFWINDOW, tf->xUL, tf->yLR - span, tf->width, span, False);
         } else {
             if (verbose)
-                fprintf(stdout, "tfed: 9 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+                fprintf(stdout, "tfed: 9 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                         tf->yUL + upper, tf->width, tf->height - upper);
             XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, tf->height - upper,
                        False);
@@ -5700,12 +5700,12 @@ TFLineNode* source;
                           tf->width, safety, tf->xUL, tf->yUL + upper);
             }
             if (verbose)
-                fprintf(stdout, "tfed: 10 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+                fprintf(stdout, "tfed: 10 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                         tf->yUL + upper, tf->width, tf->height - upper);
             XClearArea(display, TFWINDOW, tf->xUL, tf->yLR - span, tf->width, span, False);
         } else {
             if (verbose)
-                fprintf(stdout, "tfed: 12 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL,
+                fprintf(stdout, "tfed: 12 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                         tf->yUL + upper, tf->width, tf->height - upper);
             XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, tf->height - upper,
                        False);
@@ -5859,7 +5859,7 @@ TFLineNode* source;
                           py);
 
 #ifdef VERBOSE_SCROLLINEFORWARD
-                fprintf(stdout, "tfed: 33 XClearArea w=%x %d %d %d %d\n", TFWINDOW, px, py, pwidth,
+                fprintf(stdout, "tfed: 33 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, px, py, pwidth,
                         currentp->maxFontHeight, False);
 #endif
                 XClearArea(display, TFWINDOW, px, py, pwidth, currentp->maxFontHeight, False);
@@ -5964,7 +5964,7 @@ TFLineNode* source;
             i = tf->xLR - px;
             if (i > 1 && TFWINDOW) {
 #ifdef VERBOSE_SCROLLINEFORWARD
-                fprintf(stdout, "tfed: 13 XClearArea w=%x %d %d %d %d\n", TFWINDOW, px, py, i,
+                fprintf(stdout, "tfed: 13 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, px, py, i,
                         currentp->maxFontHeight);
 #endif
                 XClearArea(display, TFWINDOW, px, py, i, currentp->maxFontHeight, False);
@@ -6027,7 +6027,7 @@ TFLineNode* source;
                       tf->height - span, tf->xUL, tf->yUL + span);
 
             if (verbose)
-                fprintf(stdout, "tfed: 20 XClearArea w=%x %d %d %d %d\n", TFWINDOW, 0, 0, tf->width,
+                fprintf(stdout, "tfed: 20 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, 0, 0, tf->width,
                         span);
 
             XClearArea(display, TFWINDOW, tf->xUL, tf->yUL, tf->width, span, False);
@@ -6093,7 +6093,7 @@ TFLineNode* source;
             XCopyArea(display, TFWINDOW, TFWINDOW, gc_copy, tf->xUL, tf->yUL + span, tf->width,
                       tf->height - span, tf->xUL, tf->yUL);
             if (verbose)
-                fprintf(stdout, "tfed: 21 XClearArea w=%x %d %d %d %d\n", TFWINDOW, tf->xUL, py,
+                fprintf(stdout, "tfed: 21 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL, py,
                         tf->width, tf->height - py);
             XClearArea(display, TFWINDOW, tf->xUL, py, tf->width, tf->height - py + tf->yUL, False);
             if (currentp) {
@@ -6722,7 +6722,7 @@ TFLineNode* source;
                             if (insetName) {
                                 inset = getObject(insetName);
                                 if (inset) {
-                                    insetHeight = GET_height(inset) + 2;
+                                    insetHeight = (int)GET_height(inset) + 2;
                                     if (maxFontHeight < insetHeight)
                                         maxFontHeight = insetHeight;
                                 }

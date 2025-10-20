@@ -256,7 +256,7 @@ helper_pane_config(self) VObj* self;
                 /*printf("pane config error\n");*/
                 break;
             }
-            span = (self[spanIdx] - markedsum) / (nchildren - nmarked);
+            span = (int)((self[spanIdx] - markedsum) / (nchildren - nmarked));
             i = 0;
 
             /*printf("GM lookbreak=%d\n", loopbreak);*/
@@ -269,18 +269,18 @@ helper_pane_config(self) VObj* self;
                 /*printf("GM cobj=%s\t\n", GET_name(olist->o));*/
                 bd = borderStyleThickness[GET_border(olist->o)];
 
-                CHILD_GAP(i) = olist->o[gapIdx];
-                CHILD_GAPO(i) = olist->o[gapOtherIdx];
+                CHILD_GAP(i) = (int)olist->o[gapIdx];
+                CHILD_GAPO(i) = (int)olist->o[gapOtherIdx];
                 gap2 = CHILD_GAP(i) * 2;
 
                 if (!CHILD_SPAN(i)) {
                     if (span <= olist->o[minIdx] + bd + gap2) {
-                        CHILD_SPAN(i) = olist->o[minIdx];
+                        CHILD_SPAN(i) = (int)olist->o[minIdx];
                         markedsum += CHILD_SPAN(i) + bd + gap2;
                         ++nmarked;
                         goto escape;
                     } else if (span >= olist->o[maxIdx] + bd + gap2) {
-                        CHILD_SPAN(i) = olist->o[maxIdx];
+                        CHILD_SPAN(i) = (int)olist->o[maxIdx];
                         markedsum += CHILD_SPAN(i) + bd + gap2;
                         ++nmarked;
                         goto escape;
@@ -334,7 +334,7 @@ helper_pane_config(self) VObj* self;
                                         GET_height(olist->o) != CHILD_SPAN(i)) {
             */
             if (verbose)
-                fprintf(stderr, "pane y: %s : %d %d %d %d\n", GET_name(olist->o), GET_x(olist->o),
+                fprintf(stderr, "pane y: %s : %ld %d %d %d\n", GET_name(olist->o), GET_x(olist->o),
                         CHILD_POSN(i), CHILD_SPANO(i), CHILD_SPAN(i));
 
             SET_x(olist->o, CHILD_GAPO(i));
@@ -374,7 +374,7 @@ helper_pane_config(self) VObj* self;
                                         GET_height(olist->o) != CHILD_SPANO(i)) {
             */
             if (verbose)
-                fprintf(stderr, "pane x: %s : %d %d %d %d\n", GET_name(olist->o), CHILD_POSN(i),
+                fprintf(stderr, "pane x: %s : %d %ld %d %d\n", GET_name(olist->o), CHILD_POSN(i),
                         GET_y(olist->o), CHILD_SPAN(i), CHILD_SPANO(i));
 
             SET_x(olist->o, CHILD_POSN(i));

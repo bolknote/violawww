@@ -248,7 +248,7 @@ void CB_HTML_new() {
         }
     }
     if (!dmi) {
-        char* stylesheetFN[128];
+        char stylesheetFN[128];
         extern char* sgmlPath;
 
         sprintf(stylesheetFN, "%s/styles/%s.style", sgmlPath, dtd);

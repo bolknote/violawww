@@ -535,7 +535,7 @@ void dumpHashTable(ht) HashTable* ht;
                 if (ht->func_hash == hash_str) {
                     printf("%d\tlabel=\"%s\"\tval=%d\n", i, (char*)hp->label, (int)hp->val);
                 } else {
-                    printf("%d\tlabel=%d\tval=0x%x\n", i, (int)hp->label, hp->val);
+                    printf("%d\tlabel=%d\tval=0x%lx\n", i, (int)hp->label, hp->val);
                 }
     }
 }

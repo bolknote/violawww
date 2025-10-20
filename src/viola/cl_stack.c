@@ -149,7 +149,7 @@ Packet argv[];
     while (olist) {
         ++n;
         if (verbose)
-            printf("\tBoreground Card: [%x]\"%s\"\n", olist->o, GET_name(olist->o));
+            printf("\tBoreground Card: [%p]\"%s\"\n", (void*)olist->o, GET_name(olist->o));
         olist = olist->next;
     }
 
@@ -177,7 +177,7 @@ Packet argv[];
     while (olist) {
         ++n;
         if (verbose)
-            printf("\tForeground Card: [%x]\"%s\"\n", olist->o, GET_name(olist->o));
+            printf("\tForeground Card: [%p]\"%s\"\n", (void*)olist->o, GET_name(olist->o));
         olist = olist->next;
     }
 

@@ -175,4 +175,4 @@ char* enQuote(char* str);
 char* enBracket(char* str);
 char* deBracket(char* str);
 char* listItem(char* list, int li, int hi);
-char* extractWord(char* text, int li, int hi, char* retStr);
+char* extractWord(char* text, long li, long hi, char* retStr);

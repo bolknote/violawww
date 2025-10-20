@@ -2260,7 +2260,7 @@ TFChar* tfcArrayFrom;
 }
 
 /* returns length of tfcAttarTo */
-int TFCstrcpy(tfcArrayTo, tfcArrayFrom)
+ptrdiff_t TFCstrcpy(tfcArrayTo, tfcArrayFrom)
 TFChar* tfcArrayTo;
 TFChar* tfcArrayFrom;
 {
@@ -2273,10 +2273,10 @@ TFChar* tfcArrayFrom;
     }
     TFCClear(tfcArrayTo);
 
-    return (int)(tfcArrayTo - tfcArrayTo_orig);
+    return (tfcArrayTo - tfcArrayTo_orig);
 }
 
-int TFCstrncpy(tfcArrayTo, tfcArrayFrom, n)
+ptrdiff_t TFCstrncpy(tfcArrayTo, tfcArrayFrom, n)
 TFChar* tfcArrayTo;
 TFChar* tfcArrayFrom;
 int n;
@@ -2288,7 +2288,7 @@ int n;
         ++tfcArrayFrom;
         ++tfcArrayTo;
     }
-    return (int)(tfcArrayTo - tfcArrayTo_orig);
+    return (tfcArrayTo - tfcArrayTo_orig);
 }
 
 int joinLine(tf)
@@ -2742,10 +2742,11 @@ TFLineNode* source;
         return 0;
     }
 
-    int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
-    {
-        char c, *s, *cp;
-        int i, j, stat, done = 0, length;
+int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
+{
+    char c, *s, *cp;
+    int i, j, stat, done = 0;
+    size_t length;
         TFChar* tfcp = buildInfo->tbuff + buildInfo->tbuffi;
         TagInfo* ti;
 
@@ -2785,7 +2786,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -2846,7 +2847,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 cp = (char*)Rmalloc(sizeof(char) * length + 1);
                 strncpy(cp, buildInfo->str + 1, length);
                 cp[length] = '\0';
@@ -2936,7 +2937,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -2992,7 +2993,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 /*			cp = (char*)Vmalloc(GET__TFStruct(buildInfo->self)->mg,
                                                                 sizeof(char) * length + 1);
                 */
@@ -3072,7 +3073,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 1);
+                length = (size_t)(s - buildInfo->str - 1);
                 cp = (char*)Rmalloc(sizeof(char) * (length + 1));
                 if (!cp) {
                     fprintf(stderr, "malloc failed\n");
@@ -3122,7 +3123,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 if (length >= sizeof(sbuff)) {
                     length = sizeof(sbuff) - 1;  /* Prevent buffer overflow */
                 }
@@ -3156,7 +3157,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 cp = buildInfo->str + 1;
                 buildInfo->flags |= MASK_REVERSE;
                 while (length--) {
@@ -3188,7 +3189,7 @@ TFLineNode* source;
                                             printf("tag error.\n");
                                             break;
                                     }
-                                    length = (int)(s - buildInfo->str - 2);
+                                    length = (size_t)(s - buildInfo->str - 2);
                                     cp = buildInfo->str + 1;
                                     buildInfo->flags |= MASK_UNDER;
                                     while (length--) {
@@ -3222,7 +3223,7 @@ TFLineNode* source;
                     printf("tag error.\n");
                     break;
                 }
-                length = (int)(s - buildInfo->str - 2);
+                length = (size_t)(s - buildInfo->str - 2);
                 cp = buildInfo->str + 1;
                 buildInfo->flags |= MASK_ITALIC;
                 while (length--) {

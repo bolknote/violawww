@@ -139,9 +139,13 @@ long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], long lab
                     0, 0,                                           /* left, bottom */
                     0, 0);                                          /* top, right */
             printf("buff=>%s<\n", buff);
-            XChangeProperty(display, GET_window(self),
-                            XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
-                            PropModeReplace, (unsigned char*)buff, (int)strlen(buff));
+            {
+                size_t len = strlen(buff);
+                /* Safe: buff is BUFF_SIZE (64000) which is << INT_MAX */
+                XChangeProperty(display, GET_window(self),
+                                XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
+                                PropModeReplace, (unsigned char*)buff, (int)len);
+            }
             printf("buff=>%s<\n", buff);
             sprintf(buff, "%lx", (unsigned long)GET_window(self));
             printf("buff=>%s<\n", buff);

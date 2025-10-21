@@ -982,7 +982,11 @@ int isGlass;
         attrs.bit_gravity = StaticGravity;
         attrs.backing_store = NotUseful;
         attrs.cursor = 0;
-        w = XCreateWindow(display, parentWindow, x, y, width, height, borderThickness,
+        /* X11 border is drawn OUTSIDE the window, so reduce window size to fit */
+        w = XCreateWindow(display, parentWindow, x, y, 
+                          width - (borderThickness * 2), 
+                          height - (borderThickness * 2), 
+                          borderThickness,
                           CopyFromParent, CopyFromParent, CopyFromParent,
                           CWBorderPixel | CWEventMask | CWBackPixel | CWBitGravity | CWCursor,
                           &attrs);

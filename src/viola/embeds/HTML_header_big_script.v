@@ -119,15 +119,79 @@
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");
 			if (i) set("BDColor", i);
-			i = STG_attr(tagPtr, "fontSlant");
-			if (i) {
-				switch (i) {
-				case "italic": 	set("font", i);	break;
-				case "bold": 	set("font", i);	break;
+			
+			fontSlant = STG_attr(tagPtr, "fontSlant");
+			fontSize = STG_attr(tagPtr, "fontSize");
+			fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			
+			/* If mono spacing requested, use fixed font */
+			if (fontSpacing == "mono") {
+				set("_font", 0);
+			} else {
+			/* Get current default font (H1 default is bold_largest=6) */
+			currentFont = get("_font");
+			if (currentFont == 0) currentFont = 6;
+			
+			/* Determine current slant and size from font ID */
+			/* If current is fixed and slant/size specified, switch to proportional */
+			if (currentFont == 0 && (fontSlant != 0 || fontSize != 0)) {
+				slant = "bold"; /* H1 default slant */
+			} else if (currentFont >= 0 && currentFont <= 3) {
+				slant = "normal";
+			} else if (currentFont >= 4 && currentFont <= 6) {
+				slant = "bold";
+			} else if (currentFont >= 7 && currentFont <= 9) {
+				slant = "italic";
+			} else {
+				slant = "bold";
+			}
+			
+			if (currentFont == 2 || currentFont == 5 || currentFont == 8) {
+				size = "_large";
+			} else if (currentFont == 3 || currentFont == 6 || currentFont == 9) {
+				size = "_largest";
+			} else {
+				size = "";
+			}
+			
+			/* Override with stylesheet values if provided */
+			if (fontSlant) {
+				switch (fontSlant) {
+				case "italic": 	slant = "italic";	break;
+				case "bold": 	slant = "bold";		break;
 				default:
-				case "normal":	set("font", i);	break;
+				case "normal":	slant = "normal";	break;
 				}
 			}
+			
+			if (fontSize) {
+				switch (fontSize) {
+				case "large": 		size = "_large";	break;
+				case "largest": 	size = "_largest";	break;
+				default:		size = "";		break;
+				}
+			}
+			
+			/* Map font name to font ID */
+			if (slant == "normal") {
+				if (size == "_large") fontID = 2;
+				else if (size == "_largest") fontID = 3;
+				else fontID = 1;
+			} else if (slant == "bold") {
+				if (size == "_large") fontID = 5;
+				else if (size == "_largest") fontID = 6;
+				else fontID = 4;
+			} else if (slant == "italic") {
+				if (size == "_large") fontID = 8;
+				else if (size == "_largest") fontID = 9;
+				else fontID = 7;
+			} else {
+				fontID = 6; /* fallback to H1 default */
+			}
+			
+				set("_font", fontID);
+			}
+			
 			i = STG_attr(tagPtr, "align");
 			if (i) {
 				useTagInfo_align = 0;

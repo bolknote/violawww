@@ -142,7 +142,58 @@
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");
 			if (i) set("BDColor", i);
-			i = STG_attr(tagPtr, "fontSlant");
+			
+			fontSlant = STG_attr(tagPtr, "fontSlant");
+			fontSize = STG_attr(tagPtr, "fontSize");
+			fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			
+			/* If mono spacing requested, use fixed font */
+			if (fontSpacing == "mono") {
+				set("_font", 0);
+			} else {
+			/* Get current font (ADDRESS default is italic=7) */
+			currentFont = get("_font");
+			if (currentFont == 0) currentFont = 7;
+			
+			/* Extract slant and size */
+			if (currentFont == 0 && (fontSlant != 0 || fontSize != 0)) slant = "italic"; /* ADDRESS default */
+			else if (currentFont <= 3) slant = "normal";
+			else if (currentFont <= 6) slant = "bold";
+			else slant = "italic";
+			
+			if (currentFont == 2 || currentFont == 5 || currentFont == 8) size = "_large";
+			else if (currentFont == 3 || currentFont == 6 || currentFont == 9) size = "_largest";
+			else size = "";
+			
+			/* Override with stylesheet values */
+			if (fontSlant) {
+				if (fontSlant == "italic") slant = "italic";
+				else if (fontSlant == "bold") slant = "bold";
+				else slant = "normal";
+			}
+			if (fontSize) {
+				if (fontSize == "large") size = "_large";
+				else if (fontSize == "largest") size = "_largest";
+				else size = "";
+			}
+			
+			/* Map to font ID */
+			if (slant == "normal") {
+				if (size == "_large") fontID = 2;
+				else if (size == "_largest") fontID = 3;
+				else fontID = 1;
+			} else if (slant == "bold") {
+				if (size == "_large") fontID = 5;
+				else if (size == "_largest") fontID = 6;
+				else fontID = 4;
+			} else {
+				if (size == "_large") fontID = 8;
+				else if (size == "_largest") fontID = 9;
+				else fontID = 7;
+			}
+			
+				set("_font", fontID);
+			}
 		}
 		return;
 	break;

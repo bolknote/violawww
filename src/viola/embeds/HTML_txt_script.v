@@ -355,15 +355,86 @@ print("TXT: height=", get("height"), "................................\n");
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");
 			if (i) set("BDColor", i);
-			i = STG_attr(tagPtr, "fontSlant");
-			if (i) {
-				switch (i) {
-				case "italic": 	set("font", i);	break;
-				case "bold": 	set("font", i);	break;
+			
+			fontSlant = STG_attr(tagPtr, "fontSlant");
+			fontSize = STG_attr(tagPtr, "fontSize");
+			fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			
+			/* If mono spacing requested, use fixed font and ignore slant/size */
+			if (fontSpacing == "mono") {
+				set("_font", 0);
+			} else {
+			/* Get current default font, or use normal (ID=1) */
+			currentFont = get("_font");
+			if (currentFont == 0) currentFont = 1;
+			
+			/* Determine current slant and size from font ID */
+			/* Note: if current is fixed (0) and slant/size specified, switch to proportional */
+			if (currentFont == 0 && fontSlant == 0 && fontSize == 0) {
+				slant = "fixed"; size = "";
+			} else if (currentFont == 0) {
+				/* Switch from fixed to proportional if slant/size specified */
+				slant = "normal"; size = "";
+			} else if (currentFont == 1) {
+				slant = "normal"; size = "";
+			} else if (currentFont == 2) {
+				slant = "normal"; size = "_large";
+			} else if (currentFont == 3) {
+				slant = "normal"; size = "_largest";
+			} else if (currentFont == 4) {
+				slant = "bold"; size = "";
+			} else if (currentFont == 5) {
+				slant = "bold"; size = "_large";
+			} else if (currentFont == 6) {
+				slant = "bold"; size = "_largest";
+			} else if (currentFont == 7) {
+				slant = "italic"; size = "";
+			} else if (currentFont == 8) {
+				slant = "italic"; size = "_large";
+			} else if (currentFont == 9) {
+				slant = "italic"; size = "_largest";
+			} else {
+				slant = "normal"; size = "";
+			}
+			
+			/* Override with stylesheet values if provided */
+			if (fontSlant) {
+				switch (fontSlant) {
+				case "italic": 	slant = "italic";	break;
+				case "bold": 	slant = "bold";		break;
 				default:
-				case "normal":	set("font", i);	break;
+				case "normal":	slant = "normal";	break;
 				}
 			}
+			
+			if (fontSize) {
+				switch (fontSize) {
+				case "large": 		size = "_large";	break;
+				case "largest": 	size = "_largest";	break;
+				default:		size = "";		break;
+				}
+			}
+			
+			/* Map font name to font ID */
+			if (slant == "normal") {
+				if (size == "_large") fontID = 2;
+				else if (size == "_largest") fontID = 3;
+				else fontID = 1;
+			} else if (slant == "bold") {
+				if (size == "_large") fontID = 5;
+				else if (size == "_largest") fontID = 6;
+				else fontID = 4;
+			} else if (slant == "italic") {
+				if (size == "_large") fontID = 8;
+				else if (size == "_largest") fontID = 9;
+				else fontID = 7;
+			} else {
+				fontID = 1; /* fallback */
+			}
+			
+				set("_font", fontID);
+			}
+			
 			i = STG_attr(tagPtr, "align");
 			if (i) {
 				useTagInfo_align = 0;

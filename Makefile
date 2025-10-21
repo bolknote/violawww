@@ -269,6 +269,15 @@ $(VIOLA): $(VIOLA_OBJS) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
 $(VIOLA_DIR)/%.o: $(VIOLA_DIR)/%.c
 	$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -c $< -o $@
 
+# Generate .h files from .v scripts (hex encoding for C string literals)
+$(VIOLA_DIR)/embeds/%.v.h: $(VIOLA_DIR)/embeds/%.v
+	@printf '"' > $@
+	@hexdump -ve '1/1 "x%.2x"' $< | sed 's/x/\\x/g' >> $@
+	@printf '"\n' >> $@
+
+# objs.o depends on all .h files being generated
+$(VIOLA_DIR)/objs.o: $(VIOLA_DIR)/objs.c $(patsubst %.v,%.v.h,$(wildcard $(VIOLA_DIR)/embeds/*.v))
+
 # Generate gram.c from gram.y using byacc (Berkeley Yacc)
 # Note: We use byacc instead of GNU Bison for compatibility with old SunOS yacc
 $(VIOLA_DIR)/gram.c: $(VIOLA_DIR)/gram.y

@@ -269,6 +269,11 @@ $(VIOLA): $(VIOLA_OBJS) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
 $(VIOLA_DIR)/%.o: $(VIOLA_DIR)/%.c
 	$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -c $< -o $@
 
+# Auto-generate objs.c from template before compilation
+$(VIOLA_DIR)/objs.c: $(VIOLA_DIR)/objs.c.template $(wildcard $(VIOLA_DIR)/embeds/*.v)
+	@echo "=== Generating objs.c from template ==="
+	python3 generate_objs.py $< $@
+
 # Generate gram.c from gram.y using byacc (Berkeley Yacc)
 # Note: We use byacc instead of GNU Bison for compatibility with old SunOS yacc
 $(VIOLA_DIR)/gram.c: $(VIOLA_DIR)/gram.y

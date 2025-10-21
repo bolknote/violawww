@@ -1,7 +1,19 @@
+# Build artifacts
 *.o
-*.a
 *.d
+*.a
 src/viola/viola
 src/vw/vw
-.vscode/
+src/libWWW/Library/darwin/
 test/build/
+
+# Generated files
+src/viola/objs.c
+src/viola/gram.c
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store

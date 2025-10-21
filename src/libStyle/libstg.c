@@ -238,11 +238,19 @@ char** s;
         if (stgInfo.type == STG_INFO_TOKEN) {
             if (stgInfo.info.t == '(') {
                 addMajor(&(major->firstMajorChild), parseMajor(major, s));
+                /* Reset state after nested major so parent can accept new attributes */
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
+                stgInfo.type = 0;  /* Clear global state from nested parse */
             } else if (stgInfo.info.t == ')') {
                 ++(*s);
                 return major;
             } else if (stgInfo.info.t == '{') {
                 addMinor(&(major->firstMinorChild), parseMinor(s, major));
+                /* Reset state after nested minor so parent can accept new attributes */
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
+                stgInfo.type = 0;  /* Clear global state from nested parse */
             } else if (stgInfo.info.t == ',') {
                 ctx.stack_op = stgInfo.info.t;
             } else if (stgInfo.info.t == '=') {
@@ -265,6 +273,8 @@ char** s;
                 assertAttr(&major->firstAssert, ctx.stack_str, stgInfo.info.s);
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
             } else if (ctx.stack_op == '(') {
                 /*				printf("### major: add(1): %s\n",
                                                 stgInfo.info.s);
@@ -273,6 +283,8 @@ char** s;
 
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
             } else if (ctx.stack_op == ',') {
                 /*				printf("### major: add: %s\n",
                                                 stgInfo.info.s);
@@ -281,21 +293,24 @@ char** s;
 
                 stgInfo.info.s = NULL;
                 stgInfo.type = 0;
+                ctx.stack_str[0] = '\0';
+                ctx.stack_op = '\0';
             } else if (ctx.stack_op == '\0') {
                 if (ctx.stack_str[0]) {
                     /*					printf("@@@ major: flag: %s\n",
                                                                     ctx.stack_str);
                     */
                     assertAttr(&major->firstAssert, ctx.stack_str, NULL);
+                    ctx.stack_str[0] = '\0';
+                    ctx.stack_op = '\0';
                 }
+                /* else: keep the string in stack_str, don't reset - might be followed by '=' */
             } else {
                 printf("libstg: major: unable to apply word.\n");
                 ctx.stack_str[0] = '\0';
                 ctx.stack_op = '\0';
                 return major;
             }
-            ctx.stack_str[0] = '\0';
-            ctx.stack_op = '\0';
         } else {
             printf("libstg: major: parse error (unknown type).\n");
             return major;
@@ -554,6 +569,13 @@ int maxResults;
             }
             if (!inContext)
                 majorTryReg[i].smajor = NULL;
+        }
+        /* If context is shorter than style hierarchy, it's not a match.
+         * After checking all context levels, maj should be NULL (no more parents).
+         * If maj->super is not NULL, this style requires more parent context.
+         */
+        if (majorTryReg[i].smajor && maj && maj->super) {
+            majorTryReg[i].smajor = NULL;
         }
     }
     matchCount = 0;

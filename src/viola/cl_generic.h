@@ -49,6 +49,7 @@ long meth_generic_SGMLTileDoc();
 long meth_generic_STGInfo();
 long meth_generic_STG_clean();
 long meth_generic_STG_tagPtr();
+long meth_generic_STG_attrEx();
 long meth_generic_STG_attr();
 long meth_generic_accessible();
 long meth_generic_activeHelp();

@@ -95,6 +95,7 @@ enum {
     STR_STG_clean,
     STR_STG_tagPtr,
     STR_STG_attr,
+    STR_STG_attrEx,
     STR_STG_test,
     STR_TTY,
     STR_WWWNameOfFile,

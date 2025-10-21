@@ -20,11 +20,10 @@ char* a;
     return a;
 }
 
-int tagName2ID(s)
-char* s;
+long tagName2ID(char* s)
 {
     HashEntry* entry;
-    static int idCount = 0;
+    static long idCount = 0;
 
     entry = HT_str2token->get(HT_str2token, (long)s);
     if (entry)
@@ -34,7 +33,7 @@ char* s;
     if (!entry)
         return 0;
 
-    entry = putHashEntry(HT_token2str, (long)idCount, (long)saveString(s));
+    entry = putHashEntry(HT_token2str, idCount, (long)saveString(s));
     if (!entry)
         return 0;
     return idCount;
@@ -74,6 +73,7 @@ char* url;
     char* spec;
     char inFile[500];
     int stat;
+    extern int WWW_TraceFlag;
 
     /* load a stylesheet
      */
@@ -86,12 +86,78 @@ char* url;
     }
     stgGroup = STG_makeGroup(stgLib, spec);
 
+    if (WWW_TraceFlag && stgGroup) {
+        printf("### loadSTG: Dumping parsed stylesheet:\n");
+        STG_dumpGroup(stgGroup);
+    }
+
     free(spec);
     return (stgGroup ? 1 : 0);
 }
 
 /*
- * access to libstg.
+ * access to libstg - with style attribute support
+ */
+int getSTGInfo_tagPtrWithStyle(result, tagName1, tagName2, styleAttr)
+Packet* result;
+char* tagName1;
+char* tagName2; /* super element */
+char* styleAttr; /* style attribute value like "WARNING" */
+{
+    int stat;
+    char* context[4];
+    STGResult results[2];
+    extern int WWW_TraceFlag;
+
+    clearPacket(result);
+
+    if (!stgGroup)
+        return 0;
+
+    if (WWW_TraceFlag && styleAttr) {
+        printf("### getSTGInfo_tagPtrWithStyle: tag=%s styleAttr=%s\n", tagName1, styleAttr);
+    }
+
+    context[0] = (char*)(long)tagName2ID(tagName1);
+    context[1] = styleAttr ? (char*)(long)tagName2ID(styleAttr) : NULL;
+    if (tagName2 && tagName2[0]) {
+        context[2] = (char*)(long)tagName2ID(tagName2);
+        context[3] = 0;
+        stat = STG_findStyle(stgGroup, context, 2, results, 2);
+    } else {
+        stat = STG_findStyle(stgGroup, context, 1, results, 1);
+    }
+    
+    if (WWW_TraceFlag && styleAttr) {
+        printf("### getSTGInfo_tagPtrWithStyle: STG_findStyle returned %d\n", stat);
+    }
+    
+    if (stat) {
+        /* Pack both major and minor into result */
+        /* We'll use a simple encoding: store pointer to results array */
+        /* Actually, let's return a struct pointer */
+        STGResult* res = (STGResult*)malloc(sizeof(STGResult));
+        if (res) {
+            res->smajor = results[0].smajor;
+            res->sminor = results[0].sminor;
+            
+            if (WWW_TraceFlag && styleAttr) {
+                printf("### getSTGInfo_tagPtrWithStyle: found major=%p minor=%p\n", 
+                       res->smajor, res->sminor);
+            }
+            
+            result->info.i = (long)res;
+            result->type = PKT_INT;
+            result->canFree = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/*
+ * access to libstg - original version for backward compatibility
+ * Returns just STGMajor* for old code
  */
 int getSTGInfo_tagPtr(result, tagName1, tagName2)
 Packet* result;
@@ -107,10 +173,8 @@ char* tagName2; /* super element */
     if (!stgGroup)
         return 0;
 
-    /* XXX BUG: no context spec
-     */
     context[0] = (char*)(long)tagName2ID(tagName1);
-    context[1] = 0;
+    context[1] = 0; /* No style attribute in old API */
     if (tagName2) {
         context[2] = (char*)(long)tagName2ID(tagName2);
         context[3] = 0;
@@ -119,7 +183,8 @@ char* tagName2; /* super element */
         stat = STG_findStyle(stgGroup, context, 1, results, 1);
     }
     if (stat) {
-        result->info.i = (long)results[0].smajor; /*XXX*/
+        /* Old API: return only major pointer (backward compatible) */
+        result->info.i = (long)results[0].smajor;
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
@@ -127,6 +192,33 @@ char* tagName2; /* super element */
     return 0;
 }
 
+/* Get attribute from STGResult (supports both major and minor) */
+int getSTGInfo_attrFromResult(resultPtr, attrName, result)
+long resultPtr; /* Actually STGResult* */
+char* attrName;
+Packet* result;
+{
+    STGResult* stgRes = (STGResult*)resultPtr;
+    STGAssert* assert;
+
+    clearPacket(result);
+    if (!stgRes || !stgRes->smajor)
+        return 0;
+    if (!attrName)
+        return 0;
+    
+    /* Use new function that checks minor first, then major */
+    assert = STGFindAssertWithMinor(stgRes->smajor, stgRes->sminor, tagName2ID(attrName));
+    if (assert) {
+        result->info.s = assert->val;
+        result->type = PKT_STR;
+        result->canFree = 0;
+        return 1;
+    }
+    return 0;
+}
+
+/* Original function - for backward compatibility, assumes tagPtr is just STGMajor* */
 int getSTGInfo_attr(tagPtr, attrName, result)
 STGMajor* tagPtr;
 char* attrName;

@@ -193,17 +193,28 @@ print("TXT: height=", get("height"), "................................\n");
 */
 		}
 
+		/* setStyleAttr was already called before D, so savedStyleAttr is ready */
 		send(self(), "setStyles", parent());
 
 		if (deco) {
 			box = send(deco, "clone");
 			objectListAppend_children(box);
+			
+			/* Get colors to pass to deco */
+			savedFGColor = get("FGColor");
+			savedBGColor = get("BGColor");
+			savedBDColor = get("BDColor");
+			
+			print("### HTML_txt D: passing to box.make FG=", savedFGColor, " BG=", savedBGColor, " BD=", savedBDColor, "\n");
+			
 			if (inPreP) 
 			  h = send(box, "make", self(), 
-				   get("label"), get("width"));
+				   get("label"), get("width"),
+				   savedFGColor, savedBGColor, savedBDColor);
 			else 
 			  h = send(box, "make", self(), 
-				   trimEdgeQ(get("label")), get("width"));
+				   trimEdgeQ(get("label")), get("width"),
+				   savedFGColor, savedBGColor, savedBDColor);
 			return h + 2;
 			/* +2 for hot-link-indicator border around IMGs */
 		} else {
@@ -277,6 +288,12 @@ print("TXT: height=", get("height"), "................................\n");
 			tagIDCount++;
 		break;
 		case "STYLE":
+			/* STYLE attribute is now handled by setStyleAttr message from CB_HTML_etag */
+			/* This case should not be reached anymore */
+			print("### HTML_txt AA: WARNING - STYLE should be handled by setStyleAttr!\n");
+		break;
+		case "OLD_STYLE_COMPAT":
+			/* Old hardcoded styles - for backward compatibility if needed */
 			switch (arg[2]) {
 			case "NOTE":
 				deco = "HTML__txtBox_note";
@@ -285,11 +302,11 @@ print("TXT: height=", get("height"), "................................\n");
 				deco = "HTML__txtBox_caution";
 			break;
 			case "WARNING":
-				set("BDColor", "darkOrange");
+				/* Colors now come from STG */
 				deco = "HTML__txtBox_caution";
 			break;
 			case "ERROR":
-				set("BDColor", "red");
+				/* Colors now come from STG */
 				deco = "HTML__txtBox_error";
 			break;
 			case "TIMED": /*just for fun*/
@@ -339,32 +356,90 @@ print("TXT: height=", get("height"), "................................\n");
 		eventMask("+pointerMotion +leaveWindow");
 		return code_HTML_txt(arg);
 	break;
+	case "setStyleAttr":
+		/* Save style attribute value for later use in setStyles/D */
+		savedStyleAttr = arg[1];
+		print("### HTML_txt setStyleAttr: saved=", savedStyleAttr, "\n");
+		return;
+	break;
 	case "setStyles":
 		useTagInfo_align = 1;
 
+		/* Check if element has a style attribute for minor matching */
+		/* Can be passed as arg[2] or from savedStyleAttr variable */
+		argc = arg[];
+		if (argc >= 3) {
+			styleAttr = arg[2];
+		} else {
+			styleAttr = savedStyleAttr;
+		}
+		if (styleAttr) print("### HTML_txt setStyles: style=", styleAttr, "\n");
+		
+		print("### HTML_txt setStyles: arg[1]=", arg[1], " parent=", parent(), "\n");
 		if (findPattern(arg[1], "address") != -1) {
 			/*tagPtr = send(arg[1], "styleSheet");*/
-			tagPtr = STG_tagPtr("P", "ADDRESS");
-		} else {
-			tagPtr = STG_tagPtr("P");
-		}
-		if (tagPtr) {
-			i = STG_attr(tagPtr, "BGColor");
-			if (i) set("BGColor", i);
-			i = STG_attr(tagPtr, "FGColor");
-			if (i) set("FGColor", i);
-			i = STG_attr(tagPtr, "BDColor");
-			if (i) set("BDColor", i);
-			i = STG_attr(tagPtr, "border");
-			if (i) {
-				/* border can be numeric (thickness) or style name */
-				/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
-				if (i != "0") set("border", 6);
+			if (styleAttr) {
+				print("### HTML_txt: calling STG_tagPtr(P, ADDRESS, ", styleAttr, ")\n");
+				tagPtr = STG_tagPtr("P", "ADDRESS", styleAttr);
+			} else {
+				print("### HTML_txt: calling STG_tagPtr(P, ADDRESS)\n");
+				tagPtr = STG_tagPtr("P", "ADDRESS");
 			}
-			
-			fontSlant = STG_attr(tagPtr, "fontSlant");
-			fontSize = STG_attr(tagPtr, "fontSize");
-			fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			print("### HTML_txt: STG_tagPtr returned ", tagPtr, "\n");
+		} else {
+			if (styleAttr) {
+				tagPtr = STG_tagPtr("P", "", styleAttr);
+			} else {
+				tagPtr = STG_tagPtr("P");
+			}
+		}
+		
+		if (tagPtr) {
+			/* Use STG_attrEx if styleAttr is set (supports minors), else use STG_attr */
+			if (styleAttr) {
+				i = STG_attrEx(tagPtr, "BGColor");
+				if (i) set("BGColor", i);
+				i = STG_attrEx(tagPtr, "FGColor");
+				if (i) set("FGColor", i);
+				i = STG_attrEx(tagPtr, "BDColor");
+				if (i) set("BDColor", i);
+				i = STG_attrEx(tagPtr, "border");
+				if (i) {
+					/* border can be numeric (thickness) or style name */
+					/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+					if (i != "0") {
+						set("border", 6);
+						/* Set deco based on styleAttr value */
+						if (styleAttr == "WARNING") {
+							deco = "HTML__txtBox_caution";
+						}
+					}
+				}
+				
+				fontSlant = STG_attrEx(tagPtr, "fontSlant");
+				fontSize = STG_attrEx(tagPtr, "fontSize");
+				fontSpacing = STG_attrEx(tagPtr, "fontSpacing");
+			} else {
+				i = STG_attr(tagPtr, "BGColor");
+				if (i) set("BGColor", i);
+				i = STG_attr(tagPtr, "FGColor");
+				if (i) set("FGColor", i);
+				i = STG_attr(tagPtr, "BDColor");
+				if (i) set("BDColor", i);
+				i = STG_attr(tagPtr, "border");
+				if (i) {
+					/* border can be numeric (thickness) or style name */
+					/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+					if (i != "0") {
+						set("border", 6);
+						/* No styleAttr in this branch, so no deco */
+					}
+				}
+				
+				fontSlant = STG_attr(tagPtr, "fontSlant");
+				fontSize = STG_attr(tagPtr, "fontSize");
+				fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			}
 			
 			/* If mono spacing requested, use fixed font and ignore slant/size */
 			if (fontSpacing == "mono") {
@@ -414,11 +489,13 @@ print("TXT: height=", get("height"), "................................\n");
 			}
 			
 			if (fontSize) {
+				print("### HTML_txt: applying fontSize=", fontSize, "\n");
 				switch (fontSize) {
 				case "large": 		size = "_large";	break;
 				case "largest": 	size = "_largest";	break;
 				default:		size = "";		break;
 				}
+				print("### HTML_txt: mapped to size=", size, "\n");
 			}
 			
 			/* Map font name to font ID */
@@ -438,10 +515,16 @@ print("TXT: height=", get("height"), "................................\n");
 				fontID = 1; /* fallback */
 			}
 			
-				set("_font", fontID);
+			print("### HTML_txt: setting _font to fontID=", fontID, "\n");
+			set("_font", fontID);
 			}
 			
-			i = STG_attr(tagPtr, "align");
+			/* Use correct function based on whether we have styleAttr */
+			if (styleAttr) {
+				i = STG_attrEx(tagPtr, "align");
+			} else {
+				i = STG_attr(tagPtr, "align");
+			}
 			if (i) {
 				useTagInfo_align = 0;
 				switch (i) {
@@ -456,12 +539,22 @@ print("TXT: height=", get("height"), "................................\n");
 				break;
 				}
 			}
-			i = STG_attr(tagPtr, "blink");
+			
+			if (styleAttr) {
+				i = STG_attrEx(tagPtr, "blink");
+			} else {
+				i = STG_attr(tagPtr, "blink");
+			}
 			if (i) {
 				blinkRate = i;
 				fgc = get("FGColor");
-				bclr0 = STG_attr(tagPtr, "blinkColorOn");
-				bclr1 = STG_attr(tagPtr, "blinkColorOff");
+				if (styleAttr) {
+					bclr0 = STG_attrEx(tagPtr, "blinkColorOn");
+					bclr1 = STG_attrEx(tagPtr, "blinkColorOff");
+				} else {
+					bclr0 = STG_attr(tagPtr, "blinkColorOn");
+					bclr1 = STG_attr(tagPtr, "blinkColorOff");
+				}
 				after(i, self(), "blink");
 			}
 		}

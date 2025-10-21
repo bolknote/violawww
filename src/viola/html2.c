@@ -605,6 +605,7 @@ HTTag* tagInfo;
     bstate->parent = parent_bstate->obj;
 
     bstate->tag = tag;
+    bstate->styleAttr = NULL; /* Initialize style attribute */
     bstate->obj = HTMLBuildObj(bstate, parent_bstate->sub_width, bstate->tmi);
 
     /* Check if object creation failed */
@@ -704,7 +705,13 @@ HTTag* tagInfo;
         char** tagAttrNames = tagInfo->attributes;
         for (i = 0; i < tagInfo->number_of_attributes; i++) {
             if (present[i]) {
-                sendMessage1N2str(bstate->obj, "AA", tagAttrNames[i], value[i]);
+                /* Save STYLE attribute for later use in minor matching */
+                if (!strcasecmp(tagAttrNames[i], "STYLE")) {
+                    bstate->styleAttr = value[i];
+                    /* Don't send AA for STYLE - will be sent as setStyleAttr in etag */
+                } else {
+                    sendMessage1N2str(bstate->obj, "AA", tagAttrNames[i], value[i]);
+                }
             }
         }
     }
@@ -1023,6 +1030,13 @@ void CB_HTML_etag(element_number) int element_number;
              */
             if (parent_bstate)
                 SGMLBuildDoc_span = parent_bstate->sub_y;
+
+            /* Pass style attribute to object before calling D method */
+            if (bstate->styleAttr) {
+                extern int WWW_TraceFlag;
+                if (WWW_TraceFlag) printf("### CB_HTML_etag: sending setStyleAttr with %s\n", bstate->styleAttr);
+                sendMessage1N1str(bstate->obj, "setStyleAttr", bstate->styleAttr);
+            }
 
             if (parent_bstate != bstate->obj)
                 span = getVSpan(bstate->obj, STR_D);

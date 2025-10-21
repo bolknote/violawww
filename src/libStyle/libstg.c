@@ -126,12 +126,23 @@ char* gspec;
             while (ISSPACE(*cp))
                 cp++;
         } else if (*cp == '(') {
+            if (TRACE) printf("### makeGroup: found '(', calling parseMajor\n");
+            cp++; /* Skip the '(' before calling parseMajor */
+            /* Clear global stgInfo before each top-level parse */
+            stgInfo.type = 0;
+            stgInfo.info.t = '\0';
             major = parseMajor(NULL, &cp);
+            if (TRACE) printf("### makeGroup: parseMajor returned major=%p, has minors=%s\n",
+                             major, major && major->firstMinorChild ? "YES" : "NO");
             addMajor(&group->first, major);
+            if (TRACE) printf("### makeGroup: after addMajor, group->first=%p, first has minors=%s\n",
+                             group->first, 
+                             group->first && group->first->firstMinorChild ? "YES" : "NO");
         } else if (*cp == '{') {
             /* probably should not happen here at top level
              * (must be inside a major)
              */
+            cp++; /* Skip the '{' before calling parseMinor */
             minor = parseMinor(&cp, NULL);
         }
     }
@@ -196,9 +207,12 @@ STGMinor* addMinor(firstChild, child)
 STGMinor** firstChild;
 STGMinor* child;
 {
+    if (TRACE) printf("### addMinor: firstChild=%p *firstChild=%p child=%p\n", 
+                     firstChild, *firstChild, child);
     if (*firstChild)
         child->next = *firstChild;
     *firstChild = child;
+    if (TRACE) printf("### addMinor: after add, *firstChild=%p\n", *firstChild);
     return child;
 }
 
@@ -224,6 +238,8 @@ char** s;
         return NULL;
     }
 
+    if (TRACE) printf("### parseMajor: CREATED major=%p\n", major);
+
     major->next = NULL;
     major->super = superMajor;
     major->IDList = NULL;
@@ -233,10 +249,18 @@ char** s;
 
     init_parse_context(&ctx);
     ctx.stack_op = '(';
+    
+    /* Clear global stgInfo to prevent contamination from previous parse */
+    stgInfo.type = 0;
+    stgInfo.info.t = '\0';
 
     while (nextToken(&ctx, s)) {
+        if (TRACE) printf("### major: nextToken returned type=%d ", stgInfo.type);
         if (stgInfo.type == STG_INFO_TOKEN) {
+            if (TRACE) printf("token='%c'\n", stgInfo.info.t);
             if (stgInfo.info.t == '(') {
+                if (TRACE) printf("### major: found nested '(', calling parseMajor\n");
+                /* nextToken already skipped '(' */
                 addMajor(&(major->firstMajorChild), parseMajor(major, s));
                 /* Reset state after nested major so parent can accept new attributes */
                 ctx.stack_str[0] = '\0';
@@ -246,11 +270,22 @@ char** s;
                 ++(*s);
                 return major;
             } else if (stgInfo.info.t == '{') {
-                addMinor(&(major->firstMinorChild), parseMinor(s, major));
+                /* nextToken already skipped '{' */
+                STGMinor* parsedMinor = parseMinor(s, major);
+                if (TRACE) printf("### major: parseMinor returned %p\n", parsedMinor);
+                if (parsedMinor) {
+                    if (TRACE) printf("### major: BEFORE addMinor, major=%p major->firstMinorChild=%p\n",
+                                     major, major->firstMinorChild);
+                    addMinor(&(major->firstMinorChild), parsedMinor);
+                    if (TRACE) printf("### major: AFTER addMinor, major->firstMinorChild=%p\n",
+                                     major->firstMinorChild);
+                }
                 /* Reset state after nested minor so parent can accept new attributes */
                 ctx.stack_str[0] = '\0';
                 ctx.stack_op = '\0';
                 stgInfo.type = 0;  /* Clear global state from nested parse */
+                if (TRACE) printf("### major: AFTER reset, major->firstMinorChild=%p\n",
+                                 major->firstMinorChild);
             } else if (stgInfo.info.t == ',') {
                 ctx.stack_op = stgInfo.info.t;
             } else if (stgInfo.info.t == '=') {
@@ -265,6 +300,7 @@ char** s;
                 }
             }
         } else if (stgInfo.type == STG_INFO_STR) {
+            if (TRACE) printf("string='%s' stack_op='%c'\n", stgInfo.info.s, ctx.stack_op);
             if (ctx.stack_op == '=') {
                 /*
                                                 printf("### major: assert: %s = %s\n",
@@ -313,9 +349,12 @@ char** s;
             }
         } else {
             printf("libstg: major: parse error (unknown type).\n");
+            if (TRACE) printf("### parseMajor: RETURNING major=%p (error)\n", major);
             return major;
         }
     }
+    if (TRACE) printf("### parseMajor: RETURNING major=%p (normal) has minors=%s\n",
+                     major, major->firstMinorChild ? "YES" : "NO");
     return major;
 }
 
@@ -323,19 +362,24 @@ STGMinor* parseMinor(s, major)
 char** s;
 STGMajor* major;
 {
-    ParseContext ctx;  /* Local context - recursion-safe */
+    ParseContext ctx;
     STGMinor* minor = (STGMinor*)malloc(sizeof(struct STGMinor));
 
-    if (!major) {
+    if (!minor) {
         perror("malloc failed\n");
         return NULL;
     }
 
     minor->next = NULL;
+    minor->IDList = NULL;
     minor->firstAssert = NULL;
-    minor->super = NULL;
+    minor->super = major;
 
     init_parse_context(&ctx);
+    
+    /* Clear global stgInfo to prevent contamination from previous parse */
+    stgInfo.type = 0;
+    stgInfo.info.t = '\0';
 
     while (nextToken(&ctx, s)) {
         if (stgInfo.type == STG_INFO_TOKEN) {
@@ -344,34 +388,34 @@ STGMajor* major;
             }
             if (**s == '{') {
                 printf("error: minor: detected nested minor\n");
-                return NULL;
+                return minor;
             }
         } else if (stgInfo.type == STG_INFO_STR) {
             if (ctx.stack_op == '=') {
-                /*				printf("### minor: assert: %s = %s\n",
-                                                        ctx.stack_str, stgInfo.info.s);
-                */
                 assertAttr(&minor->firstAssert, ctx.stack_str, stgInfo.info.s);
             } else if (ctx.stack_op == '{') {
-                if (TRACE) printf("### minor: add(1): %s\n", stgInfo.info.s);
+                /* First ID - like "STYLE" */
+                addID(&minor->IDList, (char*)(long)stg_tagName2ID(stgInfo.info.s));
             } else if (ctx.stack_op == ',') {
-                if (TRACE) printf("### minor: add: %s\n", stgInfo.info.s);
+                /* Additional IDs - like "WARNING", "NOTE" */
+                addID(&minor->IDList, (char*)(long)stg_tagName2ID(stgInfo.info.s));
             } else if (ctx.stack_op == '\0') {
-                if (TRACE) printf("### minor: flag: %s\n", stgInfo.info.s);
+                /* Flag attribute or ID */
+                addID(&minor->IDList, (char*)(long)stg_tagName2ID(stgInfo.info.s));
             } else {
-                printf("libstg: unable to apply word.\n");
+                printf("libstg: minor: unable to apply word.\n");
                 ctx.stack_str[0] = '\0';
                 ctx.stack_op = '\0';
-                return NULL;
+                return minor;
             }
             ctx.stack_str[0] = '\0';
             ctx.stack_op = '\0';
         } else {
-            printf("libstg: parse error (unknown type).\n");
-            return NULL;
+            printf("libstg: minor: parse error (unknown type).\n");
+            return minor;
         }
     }
-    return NULL;
+    return minor;
 }
 
 void STG_dumpAssert(assert, level) STGAssert* assert;
@@ -385,12 +429,17 @@ void STG_dumpMinor(minor, level) STGMinor* minor;
 int level;
 {
     STGAssert* assert;
+    STGStrList* ids;
 
     if (!minor)
         return;
 
     PRINT_INDENTS(level);
-    printf("--Minor--\n");
+    printf("--Minor: ");
+    for (ids = minor->IDList; ids; ids = ids->next)
+        printf("%s (%d), ", stg_tagID2Name(ids->val), ids->val);
+    printf("\n");
+    
     for (assert = minor->firstAssert; assert; assert = assert->next) {
         STG_dumpAssert(assert, level + 1);
     }
@@ -464,6 +513,60 @@ ex 3:
         1 attr	NULL
 
 */
+/* Match minor by attribute name and value
+ * For: {STYLE WARNING ...} matches attr="STYLE" attrVal="WARNING"
+ * Returns matching minor or NULL
+ */
+STGMinor* matchMinor(major, attrName, attrVal)
+STGMajor* major;
+char *attrName, *attrVal;
+{
+    STGMinor* minor;
+    STGStrList* ids;
+    int attrNameMatch = 0;
+    int attrValMatch = 0;
+    
+    if (!attrName || !attrVal) {
+        if (TRACE) printf("### matchMinor: attrName=%s attrVal=%s - NULL INPUT\n", 
+                          attrName ? attrName : "(null)", 
+                          attrVal ? attrVal : "(null)");
+        return NULL;
+    }
+    
+    if (TRACE) printf("### matchMinor: Looking for attrName=%s(%d) attrVal=%s(%d)\n",
+                      stg_tagID2Name(attrName), attrName,
+                      stg_tagID2Name(attrVal), attrVal);
+    
+    for (minor = major->firstMinorChild; minor; minor = minor->next) {
+        attrNameMatch = 0;
+        attrValMatch = 0;
+        
+        if (TRACE) printf("### matchMinor: Checking minor with IDList:\n");
+        
+        /* Check if minor IDList contains both attrName and attrVal */
+        for (ids = minor->IDList; ids; ids = ids->next) {
+            if (TRACE) printf("###   ID: %s(%d)\n", stg_tagID2Name(ids->val), ids->val);
+            
+            if (stg_tagNameCmp(ids->val, attrName)) {
+                attrNameMatch = 1;
+                if (TRACE) printf("###   -> attrName MATCH!\n");
+            }
+            if (stg_tagNameCmp(ids->val, attrVal)) {
+                attrValMatch = 1;
+                if (TRACE) printf("###   -> attrVal MATCH!\n");
+            }
+        }
+        
+        if (attrNameMatch && attrValMatch) {
+            if (TRACE) printf("### matchMinor: FOUND MATCHING MINOR!\n");
+            return minor;
+        }
+    }
+    
+    if (TRACE) printf("### matchMinor: NO MATCH FOUND\n");
+    return NULL;
+}
+
 /* return: 1== OK, can stop now further searches */
 int matchMajor(major, tag, attr, max, matchResults, matchCount)
 STGMajor* major;
@@ -474,6 +577,7 @@ int* matchCount;
 {
     STGStrList* ids;
     STGMajor* cmajor;
+    STGMinor* minor;
     /*
             PRINT_INDENTS(0); printf("matchMajor: ");
             for (ids = major->IDList; ids; ids = ids->next)
@@ -488,8 +592,20 @@ int* matchCount;
                                             tagID2Name(tag), tag);
             */
             if (stg_tagNameCmp(ids->val, tag)) {
+                /* Tag matches - now check for minor if attr is specified */
+                minor = NULL;
+                if (attr) {
+                    /* attr format expected: "attrName:attrValue" or just store both */
+                    /* For now we assume attr contains the attribute value like "WARNING" */
+                    /* and we search for minors with STYLE/WARNING pattern */
+                    if (TRACE) printf("### matchMajor: tag matched, looking for minor with attr=%s(%d)\n",
+                                     stg_tagID2Name(attr), attr);
+                    minor = matchMinor(major, (char*)(long)stg_tagName2ID("STYLE"), attr);
+                    if (TRACE) printf("### matchMajor: matchMinor returned %p\n", minor);
+                }
+                
                 matchResults[*matchCount].smajor = major;
-                matchResults[*matchCount].sminor = NULL;
+                matchResults[*matchCount].sminor = minor;
                 ++(*matchCount);
                 if (*matchCount >= max)
                     return 1;
@@ -555,7 +671,7 @@ int maxResults;
      */
     for (i = 0; i < majorResultCount; i++) {
         majorTryReg[i].smajor = majorResults[i].smajor;
-        majorTryReg[i].sminor = NULL;
+        majorTryReg[i].sminor = majorResults[i].sminor;
     }
     for (i = 0; i < majorResultCount; i++) {
         for (maj = majorTryReg[i].smajor, j = 0; maj && j < contextCount; maj = maj->super, j++) {
@@ -570,27 +686,37 @@ int maxResults;
             if (!inContext)
                 majorTryReg[i].smajor = NULL;
         }
-        /* If context is shorter than style hierarchy, it's not a match.
-         * After checking all context levels, maj should be NULL (no more parents).
-         * If maj->super is not NULL, this style requires more parent context.
+        /* If we didn't check all context levels (j < contextCount), 
+         * this style doesn't have enough parent hierarchy - reject it.
          */
-        if (majorTryReg[i].smajor && maj && maj->super) {
+        if (TRACE) {
+            printf("### STG_findStyle: after context check: candidate %d j=%d contextCount=%d smajor=%p\n",
+                   i, j, contextCount, majorTryReg[i].smajor);
+        }
+        if (majorTryReg[i].smajor && j < contextCount) {
+            if (TRACE) printf("### STG_findStyle: REJECTING candidate %d (incomplete context)\n", i);
             majorTryReg[i].smajor = NULL;
         }
     }
     matchCount = 0;
     for (i = 0; i < majorResultCount; i++) {
-        /*		printf("///// majorTryReg: context %d\n", i);
-                        STG_dumpMajor(majorTryReg[i].smajor, 0);
-        */
+        if (TRACE) {
+            printf("### STG_findStyle: candidate %d: smajor=%p j=%d contextCount=%d\n",
+                   i, majorTryReg[i].smajor, 0, contextCount);
+        }
         if (majorTryReg[i].smajor) {
             results[matchCount].smajor = majorTryReg[i].smajor;
             results[matchCount].sminor = majorTryReg[i].sminor;
+            if (TRACE) {
+                printf("### STG_findStyle: ACCEPTED candidate %d as result %d (major=%p minor=%p)\n",
+                       i, matchCount, results[matchCount].smajor, results[matchCount].sminor);
+            }
             ++matchCount;
             if (matchCount >= maxResults)
                 break;
         }
     }
+    if (TRACE) printf("### STG_findStyle: returning matchCount=%d\n", matchCount);
     return matchCount;
 }
 
@@ -656,6 +782,29 @@ zoro:
         /*printf("### TOKEN token  [%c]\n", stgInfo.info.t);*/
 
         break;
+    case '"': {
+        /* String literal in quotes */
+        char* cp = *s;
+        
+        if (stgInfo.type == STG_INFO_STR)
+            swap_buffers(ctx);
+        else if (stgInfo.type == STG_INFO_TOKEN)
+            ctx->stack_op = stgInfo.info.t;
+        
+        ++cp; /* skip opening quote */
+        ctx->stgInfo_buffIdx = 0;
+        while (*cp && *cp != '"') {
+            ctx->stgInfo_buff[ctx->stgInfo_buffIdx++] = *cp;
+            ++cp;
+        }
+        if (*cp == '"') ++cp; /* skip closing quote */
+        ctx->stgInfo_buff[ctx->stgInfo_buffIdx] = '\0';
+        *s = cp;
+        stgInfo.type = STG_INFO_STR;
+        stgInfo.info.s = ctx->stgInfo_buff;
+        
+        /*printf("### TOKEN quoted str [%s]\n", stgInfo.info.s);*/
+    } break;
     default: {
         char* cp = *s;
 
@@ -683,24 +832,49 @@ zoro:
     return 0;
 }
 
-STGAssert* STGFindAssert(major, attrName)
+/* Find assert in minor, then fallback to major hierarchy */
+STGAssert* STGFindAssertWithMinor(major, minor, attrName)
 STGMajor* major;
+STGMinor* minor;
 char* attrName;
 {
     STGAssert* assert;
-    int stat;
-
-    while (major) {
-        /*		STG_dumpMajor(major, 0);*/
-        assert = major->firstAssert;
-        for (; assert; assert = assert->next) {
+    
+    /* First check minor (most specific) */
+    if (minor) {
+        if (TRACE) printf("### STGFindAssertWithMinor: searching in minor for %s(%d)\n",
+                         stg_tagAttrID2Name(attrName), attrName);
+        for (assert = minor->firstAssert; assert; assert = assert->next) {
+            if (TRACE) printf("###   minor has: %s = %s\n", 
+                             stg_tagAttrID2Name(assert->name), assert->val);
             if (stg_tagAttrNameCmp(assert->name, attrName)) {
+                if (TRACE) printf("###   FOUND in minor: %s = %s\n",
+                                 stg_tagAttrID2Name(assert->name), assert->val);
+                return assert;
+            }
+        }
+    }
+    
+    /* Then check major hierarchy (inheritance) */
+    while (major) {
+        for (assert = major->firstAssert; assert; assert = assert->next) {
+            if (stg_tagAttrNameCmp(assert->name, attrName)) {
+                if (TRACE) printf("### STGFindAssertWithMinor: FOUND in major: %s = %s\n",
+                                 stg_tagAttrID2Name(assert->name), assert->val);
                 return assert;
             }
         }
         major = major->super;
     }
     return NULL;
+}
+
+/* Original function - for backward compatibility */
+STGAssert* STGFindAssert(major, attrName)
+STGMajor* major;
+char* attrName;
+{
+    return STGFindAssertWithMinor(major, NULL, attrName);
 }
 
 int freeGroup(STGLib* lib, STGGroup** group) {

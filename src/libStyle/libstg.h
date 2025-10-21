@@ -71,6 +71,8 @@ STGGroup* STG_makeGroup();
 int STG_findStyle();
 int STG_findStyle1();
 STGAssert* STGFindAssert();
+STGAssert* STGFindAssertWithMinor();
+STGMinor* matchMinor();
 
 int freeGroup();
 int freeLib();

@@ -17,6 +17,7 @@ typedef struct SGMLBuildInfoState {
     int sub_width;
     int sub_height;
     VObj* insert;
+    char* styleAttr; /* HTML style attribute value for minor matching */
 } SGMLBuildInfoState;
 
 /* SGMLBuildInfo

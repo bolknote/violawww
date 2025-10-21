@@ -213,6 +213,7 @@ MethodInfo meths_generic[] = {
     {STR_STGInfo, meth_generic_STGInfo},
     {STR_STG_tagPtr, meth_generic_STG_tagPtr},
     {STR_STG_attr, meth_generic_STG_attr},
+    {STR_STG_attrEx, meth_generic_STG_attrEx},
     {STR_STG_clean, meth_generic_STG_clean},
     {STR_accessible, meth_generic_accessible},
     {STR_activeHelp, meth_generic_activeHelp},
@@ -1718,13 +1719,33 @@ long meth_generic_STGInfo(VObj* self, Packet* result, int argc, Packet argv[]) {
 
 long meth_generic_STG_tagPtr(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* superTagName = NULL;
-    if (argc == 2)
+    char* styleAttr = NULL;
+    
+    if (argc >= 2)
         superTagName = PkInfo2Str(&argv[1]);
-    return getSTGInfo_tagPtr(result, PkInfo2Str(&argv[0]), superTagName);
+    if (argc >= 3)
+        styleAttr = PkInfo2Str(&argv[2]);
+    
+    if (styleAttr) {
+        return getSTGInfo_tagPtrWithStyle(result, PkInfo2Str(&argv[0]), superTagName, styleAttr);
+    } else {
+        return getSTGInfo_tagPtr(result, PkInfo2Str(&argv[0]), superTagName);
+    }
 }
 
 long meth_generic_STG_attr(VObj* self, Packet* result, int argc, Packet argv[]) {
-    return getSTGInfo_attr(PkInfo2Int(&argv[0]), PkInfo2Str(&argv[1]), result);
+    long tagPtr = PkInfo2Int(&argv[0]);
+    
+    /* Always use old API - it's safe and works with STGMajor* */
+    /* New API with minors is accessed through STG_attrEx separately */
+    return getSTGInfo_attr((STGMajor*)tagPtr, PkInfo2Str(&argv[1]), result);
+}
+
+long meth_generic_STG_attrEx(VObj* self, Packet* result, int argc, Packet argv[]) {
+    long tagPtr = PkInfo2Int(&argv[0]);
+    
+    /* New API - expects STGResult* from STG_tagPtr with style attribute */
+    return getSTGInfo_attrFromResult(tagPtr, PkInfo2Str(&argv[1]), result);
 }
 
 long meth_generic_STG_clean(VObj* self, Packet* result, int argc, Packet argv[]) {

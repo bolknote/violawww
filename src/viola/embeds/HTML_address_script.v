@@ -142,6 +142,10 @@
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");
 			if (i) set("BDColor", i);
+			i = STG_attr(tagPtr, "border");
+			if (i) {
+				if (i != "0") set("border", 6);
+			}
 			
 			fontSlant = STG_attr(tagPtr, "fontSlant");
 			fontSize = STG_attr(tagPtr, "fontSize");

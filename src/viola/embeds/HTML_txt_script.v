@@ -355,6 +355,12 @@ print("TXT: height=", get("height"), "................................\n");
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");
 			if (i) set("BDColor", i);
+			i = STG_attr(tagPtr, "border");
+			if (i) {
+				/* border can be numeric (thickness) or style name */
+				/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+				if (i != "0") set("border", 6);
+			}
 			
 			fontSlant = STG_attr(tagPtr, "fontSlant");
 			fontSize = STG_attr(tagPtr, "fontSize");

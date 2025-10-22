@@ -180,7 +180,8 @@ long meth_PS_render(VObj* self, Packet* result, int argc, Packet argv[]) {
         return 0;
     if ((pixmap = (Pixmap)GET__label(self))) {
     } else {
-        int width, height, hotx, hoty;
+        unsigned int width, height;
+        int hotx, hoty;
         char* cp;
 
         if (!(cp = GET_label(self)))

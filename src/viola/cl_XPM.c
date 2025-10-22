@@ -166,7 +166,8 @@ long helper_XPM_set(VObj* self, Packet* result, int argc, Packet argv[], long la
     switch (labelID) {
     case STR_label: {
         Window w = GET_window(self);
-        int width = 0, height = 0, hotx, hoty;
+        unsigned int width = 0, height = 0;
+        int hotx, hoty;
         Pixmap pixmap;
 
         result->info.s = SaveString(PkInfo2Str(&argv[1]));
@@ -205,7 +206,8 @@ long meth_XPM_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     if ((pixmap = (Pixmap)GET__label(self))) {
         GLDisplayXPM(w, 0, 0, GET_width(self), GET_height(self), pixmap);
     } else {
-        int width = 0, height = 0, hotx, hoty;
+        unsigned int width = 0, height = 0;
+        int hotx, hoty;
         char* cp;
 
         if (!(cp = GET_label(self)))

@@ -115,7 +115,8 @@ long meth_XPMBG_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     if ((pixmap = (Pixmap)GET__label(self))) {
         GLDisplayXPMBG(w, 0, 0, GET_width(self), GET_height(self), pixmap);
     } else {
-        int width, height, hotx, hoty;
+        unsigned int width, height;
+        int hotx, hoty;
         char* cp;
 
         if (!(cp = GET_label(self)))

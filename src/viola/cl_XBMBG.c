@@ -105,7 +105,8 @@ ClassInfo class_XBMBG = {
 long meth_XBMBG_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
     Window w = GET_window(self);
     Pixmap pixmap;
-    int width, height, hotx, hoty;
+    unsigned int width, height;
+    int hotx, hoty;
 
     meth_field_expose(self, result, argc, argv);
 
@@ -139,7 +140,7 @@ long meth_XBMBG_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_XBMBG_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     Window w = GET_window(self);
     Pixmap pixmap;
-    int width, height;
+    unsigned int width, height;
     char* cp;
 
     if (!meth_field_render(self, result, argc, argv))

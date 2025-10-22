@@ -136,7 +136,8 @@ long meth_XBM_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (!(w = GET_window(self)))
         return 0;
     if (!(pixmap = (Pixmap)GET__label(self))) {
-        int width = 0, height = 0, hotx, hoty;
+        unsigned int width = 0, height = 0;
+        int hotx, hoty;
         char* cp;
 
         if (!(cp = GET_label(self)))
@@ -186,7 +187,8 @@ long helper_XBM_set(VObj* self, Packet* result, int argc, Packet argv[], long la
     switch (labelID) {
     case STR_label: {
         Pixmap pixmap;
-        int width = 0, height = 0, hotx, hoty;
+        unsigned int width = 0, height = 0;
+        int hotx, hoty;
         char* cp;
 
         result->info.s = SaveString(PkInfo2Str(&argv[1]));
@@ -220,7 +222,8 @@ long meth_XBM_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (!(w = GET_window(self)))
         return 0;
     if (!(pixmap = (Pixmap)GET__label(self))) {
-        int width = 0, height = 0, hotx, hoty;
+        unsigned int width = 0, height = 0;
+        int hotx, hoty;
         char* cp;
 
         if (!(cp = GET_label(self)))

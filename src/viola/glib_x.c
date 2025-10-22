@@ -171,11 +171,11 @@ int fontID_symbol_largest = -1;
 Colormap colormap;
 int numOfDisplayColors;
 unsigned long FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
-int DefaultFGPixel, DefaultBGPixel, DefaultBDPixel, DefaultCRPixel;
-int DefaultFGPixel_lighter, DefaultFGPixel_darker, DefaultFGPixel_darkest;
-int DefaultBGPixel_lighter, DefaultBGPixel_darker, DefaultBGPixel_darkest;
-int DefaultBDPixel_lighter, DefaultBDPixel_darker, DefaultBDPixel_darkest;
-int DefaultBRPixel_lighter, DefaultCRPixel_darker, DefaultCRPixel_darkest;
+unsigned long DefaultFGPixel, DefaultBGPixel, DefaultBDPixel, DefaultCRPixel;
+unsigned long DefaultFGPixel_lighter, DefaultFGPixel_darker, DefaultFGPixel_darkest;
+unsigned long DefaultBGPixel_lighter, DefaultBGPixel_darker, DefaultBGPixel_darkest;
+unsigned long DefaultBDPixel_lighter, DefaultBDPixel_darker, DefaultBDPixel_darkest;
+unsigned long DefaultBRPixel_lighter, DefaultCRPixel_darker, DefaultCRPixel_darkest;
 int* colorReferenceTable;
 
 /****************************************************************************
@@ -357,7 +357,7 @@ int borderStyleThickness[BORDER_STYLE_COUNT];
 
 XrmDatabase resDB;
 
-int initDefaultColor(char* colorname, int defpixel, int* pixel, int* pixel_lighter, int* pixel_darker, int* pixel_darkest)
+int initDefaultColor(char* colorname, unsigned long defpixel, unsigned long* pixel, unsigned long* pixel_lighter, unsigned long* pixel_darker, unsigned long* pixel_darkest)
 {
     XColor color, exactcolor;
     int stat = 1;
@@ -2264,7 +2264,7 @@ int GLSetBGColor(VObj* self, char* colorname)
     return 1;
 }
 
-int GLSetBGColorPixel(VObj* self, int pixel)
+int GLSetBGColorPixel(VObj* self, unsigned long pixel)
 {
     Window w = GET_window(self);
     ColorInfo* colorInfo = GET__colorInfo(self);
@@ -2321,10 +2321,10 @@ char* GLGetCRColor(VObj* self)
     return colorInfo->cr->name;
 }
 
-int prevBDPixel = -1;
-int prevBGPixel = -1;
-int prevCRPixel = -1;
-int prevFGPixel = -1;
+unsigned long prevBDPixel = ~0UL;
+unsigned long prevBGPixel = ~0UL;
+unsigned long prevCRPixel = ~0UL;
+unsigned long prevFGPixel = ~0UL;
 
 ColorInfo* GLPrepareObjColor(VObj* self)
 {

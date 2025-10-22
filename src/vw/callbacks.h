@@ -18,8 +18,7 @@
 #ifndef _CALLBACKS_H_
 #define _CALLBACKS_H_
 
-/* Forward declaration */
-typedef struct DocViewInfoStruct DocViewInfo;
+#include "vw.h"
 
 void genericCallback(Widget thing, XtPointer clientData, XtPointer callData);
 void okCallback(Widget button, XtPointer clientData, XtPointer callData);

@@ -5,7 +5,10 @@
 
 #include <stdio.h>
 
+#ifndef VOBJ_DEFINED
+#define VOBJ_DEFINED
 typedef long VObj;
+#endif
 
 /***************************************************************************
  *
@@ -31,6 +34,8 @@ enum {
 #define PK_CANFREE_STR 1 /* can free info.s */
 #define PK_CANFREE_NOT 2 /* do not clear&free this packet */
 
+#ifndef PACKET_DEFINED
+#define PACKET_DEFINED
 typedef struct Packet {
     union {
         VObj* o;
@@ -50,6 +55,7 @@ typedef struct Packet {
     char canFree; /* regarding .info.s */
     char sticky;  /* if on, do not free packet structure */
 } Packet;
+#endif
 
 typedef struct Array {
     long size;

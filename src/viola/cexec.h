@@ -1,8 +1,8 @@
 #pragma once
 
-typedef struct Packet Packet;
-typedef struct Attr Attr;
-typedef long VObj;
+#include "packet.h"
+#include "attr.h"
+
 union PCode;
 
 #define PCODE_IDX_SIZE 0

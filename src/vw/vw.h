@@ -62,6 +62,8 @@ extern int activeHelpLock;
  * DocView has a corresponding DocViewInfo structure.  All of these are
  * contained in the global Box "docViews".
  */
+#ifndef DOCVIEWINFO_DEFINED
+#define DOCVIEWINFO_DEFINED
 typedef struct DocViewInfoStruct {
     char* shellName;
     char* docName;
@@ -112,6 +114,7 @@ typedef struct DocViewInfoStruct {
     int currentHotlistItem;
 
 } DocViewInfo;
+#endif
 extern Box* docViews;
 
 /*

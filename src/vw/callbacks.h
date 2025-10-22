@@ -71,7 +71,7 @@ void searchModeMH(char* arg[], int argc, void* clientData);
 void sliderConfig(char* arg[], int argc, void* clientData);
 
 void doViolaEvent(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch);
-void doViolaIdle(XtPointer clientData);
+Boolean doViolaIdle(XtPointer clientData);
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch);
 
 void scrollBarValueChanged(Widget sbar, XtPointer clientData, XtPointer callData);

@@ -47,7 +47,7 @@ extern int init_sys();
 extern int init_obj();
 extern int init_scanutils();
 extern int init_tfed();
-extern int init_cexec();
+extern long init_cexec();
 extern int init_html();
 extern int SGMLInit();
 extern int meth_generic_cli();

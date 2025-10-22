@@ -17,6 +17,9 @@ typedef struct CallObjStack {
 extern CallObjStack callObjStack[];
 extern int callObjStackIdx;
 
+extern long init_cexec();
+extern void cleanup_cexec();
+
 /*notes:
  * pcode[0] stores size of pcode array
  * pcode[1] stores reference count to this pcode

@@ -65,11 +65,16 @@ int flag_vwatch = 0;
 int script_watch_source_size = 0;
 int script_watch_pcode_size = 0;
 
-#define EXEC_STACK_SIZE_INCREMENT 10000
+/* Execution stack configuration.
+ * Large initial size to avoid reallocation, which is unsafe because
+ * code execution may store pointers into the stack.
+ */
+#define EXEC_STACK_INITIAL_SIZE 100000
+#define EXEC_STACK_SIZE_MARGIN 100
 
 int execStackSize = 0;
 int execStackSizeCheck = 0;
-Packet* execStack;
+Packet* execStack = NULL;
 long stackExecIdx = -1;
 long stackBaseIdx = -1;
 
@@ -95,27 +100,42 @@ long init_cexec() {
     return incrementExecStack();
 }
 
-/* reallocating the stack is unsafe because of the stack's usage
- * (may be pointers into the stack?)
- * oh well, just start out with a large enough stack, I guess, for now.
+/* Clean up the execution stack */
+void cleanup_cexec() {
+    if (execStack != NULL) {
+        free(execStack);
+        execStack = NULL;
+        execStackSize = 0;
+        execStackSizeCheck = 0;
+    }
+}
+
+/* Reallocating the stack is unsafe because of the stack's usage
+ * (may be pointers into the stack).
+ * Therefore, we start with a large enough stack (EXEC_STACK_INITIAL_SIZE)
+ * to avoid reallocation during execution.
  */
 long incrementExecStack() {
-    Packet* newStack;
-
-    newStack = (Packet*)malloc(sizeof(struct Packet) * (size_t)(execStackSize + EXEC_STACK_SIZE_INCREMENT));
-    if (!newStack) {
+    if (execStack != NULL) {
+        /* Stack already allocated - overflow detected */
+        fprintf(stderr, "FATAL ERROR: pcode execution stack overflow!\n");
+        fprintf(stderr, "Stack size: %d, current index: %ld\n", execStackSize, stackExecIdx);
+        fprintf(stderr, "Consider increasing EXEC_STACK_INITIAL_SIZE\n");
         return 0;
     }
-    if (execStackSize > 0) {
-        fprintf(stderr, "WARNING: pcode execution stack overflow. Errors may occur\n");
-        bcopy(execStack, newStack, (size_t)execStackSize * sizeof(struct Packet));
-        /*	free(execStack);*/
-    } else {
-        bzero(newStack, (size_t)(execStackSize + EXEC_STACK_SIZE_INCREMENT) * sizeof(struct Packet));
+
+    /* Allocate the initial stack */
+    execStack = (Packet*)malloc(sizeof(struct Packet) * (size_t)EXEC_STACK_INITIAL_SIZE);
+    if (!execStack) {
+        fprintf(stderr, "FATAL ERROR: Failed to allocate execution stack\n");
+        return 0;
     }
-    execStackSize = execStackSize + EXEC_STACK_SIZE_INCREMENT;
-    execStackSizeCheck = execStackSize - 100; /* 100 as arbitrary margin */
-    execStack = newStack;
+
+    /* Initialize the stack to zero */
+    bzero(execStack, (size_t)EXEC_STACK_INITIAL_SIZE * sizeof(struct Packet));
+    
+    execStackSize = EXEC_STACK_INITIAL_SIZE;
+    execStackSizeCheck = execStackSize - EXEC_STACK_SIZE_MARGIN;
 
     return (long)execStack;
 }

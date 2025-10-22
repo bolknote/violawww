@@ -1069,10 +1069,10 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             data = code & 0x0000ffff;
             switch (code & 0x0fff0000) {
             case CODE_INTEGER << 16:
-                fprintf(stderr, "%d\tINTEGER2, %d\n", (*pc - 1), data);
+                fprintf(stderr, "%ld\tINTEGER2, %d\n", (*pc - 1), data);
                 break;
             case CODE_CHAR << 16:
-                fprintf(stderr, "%d\tCHAR2, %d\n", (*pc - 1), data);
+                fprintf(stderr, "%ld\tCHAR2, %d\n", (*pc - 1), data);
                 break;
             case CODE_BR2 << 16:
             case CODE_BR2_ZERO << 16:
@@ -1100,23 +1100,23 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_GET2 << 16:
             case CODE_PUSH_SET2 << 16:
             case CODE_LISTC2 << 16:
-                fprintf(stderr, "%d\t%s, %d\n", (*pc - 1), PCodeStr[(code & 0x0fff0000) >> 16],
+                fprintf(stderr, "%ld\t%s, %d\n", (*pc - 1), PCodeStr[(code & 0x0fff0000) >> 16],
                         data);
                 break;
             case CODE_CALL2 << 16:
             case CODE_CALL2_C << 16:
-                fprintf(stderr, "%d\t%s, %d (argc)\n", (*pc - 1),
+                fprintf(stderr, "%ld\t%s, %d (argc)\n", (*pc - 1),
                         PCodeStr[(code & 0x0fff0000) >> 16], data);
-                fprintf(stderr, "%d\t%ld (id)\n", *pc, pcode[*pc].i);
+                fprintf(stderr, "%ld\t%ld (id)\n", *pc, pcode[*pc].i);
                 (*pc)++;
                 break;
             }
         } else {
-            fprintf(stderr, "%d\t%s\n", (*pc - 1), PCodeStr[code]);
+            fprintf(stderr, "%ld\t%s\n", (*pc - 1), PCodeStr[code]);
 
             switch (code) {
             case CODE_PUSH_REFP:
-                fprintf(stderr, "%d\t%li (%s)\n", *pc, pcode[*pc].i,
+                fprintf(stderr, "%ld\t%li (%s)\n", *pc, pcode[*pc].i,
                         (char*)((symID2Str->get)(symID2Str, pcode[*pc].i)->val));
                 (*pc)++;
                 break;
@@ -1124,10 +1124,10 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_PUSH_REFPS: {
                 int i, n;
                 n = (int)pcode[*pc].i;
-                fprintf(stderr, "%d\tcount=%d\n", *pc, n);
+                fprintf(stderr, "%ld\tcount=%d\n", *pc, n);
                 (*pc)++;
                 while (n--) {
-                    fprintf(stderr, "%d\t%li (%s)\n", *pc, pcode[*pc].i,
+                    fprintf(stderr, "%ld\t%li (%s)\n", *pc, pcode[*pc].i,
                             (char*)symID2Str->get(symID2Str, pcode[*pc].i)->val);
                     (*pc)++;
                 }
@@ -1220,7 +1220,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_NE:
             case CODE_EQ:
 
-                fprintf(stderr, "%d\t%ld\n", *pc, pcode[*pc].i);
+                fprintf(stderr, "%ld\t%ld\n", *pc, pcode[*pc].i);
                 (*pc)++;
                 break;
 
@@ -1239,7 +1239,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_GT_CHAR:
             case CODE_AND_CHAR:
             case CODE_OR_CHAR:
-                fprintf(stderr, "%d\t'%c' (%d)\n", *pc, pcode[*pc].c, (int)pcode[*pc].c);
+                fprintf(stderr, "%ld\t'%c' (%d)\n", *pc, pcode[*pc].c, (int)pcode[*pc].c);
                 (*pc)++;
                 break;
 
@@ -1258,7 +1258,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_GT_FLOAT:
             case CODE_AND_FLOAT:
             case CODE_OR_FLOAT:
-                fprintf(stderr, "%d\t%f\n", *pc, pcode[*pc].f);
+                fprintf(stderr, "%ld\t%f\n", *pc, pcode[*pc].f);
                 (*pc)++;
                 break;
 
@@ -1277,7 +1277,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_GT_STR:
             case CODE_AND_STR:
             case CODE_OR_STR:
-                fprintf(stderr, "%d\t\"%s\"\n", *pc, pcode[*pc].s);
+                fprintf(stderr, "%ld\t\"%s\"\n", *pc, pcode[*pc].s);
                 (*pc)++;
                 break;
 
@@ -1308,7 +1308,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
                 break;
 
             default:
-                fprintf(stderr, "pc=%d, unknown pcode=%ld\n", *pc - 1, pcode[*pc - 1].x);
+                fprintf(stderr, "pc=%ld, unknown pcode=%ld\n", *pc - 1, pcode[*pc - 1].x);
                 break;
             }
         }

@@ -69,7 +69,7 @@ extern int notSecure();
 extern double cos(), sin();
 int flag_cliprompt = 1;
 
-#define RADIAN_TO_DEGREE_RATIO 0.017453293
+#define RADIAN_TO_DEGREE_RATIO 0.017453293f
 
 struct StrInfo init_obj_script; /* initialized in class.c */
 
@@ -2277,7 +2277,7 @@ long meth_generic_concatList(VObj* self, Packet* result, int argc, Packet argv[]
  */
 long meth_generic_cos(VObj* self, Packet* result, int argc, Packet argv[]) {
     result->type = PKT_FLT;
-    result->info.f = cos((double)(PkInfo2Flt(&argv[0]) * RADIAN_TO_DEGREE_RATIO));
+    result->info.f = cosf(PkInfo2Flt(&argv[0]) * RADIAN_TO_DEGREE_RATIO);
     return 1;
 }
 
@@ -4225,7 +4225,7 @@ long meth_generic_shiftKeyP(VObj* self, Packet* result, int argc, Packet argv[])
  */
 long meth_generic_sin(VObj* self, Packet* result, int argc, Packet argv[]) {
     result->type = PKT_FLT;
-    result->info.f = sin((double)(PkInfo2Flt(&argv[0]) * RADIAN_TO_DEGREE_RATIO));
+    result->info.f = sinf(PkInfo2Flt(&argv[0]) * RADIAN_TO_DEGREE_RATIO);
     return 1;
 }
 

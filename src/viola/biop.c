@@ -471,7 +471,7 @@ Packet* p2;
 void float_div(p1, p2) Packet* p1;
 Packet* p2;
 {
-    if (p2->info.f) {
+    if (p2->info.f != 0.0f) {
         p1->info.f /= p2->info.f;
         p1->canFree = 0;
         return;
@@ -759,7 +759,7 @@ void float_and(p1, p2) Packet* p1;
 Packet* p2;
 {
     p1->type = PKT_INT;
-    p1->info.i = p1->info.f && p2->info.f;
+    p1->info.i = (p1->info.f != 0.0f) && (p2->info.f != 0.0f);
     p1->canFree = 0;
 }
 
@@ -788,7 +788,7 @@ void float_or(p1, p2) Packet* p1;
 Packet* p2;
 {
     p1->type = PKT_INT;
-    p1->info.i = p1->info.f || p2->info.f;
+    p1->info.i = (p1->info.f != 0.0f) || (p2->info.f != 0.0f);
     p1->canFree = 0;
 }
 

@@ -567,9 +567,11 @@ print("TXT: height=", get("height"), "................................\n");
 						deco = "HTML__txtBox_caution";
 					break;
 					case "WARNING":
+						set("BDColor", "darkOrange");
 						deco = "HTML__txtBox_caution";
 					break;
 					case "ERROR":
+						set("BDColor", "red");
 						deco = "HTML__txtBox_error";
 					break;
 					case "TIMED":
@@ -588,9 +590,11 @@ print("TXT: height=", get("height"), "................................\n");
 				deco = "HTML__txtBox_caution";
 			break;
 			case "WARNING":
+				set("BDColor", "darkOrange");
 				deco = "HTML__txtBox_caution";
 			break;
 			case "ERROR":
+				set("BDColor", "red");
 				deco = "HTML__txtBox_error";
 			break;
 			case "TIMED":

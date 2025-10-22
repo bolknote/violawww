@@ -253,9 +253,9 @@ PUBLIC BOOL HTAA_checkPassword ARGS3(CONST char*, username, CONST char*, passwor
             if (TRACE)
                 fprintf(stderr, "HTAAFile_validateUser: %s \"%s\" %s \"%s:%s\"\n",
                         "Matching username:", username, "against passwd record:", user, pw);
-            if (username && user && !strcmp(username, user)) {
+            if (username && user[0] && !strcmp(username, user)) {
                 /* User's record found */
-                if (pw) { /* So password is required for this user */
+                if (pw[0]) { /* So password is required for this user */
                     if (!password || !HTAA_passwdMatch(password, pw)) /* Check the password */
                         status = EOF; /* If wrong, indicate it with EOF */
                 }

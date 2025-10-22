@@ -39,7 +39,7 @@ int load_objects_slots_fromBuiltInCache();
 char c;
 
 #define VIOLA_PATH_ARRAY_SIZE 32
-char* viola_path[VIOLA_PATH_ARRAY_SIZE];
+char* viola_path[VIOLA_PATH_ARRAY_SIZE + 1]; /* +1 for NULL terminator */
 
 #define DFLT_VIOLA_PATH "/usr/local/lib/WWW/viola/apps" /*PATCHED*/
 

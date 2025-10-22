@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "vlist.h"
 #include <ctype.h>
+#include <limits.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdint.h>
@@ -717,10 +718,13 @@ int tool;
                 size_t length;
 
                 length = strlen(cp);
+                /* Ensure length doesn't exceed INT_MAX for XChangeProperty */
+                if (length > INT_MAX)
+                    length = INT_MAX;
 
                 XChangeProperty(ep->xselectionrequest.display, ep->xselectionrequest.requestor,
-                                ep->xselectionrequest.property, XA_STRING, 8, PropModeReplace, cp,
-                                length);
+                                ep->xselectionrequest.property, XA_STRING, 8, PropModeReplace,
+                                (unsigned char*)cp, (int)length);
 
                 sep = (XSelectionRequestEvent*)ep;
 

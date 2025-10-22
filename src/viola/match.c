@@ -1,6 +1,4 @@
-int matchString(inStr, patStr)
-char* inStr;
-char* patStr;
+int matchString(char* inStr, char* patStr)
 {
     char* cp;
     int ii = 0;

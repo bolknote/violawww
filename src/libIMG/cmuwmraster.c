@@ -23,8 +23,7 @@ int babble(char* name, struct cmuwm_header* headerp) {
            memToVal(headerp->height, sizeof(long)), memToVal(headerp->depth, sizeof(short)));
 }
 
-int cmuwmIdent(fullname, name)
-char *fullname, *name;
+int cmuwmIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     struct cmuwm_header header;
@@ -60,9 +59,7 @@ char *fullname, *name;
     return r;
 }
 
-Image* cmuwmLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* cmuwmLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     struct cmuwm_header header;

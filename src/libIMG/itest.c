@@ -66,8 +66,7 @@ void purgeImg() {
     }
 }
 
-ImgNode* imgNodeRefInc(id)
-char* id;
+ImgNode* imgNodeRefInc(char* id)
 {
     ImgNode* ip = imgNodes;
     int stat;
@@ -101,8 +100,7 @@ char* id;
     return ip;
 }
 
-int imgNodeRefDec(id)
-char* id;
+int imgNodeRefDec(char* id)
 {
     ImgNode *last_ip = NULL, *ip, *next_ip;
 
@@ -125,8 +123,7 @@ char* id;
     return 0;
 }
 
-int makeImg(filename)
-char* filename;
+int makeImg(char* filename)
 {
     int i, stat;
     XSetWindowAttributes attrs;

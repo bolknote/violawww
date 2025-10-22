@@ -158,20 +158,12 @@ ClassInfo class_txtEdit = {
     &class_txtDisp,                                        /* super class info		*/
 };
 
-long int meth_txtEdit_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtEdit_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_txtDisp_initialize(self, result, argc, argv);
 }
 
-long int meth_txtEdit_expose(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtEdit_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
     int stat;
@@ -191,11 +183,7 @@ Packet argv[];
     return stat;
 }
 
-long int meth_txtEdit_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtEdit_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_txtDisp_render(self, result, argc, argv);
 }

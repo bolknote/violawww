@@ -22,12 +22,7 @@
 
 LFUNC(CreateData, int, (char*** data_return, xpmInternAttrib* attrib, XpmAttributes* attributes));
 
-int XpmCreateDataFromImage(display, data_return, image, shapeimage, attributes)
-Display* display;
-char*** data_return;
-XImage* image;
-XImage* shapeimage;
-XpmAttributes* attributes;
+int XpmCreateDataFromImage(Display* display, char*** data_return, XImage* image, XImage* shapeimage, XpmAttributes* attributes)
 {
     int ErrorStatus;
     xpmInternAttrib attrib;
@@ -64,10 +59,7 @@ XpmAttributes* attributes;
         return (status);                                                                           \
     }
 
-static int CreateData(data_return, attrib, attributes)
-char*** data_return;
-xpmInternAttrib* attrib;
-XpmAttributes* attributes;
+static int CreateData(char*** data_return, xpmInternAttrib* attrib, XpmAttributes* attributes)
 {
     /* calculation variables */
     xpmRgbName rgbn[MAX_RGBNAMES];

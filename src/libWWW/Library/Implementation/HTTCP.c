@@ -73,8 +73,7 @@ extern int sys_nerr;
 #ifdef __STDC__
 PUBLIC int HTInetStatus(char* where)
 #else
-PUBLIC int HTInetStatus(where)
-char* where;
+PUBLIC int HTInetStatus(char* where)
 #endif
 {
 #ifdef VMS

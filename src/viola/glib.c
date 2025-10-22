@@ -18,9 +18,7 @@ FontInfo fontInfo[MAXFONTS];
 int lookAndFeel = LAF_VIOLA;
 
 /* Scott: added dpy and scrn */
-int init_glib(dpy, scrn)
-Display* dpy;
-Screen* scrn;
+int init_glib(Display* dpy, Screen* scrn)
 {
     if (!GLInit(dpy, scrn))
         return 0;
@@ -32,8 +30,7 @@ Screen* scrn;
     return 1;
 }
 
-Window bossWindow(self)
-VObj* self;
+Window bossWindow(VObj* self)
 {
     Window w;
 
@@ -65,8 +62,7 @@ void unMapObject(self) VObj* self;
 
 int check = 1;
 
-VObj* findWindowObject(w)
-Window w;
+VObj* findWindowObject(Window w)
 {
     static Window lastFailedSearchW = 0;
     static Window lastSuccessSearchW = 0;
@@ -140,9 +136,7 @@ VObj* findNewObject(VObj* self) {
     return obj;
 }
 
-VObj findClickedObj(self, mx, my)
-VObj self;
-int mx, my;
+VObj findClickedObj(VObj self, int mx, int my)
 {
     VObj obj, matchObj = NULL;
     OLIST* olist;
@@ -159,9 +153,7 @@ int mx, my;
     return matchObj;
 }
 
-VObj findClickedObjFromList(olist, mx, my)
-OLIST* olist;
-int mx, my;
+VObj findClickedObjFromList(OLIST* olist, int mx, int my)
 {
     VObj matchObj = NULL;
 

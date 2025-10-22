@@ -356,13 +356,7 @@ int borderStyleThickness[BORDER_STYLE_COUNT];
 
 XrmDatabase resDB;
 
-int initDefaultColor(colorname, defpixel, pixel, pixel_lighter, pixel_darker, pixel_darkest)
-char* colorname;
-int defpixel;
-int* pixel;
-int* pixel_lighter;
-int* pixel_darker;
-int* pixel_darkest;
+int initDefaultColor(char* colorname, int defpixel, int* pixel, int* pixel_lighter, int* pixel_darker, int* pixel_darkest)
 {
     XColor color, exactcolor;
     int stat = 1;
@@ -402,9 +396,7 @@ int* pixel_darkest;
 /*
  *
  */
-int GLInit(dpy, scrn)
-Display* dpy;
-Screen* scrn;
+int GLInit(Display* dpy, Screen* scrn)
 {
     Screen* screen;
     extern double pow();
@@ -884,9 +876,7 @@ void free_fonts() {
     }
 }
 
-int resolveFontSet(varlist, fontSet)
-Attr* varlist;
-char* fontSet;
+int resolveFontSet(Attr* varlist, char* fontSet)
 {
     Packet pk, *packetp;
     Attr *attrp, *fattrp;
@@ -931,10 +921,7 @@ char* fontSet;
 **
 */
 
-Window GLOpenWindow(self, x, y, width, height, isGlass)
-VObj* self;
-int x, y, width, height;
-int isGlass;
+Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass)
 {
     Window w, parentWindow = 0;
     int borderThickness;
@@ -1092,17 +1079,14 @@ void GLCloseWindow(w) Window w;
         XUnmapWindow(display, w);
 }
 
-int GLDestroyWindow(w)
-Window w;
+int GLDestroyWindow(Window w)
 {
     /* printf("destroyWindow (w = 0x%x = %ld)\n", w, w);*/
     XDestroyWindow(display, w);
     return 1;
 }
 
-int GLWindowSize(w, height, width)
-Window w;
-int *height, *width;
+int GLWindowSize(Window w, int * height, int * width)
 {
     XWindowAttributes xwa;
 
@@ -1120,18 +1104,14 @@ int *height, *width;
     return 0;
 }
 
-int GLSetWindowName(w, windowName)
-Window w;
-char* windowName;
+int GLSetWindowName(Window w, char* windowName)
 {
     if (XStoreName(display, w, windowName))
         return 1;
     return 0;
 }
 
-int GLSetIconName(w, iconName)
-Window w;
-char* iconName;
+int GLSetIconName(Window w, char* iconName)
 {
     extern int runInSubWindow; /* spider hack */
 
@@ -1196,10 +1176,7 @@ int *root_xp, *root_yp;
     }
 }
 
-Window GLQueryMouse(w, rootx, rooty, wx, wy)
-Window w;
-int *rootx, *rooty;
-int *wx, *wy;
+Window GLQueryMouse(Window w, int * rootx, int * rooty, int * wx, int * wy)
 {
     Window rootw, childw;
     unsigned int mask;
@@ -1237,10 +1214,7 @@ void GLChangeToNormalMouseCursor(w) Window w;
 ** line
 **
 */
-int GLPaintLine(w, gc, x1, y1, x2, y2)
-Window w;
-GC gc;
-int x1, y1, x2, y2;
+int GLPaintLine(Window w, GC gc, int x1, int y1, int x2, int y2)
 {
     XDrawLine(display, w, gc, x1, y1, x2, y2);
     return 1;
@@ -1250,10 +1224,7 @@ int x1, y1, x2, y2;
 ** Rectangle
 **
 */
-int GLPaintRect(w, gc, x1, y1, x2, y2)
-Window w;
-GC gc;
-int x1, y1, x2, y2;
+int GLPaintRect(Window w, GC gc, int x1, int y1, int x2, int y2)
 {
     XPoint pts[5];
 
@@ -1276,10 +1247,7 @@ int x1, y1, x2, y2;
  * paints the rectangle with opposite corners (x0,y0) and (x1,y1)
  * to background in w.
  */
-int GLPaintFillRect(w, gc, x0, y0, x1, y1)
-Window w;
-GC gc;
-int x0, y0, x1, y1;
+int GLPaintFillRect(Window w, GC gc, int x0, int y0, int x1, int y1)
 {
     XFillRectangle(display, w, gc, x0, y0, x1 - x0 + 1, y1 - y0 + 1);
     return 1;
@@ -1289,29 +1257,19 @@ int x0, y0, x1, y1;
 ** circle/oval
 **
 */
-int GLPaintOval(w, gc, x, y, width, height)
-Window w;
-GC gc;
-int x, y, width, height;
+int GLPaintOval(Window w, GC gc, int x, int y, int width, int height)
 {
     XDrawArc(display, w, gc, x, y, width, height, 90 * 64, 360 * 64);
     return 1;
 }
 
-int GLPaintFillOval(w, gc, x, y, width, height)
-Window w;
-GC gc;
-int x, y, width, height;
+int GLPaintFillOval(Window w, GC gc, int x, int y, int width, int height)
 {
     XFillArc(display, w, gc, x, y, width, height, 90 * 64, 360 * 64);
     return 1;
 }
 
-int GLPaintFillArc(w, gc, x, y, width, height, degree1, degree2)
-Window w;
-GC gc;
-int x, y, width, height;
-int degree1, degree2;
+int GLPaintFillArc(Window w, GC gc, int x, int y, int width, int height, int degree1, int degree2)
 {
     XFillArc(display, w, gc, x, y, width, height, degree1 * 64, degree2 * 64);
     return 1;
@@ -1321,11 +1279,7 @@ int degree1, degree2;
 ** text
 **
 */
-int GLDefineNewFont(fontInfo, id, fontReferenceName, fontPatternName)
-FontInfo* fontInfo;
-int id;
-char* fontReferenceName;
-char* fontPatternName;
+int GLDefineNewFont(FontInfo* fontInfo, int id, char* fontReferenceName, char* fontPatternName)
 {
     Font font;
     int i;
@@ -1364,9 +1318,7 @@ char* fontPatternName;
     return 0;
 }
 
-int GLUpdateFontInfo(fontInfo, id)
-FontInfo* fontInfo;
-int id;
+int GLUpdateFontInfo(FontInfo* fontInfo, int id)
 {
     static XFontStruct* xfontStruct = NULL;
     int i;
@@ -1440,26 +1392,17 @@ int id;
 }
 
 /* currently assumes that all fonts are of equal width */
-int GLTextWidth(fontID, str)
-int fontID;
-char* str;
+int GLTextWidth(int fontID, char* str)
 {
     return XTextWidth(FontFontStruct(fontID), str, strlen(str));
 }
 
-int GLTextHeight(fontID, str)
-int fontID;
-char* str;
+int GLTextHeight(int fontID, char* str)
 {
     return FontMaxHeight(fontID);
 }
 
-int GLPaintText(w, gc, fontID, x0, y0, str)
-Window w;
-GC gc;
-int fontID;
-int x0, y0;
-char* str;
+int GLPaintText(Window w, GC gc, int fontID, int x0, int y0, char* str)
 {
     XTextItem item;
     item.chars = str;
@@ -1471,13 +1414,7 @@ char* str;
     return 1;
 }
 
-int GLPaintTextLength(w, gc, fontID, x0, y0, str, length)
-Window w;
-GC gc;
-int fontID;
-int x0, y0;
-char* str;
-int length;
+int GLPaintTextLength(Window w, GC gc, int fontID, int x0, int y0, char* str, int length)
 {
     XTextItem item;
     item.chars = str;
@@ -1618,10 +1555,7 @@ Pixmap GLMakeXPMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
     return pixmap;
 }
 
-int GLDisplayXBMFromASCII(w, x, y, bitmapStr)
-Window w;
-int x, y;
-char* bitmapStr;
+int GLDisplayXBMFromASCII(Window w, int x, int y, char* bitmapStr)
 {
     Pixmap bitmap;
     unsigned int width, height;
@@ -1638,10 +1572,7 @@ char* bitmapStr;
     return 1;
 }
 
-int GLDisplayXPMFromASCII(w, x, y, bitmapStr)
-Window w;
-int x, y;
-char* bitmapStr;
+int GLDisplayXPMFromASCII(Window w, int x, int y, char* bitmapStr)
 {
     Pixmap bitmap;
     unsigned int width, height;
@@ -1657,10 +1588,7 @@ char* bitmapStr;
     return 1;
 }
 
-int GLDisplayXBM(w, x, y, width, height, bitmap)
-Window w;
-int x, y, width, height;
-Pixmap bitmap;
+int GLDisplayXBM(Window w, int x, int y, int width, int height, Pixmap bitmap)
 {
     if (!w || !bitmap)
         return 0;
@@ -1670,11 +1598,7 @@ Pixmap bitmap;
     return 1;
 }
 
-int GLDisplayXBMBG(w, x, y, width, height, bitmap, bitmapWidth, bitmapHeight)
-Window w;
-int x, y, width, height;
-Pixmap bitmap;
-int bitmapWidth, bitmapHeight;
+int GLDisplayXBMBG(Window w, int x, int y, int width, int height, Pixmap bitmap, int bitmapWidth, int bitmapHeight)
 {
     Pixmap pix;
 
@@ -1691,10 +1615,7 @@ int bitmapWidth, bitmapHeight;
     return 1;
 }
 
-int GLDisplayXPM(w, x, y, width, height, bitmap)
-Window w;
-int x, y, width, height;
-Pixmap bitmap;
+int GLDisplayXPM(Window w, int x, int y, int width, int height, Pixmap bitmap)
 {
     if (!w || !bitmap)
         return 0;
@@ -1702,10 +1623,7 @@ Pixmap bitmap;
     return 1;
 }
 
-int GLDisplayXPMBG(w, x, y, width, height, bitmap)
-Window w;
-int x, y, width, height;
-Pixmap bitmap;
+int GLDisplayXPMBG(Window w, int x, int y, int width, int height, Pixmap bitmap)
 {
     if (!w || !bitmap)
         return 0;
@@ -1717,24 +1635,19 @@ Pixmap bitmap;
     return 1;
 }
 
-int GLFreeXBM(bitmap)
-Pixmap bitmap;
+int GLFreeXBM(Pixmap bitmap)
 {
     XFreePixmap(display, bitmap);
     return 1;
 }
 
-int GLFreeXPM(bitmap)
-Pixmap bitmap;
+int GLFreeXPM(Pixmap bitmap)
 {
     /*	XFreePixmap(display, bitmap);*/
     return 1;
 }
 
-XImage* GLReadBitmapImage(w, image, filename)
-Window w;
-XImage* image;
-char* filename;
+XImage* GLReadBitmapImage(Window w, XImage* image, char* filename)
 {
     unsigned int width, height;
     int x_hot, y_hot;
@@ -1892,9 +1805,7 @@ int style;
     }
 }
 
-int GLDrawRubberFrame(self, x1, y1, x2, y2)
-VObj* self;
-int x1, y1, x2, y2;
+int GLDrawRubberFrame(VObj* self, int x1, int y1, int x2, int y2)
 {
     Window w = 0;
     if (GET__parent(self))
@@ -2177,8 +2088,7 @@ ColorInfo* GLInitColorInfo() {
     return colorInfo;
 }
 
-int approximateColor(r, g, b)
-unsigned long r, g, b;
+int approximateColor(int r, unsigned g, unsigned b)
 {
     int i, d, mdist = 100000, close = -1;
 
@@ -2219,11 +2129,7 @@ unsigned long r, g, b;
 }
 int callCount_GLSetColor = 0;
 
-int GLSetColor(colorpp, colorname, defaultColorName, defaultPixel)
-ColorStruct** colorpp;
-char* colorname;
-char* defaultColorName;
-long defaultPixel;
+int GLSetColor(ColorStruct** colorpp, char* colorname, char* defaultColorName, long defaultPixel)
 {
     ColorStruct* cs;
     XColor exactcolor;
@@ -2328,9 +2234,7 @@ long defaultPixel;
     return 0;
 }
 
-int GLSetBDColor(self, colorname)
-VObj* self;
-char* colorname;
+int GLSetBDColor(VObj* self, char* colorname)
 {
     Window w = GET_window(self);
     ColorInfo* colorInfo = GET__colorInfo(self);
@@ -2344,9 +2248,7 @@ char* colorname;
     return 1;
 }
 
-int GLSetBGColor(self, colorname)
-VObj* self;
-char* colorname;
+int GLSetBGColor(VObj* self, char* colorname)
 {
     Window w = GET_window(self);
     ColorInfo* colorInfo = GET__colorInfo(self);
@@ -2361,9 +2263,7 @@ char* colorname;
     return 1;
 }
 
-int GLSetBGColorPixel(self, pixel)
-VObj* self;
-int pixel;
+int GLSetBGColorPixel(VObj* self, int pixel)
 {
     Window w = GET_window(self);
     ColorInfo* colorInfo = GET__colorInfo(self);
@@ -2372,9 +2272,7 @@ int pixel;
     return 1;
 }
 
-int GLSetFGColor(self, colorname)
-VObj* self;
-char* colorname;
+int GLSetFGColor(VObj* self, char* colorname)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
 
@@ -2386,9 +2284,7 @@ char* colorname;
     return 1;
 }
 
-int GLSetCRColor(self, colorname)
-VObj* self;
-char* colorname;
+int GLSetCRColor(VObj* self, char* colorname)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
 
@@ -2400,29 +2296,25 @@ char* colorname;
     return 1;
 }
 
-char* GLGetBDColor(self)
-VObj* self;
+char* GLGetBDColor(VObj* self)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
     return colorInfo->bd->name;
 }
 
-char* GLGetBGColor(self)
-VObj* self;
+char* GLGetBGColor(VObj* self)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
     return colorInfo->bg->name;
 }
 
-char* GLGetFGColor(self)
-VObj* self;
+char* GLGetFGColor(VObj* self)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
     return colorInfo->fg->name;
 }
 
-char* GLGetCRColor(self)
-VObj* self;
+char* GLGetCRColor(VObj* self)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
     return colorInfo->cr->name;
@@ -2433,8 +2325,7 @@ int prevBGPixel = -1;
 int prevCRPixel = -1;
 int prevFGPixel = -1;
 
-ColorInfo* GLPrepareObjColor(self)
-VObj* self;
+ColorInfo* GLPrepareObjColor(VObj* self)
 {
     ColorInfo* colorInfo = GET__colorInfo(self);
 
@@ -2566,8 +2457,7 @@ void GLClearSelection() {
 /*
 ** get content of the X cut buffer
 */
-int GLGetSelection(result)
-Packet* result;
+int GLGetSelection(Packet* result)
 {
     extern VObj* xselectionObj;
     int n;
@@ -2596,9 +2486,7 @@ Packet* result;
 ** set cut buffer
 **
 */
-int GLSetSelection(self, val)
-VObj* self;
-char* val;
+int GLSetSelection(VObj* self, char* val)
 {
     extern VObj* xselectionObj;
     Window w = GET_window(self);
@@ -2626,13 +2514,7 @@ char* val;
     return 0;
 }
 
-XImage* GLGIFLoad(id, fname, w, x, y, width, height, actual_w, actual_h, theImgp)
-char* id;
-char* fname;
-Window w;
-int x, y, width, height;
-int *actual_w, *actual_h;
-XImage** theImgp;
+XImage* GLGIFLoad(char* id, char* fname, Window w, int x, int y, int width, int height, int * actual_w, int * actual_h, XImage** theImgp)
 {
 #ifdef USE_XGIF_PACKAGE
     XImage* expImg;
@@ -2700,12 +2582,7 @@ XImage** theImgp;
 #endif
 }
 
-XImage* GLGIFResize(win, w, h, actual_w, actual_h, theImg, expImg)
-Window win;
-int w, h;
-int actual_w, actual_h;
-XImage* theImg;
-XImage* expImg;
+XImage* GLGIFResize(Window win, int w, int h, int actual_w, int actual_h, XImage* theImg, XImage* expImg)
 {
 #ifdef USE_XGIF_PACKAGE
     int ix, iy, ex, ey;
@@ -2787,10 +2664,7 @@ XImage* expImg;
 #endif
 }
 
-int GLGIFDraw(w, img, x, y, width, height)
-Window w;
-XImage* img;
-int x, y, width, height;
+int GLGIFDraw(Window w, XImage* img, int x, int y, int width, int height)
 {
 #ifdef USE_XGIF_PACKAGE
     return XPutImage(display, w, gc, img, 0, 0, x, y, width, height);
@@ -2826,8 +2700,7 @@ char xresourceBuff[1000];
  * caller must not alter or free returned string.
  * (can't alter because of value from XGetDefault() is owned by xlib)
  */
-char* GLGetResource(name)
-char* name;
+char* GLGetResource(char* name)
 {
     int status;
     char* strType[20];
@@ -2857,8 +2730,7 @@ void freeGLibResources() {
         XrmDestroyDatabase(resDB);
 }
 
-ColorStruct* getColorStruct(str)
-char* str;
+ColorStruct* getColorStruct(char* str)
 {
     HashEntry* entry;
 
@@ -2868,8 +2740,7 @@ char* str;
     return NULL;
 }
 
-ColorStruct* addColorStructByString(str)
-char* str;
+ColorStruct* addColorStructByString(char* str)
 {
     HashEntry* entry;
     ColorStruct* cs;
@@ -2884,8 +2755,7 @@ char* str;
     return cs;
 }
 
-ColorStruct* addColorName(str)
-char* str;
+ColorStruct* addColorName(char* str)
 {
     HashEntry* entry;
     ColorStruct* cs;
@@ -2942,9 +2812,7 @@ void purgeImg() {
     }
 }
 
-ImgNode* imgNodeRefInc(id, filename)
-char* id;
-char* filename;
+ImgNode* imgNodeRefInc(char* id, char* filename)
 {
     ImgNode* ip = imgNodes;
     int stat;
@@ -3002,8 +2870,7 @@ char* filename;
     return ip;
 }
 
-int imgNodeRefDec(id)
-char* id;
+int imgNodeRefDec(char* id)
 {
     ImgNode *last_ip = NULL, *ip, *next_ip;
 
@@ -3028,9 +2895,7 @@ char* id;
     return 0;
 }
 
-int GLShadeColor(orig_red, orig_green, orig_blue, shade)
-int orig_red, orig_green, orig_blue;
-float shade;
+int GLShadeColor(int orig_red, int orig_green, int orig_blue, float shade)
 {
     XColor xcolor;
     int newPixel;

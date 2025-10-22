@@ -266,11 +266,7 @@ ClassInfo class_txtDisp = {
  * Result: content of the selection buffer
  * Return: 1 if successful, 0 if error occured
  */
-long int meth_txtDisp__getSelection(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp__getSelection(VObj* self, Packet* result, int argc, Packet argv[])
 {
     result->type = PKT_STR;
     result->canFree = PK_CANFREE_STR;
@@ -278,11 +274,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_append(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_append(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     int i;
@@ -294,11 +286,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_building_maxFontDescent(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_building_maxFontDescent(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -308,11 +296,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_building_maxFontHeight(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_building_maxFontHeight(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -322,11 +306,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_building_vspan(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_building_vspan(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -341,11 +321,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_charMask(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_charMask(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -359,11 +335,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_charButtonMask(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_charButtonMask(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -377,11 +349,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_charHighLiteMask(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_charHighLiteMask(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -395,11 +363,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_charUnderlineMask(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_charUnderlineMask(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -424,11 +388,7 @@ Packet argv[];
  * Result: 1 if successful, 0 if error occured
  * Return: 1 if successful, 0 if error occured
  */
-long int meth_txtDisp_clearSelection(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_clearSelection(VObj* self, Packet* result, int argc, Packet argv[])
 {
     result->type = PKT_INT;
     result->canFree = 0;
@@ -444,11 +404,7 @@ Packet argv[];
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-long int meth_txtDisp_clone(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_clone(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObj* cloneObj;
 
@@ -467,11 +423,7 @@ Packet argv[];
     return 0;
 }
 
-long meth_txtDisp_clone2(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txtDisp_clone2(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObj* cloneObj;
     TFStruct *oldtf, *clonetf;
@@ -497,11 +449,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf;
 
@@ -529,11 +477,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_currentChar(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_currentChar(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     char c;
@@ -549,11 +493,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_currentLine(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_currentLine(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -569,11 +509,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_currentTag(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_currentTag(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     char* cp;
@@ -591,11 +527,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_currentWord(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_currentWord(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -611,11 +543,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_cursorColumn(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_cursorColumn(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -630,11 +558,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_cursorRow(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_cursorRow(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -649,11 +573,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_deHighLight(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_deHighLight(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     long ln = PkInfo2Int(&argv[0]);
@@ -668,29 +588,17 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_drawCursor(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_drawCursor(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return tfed_drawCursor(self);
 }
 
-long int meth_txtDisp_eraseCursor(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_eraseCursor(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return tfed_eraseCursor(self);
 }
 
-long int meth_txtDisp_expose(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
     /*XXX WATCH OUT. This is cheating and not calling super methods.
             meth_txt_expose(self, result, argc, argv);
@@ -703,11 +611,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_freeSelf(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!exitingViola) {
         TFStruct* tf = GET__TFStruct(self);
@@ -765,11 +669,7 @@ long int helper_txtDisp_get(VObj* self, Packet* result, int argc, Packet argv[],
     }
     return helper_txt_get(self, result, argc, argv, labelID);
 }
-long int meth_txtDisp_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_txtDisp_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
@@ -778,11 +678,7 @@ Packet argv[];
  * highLight(lineNumber, charactersToHighLight)
  *
  */
-long int meth_txtDisp_highLight(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_highLight(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     long ln = PkInfo2Int(&argv[0]);
@@ -797,11 +693,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* objl;
 
@@ -812,11 +704,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_insert(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_insert(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
 
@@ -836,11 +724,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_lineRowOffset(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_lineRowOffset(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -854,11 +738,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_nextTag(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_nextTag(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     char* cp;
@@ -877,11 +757,7 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_numberOfLinesDisplayed(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_numberOfLinesDisplayed(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;
@@ -895,11 +771,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_previousTag(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_previousTag(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     char* cp;
@@ -918,39 +790,23 @@ Packet argv[];
     return 0;
 }
 
-long int meth_txtDisp_processInput(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_processInput(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return 0;
 }
 
-long int meth_txtDisp_processKeyInput(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_processKeyInput(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return 0;
 }
 
-long int meth_txtDisp_processMouseInput(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_processMouseInput(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return tfed_processMouseInput(self);
 }
 
 /* was test4*/
-long int meth_txtDisp_processMouseMove(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_processMouseMove(VObj* self, Packet* result, int argc, Packet argv[])
 {
     char* url;
     url = tfed_processMouseMove(self);
@@ -963,11 +819,7 @@ Packet argv[];
     return 1;
 }
 
-long int meth_txtDisp_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (meth_txt_render(self, result, argc, argv)) {
         TFStruct* tf = GET__TFStruct(self);
@@ -1010,11 +862,7 @@ Packet argv[];
  * Result: content of the selection buffer
  * Return: 1 if successful, 0 if error occured
  */
-long int meth_txtDisp_setSelection(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_setSelection(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (argc > 0)
         GLSetSelection(self, saveString(PkInfo2Str(&argv[0])));
@@ -1029,11 +877,7 @@ Packet argv[];
  * Result: [0] object, [1] from_x, [2] from_y, [3] to_x, [4] to_y
  * Return: 1 if successful, 0 if error occured
  */
-long int meth_txtDisp_selectionInfo(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_selectionInfo(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     Packet* packet0 = makePacket();
@@ -1080,11 +924,7 @@ Packet argv[];
     }
 }
 
-long int meth_txtDisp_shownDepend(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_shownDepend(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -1102,9 +942,7 @@ Packet argv[];
     return 1;
 }
 
-int help_txtDisp_shownPositionV(self, newPosition)
-VObj* self;
-int newPosition;
+int help_txtDisp_shownPositionV(VObj* self, int newPosition)
 {
     TFStruct* tf = updateEStrUser(self);
     int oldDestLine, destLine;
@@ -1255,20 +1093,12 @@ long int helper_txtDisp_set(VObj* self, Packet* result, int argc, Packet argv[],
     }
     return helper_txt_set(self, result, argc, argv, labelID);
 }
-long int meth_txtDisp_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_txtDisp_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long int meth_txtDisp_setRevVideoFlag(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_setRevVideoFlag(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -1283,8 +1113,7 @@ Packet argv[];
 /*
  *
  */
-long int helper_txtDisp_updateShownInfo(tf)
-TFStruct* tf;
+long int helper_txtDisp_updateShownInfo(TFStruct* tf)
 {
     if (tf->lineVisibleCount) {
         int thumbPositionV, thumbSizeV, ldiff;
@@ -1314,11 +1143,7 @@ TFStruct* tf;
     return 0;
 }
 
-long int meth_txtDisp_totalLineCount(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtDisp_totalLineCount(VObj* self, Packet* result, int argc, Packet argv[])
 {
     TFStruct* tf = updateEStrUser(self);
     result->type = PKT_INT;

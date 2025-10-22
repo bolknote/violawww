@@ -30,11 +30,7 @@ SGMLTagMappingInfo* HMMLTagMappingInfo[] = {
 
 int SGMLInit() {}
 
-VObj* SGMLMakeDocObj(source, parent, name, width)
-char* source;
-VObj* parent;
-char* name;
-int width;
+VObj* SGMLMakeDocObj(char* source, VObj* parent, char* name, int width)
 {
     char* srcp;
     char *cp, *ccp;
@@ -81,9 +77,6 @@ int width;
 }
 }
 
-VObj* SGMLBuild(tag, parent, width)
-char* tag;
-VObj* parent;
-int width;
+VObj* SGMLBuild(char* tag, VObj* parent, int width)
 {
 }

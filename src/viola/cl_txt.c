@@ -126,11 +126,7 @@ ClassInfo class_txt = {
  * Result: clone object, and optinally name it
  * Return: 1 if successful, 0 if error occured
  */
-long meth_txt_clone(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_clone(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObj* cloneObj;
 
@@ -150,22 +146,14 @@ Packet argv[];
     return 0;
 }
 
-long meth_txt_clone2(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_clone2(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!meth_pane_clone2(self, result, argc, argv))
         return 0;
     return 1;
 }
 
-long meth_txt_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     /* set colors because configuring textfield might trigger redraws */
     GLPrepareObjColor(self);
@@ -173,20 +161,12 @@ Packet argv[];
     return meth_pane_config(self, result, argc, argv);
 }
 
-long meth_txt_expose(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_pane_expose(self, result, argc, argv);
 }
 
-long meth_txt_freeSelf(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!exitingViola) {
         if (GET_font(self)) {
@@ -214,20 +194,12 @@ long helper_txt_get(VObj* self, Packet* result, int argc, Packet argv[], long la
     }
     return helper_pane_get(self, result, argc, argv, labelID);
 }
-long meth_txt_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_txt_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_txt_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     char* cp;
     int i;
@@ -252,11 +224,7 @@ Packet argv[];
     return 1; /* don't want to kill this object on account of bad font */
 }
 
-long meth_txt_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_pane_render(self, result, argc, argv);
 }
@@ -294,11 +262,7 @@ long helper_txt_set(VObj* self, Packet* result, int argc, Packet argv[], long la
     }
     return helper_pane_set(self, result, argc, argv, labelID);
 }
-long meth_txt_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_txt_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_txt_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }

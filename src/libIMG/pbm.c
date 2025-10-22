@@ -93,11 +93,7 @@ static int pbmReadInt(ZFILE* zf) {
     }
 }
 
-static int isPBM(zf, name, width, height, maxval, verbose)
-ZFILE* zf;
-char* name;
-unsigned int *width, *height, *maxval;
-unsigned int verbose;
+static int isPBM(ZFILE* zf, char* name, unsigned int* width, unsigned int* height, unsigned int* maxval, unsigned int verbose)
 {
     byte buf[4];
 
@@ -171,8 +167,7 @@ unsigned int verbose;
     return (NOTPBM);
 }
 
-int pbmIdent(fullname, name)
-char *fullname, *name;
+int pbmIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     unsigned int width, height, maxval, ret;
@@ -185,9 +180,7 @@ char *fullname, *name;
     return (ret != NOTPBM);
 }
 
-Image* pbmLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* pbmLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     Image* image;

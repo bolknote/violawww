@@ -46,22 +46,19 @@ int version = 2;
 
 char* sgmlAttrTypesStr[] = {"IMPLIED", "CDATA", "TOKEN", "ID", "IDREF", "ENTITY", "NOTATION"};
 
-int skipInt(fp)
-FILE* fp;
+int skipInt(FILE* fp)
 {
     return fgetc(fp);
 }
 
-int readByte(fp)
-FILE* fp;
+int readByte(FILE* fp)
 {
     int i;
     i = fgetc(fp) & 255;
     return i;
 }
 
-int readInt(fp)
-FILE* fp;
+int readInt(FILE* fp)
 {
     int i;
     i = fgetc(fp) << 24;
@@ -71,8 +68,7 @@ FILE* fp;
     return i;
 }
 
-int findTagID(tagName)
-char* tagName;
+int findTagID(char* tagName)
 {
     int i;
 
@@ -83,8 +79,7 @@ char* tagName;
     return -1; /* error! */
 }
 
-char* findTagName(tagID)
-int tagID;
+char* findTagName(int tagID)
 {
     int i;
 

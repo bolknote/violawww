@@ -822,8 +822,7 @@ void expandables(self) MAST* self;
     }
 }
 
-int fold(self)
-MAST* self;
+int fold(MAST* self)
 {
     MAST *mast, *mast2, *next;
 
@@ -922,12 +921,7 @@ void setMASTSize(mast) MAST* mast;
     }
 }
 
-MAST* build(self, parent, minfo, minfoIdx, level)
-MAST* self;
-MAST* parent;
-MInfo* minfo;
-int* minfoIdx;
-int level;
+MAST* build(MAST* self, MAST* parent, MInfo* minfo, int* minfoIdx, int level)
 {
     MInfo* m;
     MAST *new, *insert, *big_brother = NULL, *child, *ret;
@@ -1282,11 +1276,7 @@ Window w;
 }
 #endif
 
-int HTMLMathFormater(self, tokenListPk, dataListPk, listSize)
-VObj* self;
-Packet* tokenListPk;
-Packet* dataListPk;
-int listSize;
+int HTMLMathFormater(VObj* self, Packet* tokenListPk, Packet* dataListPk, int listSize)
 {
     int i, token;
     char* dataStr;
@@ -1338,8 +1328,7 @@ int listSize;
     return 1;
 }
 
-int HTMLMathDraw(self)
-VObj* self;
+int HTMLMathDraw(VObj* self)
 {
     MAST* mast = (MAST*)(GET__content(self));
     Window w = GET_window(self);

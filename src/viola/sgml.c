@@ -136,9 +136,7 @@ int width;
     insert_width = width;
 }
 
-int SGMLBuildDoc_setBuff(obj, offset)
-VObj* obj;
-int offset;
+int SGMLBuildDoc_setBuff(VObj* obj, int offset)
 {
     char* cp;
     int size, src_starti, src_endi;
@@ -202,9 +200,7 @@ char _INPUTC() {
 
 /* BUG: INPUT_BUFFSIZE must be larger than (largest-possible-data-size / 2).
  */
-char* INPUTS(n, ret)
-int n;
-char* ret;
+char* INPUTS(int n, char* ret)
 {
     if (INPUT_idxLow + n < INPUT_idxHigh) {
         strncpy(ret, INPUT_buff + INPUT_idxLow, n);
@@ -240,8 +236,7 @@ char* ret;
     }
 }
 
-int INPUT_LINE_filtered(buff)
-char* buff;
+int INPUT_LINE_filtered(char* buff)
 {
     char c, *cp = buff;
 
@@ -298,8 +293,7 @@ char* buff;
     return cp - buff;
 }
 
-int INPUT_LINE(buff)
-char* buff;
+int INPUT_LINE(char* buff)
 {
     char c, *cp = buff;
     while ((c = INPUTC()) != '\n')
@@ -331,9 +325,7 @@ int readInt() {
     return i;
 }
 
-SGMLTagMappingInfo* findTagMappingInfo(tmi, tagName)
-SGMLTagMappingInfo tmi[];
-char* tagName;
+SGMLTagMappingInfo* findTagMappingInfo(SGMLTagMappingInfo tmi[], char* tagName)
 {
     int i;
     for (i = 0; tmi[i].tag; i++) {
@@ -356,13 +348,7 @@ char *findTagName(tagID)
 
 /* ESIS VERSION
  */
-VObj* SGMLBuildDoc(srcp, url, parent, name, width, anchor)
-char* srcp;
-char* url;
-VObj* parent;
-char* name;
-int width;
-char* anchor;
+VObj* SGMLBuildDoc(char* srcp, char* url, VObj* parent, char* name, int width, char* anchor)
 {
     VObj* docObj;
     char *cp, *ccp;
@@ -466,16 +452,7 @@ void loadTemplateObjectNMethod(tmi) SGMLTagMappingInfo* tmi;
     }
 }
 
-VObj* SGMLBuild(dmi, tagMappingInfo, tagName, localizingTagIDMap, parent, width, y, h, PinlineP)
-SGMLDocMappingInfo* dmi;
-SGMLTagMappingInfo* tagMappingInfo;
-char* tagName;
-int* localizingTagIDMap;
-VObj* parent;
-int width;
-int y;
-int* h;
-int PinlineP;
+VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, char* tagName, int* localizingTagIDMap, VObj* parent, int width, int y, int* h, int PinlineP)
 {
     int endP = 0;
     char token;
@@ -881,13 +858,7 @@ int PinlineP;
 
 /* BINARY FILE VERSION
  */
-VObj* SGMLBuildDoc_B(srcp, url, parent, name, width, anchor)
-char* srcp;
-char* url;
-VObj* parent;
-char* name;
-int width;
-char* anchor;
+VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width, char* anchor)
 {
     VObj* docObj;
     char *cp, *ccp;
@@ -1105,16 +1076,7 @@ char* anchor;
     return docObj;
 }
 
-VObj* SGMLBuild_B(dmi, tagMappingInfo, tagID, localizingTagIDMap, parent, width, y, h, PinlineP)
-SGMLDocMappingInfo* dmi;
-SGMLTagMappingInfo* tagMappingInfo;
-int tagID;
-int* localizingTagIDMap;
-VObj* parent;
-int width;
-int y;
-int* h;
-int PinlineP;
+VObj* SGMLBuild_B(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, int tagID, int* localizingTagIDMap, VObj* parent, int width, int y, int* h, int PinlineP)
 {
     int endP = 0;
     int token, size;
@@ -1492,16 +1454,12 @@ int PinlineP;
 
 /*============================*/
 
-int SGMLFindAnchorOffset(obj, anchor)
-VObj* obj;
-char* anchor;
+int SGMLFindAnchorOffset(VObj* obj, char* anchor)
 {
     return 0;
 }
 
-int getVSpan(self, token)
-VObj* self;
-int token;
+int getVSpan(VObj* self, int token)
 {
     /* equivalent script level statement: 	 h = send(self(), message);
      */
@@ -1562,10 +1520,7 @@ int token;
 #endif
 }
 
-int SGMLTileDoc(self, width, y)
-VObj* self;
-int width;
-int y;
+int SGMLTileDoc(VObj* self, int width, int y)
 {
     int h = 0;
     int height;
@@ -1673,11 +1628,7 @@ int y;
 
 /* to provide access to style sheet. a sickie implementation...
  */
-int getSGMLStyle(dtd, tagName, attrName, result)
-char* dtd;
-char* tagName;
-char* attrName;
-Packet* result;
+int getSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* result)
 {
     int i;
     SGMLTagMappingInfo* tmi = NULL;
@@ -1764,11 +1715,7 @@ Packet* result;
 
 /* to provide dynamic modification to style sheet. Could be faster...
  */
-int setSGMLStyle(dtd, tagName, attrName, value)
-char* dtd;
-char* tagName;
-char* attrName;
-Packet* value;
+int setSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* value)
 {
     int i;
     SGMLTagMappingInfo* tmi = NULL;
@@ -1810,9 +1757,7 @@ Packet* value;
     return 1;
 }
 
-SGMLDocMappingInfo* setSGMLStylesheet(dtd, stylesheet)
-char* dtd;
-char* stylesheet;
+SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
 {
     char *cp, *retStrp, *path;
     char tagName[128], type[128];
@@ -1960,8 +1905,7 @@ char* stylesheet;
 startHTML() { /*	dataBuffIdxStack[++dataBuffIdxStackIdx] = dataBuffIdx;*/ }
 endHTML() { /*	--dataBuffIdxStackIdx;*/ }
 
-SGMLDocMappingInfo* loadStyleSheet(dtd)
-char* dtd;
+SGMLDocMappingInfo* loadStyleSheet(char* dtd)
 {
     char stylesheetFN[128];
     SGMLDocMappingInfo* dmi = NULL;

@@ -53,8 +53,7 @@ LFUNC(strcasecmp, int, (char* s1, char* s2));
  * in case strcasecmp is not provided by the system here is one
  * which does the trick
  */
-static int strcasecmp(s1, s2)
-char *s1, *s2;
+static int strcasecmp(char* s1, char* s2)
 {
     int c1, c2;
 
@@ -118,12 +117,7 @@ unsigned int* mask_pixel_index;
         return (status);                                                                           \
     }
 
-int xpmCreateImage(display, attrib, image_return, shapeimage_return, attributes)
-Display* display;
-xpmInternAttrib* attrib;
-XImage** image_return;
-XImage** shapeimage_return;
-XpmAttributes* attributes;
+int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_return, XImage** shapeimage_return, XpmAttributes* attributes)
 {
     /* variables stored in the XpmAttributes structure */
     Visual* visual;
@@ -342,13 +336,7 @@ XpmAttributes* attributes;
 /*
  * Create an XImage
  */
-static int CreateXImage(display, visual, depth, width, height, image_return)
-Display* display;
-Visual* visual;
-unsigned int depth;
-unsigned int width;
-unsigned int height;
-XImage** image_return;
+static int CreateXImage(Display* display, Visual* visual, unsigned int depth, unsigned int width, unsigned int height, XImage** image_return)
 {
     int bitmap_pad;
 
@@ -481,13 +469,11 @@ int xpm_znormalizeimagebits(unsigned char* bp, XImage* img) {
 static unsigned char Const _lomask[0x09] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
 static unsigned char Const _himask[0x09] = {0xff, 0xfe, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0x00};
 
-static int _putbits(src, dstoffset, numbits, dst)
-char* src;     /* address of source bit string */
-int dstoffset; /* bit offset into destination;
-                * range is 0-31 */
-int numbits;   /* number of bits to copy to
-                * destination */
-char* dst;     /* address of destination bit string */
+static int _putbits(char* src, int dstoffset, int numbits, char* dst)
+/* src: address of source bit string */
+/* dstoffset: bit offset into destination; range is 0-31 */
+/* numbits: number of bits to copy to destination */
+/* dst: address of destination bit string */
 {
     unsigned char chlo, chhi;
     int hibits;
@@ -528,12 +514,7 @@ char* dst;     /* address of destination bit string */
  *	copy the temp back into the destination image data
  */
 
-static int SetImagePixels(image, width, height, pixelindex, pixels)
-XImage* image;
-unsigned int width;
-unsigned int height;
-unsigned int* pixelindex;
-Pixel* pixels;
+static int SetImagePixels(XImage* image, unsigned int width, unsigned int height, unsigned int* pixelindex, Pixel* pixels)
 {
     Pixel pixel;
     unsigned long px;
@@ -600,12 +581,7 @@ static unsigned long byteorderpixel = MSBFirst << 24;
 
 #endif
 
-static int SetImagePixels32(image, width, height, pixelindex, pixels)
-XImage* image;
-unsigned int width;
-unsigned int height;
-unsigned int* pixelindex;
-Pixel* pixels;
+static int SetImagePixels32(XImage* image, unsigned int width, unsigned int height, unsigned int* pixelindex, Pixel* pixels)
 {
     unsigned char* addr;
     unsigned int* iptr;

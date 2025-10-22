@@ -208,11 +208,7 @@ ClassInfo class_slider = {
 #define HORIZONTAL_DIR(dirc) (dirc == 'l' || dirc == 'r')
 #define THUMB_IN_RANGE(s) (s >= 0 && s <= 100)
 
-long meth_slider_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!meth_field_config(self, result, argc, argv))
         return 0;
@@ -230,20 +226,12 @@ long helper_slider_get(VObj* self, Packet* result, int argc, Packet argv[], long
     }
     return helper_field_get(self, result, argc, argv, labelID);
 }
-long meth_slider_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_slider_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_slider_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     meth_field_initialize(self, result, argc, argv);
     return 1;
@@ -271,20 +259,12 @@ long helper_slider_set(VObj* self, Packet* result, int argc, Packet argv[], long
     }
     return helper_field_set(self, result, argc, argv, labelID);
 }
-long meth_slider_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_slider_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_slider_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
 
@@ -356,11 +336,7 @@ Packet argv[];
     return 0;
 }
 
-long meth_slider_processMouseInput(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_slider_processMouseInput(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
     char orientation, dirc = *GET_direction(self), *mesg;

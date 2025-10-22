@@ -93,8 +93,7 @@ void freeRGBMapData(rgb) RGBMap* rgb;
     lfree((byte*)rgb->blue);
 }
 
-Image* newBitImage(width, height)
-unsigned int width, height;
+Image* newBitImage(unsigned int width, unsigned int height)
 {
     Image* image;
     unsigned int linelen;
@@ -114,8 +113,7 @@ unsigned int width, height;
     return (image);
 }
 
-Image* newRGBImage(width, height, depth)
-unsigned int width, height, depth;
+Image* newRGBImage(unsigned int width, unsigned int height, unsigned int depth)
 {
     Image* image;
     unsigned int pixlen, numcolors, a;
@@ -136,8 +134,7 @@ unsigned int width, height, depth;
     return (image);
 }
 
-Image* newTrueImage(width, height)
-unsigned int width, height;
+Image* newTrueImage(unsigned int width, unsigned int height)
 {
     Image* image;
     unsigned int pixlen, numcolors, a;

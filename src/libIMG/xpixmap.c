@@ -40,9 +40,7 @@ ZFILE* zf;
     exit(1);
 }
 
-Image* xpixmapLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* xpixmapLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     char buf[BUFSIZ];
@@ -236,8 +234,7 @@ unsigned int verbose;
     return (image);
 }
 
-int xpixmapIdent(fullname, name)
-char *fullname, *name;
+int xpixmapIdent(char* fullname, char* name)
 {
     Image* image;
 

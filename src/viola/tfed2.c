@@ -104,10 +104,7 @@ long kbf_delete_backward_char(TFStruct* tf) {
 }
 
 #define VERBOSE_SCROLLINEBACKWARD___
-int scrollLineBackward(tf, delta, col)
-TFStruct* tf;
-int delta;
-int col;
+int scrollLineBackward(TFStruct* tf, int delta, int col)
 {
     int sy;
     int pwidth = 0;

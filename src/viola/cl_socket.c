@@ -155,11 +155,7 @@ ClassInfo class_socket = {
     &class_client,                                      /* super class info		*/
 };
 
-long meth_socket__startClient(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_socket__startClient(VObj* self, Packet* result, int argc, Packet argv[])
 {
     int fd;
     int socket_open();
@@ -196,20 +192,12 @@ long helper_socket_get(VObj* self, Packet* result, int argc, Packet argv[], long
     }
     return helper_client_get(self, result, argc, argv, labelID);
 }
-long meth_socket_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_socket_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_socket_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_socket_freeSelf(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_socket_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])
 {
     int fd = GET_clientFD(self);
 
@@ -244,11 +232,7 @@ long helper_socket_set(VObj* self, Packet* result, int argc, Packet argv[], long
     }
     return helper_client_set(self, result, argc, argv, labelID);
 }
-long meth_socket_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_socket_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_socket_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
@@ -257,10 +241,10 @@ Packet argv[];
 /*
  * KJ's code
  */
-int socket_open(proto, host, port)
-char* proto; /* "tcp" or "udp" */
-char* host;  /* name or dotted quad */
-int port;    /* service name or number */
+int socket_open(char* proto, char* host, int port)
+/* proto: "tcp" or "udp" */
+/* host: name or dotted quad */
+/* port: service name or number */
 {
     struct sockaddr_in addr;
     int s;

@@ -529,10 +529,7 @@ void DefaultBlockHook(globals) struct sv_globals* globals;
  *	that each has at least 256 elements in it (largest map that can
  *	be addressed by an rle_pixel).
  */
-rle_pixel** buildmap(globals, minmap, gamma)
-struct sv_globals* globals;
-int minmap;
-double gamma;
+rle_pixel** buildmap(struct sv_globals* globals, int minmap, double gamma)
 {
     rle_pixel **cmap, *gammap;
     int i, j;
@@ -913,10 +910,7 @@ int rle_get_setup(struct sv_globals* globals) {
  *	Returns code.
  */
 
-int rle_get_error(code, pgmname, fname)
-int code;
-char* pgmname;
-char* fname;
+int rle_get_error(int code, char* pgmname, char* fname)
 {
     switch (code) {
     case 0: /* success */
@@ -1019,9 +1013,7 @@ void rle_debug(on_off) int on_off;
  *	decoding the instructions into scanline data.
  */
 
-int rle_getrow(globals, scanline)
-struct sv_globals* globals;
-rle_pixel* scanline[];
+int rle_getrow(struct sv_globals* globals, rle_pixel* scanline[])
 {
     rle_pixel* scanc;
     int nc;
@@ -1536,16 +1528,7 @@ int gammamap[256];
  * Algorithm:
  * 	see "Note:" in dithermap comment.
  */
-int dithergb(x, y, r, g, b, levels, divN, modN, magic)
-int x;
-int y;
-int r;
-int g;
-int b;
-int levels;
-int divN[256];
-int modN[256];
-int magic[16][16];
+int dithergb(int x, int y, int r, int g, int b, int levels, int divN[256], int modN[256], int magic[16][16])
 {
     int col = x % 16, row = y % 16;
 
@@ -1569,13 +1552,7 @@ int magic[16][16];
  * Algorithm:
  * 	see "Note:" in bwdithermap comment.
  */
-int ditherbw(x, y, val, divN, modN, magic)
-int x;
-int y;
-int val;
-int divN[256];
-int modN[256];
-int magic[16][16];
+int ditherbw(int x, int y, int val, int divN[256], int modN[256], int magic[16][16])
 {
     int col = x % 16, row = y % 16;
 

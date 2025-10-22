@@ -135,9 +135,7 @@ int HotListLoadedP = 0;
 
 int init_html2() { return 1; }
 
-SGMLTagMappingInfo* findTMI(tagMappingInfo, tag)
-SGMLTagMappingInfo* tagMappingInfo;
-char* tag;
+SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo* tagMappingInfo, char* tag)
 {
     int i;
 
@@ -149,14 +147,7 @@ char* tag;
 
 /*
  */
-VObj* html2_parseHTMLDocument(self, address, simpleAddress, anchorSearch, width, method, dataToPost)
-VObj* self;
-char* address;
-char** simpleAddress;
-char** anchorSearch;
-int width;
-int method;
-char* dataToPost;
+VObj* html2_parseHTMLDocument(VObj* self, char* address, char** simpleAddress, char** anchorSearch, int width, int method, char* dataToPost)
 {
     SGMLBuildInfoState* bstate;
     char c, anchorInfo[64];
@@ -1150,10 +1141,7 @@ void CB_HTML_end() {
      */
 }
 
-VObj* HTMLBuildObj(bstate, parentWidth, tmi)
-SGMLBuildInfoState* bstate;
-int parentWidth;
-SGMLTagMappingInfo* tmi;
+VObj* HTMLBuildObj(SGMLBuildInfoState* bstate, int parentWidth, SGMLTagMappingInfo* tmi)
 {
     Packet argv[1];
     char* dtd;
@@ -1268,8 +1256,7 @@ SGMLTagMappingInfo* tmi;
     return bstate->obj;
 }
 
-char* encodeURL(str)
-char* str;
+char* encodeURL(char* str)
 {
     char *s, *buffp = URLEncodeBuff, *encode;
 
@@ -1285,8 +1272,7 @@ char* str;
     return s;
 }
 
-char* decodeURL(str)
-char* str;
+char* decodeURL(char* str)
 {
     char *s = str, *buffp = URLEncodeBuff, dd[3];
 
@@ -1309,8 +1295,7 @@ char* str;
     return s;
 }
 
-int http_progress_notify(n)
-int n;
+int http_progress_notify(int n)
 {
     char notice[256];
     extern int perishableActiveHelp;
@@ -1374,8 +1359,7 @@ void user_alert(message) char* message;
         sendMessage1N1str(mesgObj, "alert", message);
 }
 
-int user_message_confirm(message)
-char* message;
+int user_message_confirm(char* message)
 {
     Packet* result = makePacket();
     int i = 0;
@@ -1397,9 +1381,7 @@ char* message;
     return i;
 }
 
-char* user_prompt_default(message, deflt)
-char* message;
-char* deflt;
+char* user_prompt_default(char* message, char* deflt)
 {
     Packet* result = makePacket();
     char* s = NULL;
@@ -1421,8 +1403,7 @@ char* deflt;
     return s;
 }
 
-char* user_prompt_password(message)
-char* message;
+char* user_prompt_password(char* message)
 {
     Packet* result = makePacket();
     char* s = NULL;
@@ -1525,8 +1506,7 @@ Bool initHotList() {
     return 1;
 }
 
-Bool addHotListItem(url, comment, date)
-char *url, *comment, *date;
+Bool addHotListItem(char * url, char * comment, char * date)
 {
     HotListItem *new, *l_hip, *hip;
 
@@ -1553,8 +1533,7 @@ char *url, *comment, *date;
     }
 }
 
-HotListItem* getNthHotListItem(n)
-int n;
+HotListItem* getNthHotListItem(int n)
 {
     HotListItem* hip;
     int i = 0;
@@ -1567,8 +1546,7 @@ int n;
     return NULL;
 }
 
-Bool deleteHotListItem(n)
-int n;
+Bool deleteHotListItem(int n)
 {
     HotListItem *hip, *l_hip = NULL;
     int i = 0;
@@ -1588,8 +1566,7 @@ int n;
     return 0;
 }
 
-char* dumpHotList(mode)
-int mode;
+char* dumpHotList(int mode)
 {
     HotListItem* hip;
     size_t size = 1; /*for last char*/

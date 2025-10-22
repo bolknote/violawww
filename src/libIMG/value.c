@@ -23,10 +23,7 @@ unsigned long doMemToVal(byte* p, unsigned int len) {
     return (i);
 }
 
-unsigned long doValToMem(val, p, len)
-unsigned long val;
-byte* p;
-unsigned int len;
+unsigned long doValToMem(unsigned long val, byte* p, unsigned int len)
 {
     int a;
 
@@ -49,10 +46,7 @@ unsigned long doMemToValLSB(byte* p, unsigned int len) {
 /* this is provided for orthagonality
  */
 
-unsigned long doValToMemLSB(val, p, len)
-byte* p;
-unsigned long val;
-unsigned int len;
+unsigned long doValToMemLSB(unsigned long val, byte* p, unsigned int len)
 {
     while (len--) {
         *(p++) = val & 0xff;

@@ -25,12 +25,7 @@ xpmDataType xpmDataTypes[] = {"",         "!",      "\n",    '\0',   '\n', "",  
 #endif
 };
 
-int XpmReadFileToImage(display, filename, image_return, shapeimage_return, attributes)
-Display* display;
-char* filename;
-XImage** image_return;
-XImage** shapeimage_return;
-XpmAttributes* attributes;
+int XpmReadFileToImage(Display* display, char* filename, XImage** image_return, XImage** shapeimage_return, XpmAttributes* attributes)
 {
     xpmData mdata;
     char buf[BUFSIZ];

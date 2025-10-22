@@ -135,13 +135,7 @@ void parseCommandLine();
  * violaIdleEvent() when there are no events to process and nothing
  * better to do otherwise.
  */
-char* initViola(argc, argv, vObjFile, display, screen, parentWindow)
-int argc;
-char* argv[];
-char* vObjFile;
-Display* display;
-Screen* screen;
-Window parentWindow;
+char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen* screen, Window parentWindow)
 {
     extern char** environ;
     Packet* result;

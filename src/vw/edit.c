@@ -433,10 +433,7 @@ XtPointer clientData, callData;
     freeDocViewInfo(dvi);
 }
 
-int writeFile(textData, fileName, dvi)
-char* textData;
-char* fileName;
-DocViewInfo* dvi;
+int writeFile(char* textData, char* fileName, DocViewInfo* dvi)
 {
     FILE* fp;
     char buf[1024];

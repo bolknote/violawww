@@ -32,7 +32,6 @@ extern int replaceNodeLine2();
 extern int rowAdjustOffset();
 extern char* decodeURL();
 extern int replaceNodeLine();
-extern int insertKey();
 extern int updateHilite();
 extern int mapFromPixelToCharPosition();
 extern int tfed_placeCursor();
@@ -104,6 +103,9 @@ XTextItem xcharitem; /* used by drawChar() */
  * externally referenable routines:
  */
 /* something... */
+
+/* Forward declarations */
+int insertKey(TFStruct* tf, char c, int fontID);
 
 /*
  * call on program startup
@@ -194,9 +196,7 @@ int init_tfed() {
 /*
  * initializes and sets up a text field structure
  */
-TFStruct* tfed_setUpTFStruct(self, text)
-VObj* self;
-char* text;
+TFStruct* tfed_setUpTFStruct(VObj* self, char* text)
 {
     TFStruct* tf = GET__TFStruct(self);
 
@@ -285,9 +285,7 @@ char* text;
     return tf;
 }
 
-TFStruct* tfed_updateTFStruct(self, text)
-VObj* self;
-char* text;
+TFStruct* tfed_updateTFStruct(VObj* self, char* text)
 {
     TFStruct* tf = updateEStrUser(self);
     int fontID = (int)GET__font(self);
@@ -410,8 +408,7 @@ char* text;
     return tf;
 }
 
-TFStruct* tfed_clone(orig, clone)
-VObj *orig, *clone;
+TFStruct* tfed_clone(VObj * orig, VObj * clone)
 {
     TFStruct* newtf;
     TFLineNode *prevp, *currentp, *newLN;
@@ -492,9 +489,7 @@ VObj *orig, *clone;
 
 char s[2];
 
-int glyphWidth(tf, tfcp)
-TFStruct* tf;
-TFChar* tfcp;
+int glyphWidth(TFStruct* tf, TFChar* tfcp)
 {
     char c = TFCChar(tfcp);
 
@@ -532,8 +527,7 @@ TFChar* tfcp;
  * renderTextField - render text within the param of self.
  * returns: 1 for success, 0 for failure.
  */
-int tfed_render(self)
-VObj* self;
+int tfed_render(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -652,8 +646,7 @@ done:
     tf->highLiteTo_cy = y2;
 }
 
-char* tfed_processMouseMove(self)
-VObj* self;
+char* tfed_processMouseMove(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
     TFLineNode* ln;
@@ -713,8 +706,7 @@ VObj* self;
     return 0;
 }
 
-int tfed_processMouseInput(self)
-VObj* self;
+int tfed_processMouseInput(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
     int rootx, rooty;
@@ -827,8 +819,7 @@ VObj* self;
     }
 }
 
-char* tfed_getSelection(self)
-VObj* self;
+char* tfed_getSelection(VObj* self)
 {
     TFStruct* tf = GET__TFStruct(self);
     extern VObj* xselectionObj;
@@ -839,8 +830,7 @@ VObj* self;
     return 0;
 }
 
-int tfed_clearSelection(self)
-VObj* self;
+int tfed_clearSelection(VObj* self)
 {
     TFStruct* tf = GET__TFStruct(self);
 
@@ -854,9 +844,7 @@ VObj* self;
     return 1;
 }
 
-int tfed_placeCursor(self, mx, my)
-VObj* self;
-int mx, my;
+int tfed_placeCursor(VObj* self, int mx, int my)
 {
     TFStruct* tf = updateEStrUser(self);
     TFChar* tfcp;
@@ -917,10 +905,7 @@ int mx, my;
     return 0;
 }
 
-int tfed_processKeyEvent(self, w, c)
-VObj* self;
-Window w;
-char c;
+int tfed_processKeyEvent(VObj* self, Window w, char c)
 {
     TFStruct* tf = updateEStrUser(self);
     long doDrawCursor = GET_cursor(self);
@@ -1027,10 +1012,7 @@ char c;
     return 1;
 }
 
-int insertKey(tf, c, fontID)
-TFStruct* tf;
-char c;
-int fontID;
+int insertKey(TFStruct* tf, char c, int fontID)
 {
     static TFChar tfc;
     int width = FontWidths(fontID)[c];
@@ -1069,8 +1051,7 @@ int fontID;
 
 /* insert tab character
  */
-long kbf_ident(tf)
-TFStruct* tf;
+long kbf_ident(TFStruct* tf)
 {
     /*XXX*/
     insertKey(tf, ' ', tf->currentFontID);
@@ -1086,8 +1067,7 @@ TFStruct* tf;
 
 /* start of line
  */
-long kbf_beginning_of_line(tf)
-TFStruct* tf;
+long kbf_beginning_of_line(TFStruct* tf)
 {
     tf->current_col_sticky = tf->current_col = 0;
     replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -1099,8 +1079,7 @@ TFStruct* tf;
 
 /* end of line
  */
-long kbf_end_of_line(tf)
-TFStruct* tf;
+long kbf_end_of_line(TFStruct* tf)
 {
     tf->current_col_sticky = tf->current_col = theEditLN->length;
     replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -1112,8 +1091,7 @@ TFStruct* tf;
 
 /* back_space
  */
-long kbf_backward_char(tf)
-TFStruct* tf;
+long kbf_backward_char(TFStruct* tf)
 {
     tf->current_col -= 1;
     tf->current_col_sticky = tf->current_col;
@@ -1131,8 +1109,7 @@ TFStruct* tf;
 
 /* forward char
  */
-long kbf_forward_char(tf)
-TFStruct* tf;
+long kbf_forward_char(TFStruct* tf)
 {
     tf->current_col++;
     tf->current_col_sticky = tf->current_col;
@@ -1151,8 +1128,7 @@ TFStruct* tf;
 
 /* pull in from right
  */
-long kbf_delete_char(tf)
-TFStruct* tf;
+long kbf_delete_char(TFStruct* tf)
 {
     if (theEditLN->length > 0) {
         --(theEditLN->length);
@@ -1179,8 +1155,7 @@ TFStruct* tf;
 /* kill rest of line, and put it in buffer
  */
 #define VERBOSE_KBF_KILL_LINE verbose
-long kbf_kill_line(tf)
-TFStruct* tf;
+long kbf_kill_line(TFStruct* tf)
 {
     int lnA_breakc, lnB_breakc, lnAB_breakc;
     int lnB_maxFontHeight;
@@ -1410,8 +1385,7 @@ TFStruct* tf;
 }
 
 /* insert buffer */
-long kbf_insert_yank(tf)
-TFStruct* tf;
+long kbf_insert_yank(TFStruct* tf)
 {
     insertStr(tf, tf->current_col, theYankLN);
     tf->bufferUsed = 1;
@@ -1424,8 +1398,7 @@ TFStruct* tf;
 
 /* join current and the next lines
  */
-long kbf_join_line(tf)
-TFStruct* tf;
+long kbf_join_line(TFStruct* tf)
 {
     joinLine(tf);
     tf->bufferUsed = 1;
@@ -1434,8 +1407,7 @@ TFStruct* tf;
 
 /* delete current line
  */
-long kbf_delete_line(tf)
-TFStruct* tf;
+long kbf_delete_line(TFStruct* tf)
 {
     int col;
 
@@ -1464,8 +1436,7 @@ TFStruct* tf;
 /* insert line above current line, after pushing the current line
  * down one line
  */
-long kbf_open_line(tf)
-TFStruct* tf;
+long kbf_open_line(TFStruct* tf)
 {
     replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
     if (!tf->currentp) {
@@ -1488,8 +1459,7 @@ TFStruct* tf;
 
 /* insert line below cursor
  */
-long kbf_open_line_below(tf)
-TFStruct* tf;
+long kbf_open_line_below(TFStruct* tf)
 {
     insertBelowLineNode(tf, tf->currentp, 1);
     moveLine(tf, 1);
@@ -1503,8 +1473,7 @@ TFStruct* tf;
 
 /* previous line
  */
-long kbf_previous_line(tf)
-TFStruct* tf;
+long kbf_previous_line(TFStruct* tf)
 {
     moveLine(tf, -1);
     setCurrentFontID(tf);
@@ -1515,8 +1484,7 @@ TFStruct* tf;
 
 /* next line
  */
-long kbf_next_line(tf)
-TFStruct* tf;
+long kbf_next_line(TFStruct* tf)
 {
     moveLine(tf, 1);
     setCurrentFontID(tf);
@@ -1527,8 +1495,7 @@ TFStruct* tf;
 
 /* scroll down one page
  */
-long kbf_scroll_down(tf)
-TFStruct* tf;
+long kbf_scroll_down(TFStruct* tf)
 {
     moveLine(tf, -(tf->num_of_lines + 1));
     setCurrentFontID(tf);
@@ -1539,8 +1506,7 @@ TFStruct* tf;
 
 /* scroll up one page
  */
-long kbf_scroll_up(tf)
-TFStruct* tf;
+long kbf_scroll_up(TFStruct* tf)
 {
     moveLine(tf, tf->num_of_lines + 1);
     setCurrentFontID(tf);
@@ -1551,8 +1517,7 @@ TFStruct* tf;
 
 /* scroll page up one line
  */
-long kbf_scroll_up_line(tf)
-TFStruct* tf;
+long kbf_scroll_up_line(TFStruct* tf)
 {
     moveOffset(tf, -1, &buffi);
     setCurrentFontID(tf);
@@ -1566,8 +1531,7 @@ TFStruct* tf;
 
 /* scroll up down one line
  */
-long kbf_scroll_down_line(tf)
-TFStruct* tf;
+long kbf_scroll_down_line(TFStruct* tf)
 {
     moveOffset(tf, 1, &buffi);
     setCurrentFontID(tf);
@@ -1581,8 +1545,7 @@ TFStruct* tf;
 
 /* refresh
  */
-long kbf_refresh(tf)
-TFStruct* tf;
+long kbf_refresh(TFStruct* tf)
 {
     replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
     refreshMode = SCREEN;
@@ -1593,8 +1556,7 @@ TFStruct* tf;
 
 /* dump lines
  */
-long kbf_dump(tf)
-TFStruct* tf;
+long kbf_dump(TFStruct* tf)
 {
     replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
     refreshMode = SCREEN;
@@ -1604,8 +1566,7 @@ TFStruct* tf;
     return 1;
 }
 
-long kbf_newline(tf)
-TFStruct* tf;
+long kbf_newline(TFStruct* tf)
 {
     int length, start = tf->current_col;
     int delta;
@@ -1753,65 +1714,55 @@ TFStruct* tf;
     return 1;
 }
 
-long kbf_useFont_fixed(tf)
-TFStruct* tf;
+long kbf_useFont_fixed(TFStruct* tf)
 {
     tf->currentFontID = fontID_fixed;
     return 1;
 }
 
-long kbf_useFont_normal(tf)
-TFStruct* tf;
+long kbf_useFont_normal(TFStruct* tf)
 {
     tf->currentFontID = fontID_normal;
     return 1;
 }
 
-long kbf_useFont_normal_large(tf)
-TFStruct* tf;
+long kbf_useFont_normal_large(TFStruct* tf)
 {
     tf->currentFontID = fontID_normal_large;
     return 1;
 }
 
-long kbf_useFont_normal_largest(tf)
-TFStruct* tf;
+long kbf_useFont_normal_largest(TFStruct* tf)
 {
     tf->currentFontID = fontID_normal_largest;
     return 1;
 }
 
-long kbf_useFont_bold(tf)
-TFStruct* tf;
+long kbf_useFont_bold(TFStruct* tf)
 {
     tf->currentFontID = fontID_bold;
     return 1;
 }
 
-long kbf_useFont_bold_large(tf)
-TFStruct* tf;
+long kbf_useFont_bold_large(TFStruct* tf)
 {
     tf->currentFontID = fontID_bold_large;
     return 1;
 }
 
-long kbf_useFont_bold_largest(tf)
-TFStruct* tf;
+long kbf_useFont_bold_largest(TFStruct* tf)
 {
     tf->currentFontID = fontID_bold_largest;
     return 1;
 }
 
-long kbf_useFont_context(tf)
-TFStruct* tf;
+long kbf_useFont_context(TFStruct* tf)
 {
     setCurrentFontID(tf);
     return 1;
 }
 
-int tfed_get_currentChar(tf, c)
-TFStruct* tf;
-char* c;
+int tfed_get_currentChar(TFStruct* tf, char* c)
 {
     if (tf->currentp->linep) {
         *c = TFCChar(theEditLN->linep + tf->current_col);
@@ -1822,9 +1773,7 @@ char* c;
     }
 }
 
-int tfed_get_currentLine(tf, strBuff)
-TFStruct* tf;
-char* strBuff;
+int tfed_get_currentLine(TFStruct* tf, char* strBuff)
 {
     TFChar *tfcp, *tfcArray;
     int i = 0, j = 0;
@@ -1846,9 +1795,7 @@ char* strBuff;
 
 /* returns the length of the word
  */
-int tfed_get_currentWord(tf, strBuff)
-TFStruct* tf;
-char* strBuff;
+int tfed_get_currentWord(TFStruct* tf, char* strBuff)
 {
     TFChar *tfcp, *tfcArray;
     int i = 0, j = 0;
@@ -1876,8 +1823,7 @@ char* strBuff;
     return j;
 }
 
-int tfed_get_charMask(tf)
-TFStruct* tf;
+int tfed_get_charMask(TFStruct* tf)
 {
     TFChar* tfcp;
 
@@ -1891,8 +1837,7 @@ TFStruct* tf;
     return (int)TFCFlags(tfcp);
 }
 
-char* tfed_get_currentTag(tf)
-TFStruct* tf;
+char* tfed_get_currentTag(TFStruct* tf)
 {
     TFChar* tfcp;
 
@@ -1907,8 +1852,7 @@ TFStruct* tf;
     return 0;
 }
 
-char* tfed_get_previousTag(tf)
-TFStruct* tf;
+char* tfed_get_previousTag(TFStruct* tf)
 {
     TFChar* tfcp;
     int i = tf->current_col;
@@ -1928,8 +1872,7 @@ TFStruct* tf;
     return 0;
 }
 
-char* tfed_get_nextTag(tf)
-TFStruct* tf;
+char* tfed_get_nextTag(TFStruct* tf)
 {
     TFChar* tfcp;
 
@@ -1951,39 +1894,32 @@ TFStruct* tf;
     return 0;
 }
 
-int tfed_get_numberOfLinesDisplayed(tf)
-TFStruct* tf;
+int tfed_get_numberOfLinesDisplayed(TFStruct* tf)
 {
     return tf->num_of_lines;
 }
 
-int tfed_get_totalLineCount(tf)
-TFStruct* tf;
+int tfed_get_totalLineCount(TFStruct* tf)
 {
     return tf->lineNodeCount;
 }
 
-int tfed_get_cursorColumn(tf)
-TFStruct* tf;
+int tfed_get_cursorColumn(TFStruct* tf)
 {
     return tf->current_col;
 }
 
-int tfed_get_cursorRow(tf)
-TFStruct* tf;
+int tfed_get_cursorRow(TFStruct* tf)
 {
     return tf->current_row;
 }
 
-int tfed_get_lineRowOffset(tf)
-TFStruct* tf;
+int tfed_get_lineRowOffset(TFStruct* tf)
 {
     return tf->screen_row_offset;
 }
 
-int tfed_set_wrap(tf, wrap)
-TFStruct* tf;
-int wrap;
+int tfed_set_wrap(TFStruct* tf, int wrap)
 {
     tf->wrap = wrap;
     return tf->wrap;
@@ -1997,9 +1933,7 @@ TFChar* tfcp;
     TFCCopy(tfcArray + col, tfcp);
 }
 
-int tfed_setBuffer(tf, str)
-TFStruct* tf;
-char* str;
+int tfed_setBuffer(TFStruct* tf, char* str)
 {
     int fontID = 0; /* XXX */
 
@@ -2008,16 +1942,14 @@ char* str;
     return str2EBuff(tf, "", &fontID);
 }
 
-int tfed_getBuffer(str)
-char* str;
+int tfed_getBuffer(char* str)
 {
     if (str)
         return TFC2StrStrcpy(str, theBuffLN->linep);
     return 0;
 }
 
-int tfed_drawCursor(self)
-VObj* self;
+int tfed_drawCursor(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -2031,16 +1963,13 @@ VObj* self;
 }
 
 /*
-int tfed_internalShownPosition(self)
-        VObj *self;
+int tfed_internalShownPosition(VObj * self)
 {
   return tf->shownPosition;
 }
 */
 
-int tfed_setCursorBlinkDelay(self, delay)
-VObj* self;
-long delay;
+int tfed_setCursorBlinkDelay(VObj* self, long delay)
 {
     TFStruct* tf = updateEStrUser(self);
 
@@ -2051,8 +1980,7 @@ long delay;
     return 0;
 }
 
-int tfed_eraseCursor(self)
-VObj* self;
+int tfed_eraseCursor(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
     if (tf)
@@ -2063,9 +1991,7 @@ VObj* self;
     return 1;
 }
 
-int tfed_jumpToOffsetLine(self, destLine)
-VObj* self;
-int destLine;
+int tfed_jumpToOffsetLine(VObj* self, int destLine)
 {
     int delta;
     TFStruct* tf = updateEStrUser(self);
@@ -2086,9 +2012,7 @@ int destLine;
     return delta;
 }
 
-int tfed_jumpToLine(self, destLine)
-VObj* self;
-int destLine;
+int tfed_jumpToLine(VObj* self, int destLine)
 {
     /*
             TFStruct *tf = updateEStrUser(self);
@@ -2102,9 +2026,7 @@ int destLine;
 }
 #define TolowerChar(x) (isupper(x) ? tolower(x) : x)
 
-TFLineNode* get_nth_line(tf, n)
-TFStruct* tf;
-int n;
+TFLineNode* get_nth_line(TFStruct* tf, int n)
 {
     TFLineNode* p;
 
@@ -2114,12 +2036,7 @@ int n;
     return p;
 }
 
-int tfed_findString(tf, s, patlen, row, col, row_ret, col_ret)
-TFStruct* tf;
-char* s;
-int patlen;
-int row, col;
-int *row_ret, *col_ret;
+int tfed_findString(TFStruct* tf, char* s, int patlen, int row, int col, int * row_ret, int * col_ret)
 {
     TFLineNode* lp;
     int maxlen, i, j, k;
@@ -2159,9 +2076,7 @@ int *row_ret, *col_ret;
     return 0;
 }
 
-int tfed_searchAndHighlightStringFromPoint(tf, s)
-TFStruct* tf;
-char* s;
+int tfed_searchAndHighlightStringFromPoint(TFStruct* tf, char* s)
 {
     int patlen;
     int startcol, startrow;
@@ -2205,8 +2120,7 @@ char* s;
 /*****************************************************************************
  * internal routines
  */
-int TFCstrlen(tfcArray)
-TFChar tfcArray[];
+int TFCstrlen(TFChar tfcArray[])
 {
     int i = 0;
 
@@ -2219,9 +2133,7 @@ TFChar tfcArray[];
 /*
  * returns length of tfcAttarTo
  */
-int TFCstrcat(tfcArrayTo, tfcArrayFrom)
-TFChar tfcArrayTo[];
-TFChar tfcArrayFrom[];
+int TFCstrcat(TFChar tfcArrayTo[], TFChar tfcArrayFrom[])
 {
     int i = 0, j = 0;
 
@@ -2237,18 +2149,13 @@ TFChar tfcArrayFrom[];
     return i;
 }
 
-int str2EBuff(tf, str, fontID)
-TFStruct* tf;
-char* str;
-int fontID;
+int str2EBuff(TFStruct* tf, char* str, int fontID)
 {
     return 0; /*XXX*/
 }
 
 /* returns length of tfcAttarTo */
-int TFC2StrStrcpy(strTo, tfcArrayFrom)
-char* strTo;
-TFChar* tfcArrayFrom;
+int TFC2StrStrcpy(char* strTo, TFChar* tfcArrayFrom)
 {
     int i;
 
@@ -2260,9 +2167,7 @@ TFChar* tfcArrayFrom;
 }
 
 /* returns length of tfcAttarTo */
-ptrdiff_t TFCstrcpy(tfcArrayTo, tfcArrayFrom)
-TFChar* tfcArrayTo;
-TFChar* tfcArrayFrom;
+ptrdiff_t TFCstrcpy(TFChar* tfcArrayTo, TFChar* tfcArrayFrom)
 {
     TFChar* tfcArrayTo_orig = tfcArrayTo;
 
@@ -2276,10 +2181,7 @@ TFChar* tfcArrayFrom;
     return (tfcArrayTo - tfcArrayTo_orig);
 }
 
-ptrdiff_t TFCstrncpy(tfcArrayTo, tfcArrayFrom, n)
-TFChar* tfcArrayTo;
-TFChar* tfcArrayFrom;
-int n;
+ptrdiff_t TFCstrncpy(TFChar* tfcArrayTo, TFChar* tfcArrayFrom, int n)
 {
     TFChar* tfcArrayTo_orig = tfcArrayTo;
 
@@ -2291,8 +2193,7 @@ int n;
     return (tfcArrayTo - tfcArrayTo_orig);
 }
 
-int joinLine(tf)
-TFStruct* tf;
+int joinLine(TFStruct* tf)
 {
     if (!tf->currentp)
         return 0;
@@ -2308,10 +2209,7 @@ TFStruct* tf;
 }
 
 #define VERBOSE_INSERTSTR__
-int insertStr(tf, split, source)
-TFStruct* tf;
-int split;
-TFLineNode* source;
+int insertStr(TFStruct* tf, int split, TFLineNode* source)
 {
     int i = 0, j = 0, multipleInserts = 0;
     TFChar *tfcp, *tfcLocalBuff;

@@ -128,8 +128,7 @@ static int isXWD(char* name, ZFILE* zf, XWDHeader* header, int verbose) {
     return (1);
 }
 
-int xwdIdent(fullname, name)
-char *fullname, *name;
+int xwdIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     XWDHeader header;
@@ -142,10 +141,7 @@ char *fullname, *name;
     return (ret);
 }
 
-static Image* loadXYBitmap(fullname, zf, header)
-char* fullname;
-ZFILE* zf;
-XWDHeader header;
+static Image* loadXYBitmap(char* fullname, ZFILE* zf, XWDHeader header)
 {
     Image* image;
     int dlinelen;              /* length of scan line in data file */
@@ -214,10 +210,7 @@ XWDHeader header;
  * build the destination.  1-bit images are handled by XYBitmap.
  */
 
-static Image* loadXYPixmap(fullname, zf, header)
-char* fullname;
-ZFILE* zf;
-XWDHeader header;
+static Image* loadXYPixmap(char* fullname, ZFILE* zf, XWDHeader header)
 {
     Image* image;
     int plane;
@@ -303,10 +296,7 @@ XWDHeader header;
  * you gotta problem.  1-bit images are handled by XYBitmap.
  */
 
-static Image* loadZPixmap(fullname, zf, header)
-char* fullname;
-ZFILE* zf;
-XWDHeader header;
+static Image* loadZPixmap(char* fullname, ZFILE* zf, XWDHeader header)
 {
     Image* image;
     int dlinelen;              /* length of scan line in data file */

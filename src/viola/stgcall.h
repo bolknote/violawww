@@ -7,4 +7,6 @@ int loadSTG();
 int getSTGInfo();
 int getSTGInfo_clean();
 int getSTGInfo_tagPtr();
+int getSTGInfo_tagPtrWithStyle();
 int getSTGInfo_attr();
+int getSTGInfo_attrFromResult();

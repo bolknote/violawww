@@ -209,10 +209,7 @@ ConvIdx biOpConvIdx[] = {{&opft_plus, &conv1},
                              &opft_or, &conv2 /*?*/
                          }};
 
-int biOp(op, p1, p2)
-int op;
-Packet* p1;
-Packet* p2;
+int biOp(int op, Packet* p1, Packet* p2)
 {
     void (*biOpFunc)(), (*convf)();
     ProcPair* convPair;

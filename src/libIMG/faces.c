@@ -90,9 +90,7 @@ static int nextInt(ZFILE* zf, unsigned int len) {
     return (value);
 }
 
-Image* facesLoad(fullname, name, verbose)
-char *fullname, *name;
-int verbose;
+Image* facesLoad(char* fullname, char* name, int verbose)
 {
     ZFILE* zf;
     Image* image;
@@ -175,8 +173,7 @@ int verbose;
     return (image);
 }
 
-int facesIdent(fullname, name)
-char *fullname, *name;
+int facesIdent(char* fullname, char* name)
 {
     Image* image;
 

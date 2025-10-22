@@ -27,10 +27,7 @@ static ZFILE ZFileTable[MAX_ZFILES];
 /* read some info through the read cache
  */
 
-static int doRead(zf, buf, len)
-ZFILE* zf;
-byte* buf;
-int len;
+static int doRead(ZFILE* zf, byte* buf, int len)
 {
     int bread, readlen;
 

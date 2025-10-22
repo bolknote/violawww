@@ -100,31 +100,19 @@ ClassInfo class_stack = {
     &class_pane,                                     /* super class info		*/
 };
 
-long meth_stack_anyCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_anyCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     clearPacket(result);
     return 0;
 }
 
-long meth_stack_card(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_card(VObj* self, Packet* result, int argc, Packet argv[])
 {
     clearPacket(result);
     return 0;
 }
 
-long meth_stack_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!meth_pane_config(self, result, argc, argv))
         return 0;
@@ -134,11 +122,7 @@ Packet argv[];
 /*
  * countBCards()
  */
-long meth_stack_countBCards(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_countBCards(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj* stackObj = findStackObj(self);
@@ -162,11 +146,7 @@ Packet argv[];
 /*
  * countFCards()
  */
-long meth_stack_countFCards(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_countFCards(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj* stackObj = findStackObj(self);
@@ -187,30 +167,18 @@ Packet argv[];
     return 1;
 }
 
-long meth_stack_create(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_create(VObj* self, Packet* result, int argc, Packet argv[])
 {
     clearPacket(result);
     return 0;
 }
 
-long meth_stack_expose(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_pane_render(self, result, argc, argv);
 }
 
-long meth_stack_firstCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_firstCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj *nobj, *stackObj = findStackObj(self);
@@ -251,20 +219,12 @@ long helper_stack_get(VObj* self, Packet* result, int argc, Packet argv[], long 
     }
     return helper_pane_get(self, result, argc, argv, labelID);
 }
-long meth_stack_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_stack_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_stack_getCurrentCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_getCurrentCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (GET__currentCard(self)) {
         result->type = PKT_OBJ;
@@ -276,11 +236,7 @@ Packet argv[];
     return 0;
 }
 
-long meth_stack_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     char* cp;
 
@@ -300,11 +256,7 @@ Packet argv[];
     return 1;
 }
 
-long meth_stack_lastCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_lastCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj *nobj, *stackObj = findStackObj(self);
@@ -331,11 +283,7 @@ Packet argv[];
 /*
  * nextCard
  */
-long meth_stack_nextCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_nextCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj *currentCard, *nobj = NULL;
@@ -376,11 +324,7 @@ Packet argv[];
 /*
  * previousCard
  */
-long meth_stack_previousCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_previousCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObjList* olist;
     VObj *currentCard, *lobj = NULL;
@@ -414,11 +358,7 @@ Packet argv[];
     }
 }
 
-long meth_stack_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
     Pixmap pixmap;
@@ -445,20 +385,12 @@ long helper_stack_set(VObj* self, Packet* result, int argc, Packet argv[], long 
     }
     return helper_pane_set(self, result, argc, argv, labelID);
 }
-long meth_stack_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_stack_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_stack_setCurrentCard(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_stack_setCurrentCard(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObj* obj = GET__currentCard(self);
     Packet pks[2];
@@ -500,8 +432,7 @@ Packet argv[];
 #ifdef stackgarbage
 /********************************************************************/
 
-long method_stack_render(self)
-OBJ self;
+long method_stack_render(OBJ self)
 {
     if (ObjActive(self)) {
         OBJ BCard, FCard;
@@ -534,9 +465,7 @@ OBJ self;
     return NULL;
 }
 
-int method_stack_numOfCards(self, result)
-OBJ self;
-Packetp result;
+int method_stack_numOfCards(OBJ self, Packetp result)
 {
     int cards = 0;
     OLIST* BCList;
@@ -570,10 +499,7 @@ Packetp result;
     return (cards);
 }
 
-OBJ method_stack_card(self, result, cardName)
-OBJ self;
-Packetp result;
-char* cardName;
+OBJ method_stack_card(OBJ self, Packetp result, char* cardName)
 {
     OBJ stackObj = ObjStack(self);
 
@@ -586,9 +512,7 @@ char* cardName;
  *						NOT YET
  * REUTRN: first card from cardList
  */
-OBJ method_stack_currentCard(self, result)
-OBJ self;
-Packetp result;
+OBJ method_stack_currentCard(OBJ self, Packetp result)
 {
     OBJ stackObj = ObjStack(self);
 
@@ -606,9 +530,7 @@ Packetp result;
  * REUTRN: first card from cardList
  */
 
-OBJ method_stack_firstCard(self, result)
-OBJ self;
-Packetp result;
+OBJ method_stack_firstCard(OBJ self, Packetp result)
 {
     OBJ stackObj = ObjStack(self);
 
@@ -631,9 +553,7 @@ Packetp result;
  * REUTRN: last card from cardList
  */
 
-OBJ method_stack_lastCard(self, result)
-OBJ self;
-Packetp result;
+OBJ method_stack_lastCard(OBJ self, Packetp result)
 {
     OBJ stackObj = ObjStack(self);
 
@@ -643,12 +563,7 @@ Packetp result;
     return PkObject(result);
 }
 
-ATTR* method_stack_set(self, result, attrName, attrValResult, flag)
-OBJ self;
-Packetp result;
-char* attrName;
-Packetp attrValResult;
-int flag;
+ATTR* method_stack_set(OBJ self, Packetp result, char* attrName, Packetp attrValResult, int flag)
 {
     if (PkAnswer(attrValResult) == NULL) {
         clearPacket(result);
@@ -707,8 +622,7 @@ int flag;
 
 /***********************************************************************/
 
-VObj* findStackObj(obj)
-VObj* obj;
+VObj* findStackObj(VObj* obj)
 {
     while (obj) {
         if (GET__classInfo(obj) == &class_stack)

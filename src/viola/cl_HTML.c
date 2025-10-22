@@ -268,9 +268,7 @@ long meth_HTML_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 0;
 }
 
-int help_HTML_shownPositionV(self, newPosition)
-VObj* self;
-int newPosition;
+int help_HTML_shownPositionV(VObj* self, int newPosition)
 {
     return help_txtDisp_shownPositionV(self, newPosition);
 }

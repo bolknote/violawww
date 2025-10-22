@@ -309,11 +309,7 @@ char* nameOfVisualClass(int class) {
 /* find the best visual of a particular class with a particular depth
  */
 
-static Visual* bestVisualOfClassAndDepth(disp, scrn, class, depth)
-Display* disp;
-int scrn;
-int class;
-unsigned int depth;
+static Visual* bestVisualOfClassAndDepth(Display* disp, int scrn, int class, unsigned int depth)
 {
     Visual* best = NULL;
     XVisualInfo template, *info;

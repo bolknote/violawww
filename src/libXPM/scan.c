@@ -57,10 +57,7 @@ LFUNC(GetImagePixels1, int,
  * This function stores the given pixel in the given arrays which are grown
  * if not large enough.
  */
-static int storePixel(pixel, pmap, index_return)
-Pixel pixel;
-PixelsMap* pmap;
-unsigned int* index_return;
+static int storePixel(Pixel pixel, PixelsMap* pmap, unsigned int* index_return)
 {
     unsigned int a;
 
@@ -88,10 +85,7 @@ unsigned int* index_return;
     return 0;
 }
 
-static int storeMaskPixel(pixel, pmap, index_return)
-Pixel pixel;
-PixelsMap* pmap;
-unsigned int* index_return;
+static int storeMaskPixel(Pixel pixel, PixelsMap* pmap, unsigned int* index_return)
 {
     if (!pixel) {
         if (!pmap->ncolors) {
@@ -128,13 +122,7 @@ unsigned int* index_return;
  * This function scans the given image and stores the found informations in
  * the xpmInternAttrib structure which is returned.
  */
-int xpmScanImage(display, image, shapeimage, attributes, attrib)
-Display* display;
-XImage* image;
-XImage* shapeimage;
-XpmAttributes* attributes;
-xpmInternAttrib* attrib;
-
+int xpmScanImage(Display* display, XImage* image, XImage* shapeimage, XpmAttributes* attributes, xpmInternAttrib* attrib)
 {
     /* variables stored in the XpmAttributes structure */
     Colormap colormap;
@@ -294,11 +282,7 @@ static unsigned long Const low_bits_table[] = {
  *
  */
 
-static int GetImagePixels(image, width, height, pmap)
-XImage* image;
-unsigned int width;
-unsigned int height;
-PixelsMap* pmap;
+static int GetImagePixels(XImage* image, unsigned int width, unsigned int height, PixelsMap* pmap)
 {
     Pixel pixel, px;
     char* src;
@@ -361,11 +345,7 @@ static unsigned long byteorderpixel = MSBFirst << 24;
 
 #endif
 
-static int GetImagePixels32(image, width, height, pmap)
-XImage* image;
-unsigned int width;
-unsigned int height;
-PixelsMap* pmap;
+static int GetImagePixels32(XImage* image, unsigned int width, unsigned int height, PixelsMap* pmap)
 {
     unsigned char* addr;
     Pixel pixel;
@@ -414,11 +394,7 @@ PixelsMap* pmap;
  * scan pixels of a 16-bits Z image data structure
  */
 
-static int GetImagePixels16(image, width, height, pmap)
-XImage* image;
-unsigned int width;
-unsigned int height;
-PixelsMap* pmap;
+static int GetImagePixels16(XImage* image, unsigned int width, unsigned int height, PixelsMap* pmap)
 {
     unsigned char* addr;
     Pixel pixel;
@@ -453,11 +429,7 @@ PixelsMap* pmap;
  * scan pixels of a 8-bits Z image data structure
  */
 
-static int GetImagePixels8(image, width, height, pmap)
-XImage* image;
-unsigned int width;
-unsigned int height;
-PixelsMap* pmap;
+static int GetImagePixels8(XImage* image, unsigned int width, unsigned int height, PixelsMap* pmap)
 {
     Pixel pixel;
     unsigned int* iptr;
@@ -479,13 +451,7 @@ PixelsMap* pmap;
  * scan pixels of a 1-bit depth Z image data structure
  */
 
-static int GetImagePixels1(image, width, height, pmap, storeFunc)
-XImage* image;
-unsigned int width;
-unsigned int height;
-PixelsMap* pmap;
-int (*storeFunc)();
-
+static int GetImagePixels1(XImage* image, unsigned int width, unsigned int height, PixelsMap* pmap, int (*storeFunc)())
 {
     Pixel pixel;
     unsigned char bit;

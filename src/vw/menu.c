@@ -23,13 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Widget buildPulldownMenu(parent, menuTitle, menuMnemonic, items, helpLabel, shellInfo)
-Widget parent;
-char* menuTitle;
-char* menuMnemonic;
-MenuItem* items;
-Widget helpLabel;
-void* shellInfo;
+Widget buildPulldownMenu(Widget parent, char* menuTitle, char* menuMnemonic, MenuItem* items, Widget helpLabel, void* shellInfo)
 {
 
     Widget pullDown, cascade, widget;
@@ -57,7 +51,7 @@ void* shellInfo;
     for (i = 0; items[i].label != NULL; i++) {
         if (items[i].subMenu)
             widget =
-                buildPulldownMenu(pullDown, items[i].label, &items[i].mnemonic, items[i].subMenu);
+                buildPulldownMenu(pullDown, items[i].label, &items[i].mnemonic, items[i].subMenu, helpLabel, shellInfo);
         else
             widget = XtVaCreateManagedWidget(items[i].label, *items[i].class, pullDown, NULL);
 
@@ -96,11 +90,7 @@ void* shellInfo;
     return cascade;
 }
 
-Widget buildMenus(menus, helpMenuItems, parent, helpLabel, shellInfo)
-Menu* menus;
-MenuItem* helpMenuItems;
-Widget parent, helpLabel;
-void* shellInfo;
+Widget buildMenus(Menu* menus, MenuItem* helpMenuItems, Widget parent, Widget helpLabel, void* shellInfo)
 {
     int i;
     Widget menuBar, menu;

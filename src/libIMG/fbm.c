@@ -166,8 +166,7 @@ int fbmin_image_test() {
  * semi-graceful fatal error mechanism
  */
 
-static fbmin_fatal(msg)
-     char *msg;
+static void fbmin_fatal(char* msg)
 {
   printf("Error reading FBM file: %s\n", msg);
   exit(0);
@@ -189,9 +188,7 @@ static void tellAboutImage(name) char* name;
            fbmin_img_clrlen / 3);
 }
 
-Image* fbmLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* fbmLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     Image* image;
@@ -261,8 +258,7 @@ unsigned int verbose;
     return (image);
 }
 
-int fbmIdent(fullname, name)
-char *fullname, *name;
+int fbmIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     unsigned int ret;

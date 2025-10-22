@@ -72,11 +72,7 @@ helper_tray_config(VObj* self, long oldWidth, long oldHeight)
     }
 }
 
-long meth_tray_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_tray_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     long oldWidth, oldHeight;
 
@@ -92,20 +88,12 @@ Packet argv[];
     return 1;
 }
 
-long meth_tray_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_tray_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_field_initialize(self, result, argc, argv);
 }
 
-long meth_tray_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_tray_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
 

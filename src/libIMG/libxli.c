@@ -66,11 +66,7 @@ int initImgLib() {
 /* the real thing
  */
 
-int loadImg(imagename, /*image,*/ ximageinfo, width, height)
-char* imagename;
-/*   Image **image;*/
-XImageInfo** ximageinfo;
-int *width, *height;
+int loadImg(char* imagename, /*Image** image,*/ XImageInfo** ximageinfo, int* width, int* height)
 {
     char* border;
     Display* disp; /* display we're sending to */

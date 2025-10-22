@@ -65,8 +65,7 @@ struct rheader* header;
     printf(" Sun rasterfile\n");
 }
 
-int sunRasterIdent(fullname, name)
-char *fullname, *name;
+int sunRasterIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     struct rheader header;
@@ -152,9 +151,7 @@ unsigned int enc; /* true if encoded file */
     }
 }
 
-Image* sunRasterLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* sunRasterLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     struct rheader header;

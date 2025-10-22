@@ -168,8 +168,7 @@ void dumpPacket(packet) Packet* packet;
 }
 
 /* MACRONIZED
-void nullPacket(packet)
-        Packet *packet;
+void nullPacket(Packet * packet)
 {
         packet->info.i = 0;
         packet->type = 0;
@@ -187,8 +186,7 @@ void freePossibleDangler(packet) Packet* packet;
 }
 
 #ifdef DONT_USE_MACRO_OF_CLEARPACKET
-Packet* clearPacket(packet)
-Packet* packet;
+Packet* clearPacket(Packet* packet)
 {
     if (packet->canFree & PK_CANFREE_STR) {
         free(packet->info.s);  /*suspect*/

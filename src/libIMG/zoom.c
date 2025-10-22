@@ -11,10 +11,7 @@
 #include "copyright.h"
 #include "image.h"
 
-static unsigned int* buildIndex(width, zoom, rwidth)
-unsigned int width;
-unsigned int zoom;
-unsigned int* rwidth;
+static unsigned int* buildIndex(unsigned int width, unsigned int zoom, unsigned int* rwidth)
 {
     float fzoom;
     unsigned int* index;

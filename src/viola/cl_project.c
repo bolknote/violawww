@@ -63,22 +63,14 @@ ClassInfo class_project = {
     &class_field,                                          /* super class info		*/
 };
 
-long meth_project_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (!meth_field_config(self, result, argc, argv))
         return 0;
     return 1;
 }
 
-long meth_project_expose(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_field_render(self, result, argc, argv);
 }
@@ -100,20 +92,12 @@ long helper_project_get(VObj* self, Packet* result, int argc, Packet argv[], lon
     }
     return helper_field_get(self, result, argc, argv, labelID);
 }
-long meth_project_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_project_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_project_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     meth_field_initialize(self, result, argc, argv);
     return 1;
@@ -161,20 +145,12 @@ long helper_project_set(VObj* self, Packet* result, int argc, Packet argv[], lon
     }
     return helper_field_set(self, result, argc, argv, labelID);
 }
-long meth_project_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_project_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_project_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_project_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
     Pixmap pixmap;

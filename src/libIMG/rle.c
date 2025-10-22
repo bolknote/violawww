@@ -59,8 +59,7 @@ int magic[16][16];
 int modN[256];
 int divN[256];
 
-int rleIdent(fullname, name)
-char *fullname, *name;
+int rleIdent(char* fullname, char* name)
 {
     ZFILE* rlefile;
     int x_len, y_len;
@@ -139,9 +138,7 @@ char *fullname, *name;
     }
 }
 
-Image* rleLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* rleLoad(char* fullname, char* name, unsigned int verbose)
 {
     int x_len, y_len;
     int i, j;

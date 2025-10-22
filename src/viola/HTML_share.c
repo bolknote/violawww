@@ -31,10 +31,7 @@ extern int drawLineOffset();
  * Placed here to be shared by various HTML tag handlers accelerators.
  */
 
-int txtDisp_HTML_txt_expose(self, result, argv)
-VObj* self;
-Packet* result;
-Packet* argv;
+int txtDisp_HTML_txt_expose(VObj* self, Packet* result, Packet* argv)
 {
     /*************************************************************
      * just to cut thru usual() script etc... for faster response.
@@ -49,10 +46,7 @@ Packet* argv;
     return tfed_expose(self, arg1->info.i, arg2->info.i, arg3->info.i, arg4->info.i);
 }
 
-int txtDisp_HTML_txt_buttonRelease(self, result, argv)
-VObj* self;
-Packet* result;
-Packet* argv;
+int txtDisp_HTML_txt_buttonRelease(VObj* self, Packet* result, Packet* argv)
 {
     /*************************************************************
      * case "buttonRelease":
@@ -128,10 +122,7 @@ Packet* argv;
     return 1;
 }
 
-int txtDisp_HTML_txt_clone(self, result, argv)
-VObj* self;
-Packet* result;
-Packet* argv;
+int txtDisp_HTML_txt_clone(VObj* self, Packet* result, Packet* argv)
 {
     /*************************************************************
      * case "clone":
@@ -155,10 +146,7 @@ Packet* argv;
     */
 }
 
-int txtDisp_HTML_header_D(self, result, argv)
-VObj* self;
-Packet* result;
-Packet* argv;
+int txtDisp_HTML_header_D(VObj* self, Packet* result, Packet* argv)
 {
     /*************************************************************
      * case 'D':
@@ -209,11 +197,7 @@ Packet* argv;
 
 /* tag can be: H1, H2, ...
  */
-int txtDisp_HTML_header_R(self, result, argv, tag)
-VObj* self;
-Packet* result;
-Packet* argv;
-char* tag;
+int txtDisp_HTML_header_R(VObj* self, Packet* result, Packet* argv, char* tag)
 {
     /*************************************************************
      * case 'R':
@@ -295,10 +279,7 @@ char* tag;
 
 /*
  */
-int txtDisp_HTML_header_A(self, result, argv)
-VObj* self;
-Packet* result;
-Packet* argv;
+int txtDisp_HTML_header_A(VObj* self, Packet* result, Packet* argv)
 {
     /******************************************************************
      * case 'A':
@@ -372,8 +353,7 @@ typedef struct TableMatrixCell {
 #define TABLE_CELL_TYPE_THTD 24
 #define TABLE_CELL_TYPE_TCAP 32
 
-int cellType(self)
-VObj* self;
+int cellType(VObj* self)
 {
     Packet* pk;
     pk = (Packet*)getVariable_id(GET__varList(self), STR_cellType);
@@ -382,8 +362,7 @@ VObj* self;
     return 0;
 }
 
-float getRowSpan(self)
-VObj* self;
+float getRowSpan(VObj* self)
 {
     Packet* pk;
     float i;
@@ -397,8 +376,7 @@ VObj* self;
     return 1.0;
 }
 
-float getColSpan(self)
-VObj* self;
+float getColSpan(VObj* self)
 {
     Packet* pk;
     float i;
@@ -439,10 +417,7 @@ int mode;
 
 #define MAX_TABLE_ROWS 500
 
-int HTMLTableFormater(self, titleObj, titleTopP)
-VObj* self;
-VObj* titleObj;
-int titleTopP;
+int HTMLTableFormater(VObj* self, VObj* titleObj, int titleTopP)
 {
     int i, j, r, c, row, col;
     int reg[MAX_TABLE_ROWS]; /* limit on number of rows */

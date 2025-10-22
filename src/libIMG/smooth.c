@@ -70,10 +70,7 @@ static Image* doSmooth(Image* image) {
     return (new);
 }
 
-Image* smooth(image, iterations, verbose)
-Image* image;
-int iterations;
-int verbose;
+Image* smooth(Image* image, int iterations, int verbose)
 {
     int a;
     Image* new;

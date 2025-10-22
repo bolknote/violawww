@@ -48,9 +48,7 @@ MHInfo allmhp;
 /*
  * initialize the slot offset values
  */
-int initSlotOffsetInfo(cip, section)
-ClassInfo* cip;
-int section;
+int initSlotOffsetInfo(ClassInfo* cip, int section)
 {
     SlotInfo* sip;
     int i, offset;
@@ -105,10 +103,7 @@ int size;
 /*
  *
  */
-int initSlotLookUpTable(cip, section, slookup)
-ClassInfo* cip;
-int section;
-SlotInfo** slookup;
+int initSlotLookUpTable(ClassInfo* cip, int section, SlotInfo** slookup)
 {
     SlotInfo* sip;
     int offset, i;
@@ -289,8 +284,7 @@ int init_class() {
     return 1;
 }
 
-int load_classScripts(classScriptPath)
-char* classScriptPath;
+int load_classScripts(char* classScriptPath)
 {
     HashEntry* entry;
     ClassInfo* cip;
@@ -311,11 +305,7 @@ char* classScriptPath;
     return 1;
 }
 
-long initSlot(self, slotp, sip, val)
-VObj* self;
-long* slotp;
-SlotInfo* sip;
-long val;
+long initSlot(VObj* self, long* slotp, SlotInfo* sip, long val)
 {
     switch (sip->flags & SLOT_MASK_TYPE) {
 
@@ -372,8 +362,7 @@ long val;
     }
 }
 
-char* returnSlotCast(type)
-int type;
+char* returnSlotCast(int type)
 {
     switch (type) {
     case PTRV:
@@ -455,8 +444,7 @@ int generateSlotAccessors() {
 }
 #endif
 
-ClassInfo* getClassInfoByID(classid)
-int classid;
+ClassInfo* getClassInfoByID(int classid)
 {
     ClassInfo* cip;
     HashEntry* entry;
@@ -469,8 +457,7 @@ int classid;
     return 0;
 }
 
-ClassInfo* getClassInfoByName(className)
-char* className;
+ClassInfo* getClassInfoByName(char* className)
 {
     ClassInfo* cip;
     HashEntry* entry;
@@ -485,10 +472,7 @@ char* className;
     return 0;
 }
 
-VObj* buildObjWithLoadedSlots(cip, slotv, slotc)
-ClassInfo* cip;
-long slotv[100][2];
-int slotc;
+VObj* buildObjWithLoadedSlots(ClassInfo* cip, long slotv[100][2], int slotc)
 {
     VObj* obj = (VObj*)malloc(sizeof(long) * cip->totalcount);
     SlotInfo* sip;
@@ -610,9 +594,7 @@ int* slotc;
     return obj;
 }
 
-int saveSelfAndChildren(obj, fp)
-VObj* obj;
-FILE* fp;
+int saveSelfAndChildren(VObj* obj, FILE* fp)
 {
     VObjList* olist;
 
@@ -628,12 +610,7 @@ FILE* fp;
 /*
  * flag: 1=dump only if not same as default
  */
-int dumpObj(obj, dumpFunc, dumpDest, filter, flag)
-VObj* obj;
-long (*dumpFunc)();
-FILE* dumpDest;
-int filter;
-int flag;
+int dumpObj(VObj* obj, long (*dumpFunc)(), FILE* dumpDest, int filter, int flag)
 {
     SlotInfo* sip;
     VObjList* olist;
@@ -751,8 +728,7 @@ int flag;
     return 1;
 }
 
-VObj* clone(original)
-VObj* original;
+VObj* clone(VObj* original)
 {
     VObj* clone;
     ClassInfo* cip;

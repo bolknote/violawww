@@ -29,16 +29,12 @@ static int scatter[] = {
 500965035,      1800624392,     2077067425,     1672112838
 };
 */
-int hash_int(ht, n)
-HashTable* ht;
-int n;
+int hash_int(HashTable* ht, int n)
 {
     return n % ht->size;
 }
 
-int hash_str(ht, str)
-HashTable* ht;
-char* str;
+int hash_str(HashTable* ht, char* str)
 {
     int key = 0;
 
@@ -50,9 +46,7 @@ char* str;
 }
 
 /*
-int hash_str(ht, str)
-        HashTable *ht;
-        char *str;
+int hash_str(HashTable * ht, char * str)
 {
         int key = 0;
 
@@ -127,10 +121,7 @@ long (*func_remove)();
         }                                                                                          \
     }
 
-HashEntry* putHashEntry(ht, label, val)
-HashTable* ht;
-long label;
-long val;
+HashEntry* putHashEntry(HashTable* ht, long label, long val)
 {
     int key = ht->func_hash(ht, label);
     /*
@@ -143,20 +134,14 @@ long val;
     PUT_HASH_ENTRY_BLOCK(ht, key, val);
 }
 
-HashEntry* putHashEntry_int(ht, label, val)
-HashTable* ht;
-long label;
-long val;
+HashEntry* putHashEntry_int(HashTable* ht, long label, long val)
 {
     int key = label % ht->size;
 
     PUT_HASH_ENTRY_BLOCK(ht, key, val);
 }
 
-HashEntry* putHashEntry_str(ht, label, val)
-HashTable* ht;
-char* label;
-long val;
+HashEntry* putHashEntry_str(HashTable* ht, char* label, long val)
 {
     int key = 0;
     char* str = label;
@@ -168,10 +153,7 @@ long val;
     PUT_HASH_ENTRY_BLOCK(ht, key, val);
 }
 
-HashEntry* putHashEntry_cancelable_int(ht, label, val)
-HashTable* ht;
-long label;
-long val;
+HashEntry* putHashEntry_cancelable_int(HashTable* ht, long label, long val)
 {
     int key;
     HashEntry *entry, *base_entry, *new_entry;
@@ -240,28 +222,19 @@ long val;
         }                                                                                          \
     }
 
-HashEntry* putHashEntry_replace(ht, label, val)
-HashTable* ht;
-long label;
-long val;
+HashEntry* putHashEntry_replace(HashTable* ht, long label, long val)
 {
     int key = ht->func_hash(ht, label);
     PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
 }
 
-HashEntry* putHashEntry_replace_int(ht, label, val)
-HashTable* ht;
-long label;
-long val;
+HashEntry* putHashEntry_replace_int(HashTable* ht, long label, long val)
 {
     int key = label % ht->size;
     PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
 }
 
-HashEntry* putHashEntry_replace_str(ht, label, val)
-HashTable* ht;
-char* label;
-long val;
+HashEntry* putHashEntry_replace_str(HashTable* ht, char* label, long val)
 {
     int key = 0;
     char* str = label;
@@ -274,9 +247,7 @@ long val;
 }
 
 #ifdef NOT_USED
-HashEntry* getHashEntry(ht, label)
-HashTable* ht;
-long label;
+HashEntry* getHashEntry(HashTable* ht, long label)
 {
     int key;
     HashEntry *entry, *base_entry;
@@ -343,9 +314,7 @@ long label;
 }
 #endif
 
-HashEntry* getHashEntry_str(ht, label)
-HashTable* ht;
-char* label;
+HashEntry* getHashEntry_str(HashTable* ht, char* label)
 {
     HashEntry* entry;
     int key = 0;
@@ -366,9 +335,7 @@ char* label;
     return NULL;
 }
 
-HashEntry* getHashEntry_int(ht, label)
-HashTable* ht;
-long label;
+HashEntry* getHashEntry_int(HashTable* ht, long label)
 {
     HashEntry* entry;
     int key;
@@ -385,9 +352,7 @@ long label;
 }
 
 #ifdef NOT_USED
-int removeHashEntry(ht, label)
-HashTable* ht;
-long label;
+int removeHashEntry(HashTable* ht, long label)
 {
     int key;
     HashEntry *entry, *base_entry, *prevEntry;
@@ -435,9 +400,7 @@ long label;
 }
 #endif
 
-int removeHashEntry_int(ht, label)
-HashTable* ht;
-long label;
+int removeHashEntry_int(HashTable* ht, long label)
 {
     int key;
     HashEntry *entry, *prevEntry;
@@ -474,9 +437,7 @@ long label;
     return 0;
 }
 
-int removeHashEntry_str(ht, label)
-HashTable* ht;
-char* label;
+int removeHashEntry_str(HashTable* ht, char* label)
 {
     HashEntry *entry, *prevEntry;
     int key;

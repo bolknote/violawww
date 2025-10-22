@@ -23,10 +23,7 @@ char strBuff[32];
  *
  * RETURN: number of transfered.
  */
-int transferNumList2Array(numStr, array, n)
-char* numStr;
-int* array;
-int n;
+int transferNumList2Array(char* numStr, int* array, int n)
 {
     int count = 0, stri = 0, ai = 0;
 
@@ -54,10 +51,7 @@ int n;
     return count;
 }
 
-int argNumsToInt(argv, n, intBuff)
-Packet argv[];
-int n;
-int intBuff[];
+int argNumsToInt(Packet argv[], int n, int intBuff[])
 {
     int i;
     for (i = 0; i < n; i++) {
@@ -102,8 +96,7 @@ VObjList* strOListToOList(char* str)
 
 /* XXX Sins: uses global buff, 2xstrcat()...
  */
-char* OListToStr(olist)
-VObjList* olist;
+char* OListToStr(VObjList* olist)
 {
     buff[0] = '\0';
 
@@ -116,9 +109,7 @@ VObjList* olist;
 
 /* XXX Sins: uses global buff, 2xstrcat()...
  */
-char* OListToStrPlusSuffix(olist, suffix)
-VObjList* olist;
-char* suffix;
+char* OListToStrPlusSuffix(VObjList* olist, char* suffix)
 {
     buff[0] = '\0';
 
@@ -133,11 +124,7 @@ char* suffix;
 }
 
 /*
-void setDepentShownInfo(self, attrStrID, position, size)
-        VObj *self;
-        int attrStrID;
-        int position;
-        int size;
+void setDepentShownInfo(VObj * self, int attrStrID, int position, int size)
 {
         VObjList *objl;
 
@@ -146,11 +133,7 @@ void setDepentShownInfo(self, attrStrID, position, size)
                         sendMessage1N2int(objl->o, attrStrID, position, size);
 }
 
-void setNotifyShownInfo(self, attrStrID, position, size)
-        VObj *self;
-        int attrStrID;
-        int position;
-        int size;
+void setNotifyShownInfo(VObj * self, int attrStrID, int position, int size)
 {
         VObjList *objl;
 
@@ -161,9 +144,7 @@ void setNotifyShownInfo(self, attrStrID, position, size)
 
 */
 
-int makeArgv(argv, argline)
-char* argv[];
-char* argline;
+int makeArgv(char* argv[], char* argline)
 {
     int argc = 0, i = 0, j = 0;
 
@@ -179,9 +160,7 @@ char* argline;
 /*
  * NOTE: the returned string is stored in shared buffer space.
  */
-char* PkInfos2Str(argc, argv)
-int argc;
-Packet argv[];
+char* PkInfos2Str(int argc, Packet argv[])
 {
     int i;
     char sbuff[64000]; /*XXX*/
@@ -240,8 +219,7 @@ Packet argv[];
 /*
  * NOTE: the returned string is stored in shared buffer space.
  */
-char* PkInfo2Str(pk)
-Packet* pk;
+char* PkInfo2Str(Packet* pk)
 {
     switch (pk->type) {
     case PKT_STR:
@@ -280,8 +258,7 @@ Packet* pk;
     return buff;
 }
 
-float PkInfo2Flt(pk)
-Packet* pk;
+float PkInfo2Flt(Packet* pk)
 {
     switch (pk->type) {
     case PKT_FLT:
@@ -297,8 +274,7 @@ Packet* pk;
     }
 }
 
-char PkInfo2Char(pk)
-Packet* pk;
+char PkInfo2Char(Packet* pk)
 {
     switch (pk->type) {
     case PKT_CHR:
@@ -335,8 +311,7 @@ long PkInfo2Int(Packet* pk) {
 
 /* load if necessary
  */
-VObj* getObject(objName)
-char* objName;
+VObj* getObject(char* objName)
 {
     int symID;
     VObj* obj = NULL;
@@ -370,8 +345,7 @@ char* objName;
     return NULL;
 }
 
-VObj* PkInfo2Obj(pk)
-Packet* pk;
+VObj* PkInfo2Obj(Packet* pk)
 {
     VObj* obj = NULL;
 

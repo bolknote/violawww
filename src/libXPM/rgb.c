@@ -32,10 +32,7 @@
  * and the rgb mnemonics (malloc'ed) into the "rgbn" array.  Returns the
  * number of entries stored.
  */
-int xpmReadRgbNames(rgb_fname, rgbn)
-char* rgb_fname;
-xpmRgbName rgbn[];
-
+int xpmReadRgbNames(char* rgb_fname, xpmRgbName rgbn[])
 {
     FILE* rgbf;
     int i, items, red, green, blue;
@@ -103,11 +100,10 @@ xpmRgbName rgbn[];
 /*
  * Return the color name corresponding to the given rgb values
  */
-char* xpmGetRgbName(rgbn, rgbn_max, red, green, blue)
-xpmRgbName rgbn[];    /* rgb mnemonics from rgb text file */
-int rgbn_max;         /* number of rgb mnemonics in table */
-int red, green, blue; /* rgb values */
-
+char* xpmGetRgbName(xpmRgbName rgbn[], int rgbn_max, int red, int green, int blue)
+/* rgbn: rgb mnemonics from rgb text file */
+/* rgbn_max: number of rgb mnemonics in table */
+/* red, green, blue: rgb values */
 {
     int i;
 

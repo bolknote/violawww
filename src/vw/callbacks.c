@@ -894,8 +894,9 @@ void doViolaEvent(Widget widget, XtPointer clientData, XEvent* event, Boolean* c
     violaProcessEvent(event);
 }
 
-void doViolaIdle(XtPointer clientData) {
+Boolean doViolaIdle(XtPointer clientData) {
     violaIdleEvent();
+    return False;  /* Continue calling this workproc */
 }
 
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {

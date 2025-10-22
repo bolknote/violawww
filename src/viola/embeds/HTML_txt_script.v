@@ -642,6 +642,7 @@ print("TXT: height=", get("height"), "................................\n");
 		return;
 	break;
 	case "blink":
+		print("### BLINK TICK blinkOn=", blinkOn, "\n");
 		if (blinkOn) {
 			blinkOn = 0;
 			set("FGColor", bclr1);

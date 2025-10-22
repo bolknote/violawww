@@ -298,13 +298,19 @@ void violaIdleEvent() {
         return;
     }
 
-    if (timeval && !bits) {
-        tip = firstTimeInfo;
-        firstTimeInfo = firstTimeInfo->next;
-        (tip->func)(tip->obj, tip->argv, tip->argc);
-        if (tip->argv)
-            free(tip->argv);
-        free(tip);
+    /* Check if timer expired, regardless of whether there are other events */
+    if (firstTimeInfo) {
+        gettimeofday(&timenow, (struct timezone*)NULL);
+        if (timenow.tv_sec > firstTimeInfo->time.tv_sec ||
+            (timenow.tv_sec == firstTimeInfo->time.tv_sec &&
+             timenow.tv_usec >= firstTimeInfo->time.tv_usec)) {
+            tip = firstTimeInfo;
+            firstTimeInfo = firstTimeInfo->next;
+            (tip->func)(tip->obj, tip->argv, tip->argc);
+            if (tip->argv)
+                free(tip->argv);
+            free(tip);
+        }
     }
 
     if (!FD_ISSET(ConnectionNumber(display), &cur_read_mask)) {
@@ -387,18 +393,24 @@ int eventLoop() {
             bits = select(max_socks, &cur_read_mask, (fd_set*)NULL, (fd_set*)NULL,
                           (struct timeval*)timeval);
 
-            if (timeval && !bits) {
-                tip = firstTimeInfo;
-                firstTimeInfo = firstTimeInfo->next;
-                (tip->func)(tip->obj, tip->argv, tip->argc);
-                if (tip->argv) {
-                    int i = tip->argc;
-                    while (--i >= 0) {
-                        clearPacket(&(tip->argv[i]));
+            /* Check if timer expired, regardless of whether there are other events */
+            if (firstTimeInfo) {
+                gettimeofday(&timenow, (struct timezone*)NULL);
+                if (timenow.tv_sec > firstTimeInfo->time.tv_sec ||
+                    (timenow.tv_sec == firstTimeInfo->time.tv_sec &&
+                     timenow.tv_usec >= firstTimeInfo->time.tv_usec)) {
+                    tip = firstTimeInfo;
+                    firstTimeInfo = firstTimeInfo->next;
+                    (tip->func)(tip->obj, tip->argv, tip->argc);
+                    if (tip->argv) {
+                        int i = tip->argc;
+                        while (--i >= 0) {
+                            clearPacket(&(tip->argv[i]));
+                        }
+                        free(tip->argv);
                     }
-                    free(tip->argv);
+                    free(tip);
                 }
-                free(tip);
             }
             timeval = NULL;
         }

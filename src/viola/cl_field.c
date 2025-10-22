@@ -1200,10 +1200,10 @@ long meth_field_initialize(VObj* self, Packet* result, int argc, Packet argv[]) 
      */
     cip = GET__classInfo(self);
     if (cip == &class_slider) {
-        extern int DefaultBGPixel_darkest;
+        extern unsigned long DefaultBGPixel_darkest;
         GLSetBGColorPixel(self, DefaultBGPixel_darkest);
     } else if (cip == &class_txtEdit) {
-        extern int DefaultBGPixel_darker;
+        extern unsigned long DefaultBGPixel_darker;
         GLSetBGColorPixel(self, DefaultBGPixel_darker);
     } else {
         cp = GET_BGColor(self);

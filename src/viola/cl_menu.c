@@ -647,10 +647,9 @@ xpa_menu make_menu(char* menuSpec, xpa_entrys* ret_menu_entries, VObj* self) {
     xpa_menu menu;
     int mask;
     ColorInfo* colorInfo = GET__colorInfo(self);
-    extern int DefaultFGPixel;
-    extern int DefaultBGPixel;
-    extern int DefaultBGPixel_darkest;
-    extern int DefaultFGPixel;
+    extern unsigned long DefaultFGPixel;
+    extern unsigned long DefaultBGPixel;
+    extern unsigned long DefaultBGPixel_darkest;
 
     *ret_menu_entries = menu_entries = parse_menu_configuration(self, menuSpec);
 

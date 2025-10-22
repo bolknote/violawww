@@ -545,6 +545,25 @@ print("TXT: height=", get("height"), "................................\n");
 				}
 				after(i, self(), "blink");
 			}
+		} else if (styleAttr) {
+			/* Fallback: if STG not found but styleAttr is set, use hardcoded styles */
+			switch (styleAttr) {
+			case "NOTE":
+				deco = "HTML__txtBox_note";
+			break;
+			case "CAUTION":
+				deco = "HTML__txtBox_caution";
+			break;
+			case "WARNING":
+				deco = "HTML__txtBox_caution";
+			break;
+			case "ERROR":
+				deco = "HTML__txtBox_error";
+			break;
+			case "TIMED":
+				deco = "HTML__txtBox_time";
+			break;
+			}
 		}
 		return;
 	break;

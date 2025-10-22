@@ -376,7 +376,7 @@ void dumpVarList(varlist) Attr* varlist;
                 dumpPacket(packetp);
                 printf(":\n");
                 for (attrp2 = packetp->info.a; attrp2; attrp2 = attrp2->next) {
-                    printf("\tid=%ld,", (long)attrp2->id);
+                    printf("\tid=%ld,", attrp2->id);
                     dumpPacket((Packet*)(attrp2->val));
                     printf(";\n");
                 }

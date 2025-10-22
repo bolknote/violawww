@@ -3701,7 +3701,7 @@ long meth_generic_print(VObj* self, Packet* result, int argc, Packet argv[]) {
             Attr* attrp;
             attrp = argv[i].info.a;
             for (; attrp; attrp = attrp->next) {
-                printf("id=%ld val=%ld:", (long)attrp->id, (long)attrp->val);
+                printf("id=%ld val=%ld:", attrp->id, attrp->val);
                 dumpPacket((Packet*)attrp->val);
                 printf("\n");
             }

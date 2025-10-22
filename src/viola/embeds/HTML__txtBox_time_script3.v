@@ -4,10 +4,23 @@
 		/* arg[1]	parent
 		 * arg[2]	txt
 		 * arg[3]	width to use
+		 * arg[4]	FGColor (optional)
+		 * arg[5]	BGColor (optional)
+		 * arg[6]	BDColor (optional)
 		 */
 		set("parent", arg[1]);
 		set("width", arg[3]);
-		h = send(nthChild(0), "make", arg[2], arg[3]) + 3;
+		
+		argc = arg[];
+		if (argc > 3) {
+			pendingFGColor = arg[4];
+			pendingBGColor = arg[5];
+			pendingBDColor = arg[6];
+			h = send(nthChild(0), "make", arg[2], arg[3], pendingFGColor, pendingBGColor, pendingBDColor) + 3;
+		} else {
+			h = send(nthChild(0), "make", arg[2], arg[3]) + 3;
+		}
+		
 		set("height", h);
 		after(2000, nthChild(1), "tic");
 		return h;

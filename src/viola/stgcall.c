@@ -133,16 +133,8 @@ char* styleAttr; /* style attribute value like "WARNING" */
     }
     
     if (stat) {
-        /* If styleAttr was requested but no minor found, return NULL */
-        /* to indicate that built-in styles should be used instead */
-        if (styleAttr && !results[0].sminor) {
-            if (WWW_TraceFlag) {
-                printf("### getSTGInfo_tagPtrWithStyle: styleAttr=%s but no minor found, returning NULL\n", styleAttr);
-            }
-            return 0;
-        }
-        
         /* Pack both major and minor into result */
+        /* Even if minor is not found, return major so its styles can be applied */
         /* We'll use a simple encoding: store pointer to results array */
         /* Actually, let's return a struct pointer */
         STGResult* res = (STGResult*)malloc(sizeof(STGResult));

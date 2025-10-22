@@ -207,6 +207,7 @@ print("TXT: height=", get("height"), "................................\n");
 			savedFGColor = get("FGColor");
 			savedBGColor = get("BGColor");
 			savedBDColor = get("BDColor");
+			print("### HTML_txt D: got colors FG=", savedFGColor, " BG=", savedBGColor, " BD=", savedBDColor, "\n");
 			
 			if (inPreP) 
 			  h = send(box, "make", self(), 
@@ -558,20 +559,57 @@ print("TXT: height=", get("height"), "................................\n");
 			
 			/* Fallback: if styleAttr is set but no deco was set from STG, use built-in styles */
 			if (styleAttr) {
+				print("### HTML_txt: checking fallback for styleAttr=", styleAttr, " deco=", deco, "\n");
 				if (deco == 0) {
+					print("### HTML_txt: entering fallback switch for styleAttr=", styleAttr, "\n");
 					switch (styleAttr) {
 					case "NOTE":
+						print("### HTML_txt fallback: NOTE\n");
+						/* Set border=6 for visual decoration */
+						currentBorder = get("border");
+						if (currentBorder == 0) {
+							set("border", 6);
+						}
 						deco = "HTML__txtBox_note";
 					break;
 					case "CAUTION":
+						print("### HTML_txt fallback: CAUTION\n");
+						/* Set border=6 for visual decoration */
+						currentBorder = get("border");
+						if (currentBorder == 0) {
+							set("border", 6);
+						}
 						deco = "HTML__txtBox_caution";
 					break;
 					case "WARNING":
-						set("BDColor", "darkOrange");
+						print("### HTML_txt fallback: WARNING\n");
+						currentBorder = get("border");
+						print("### HTML_txt fallback WARNING: current border=", currentBorder, "\n");
+						if (currentBorder == 0) {
+							print("### HTML_txt fallback: setting border=6\n");
+							set("border", 6);
+						}
+						currentBDColor = get("BDColor");
+						print("### HTML_txt fallback WARNING: current BDColor=", currentBDColor, "\n");
+						if (currentBDColor == 0) {
+							print("### HTML_txt fallback: setting BDColor=darkOrange\n");
+							set("BDColor", "darkOrange");
+						}
 						deco = "HTML__txtBox_caution";
 					break;
 					case "ERROR":
-						set("BDColor", "red");
+						print("### HTML_txt fallback: ERROR\n");
+						currentBorder = get("border");						print("### HTML_txt fallback ERROR: current border=", currentBorder, "\n");
+						if (currentBorder == 0) {
+							print("### HTML_txt fallback: setting border=6\n");
+							set("border", 6);
+						}
+						currentBDColor = get("BDColor");
+						print("### HTML_txt fallback ERROR: current BDColor=", currentBDColor, "\n");
+						if (currentBDColor == 0) {
+							print("### HTML_txt fallback: setting BDColor=red\n");
+							set("BDColor", "red");
+						}
 						deco = "HTML__txtBox_error";
 					break;
 					case "TIMED":
@@ -582,19 +620,36 @@ print("TXT: height=", get("height"), "................................\n");
 			}
 		} else if (styleAttr) {
 			/* Fallback: if STG not found but styleAttr is set, use hardcoded styles */
+			print("### HTML_txt fallback (no STG): styleAttr=", styleAttr, "\n");
 			switch (styleAttr) {
 			case "NOTE":
+				set("border", 6);
 				deco = "HTML__txtBox_note";
 			break;
 			case "CAUTION":
+				set("border", 6);
 				deco = "HTML__txtBox_caution";
 			break;
 			case "WARNING":
-				set("BDColor", "darkOrange");
+				print("### HTML_txt fallback (no STG): WARNING\n");
+				/* Always set border=6 for WARNING */
+				set("border", 6);
+				/* Set BDColor only if not already set */
+				if (get("BDColor") == 0) {
+					print("### HTML_txt fallback (no STG): setting BDColor=darkOrange\n");
+					set("BDColor", "darkOrange");
+				}
 				deco = "HTML__txtBox_caution";
 			break;
 			case "ERROR":
-				set("BDColor", "red");
+				print("### HTML_txt fallback (no STG): ERROR\n");
+				/* Always set border=6 for ERROR */
+				set("border", 6);
+				/* Set BDColor only if not already set */
+				if (get("BDColor") == 0) {
+					print("### HTML_txt fallback (no STG): setting BDColor=red\n");
+					set("BDColor", "red");
+				}
 				deco = "HTML__txtBox_error";
 			break;
 			case "TIMED":

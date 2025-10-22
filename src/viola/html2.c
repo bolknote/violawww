@@ -91,6 +91,9 @@ enum sgmlsAttributeTypes {
 
 int sgml_verbose = 0;
 
+/* Flag to track if we're inside SCRIPT or STYLE tags */
+static int inside_ignore_tag = 0;
+
 static char* URLEncodeSeq[] = {
     NULL,  "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09", "%0A", "%0B", "%0C",
     "%0D", "%0E", "%0F", "%10", "%11", "%12", "%13", "%14", "%15", "%16", "%17", "%18", "%19",
@@ -226,6 +229,9 @@ void CB_HTML_new() {
 
     /*printf("CB_HTML_new\n");*/
 
+    /* Reset ignore tag flag */
+    inside_ignore_tag = 0;
+
     if (!STRCMP(dtd, "HTML")) {
         /*		sgmldtd = HTML_dtd;*/
     } else {
@@ -333,6 +339,11 @@ int size;
     char tempbuf[8192];
     int converted_size;
 
+    /* Ignore data inside SCRIPT and STYLE tags */
+    if (inside_ignore_tag) {
+        return;
+    }
+
     if (bstate->obj) {
         /*		fprintf(stderr, "@@@@ DATA(%d) -%s\n", size, str);
          */
@@ -432,6 +443,12 @@ HTTag* tagInfo;
         fprintf(stderr, "########################## HTML\t(%s\n", tag);
     }
 #endif
+
+    /* Ignore SCRIPT and STYLE opening tags - they are handled by SGML parser */
+    if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
+        inside_ignore_tag = 1;
+        return;
+    }
 
     parent_bstate = &SBI.stack[SBI.stacki];
     SBI.stacki++;
@@ -915,6 +932,12 @@ void CB_HTML_etag(element_number) int element_number;
     }
 #endif
 
+    /* Ignore SCRIPT and STYLE closing tags - they are handled by SGML parser */
+    if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
+        inside_ignore_tag = 0;
+        return;
+    }
+
     bstate = &SBI.stack[SBI.stacki--];
     if (SBI.stacki >= 0)
         parent_bstate = &SBI.stack[SBI.stacki];
@@ -1127,6 +1150,12 @@ void CB_HTML_end() {
     HTTag* htagp;
 
     SBI.endP = 1;
+
+    /* Check if tag is NULL */
+    if (!tag) {
+        CB_HTML_etag(elemNum);
+        return;
+    }
 
     /* do binary search, atleast! */
     for (i = 0; i < HTML_ELEMENTS; i++) {

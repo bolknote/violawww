@@ -1,10 +1,33 @@
 /*
-# ViolaWWW HTML Processing/Rendering #  inline?
-# Configuration File		     #  | notfy-on-creation?	top
-######################################  | | ?flushBySelf?	| bttm
-#					| | | on-sub?		| | left
-# Tag Name	Processing Obj		| | | | hpane? 	        | | | right
-*/
+ * ViolaWWW HTML Stylesheet Configuration
+ * =======================================
+ *
+ * Format: Each line defines styling for one HTML tag (11 fields total)
+ *
+ * TagName  ProcessingObject  inline notify flush1 flush2 hpane  top bottom left right
+ * -------  ----------------  ------ ------ ------ ------ -----  --- ------ ---- -----
+ *
+ * Field descriptions:
+ * -------------------
+ * 1. TagName          - HTML tag name (e.g. P, H1, SCRIPT)
+ * 2. ProcessingObject - Viola class for rendering (e.g. HTML_txt, HTML_ignore)
+ * 3. inline           - 0=block element (breaks line), 1=inline element (flows with text)
+ * 4. notifyOnCreation - 0=no, 1=notify when object created
+ * 5. flushAlways      - 0=no, 1=flush text buffer before processing
+ * 6. flushOnSubTag    - 0=no, 1=flush buffer when encountering nested tag
+ * 7. hpane            - 0=no, 1=use horizontal pane layout
+ * 8. top              - Top margin/padding in pixels
+ * 9. bottom           - Bottom margin/padding in pixels
+ * 10. left            - Left margin/padding in pixels
+ * 11. right           - Right margin/padding in pixels
+ *
+ * Examples:
+ * ---------
+ * P       HTML_txt        0 0 0 1 0  3 3 1 1  - Paragraph: block, flush on subtag, margins 3/3/1/1
+ * A       HTML_txtAnchor  1 0 0 1 0  0 0 0 0  - Anchor: inline, flush on subtag, no margins
+ * H1      HTML_header_big 0 0 0 1 0  7 5 0 2  - Heading: block, margins 7/5/0/2
+ * SCRIPT  HTML_ignore     1 0 0 0 0  0 0 0 0  - Script: inline, ignored content
+ */
 
 char* HTML_stylesheet_str = "\
 P 		HTML_txt 		0 0 0 1 0		3 3 1 1\n\
@@ -141,4 +164,6 @@ SIZE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 TEXT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ACTION		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 SQUARE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
+SCRIPT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
+STYLE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ";

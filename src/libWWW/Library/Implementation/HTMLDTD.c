@@ -451,12 +451,14 @@ static HTTag tags[] = {
     {"SAMP", no_attr, 0, SGML_MIXED, 0, 0},
     {"SCALE", scale_attr, HTML_SCALE_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SCREEN", no_attr, 0, SGML_MIXED, 0, 0},
+    {"SCRIPT", no_attr, 0, SGML_CDATA, 0, 0},
     {"SECTION", section_attr, HTML_SECTION_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SECURITY", security_attr, HTML_SECURITY_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SELECT", select_attr, HTML_SELECT_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SIZE", size_attr, HTML_SIZE_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SQUARE", square_attr, HTML_SQUARE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"STRONG", no_attr, 0, SGML_MIXED, 0, 0},
+    {"STYLE", no_attr, 0, SGML_CDATA, 0, 0},
     {"SUB", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
     {"SUP", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
     {"TABLE", table_attr, HTML_TABLE_ATTRIBUTES, SGML_MIXED, 0, 0},
@@ -487,7 +489,7 @@ static HTTag tags[] = {
     {"VVIEW", no_attr, 0, SGML_LITTERAL, 0, 0},
     {"XMP", xmp_attr, HTML_XMP_ATTRIBUTES, SGML_LITTERAL, 0, 0},
     {0}};
-#define HTML_TAGS 126
+#define HTML_TAGS 128
 
 PUBLIC CONST SGML_dtd HTML_dtd = {tags, HTML_ELEMENTS, entities, sizeof(entities) / sizeof(char**)};
 

@@ -116,12 +116,14 @@ typedef enum _HTMLElement {
     HTML_SCALE, /*vr exp*/
     HTML_SAMP,
     HTML_SCREEN,
+    HTML_SCRIPT,
     HTML_SECTION,
     HTML_SECURITY,
     HTML_SELECT,
     HTML_SIZE,   /*vr exp*/
     HTML_SQUARE, /*vr exp*/
     HTML_STRONG,
+    HTML_STYLE,
     HTML_SUB,
     HTML_SUP,
     HTML_TABLE,
@@ -149,7 +151,7 @@ typedef enum _HTMLElement {
     HTML_XMP
 } HTMLElement;
 
-#define HTML_ELEMENTS 125
+#define HTML_ELEMENTS 127
 
 /*
 Attribute numbers

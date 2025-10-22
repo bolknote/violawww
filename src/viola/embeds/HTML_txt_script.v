@@ -205,8 +205,6 @@ print("TXT: height=", get("height"), "................................\n");
 			savedBGColor = get("BGColor");
 			savedBDColor = get("BDColor");
 			
-			print("### HTML_txt D: passing to box.make FG=", savedFGColor, " BG=", savedBGColor, " BD=", savedBDColor, "\n");
-			
 			if (inPreP) 
 			  h = send(box, "make", self(), 
 				   get("label"), get("width"),
@@ -290,7 +288,6 @@ print("TXT: height=", get("height"), "................................\n");
 		case "STYLE":
 			/* STYLE attribute is now handled by setStyleAttr message from CB_HTML_etag */
 			/* This case should not be reached anymore */
-			print("### HTML_txt AA: WARNING - STYLE should be handled by setStyleAttr!\n");
 		break;
 		case "OLD_STYLE_COMPAT":
 			/* Old hardcoded styles - for backward compatibility if needed */
@@ -359,7 +356,6 @@ print("TXT: height=", get("height"), "................................\n");
 	case "setStyleAttr":
 		/* Save style attribute value for later use in setStyles/D */
 		savedStyleAttr = arg[1];
-		print("### HTML_txt setStyleAttr: saved=", savedStyleAttr, "\n");
 		return;
 	break;
 	case "setStyles":
@@ -373,19 +369,14 @@ print("TXT: height=", get("height"), "................................\n");
 		} else {
 			styleAttr = savedStyleAttr;
 		}
-		if (styleAttr) print("### HTML_txt setStyles: style=", styleAttr, "\n");
 		
-		print("### HTML_txt setStyles: arg[1]=", arg[1], " parent=", parent(), "\n");
 		if (findPattern(arg[1], "address") != -1) {
 			/*tagPtr = send(arg[1], "styleSheet");*/
 			if (styleAttr) {
-				print("### HTML_txt: calling STG_tagPtr(P, ADDRESS, ", styleAttr, ")\n");
 				tagPtr = STG_tagPtr("P", "ADDRESS", styleAttr);
 			} else {
-				print("### HTML_txt: calling STG_tagPtr(P, ADDRESS)\n");
 				tagPtr = STG_tagPtr("P", "ADDRESS");
 			}
-			print("### HTML_txt: STG_tagPtr returned ", tagPtr, "\n");
 		} else {
 			if (styleAttr) {
 				tagPtr = STG_tagPtr("P", "", styleAttr);
@@ -489,13 +480,11 @@ print("TXT: height=", get("height"), "................................\n");
 			}
 			
 			if (fontSize) {
-				print("### HTML_txt: applying fontSize=", fontSize, "\n");
 				switch (fontSize) {
 				case "large": 		size = "_large";	break;
 				case "largest": 	size = "_largest";	break;
 				default:		size = "";		break;
 				}
-				print("### HTML_txt: mapped to size=", size, "\n");
 			}
 			
 			/* Map font name to font ID */
@@ -515,7 +504,6 @@ print("TXT: height=", get("height"), "................................\n");
 				fontID = 1; /* fallback */
 			}
 			
-			print("### HTML_txt: setting _font to fontID=", fontID, "\n");
 			set("_font", fontID);
 			}
 			

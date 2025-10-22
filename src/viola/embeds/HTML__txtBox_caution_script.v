@@ -15,15 +15,12 @@
 		argc = arg[];
 		if (argc > 2) {
 			if (arg[3]) {
-				print("### txtBox_caution(child): applying FGColor=", arg[3], "\n");
 				set("FGColor", arg[3]);
 			}
 			if (arg[4]) {
-				print("### txtBox_caution(child): applying BGColor=", arg[4], "\n");
 				set("BGColor", arg[4]);
 			}
 			if (arg[5]) {
-				print("### txtBox_caution(child): applying BDColor=", arg[5], "\n");
 				set("BDColor", arg[5]);
 			}
 		}

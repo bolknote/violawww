@@ -31,7 +31,6 @@
 			pendingFGColor = arg[4];
 			pendingBGColor = arg[5];
 			pendingBDColor = arg[6];
-			print("### txtBox_caution(parent): received colors FG=", pendingFGColor, " BG=", pendingBGColor, " BD=", pendingBDColor, "\n");
 			h = send(nthChild(0), "make", arg[2], arg[3], pendingFGColor, pendingBGColor, pendingBDColor) + 3;
 		} else {
 			h = send(nthChild(0), "make", arg[2], arg[3]) + 3;

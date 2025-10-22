@@ -60,6 +60,8 @@ typedef struct MethodInfo {
 /*****************************************************************************
  * class info
  */
+#ifndef CLASSINFO_DEFINED
+#define CLASSINFO_DEFINED
 typedef struct ClassInfo {
     long (*slotGetMeth)();
     long (*slotSetMeth)();
@@ -83,6 +85,7 @@ typedef struct ClassInfo {
     int common_newcount; /* used for building common obj */
     int common_totalcount;
 } ClassInfo;
+#endif
 
 extern int init_class();
 extern ClassInfo* getClassInfoByID();

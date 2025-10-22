@@ -1,4 +1,8 @@
+#pragma once
+
+#ifndef CLASSINFO_DEFINED
 typedef struct ClassInfo ClassInfo;
+#endif
 
 ClassInfo* getClassInfo();
 int init_loader();

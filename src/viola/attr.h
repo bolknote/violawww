@@ -3,11 +3,14 @@
  */
 #pragma once
 
+#ifndef ATTR_DEFINED
+#define ATTR_DEFINED
 typedef struct Attr {
     struct Attr* next; /* must be the first item  (see vlist.h) */
     long id;           /* must be the second item (see vlist.h) */
     long val;
 } Attr;
+#endif
 
 Attr* makeAttr();
 

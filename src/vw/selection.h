@@ -19,8 +19,7 @@
 #define _SELECTION_H_
 
 #include <Xm/Xm.h>
-
-typedef struct DocViewInfoStruct DocViewInfo;
+#include "vw.h"
 
 extern DocViewInfo* selectionOwner;
 

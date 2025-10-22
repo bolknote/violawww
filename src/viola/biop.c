@@ -243,9 +243,9 @@ Packet* p2;
         p2->canFree = p2->info.p->canFree;
     }
     convPair = &((*biOpConvIdx[op].procTable)[p1->type][p2->type]);
-    if (convf = convPair->lf)
+    if ((convf = convPair->lf))
         convf(p1);
-    if (convf = convPair->rf)
+    if ((convf = convPair->rf))
         convf(p2);
     biOpFunc = (*biOpConvIdx[op].opftTable)[p1->type][p2->type];
     biOpFunc(p1, p2);

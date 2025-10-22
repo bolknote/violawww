@@ -102,6 +102,7 @@ int initCatalog(Widget shell) {
          * Make the default Catalog GC's.
          */
     }
+    return 0;
 }
 
 Widget makeCatalogMenus(Widget mainWin, Widget helpLabel, Catalog* catalog) {

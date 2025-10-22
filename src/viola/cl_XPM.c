@@ -202,7 +202,7 @@ long meth_XPM_render(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     if (!(w = GET_window(self)))
         return 0;
-    if (pixmap = (Pixmap)GET__label(self)) {
+    if ((pixmap = (Pixmap)GET__label(self))) {
         GLDisplayXPM(w, 0, 0, GET_width(self), GET_height(self), pixmap);
     } else {
         int width = 0, height = 0, hotx, hoty;

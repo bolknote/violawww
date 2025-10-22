@@ -711,7 +711,7 @@ void urlDlogParseURL(uds) struct urlDlogStruct* uds;
         return;
 
     protocol = newURL;
-    if (machine = strchr(newURL, (int)':')) {
+    if ((machine = strchr(newURL, (int)':'))) {
         int i = 0;
 
         *(machine++) = '\0';
@@ -1333,4 +1333,5 @@ char* openSimpleLineEntryDialog(DocViewInfo* dvi, char *dialogLabel, char *defau
 
     XtManageChild(form);
     XtPopup(XtParent(form), XtGrabNone);
+    return NULL;
 }

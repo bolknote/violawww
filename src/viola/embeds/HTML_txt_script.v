@@ -542,19 +542,20 @@ print("TXT: height=", get("height"), "................................\n");
 				i = STG_attrEx(tagPtr, "blink");
 			} else {
 				i = STG_attr(tagPtr, "blink");
+		}
+		if (i) {
+			blinkRate = i;
+			blinkOn = 0;  /* Initialize blink state */
+			fgc = get("FGColor");
+			if (styleAttr) {
+				bclr0 = STG_attrEx(tagPtr, "blinkColorOn");
+				bclr1 = STG_attrEx(tagPtr, "blinkColorOff");
+			} else {
+				bclr0 = STG_attr(tagPtr, "blinkColorOn");
+				bclr1 = STG_attr(tagPtr, "blinkColorOff");
 			}
-			if (i) {
-				blinkRate = i;
-				fgc = get("FGColor");
-				if (styleAttr) {
-					bclr0 = STG_attrEx(tagPtr, "blinkColorOn");
-					bclr1 = STG_attrEx(tagPtr, "blinkColorOff");
-				} else {
-					bclr0 = STG_attr(tagPtr, "blinkColorOn");
-					bclr1 = STG_attr(tagPtr, "blinkColorOff");
-				}
-				after(i, self(), "blink");
-			}
+			after(i, self(), "blink");
+		}
 			
 			/* Fallback: if styleAttr is set but no deco was set from STG, use built-in styles */
 			if (styleAttr) {

@@ -674,6 +674,17 @@ int maxResults;
         majorTryReg[i].sminor = majorResults[i].sminor;
     }
     for (i = 0; i < majorResultCount; i++) {
+        /* If this is a nested element (has super) but context is too shallow,
+         * reject it before even checking context details.
+         */
+        STGMajor* originalMajor = majorTryReg[i].smajor;
+        if (originalMajor && originalMajor->super && contextCount == 1) {
+            if (TRACE) printf("### STG_findStyle: REJECTING candidate %d (nested element with super=%p but contextCount=1)\n", 
+                             i, originalMajor->super);
+            majorTryReg[i].smajor = NULL;
+            continue;
+        }
+        
         for (maj = majorTryReg[i].smajor, j = 0; maj && j < contextCount; maj = maj->super, j++) {
             tag = context[j * 2];
             inContext = 0;

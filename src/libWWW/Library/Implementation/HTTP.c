@@ -294,8 +294,6 @@ retry:
             timeout.tv_sec = 60;
             timeout.tv_usec = 0;
             setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-            
-            fprintf(stderr, "⏱️  HTTP: Timeouts set: connect=30s, read=60s\n");
         }
         
         if (TRACE) {
@@ -315,8 +313,6 @@ retry:
         gettimeofday(&connect_time, NULL);
         connect_ms = (connect_time.tv_sec - start_time.tv_sec) * 1000 + 
                      (connect_time.tv_usec - start_time.tv_usec) / 1000;
-        fprintf(stderr, "*** HTTP: NEW connection to %s:%d (TCP handshake took %ld ms)\n", 
-                hostname, port, connect_ms);
     }
 
     /*	Ask that node for the document,
@@ -634,8 +630,6 @@ retry:
                             keep_alive = NO;
                             fprintf(stderr, "--- HTTP: Server says Keep-Alive but NO Content-Length (HTTP/1.0 violation) - ignoring\n");
                         }
-                    } else {
-                        fprintf(stderr, "--- HTTP: Server %s:%d does NOT support keep-alive\n", hostname, port);
                     }
                 } else {
                     fprintf(stderr, "--- HTTP: No Connection header from %s:%d - will close\n", hostname, port);
@@ -815,12 +809,8 @@ copy:
             if (http_progress_reporter_level == 1) {
                 http_progress_expected_total_bytes = content_length;
             }
-            fprintf(stderr, "📦 HTTP: Content-Length = %d bytes (progress_level=%d)\n", 
-                    content_length, http_progress_reporter_level);
         } else {
-            fprintf(stderr, "⚠️  HTTP: No Content-Length header - will hang 30s waiting for EOF!\n");
             if (keep_alive) {
-                fprintf(stderr, "    ⚠️  Server claims Keep-Alive but no Content-Length - disabling keep-alive!\n");
                 keep_alive = NO;
             }
         }
@@ -936,8 +926,6 @@ wheee:
         ptrdiff_t remaining_length = length - data_offset - offset;
         int initial_data = (int)remaining_length;
         (*target->isa->put_block)(target, binary_buffer + data_offset + offset, initial_data);
-        
-        fprintf(stderr, "📨 HTTP: Initial data block = %d bytes\n", initial_data);
     }
     
     /* Copy remaining data - use Content-Length if available */
@@ -947,9 +935,6 @@ wheee:
         ptrdiff_t remaining_length = length - data_offset - offset;
         int bytes_to_read = content_length - (int)remaining_length;
         int bytes_read_so_far = 0;
-        
-        fprintf(stderr, "📥 HTTP: Need to read %d more bytes (Content-Length=%d, already have %d)\n",
-                bytes_to_read, content_length, (int)remaining_length);
         
         /* Keep 60s timeout for Content-Length reads */
         
@@ -961,23 +946,15 @@ wheee:
             
             status = NETREAD(s, binary_buffer, to_read);
             if (status <= 0) {
-                fprintf(stderr, "⚠️  HTTP: Read returned %d (expected %d more bytes)\n", 
-                        status, bytes_to_read - bytes_read_so_far);
                 break;
             }
             
             bytes_received += status;
             bytes_read_so_far += status;
             (*target->isa->put_block)(target, binary_buffer, status);
-            
-            fprintf(stderr, "📥 HTTP: Read %d bytes (%d/%d total)\n", 
-                    status, bytes_read_so_far, bytes_to_read);
         }
-        
-        fprintf(stderr, "✅ HTTP: Finished reading Content-Length data (exact bytes)\n");
     } else {
         /* No Content-Length - read until EOF with 60s timeout */
-        fprintf(stderr, "📥 HTTP: No Content-Length - reading until EOF or timeout (60s)...\n");
         HTCopy(s, target);
     }
     
@@ -1007,11 +984,6 @@ clean_up:
     gettimeofday(&end_time, NULL);
     total_ms = (end_time.tv_sec - start_time.tv_sec) * 1000 + 
                (end_time.tv_usec - start_time.tv_usec) / 1000;
-    
-    fprintf(stderr, "⏱  HTTP: Downloaded %d bytes in %ld ms (%.1f KB/s, connect: %ld ms)\n",
-            bytes_received, total_ms, 
-            total_ms > 0 ? (bytes_received / 1024.0) / (total_ms / 1000.0) : 0.0,
-            connect_ms);
 
     if (TRACE)
         fprintf(stderr, "HTTP: %s connection.\n", 

@@ -90,7 +90,7 @@ typedef struct _HTStyle {
 
     /*      Style management information
      */
-    struct _HTStyle* next; /* Link for putting into stylesheet */
+    struct _HTStyle* next; /* Link for putting into  */
     char* name;            /* Style name */
     char* SGMLTag;         /* Tag name to start */
 

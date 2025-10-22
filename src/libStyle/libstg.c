@@ -676,13 +676,21 @@ int maxResults;
     for (i = 0; i < majorResultCount; i++) {
         /* If this is a nested element (has super) but context is too shallow,
          * reject it before even checking context details.
+         * Exception: allow first-level nesting (super->super == NULL), 
+         * which represents "almost root" styles like H1 inside BODY.
          */
         STGMajor* originalMajor = majorTryReg[i].smajor;
         if (originalMajor && originalMajor->super && contextCount == 1) {
-            if (TRACE) printf("### STG_findStyle: REJECTING candidate %d (nested element with super=%p but contextCount=1)\n", 
+            /* Check nesting depth: if super->super exists, it's nested too deep */
+            if (originalMajor->super->super) {
+                if (TRACE) printf("### STG_findStyle: REJECTING candidate %d (nested >1 level with super->super=%p but contextCount=1)\n", 
+                                 i, originalMajor->super->super);
+                majorTryReg[i].smajor = NULL;
+                continue;
+            }
+            /* First-level nesting is OK - e.g., H1 inside BODY */
+            if (TRACE) printf("### STG_findStyle: ACCEPTING candidate %d (first-level nesting: super=%p, super->super=NULL)\n", 
                              i, originalMajor->super);
-            majorTryReg[i].smajor = NULL;
-            continue;
         }
         
         for (maj = majorTryReg[i].smajor, j = 0; maj && j < contextCount; maj = maj->super, j++) {

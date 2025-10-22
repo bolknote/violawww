@@ -113,8 +113,8 @@
 		useTagInfo_align = 1;
 		tagPtr = STG_tagPtr("H1");
 		if (tagPtr) {
-			i = STG_attr(tagPtr, "BGColor");
-			if (i) set("BGColor", i);
+		i = STG_attr(tagPtr, "BGColor");
+		if (i) set("BGColor", i);
 			i = STG_attr(tagPtr, "FGColor");
 			if (i) set("FGColor", i);
 			i = STG_attr(tagPtr, "BDColor");

@@ -16,6 +16,7 @@
 #include "mystrings.h"
 #include "utils.h"
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 /*
 static int scatter[] = {
@@ -494,9 +495,9 @@ void dumpHashTable(ht) HashTable* ht;
         for (hp = &(ht->entries[i]); hp; hp = hp->next)
             if (hp->label)
                 if (ht->func_hash == hash_str) {
-                    printf("%d\tlabel=\"%s\"\tval=%d\n", i, (char*)hp->label, (int)hp->val);
+                    printf("%d\tlabel=\"%s\"\tval=%ld\n", i, (char*)hp->label, hp->val);
                 } else {
-                    printf("%d\tlabel=%d\tval=0x%lx\n", i, (int)hp->label, hp->val);
+                    printf("%d\tlabel=%ld\tval=0x%lx\n", i, hp->label, hp->val);
                 }
     }
 }

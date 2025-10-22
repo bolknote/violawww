@@ -30,6 +30,7 @@
 #include <math.h>
 #include <pwd.h>
 #include <signal.h>
+#include <stdint.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -1064,7 +1065,7 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
     SET_window(self, w);
     SET_visible(self, 0);
 
-    if (!putHashEntry_replace(window2Obj, (int)w, (int)self)) {
+    if (!putHashEntry_replace(window2Obj, (intptr_t)w, (intptr_t)self)) {
         /* error recovery */
     }
 

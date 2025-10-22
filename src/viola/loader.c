@@ -2,6 +2,7 @@
  * loader.c
  */
 #include "utils.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #ifndef SEEK_SET
@@ -374,7 +375,7 @@ int load_objects_slots_fromBuiltInCache(SlotStruct* slotsInfo, int* slotsInfoIdx
         */
         label = slotsInfo[(*slotsInfoIdx)].slotName;
         if (!label) {
-            if ((int)slotsInfo[(*slotsInfoIdx)++].slotValue) {
+            if ((intptr_t)slotsInfo[(*slotsInfoIdx)++].slotValue) {
                 /* 1== end of object reached */
                 return 1;
             } else {

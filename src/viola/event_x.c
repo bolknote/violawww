@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <pwd.h>
 #include <signal.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -753,7 +754,7 @@ void handle_KeyPress(ep) XKeyEvent* ep;
     keyInfo = eventChar(ep);
 
     if (obj) {
-        if ((unsigned int)keyInfo <= (char*)1) {
+        if ((uintptr_t)keyInfo <= (uintptr_t)1) {
             sendMessage1(obj, "keyPress");
         } else {
             sendMessage1(obj, keyInfo);
@@ -764,7 +765,7 @@ void handle_KeyPress(ep) XKeyEvent* ep;
 
 void handle_KeyRelease(XKeyEvent* ep) {
     VObj* obj = findWindowObject(ep->window);
-    if (((int)eventChar(ep) <= 1) && obj) {
+    if (((intptr_t)eventChar(ep) <= 1) && obj) {
         sendMessage1(obj, "keyRelease");
     }
 }

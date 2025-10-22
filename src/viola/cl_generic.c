@@ -48,6 +48,7 @@
 #include "utils.h"
 #include "vlist.h"
 #include <ctype.h>
+#include <math.h>
 #include <stdlib.h>
 #include <sys/file.h>
 #include <unistd.h>

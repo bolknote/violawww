@@ -23,9 +23,7 @@
 
 int io_stat;
 
-char* vl_expandPath(path, buffer)
-char* path;
-char* buffer;
+char* vl_expandPath(char* path, char* buffer)
 {
     if (!path)
         return NULL;
@@ -81,10 +79,7 @@ char* buffer;
  * enter environment variables into the resource's variable list.
  *
  */
-char* getEnvironVars(argv, name, content)
-char* argv[];
-char* name;
-char* content;
+char* getEnvironVars(char* argv[], char* name, char* content)
 {
     if (argv) {
         int ai = 0, i;
@@ -112,9 +107,7 @@ char* content;
  *
  * return: -1 if unable to open file.
  */
-int loadFile(fileName, strp)
-char* fileName;
-char** strp;
+int loadFile(char* fileName, char** strp)
 {
     int fd;
     FILE* fp;
@@ -157,9 +150,7 @@ char** strp;
  *
  * return: -1 if unable to open file.
  */
-int saveFile(fileName, str)
-char* fileName;
-char* str;
+int saveFile(char* fileName, char* str)
 {
     FILE* fp;
 

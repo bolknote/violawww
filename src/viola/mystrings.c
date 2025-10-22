@@ -39,9 +39,7 @@ long itemValArray2[40];
 
 /* later, make into flags so no function call is necessary
  */
-int cmp_str(s1, s2)
-char* s1;
-char* s2;
+int cmp_str(char* s1, char* s2)
 {
     if (s1[0] == s2[0])
         if (!strcmp(s1, s2))
@@ -49,9 +47,7 @@ char* s2;
     return 0;
 }
 
-int cmp_int(n1, n2)
-int n1;
-int n2;
+int cmp_int(int n1, int n2)
 {
     return n1 == n2;
 }
@@ -66,8 +62,7 @@ int* i;
     }
 }
 
-int noCaseCharCmp(c1, c2)
-char c1, c2;
+int noCaseCharCmp(char c1, char c2)
 {
     if (c1 > 'Z')
         c1 -= 32; /* convert to lower case */
@@ -82,8 +77,7 @@ char c1, c2;
 /*
  * case insensitive strcmp
  */
-int noCaseStrCmp(s1, s2)
-char *s1, *s2;
+int noCaseStrCmp(char * s1, char * s2)
 {
     while (*s1 && *s2) {
         if (!noCaseCharCmp(*s1++, *s2++))
@@ -145,9 +139,7 @@ int NextWord(char* linep, int i, char* wordp, int maxlen)
  *               *wordp must be large enough to hold any argument in *linep.
  * PostCondition: *wordp contains an argument string from *linep.
  */
-int SkipNextWord(linep, i)
-char* linep;
-int i;
+int SkipNextWord(char* linep, int i)
 {
     for (;;) {
         if (linep[i] == NULL)
@@ -170,11 +162,7 @@ int i;
  * copys the next phrase, up to the cutOffWord, onto destStr.
  * if no cutOffWord is found, the phrase string is copied anyway.
  */
-int GetNextPhrase(str, i, destStr, cutOffWord)
-char* str;
-int i;
-char* destStr;
-char* cutOffWord;
+int GetNextPhrase(char* str, int i, char* destStr, char* cutOffWord)
 {
     char c;
     int x, y, ci = i, cuti = 0, parenLevel = 0, quoteToggle = 0;
@@ -232,9 +220,7 @@ gag:
  * returns: number of characters in returned string
  *          string containing the next number of "lines"
  */
-char* NextLines(textpp, lines, size)
-char** textpp;
-int *lines, *size;
+char* NextLines(char** textpp, int * lines, int * size)
 {
     char c = '\0', *textSavep, *cp;
     int linesToGet = *lines;
@@ -289,9 +275,7 @@ int *lines, *size;
  * "lines" specify how many lines to skip.
  * returns: current textpp value;
  */
-char* SkipNextLines(textpp, lines, size)
-char** textpp;
-int *lines, *size;
+char* SkipNextLines(char** textpp, int * lines, int * size)
 {
     char c = '\0';
     int linesToGet = *lines;
@@ -334,8 +318,7 @@ int *lines, *size;
  *                terminate line with <return>.
  * Return: address of the string
  */
-char* GetLine(commandline)
-char* commandline;
+char* GetLine(char* commandline)
 {
     char c;
     int i = 0;
@@ -356,8 +339,7 @@ char* commandline;
  *
  * PreCondition: str must end with a zero.
  */
-int AllBlank(str)
-char* str;
+int AllBlank(char* str)
 {
     if (str) {
         char c;
@@ -377,9 +359,7 @@ char* str;
  *         -1 if search character is not in the string.
  * PRECONDITION: str must end with null.
  */
-int SearchChar(str, sc)
-char* str;
-char sc;
+int SearchChar(char* str, char sc)
 {
     char c;
     int i = 0;
@@ -400,8 +380,7 @@ char sc;
  * RETURN: Number of spaces cut.
  *         0 if strings is set to NULL.
  */
-int CutTailSpace(str)
-char* str;
+int CutTailSpace(char* str)
 {
     if (str) {
         int l, i = 0;
@@ -421,8 +400,7 @@ char* str;
 /*
  * cuts of the spaces, if any, at the beginning and the end of a string.
  */
-char* trimEdgeSpaces(str)
-char* str;
+char* trimEdgeSpaces(char* str)
 {
     int i;
     char c, *cp, *cp2;
@@ -464,8 +442,7 @@ char* str;
  * rids of the leading spaces
  * shift string toward left to write over leading spaces
  */
-char* trimFrontSpaces(str)
-char* str;
+char* trimFrontSpaces(char* str)
 {
     int i = 0, j = 0;
 
@@ -497,8 +474,7 @@ char* str;
  * RETURN: proper value. or 0 if str is NULL
  * NOTE: Spaces at edges are ok. ex: "   ---2345.3555 " -> (-2345)
  */
-int strToVal(str)
-char* str;
+int strToVal(char* str)
 {
     long i;
     int j = 1, val = 0, negate = 1;
@@ -531,9 +507,7 @@ char* str;
  *
  * PRECONDITION: val must be integer.
  */
-char* valToStr(val, str)
-long val;
-char* str;
+char* valToStr(long val, char* str)
 {
     long i, j = 0, digit;
 
@@ -575,8 +549,7 @@ char* str;
  * find where the common character is
  * RETURN: -1 if none.
  */
-int commonCharAt(str, set)
-char *str, *set;
+int commonCharAt(char * str, char * set)
 {
     int i = 0;
 
@@ -591,8 +564,7 @@ char *str, *set;
 /*
  * see if str contains any characters in set.
  */
-int anyCommonChar(str, set)
-char *str, *set;
+int anyCommonChar(char * str, char * set)
 {
     while (*str)
         if (charIsInStr(*str++, set))
@@ -603,8 +575,7 @@ char *str, *set;
 /*
  * see if character ch is in string str
  */
-int charIsInStr(ch, str)
-char ch, *str;
+int charIsInStr(char ch, char * str)
 {
     while (*str) {
         if (*str++ == ch)
@@ -613,9 +584,7 @@ char ch, *str;
     return 0;
 }
 
-int numOfChar(str, sc)
-char str[];
-char sc;
+int numOfChar(char str[], char sc)
 {
     char c;
     int i = 0, j = 0;
@@ -631,8 +600,7 @@ char sc;
 /*
  * trim off the enclosing quotes of a string
  */
-char* trimQuote(str)
-char* str;
+char* trimQuote(char* str)
 {
     char *s, *h = str;
 
@@ -654,8 +622,7 @@ char* str;
 }
 
 /* allocates bigger space, and append to it.. the original string is freed*/
-char* append(orig, append)
-char *orig, *append;
+char* append(char * orig, char * append)
 {
     char* sp;
 
@@ -676,8 +643,7 @@ char *orig, *append;
 }
 
 /* same as append, with a carriage appended at the end */
-char* appendLine(orig, append)
-char *orig, *append;
+char* appendLine(char * orig, char * append)
 {
     char* sp;
 

@@ -139,9 +139,7 @@ void loadPathsAndExts() {
 #endif
 }
 
-static int fileIsOk(fullname, sbuf)
-char* fullname;
-struct stat* sbuf;
+static int fileIsOk(char* fullname, struct stat* sbuf)
 {
     if ((sbuf->st_mode & S_IFMT) == S_IFDIR) /* is a directory */
         return (0);
@@ -152,8 +150,7 @@ struct stat* sbuf;
  * -1 if access denied or not found, 0 if ok.
  */
 
-int findImage(name, fullname)
-char *name, *fullname;
+int findImage(char* name, char* fullname)
 {
     unsigned int p, e;
     struct stat sbuf;
@@ -251,8 +248,7 @@ void showPath() {
     }
 }
 
-char* expandPath(p)
-char* p;
+char* expandPath(char* p)
 {
     char buf1[BUFSIZ], buf2[BUFSIZ];
     int b1, b2, var;

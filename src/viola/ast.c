@@ -92,9 +92,7 @@ char* ASTTypeStr[] = {"EXPR_PLUS",  /* the EXPR's must be grouped in the front. 
                      "METH_SEND",
                      NULL};
 
-int my_yyinput(buf, max_size)
-char* buf;
-int max_size;
+int my_yyinput(char* buf, int max_size)
 {
     int n;
     size_t l = strlen(yyscript + yyscriptidx);
@@ -138,8 +136,7 @@ int init_ast() {
     return 1;
 }
 
-AST* makeAST(type)
-int type;
+AST* makeAST(int type)
 {
     AST* ast;
 
@@ -165,8 +162,7 @@ int type;
     return ast;
 }
 
-int countASTSiblings(ast)
-AST* ast;
+int countASTSiblings(AST* ast)
 {
     int i;
     for (i = 0; ast; ast = ast->next)

@@ -305,7 +305,7 @@ static int gifin_get_pixel(int* pel) {
  * close an open GIF image
  */
 
-static int gifin_close_image()
+static int gifin_close_image(void)
 {
   /* make sure there's an image open */
   if (!image_open)
@@ -348,9 +348,7 @@ static int gifin_close_file() {
  * load a colormap from the input stream
  */
 
-static int gifin_load_cmap(cmap, ncolors)
-BYTE cmap[3][256];
-int ncolors;
+static int gifin_load_cmap(BYTE cmap[3][256], int ncolors)
 {
     int i;
 
@@ -462,9 +460,7 @@ static void tellAboutImage(name) char* name;
            (gifin_l_cmap_flag ? gifin_l_ncolors : gifin_g_ncolors));
 }
 
-Image* gifLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* gifLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     Image* image;
@@ -558,8 +554,7 @@ unsigned int verbose;
     return (image);
 }
 
-int gifIdent(fullname, name)
-char *fullname, *name;
+int gifIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     unsigned int ret;

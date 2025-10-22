@@ -385,8 +385,7 @@ int scanString() {
 /*
  * Scan an identifier.
  */
-int scanIdentifier(sp)
-char* sp;
+int scanIdentifier(char* sp)
 {
     HashEntry* entry;
 
@@ -418,8 +417,7 @@ int scanInt() {
  * Scan for integer, maximum of n digits.
  * Return integer value.
  */
-int scanIntNDigits(n)
-int n;
+int scanIntNDigits(int n)
 {
     int i = 0;
     char c;

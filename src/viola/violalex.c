@@ -44,9 +44,9 @@ extern int verbose;
 char scanComment();
 
 int refresh_buf();
-int grabop();
-int grabint();
-int grabtag();
+int grabop(char c);
+int grabint(char c);
+int grabtag(char c);
 int iskeyword();
 
 #define strdup saveString
@@ -62,8 +62,7 @@ int varStrID = 0;
 /*
  * Stores identifier in hashtable
  */
-long storeIdent(identStr)
-char* identStr;
+long storeIdent(char* identStr)
 {
     HashEntry* entry;
 
@@ -75,8 +74,7 @@ char* identStr;
     return entry->val;
 }
 
-long getIdent(identStr)
-char* identStr;
+long getIdent(char* identStr)
 {
     HashEntry* entry;
 
@@ -102,8 +100,7 @@ long tokenize(char* identStr) {
  * Scan for integer, maximum of n digits.
  * Return integer value.
  */
-int scanIntNDigits(n)
-int n;
+int scanIntNDigits(int n)
 {
     int i = 0;
     char c;
@@ -173,8 +170,7 @@ char convertEscChar() {
  * the string, or the next character is anything other than a digit.
  * example: "\65B" => "AB"   "\0652" => "A2"   "\65\66" => "AB"
  */
-char* scanStringBlock(delimeter)
-char delimeter;
+char* scanStringBlock(char delimeter)
 {
     char c;
     short i = 0;
@@ -223,8 +219,7 @@ int scanString() {
 /*
  * Scan an identifier.
  */
-int scanIdentifier(sp)
-char* sp;
+int scanIdentifier(char* sp)
 {
     HashEntry* entry;
 
@@ -233,9 +228,7 @@ char* sp;
     return IDENT;
 }
 
-int dumpProximityErrorLine(buff, i)
-char* buff;
-int* i;
+int dumpProximityErrorLine(char* buff, int* i)
 {
     char c, j;
 
@@ -317,8 +310,7 @@ YYSTYPE yylval;
 
 #endif /* TEST */
 
-char* alloc_string(s)
-char* s;
+char* alloc_string(char* s)
 {
     char* t = (char*)malloc(strlen(s) + 1);
     assert(t != NULL);
@@ -326,9 +318,7 @@ char* s;
     return t;
 }
 
-char* alloc_stringn(s, l)
-char* s;
-int l;
+char* alloc_stringn(char* s, int l)
 {
     char* t = (char*)malloc(l + 1);
     assert(t != NULL);
@@ -337,11 +327,7 @@ int l;
     return t;
 }
 
-char* realloc_strcat(s, t, l, m)
-char* s;
-char* t;
-int l;
-int m;
+char* realloc_strcat(char* s, char* t, int l, int m)
 {
     s = (char*)realloc(s, l + m + 1);
     bcopy(t, s + l, m);
@@ -365,8 +351,7 @@ static int iskeyword(char* name);
 static int refresh_buf(void);
 #endif /* ANSI */
 
-static char* translate_token(token)
-int token;
+static char* translate_token(int token)
 {
     static char buf[80];
     if (token == 0) {
@@ -385,8 +370,7 @@ int token;
 }
 
 #ifdef NOT
-int yyerror(s)
-char* s;
+int yyerror(char* s)
 {
     /*	extern int yychar;*/
     char buf[BUFSIZ];
@@ -665,8 +649,7 @@ yypoint:
 extern void* is_inlib(char* s);
 #endif /* ANSI */
 
-int grabtag(c)
-char c;
+int grabtag(char c)
 {
     char buf[BUFSIZ];
     int i = 0, j;
@@ -810,8 +793,7 @@ loopdone:
     return yylex();
 }
 
-int grabop(c)
-char c;
+int grabop(char c)
 {
     int i;
     trielevel tp;
@@ -840,8 +822,7 @@ char c;
 }
 
 #define MAXNLEN 38
-int grabint(c)
-char c;
+int grabint(char c)
 {
     char intbuf[MAXNLEN + 2];
     unsigned int floating_pointp = 0;
@@ -878,8 +859,7 @@ donereading:
     return INTCONST;
 }
 
-int iskeyword(name)
-char* name;
+int iskeyword(char* name)
 {
     int index = 0;
     trielevel tb = trietop;

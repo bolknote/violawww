@@ -29,8 +29,7 @@ static unsigned long vhtonl(unsigned long lend) {
 }
 
 /* ARGSUSED */
-int mcidasIdent(fullname, name)
-char *fullname, *name;
+int mcidasIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     struct area_dir dir;
@@ -62,9 +61,7 @@ char *fullname, *name;
     return (r);
 }
 
-Image* mcidasLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* mcidasLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     struct area_dir dir;

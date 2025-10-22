@@ -14,8 +14,7 @@ STGGroup* stgGroup;
 HashTable* HT_str2token;
 HashTable* HT_token2str;
 
-char* returnSame(a)
-char* a;
+char* returnSame(char* a)
 {
     return a;
 }
@@ -39,8 +38,7 @@ long tagName2ID(char* s)
     return idCount;
 }
 
-char* tagID2Name(id)
-int id;
+char* tagID2Name(int id)
 {
     HashEntry* entry = HT_token2str->get(HT_token2str, (long)id);
     if (entry)
@@ -67,8 +65,7 @@ int stgcall_init() {
 
 /*XXX now url is filename
  */
-int loadSTG(url)
-char* url;
+int loadSTG(char* url)
 {
     char* spec;
     char inFile[500];
@@ -98,11 +95,9 @@ char* url;
 /*
  * access to libstg - with style attribute support
  */
-int getSTGInfo_tagPtrWithStyle(result, tagName1, tagName2, styleAttr)
-Packet* result;
-char* tagName1;
-char* tagName2; /* super element */
-char* styleAttr; /* style attribute value like "WARNING" */
+int getSTGInfo_tagPtrWithStyle(Packet* result, char* tagName1, char* tagName2, char* styleAttr)
+/* tagName2: super element */
+/* styleAttr: style attribute value like "WARNING" */
 {
     int stat;
     char* context[4];
@@ -160,10 +155,8 @@ char* styleAttr; /* style attribute value like "WARNING" */
  * access to libstg - original version for backward compatibility
  * Returns just STGMajor* for old code
  */
-int getSTGInfo_tagPtr(result, tagName1, tagName2)
-Packet* result;
-char* tagName1;
-char* tagName2; /* super element */
+int getSTGInfo_tagPtr(Packet* result, char* tagName1, char* tagName2)
+/* tagName2: super element */
 {
     int stat;
     char* context[4];
@@ -194,10 +187,8 @@ char* tagName2; /* super element */
 }
 
 /* Get attribute from STGResult (supports both major and minor) */
-int getSTGInfo_attrFromResult(resultPtr, attrName, result)
-long resultPtr; /* Actually STGResult* */
-char* attrName;
-Packet* result;
+int getSTGInfo_attrFromResult(long resultPtr, char* attrName, Packet* result)
+/* resultPtr: Actually STGResult* */
 {
     STGResult* stgRes = (STGResult*)resultPtr;
     STGAssert* assert;
@@ -220,10 +211,7 @@ Packet* result;
 }
 
 /* Original function - for backward compatibility, assumes tagPtr is just STGMajor* */
-int getSTGInfo_attr(tagPtr, attrName, result)
-STGMajor* tagPtr;
-char* attrName;
-Packet* result;
+int getSTGInfo_attr(STGMajor* tagPtr, char* attrName, Packet* result)
 {
     STGAssert* assert;
 
@@ -242,8 +230,7 @@ Packet* result;
     return 0;
 }
 
-int getSTGInfo_clean(tagPtr)
-STGMajor* tagPtr;
+int getSTGInfo_clean(STGMajor* tagPtr)
 {
     freeGroup(stgLib, &stgGroup);
 
@@ -253,10 +240,7 @@ STGMajor* tagPtr;
 /*
  * access to libstg.
  */
-int getSTGInfo(tagName, attrName, result)
-char* tagName;
-char* attrName;
-Packet* result;
+int getSTGInfo(char* tagName, char* attrName, Packet* result)
 {
     int stat;
     char* context[20];

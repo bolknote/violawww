@@ -42,9 +42,7 @@ static void PCX_LoadImage(); /* Routine to load a PCX file */
 **	Returns 1 if file is a PCX file, 0 otherwise
 */
 
-unsigned int pcxIdent(fullname, name)
-
-char *fullname, *name;
+unsigned int pcxIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     unsigned int ret;
@@ -88,10 +86,7 @@ char *fullname, *name;
 **	Returns pointer to allocated struct if successful, NULL otherwise
 */
 
-Image* pcxLoad(fullname, name, verbose)
-
-char *fullname, *name;
-unsigned int verbose;
+Image* pcxLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     unsigned char pcxhd[128];
@@ -156,12 +151,7 @@ unsigned int verbose;
 **	Returns no value (void function)
 */
 
-static void PCX_LoadImage(zf, bytes_per_row, image, rows)
-
-    ZFILE* zf;
-int bytes_per_row;
-Image* image;
-int rows;
+static void PCX_LoadImage(ZFILE* zf, int bytes_per_row, Image* image, int rows)
 {
     /* Goes like this: Read a byte.  If the two high bits are set,
     ** then the low 6 bits contain a repeat count, and the byte to

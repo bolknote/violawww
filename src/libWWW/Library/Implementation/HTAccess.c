@@ -64,8 +64,7 @@ PRIVATE HTList* protocols = NULL; /* List of registered protocol descriptors */
 **	-------------------
 */
 
-PUBLIC BOOL HTRegisterProtocol(protocol)
-HTProtocol* protocol;
+PUBLIC BOOL HTRegisterProtocol(HTProtocol* protocol)
 {
     if (!protocols)
         protocols = HTList_new();
@@ -511,8 +510,7 @@ PUBLIC BOOL HTLoadAnchor ARGS1(HTAnchor*, destination) {
 **	here		is anchor search is to be done on.
 */
 
-PRIVATE char hex(i)
-int i;
+PRIVATE char hex(int i)
 {
     char* hexchars = "0123456789ABCDEF";
     return hexchars[i];

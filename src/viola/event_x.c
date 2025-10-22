@@ -792,11 +792,7 @@ long handle_EnterNotify(XEnterWindowEvent* ep, VObj** dragObjp, int tool, int* m
     return 0;
 }
 
-long handle_LeaveNotify(ep, dragObjp, tool, mouseDown)
-XLeaveWindowEvent* ep;
-VObj** dragObjp;
-int tool;
-int* mouseDown;
+long handle_LeaveNotify(XLeaveWindowEvent* ep, VObj** dragObjp, int tool, int* mouseDown)
 {
     if (VCurrentObj == NULL)
         return 0;
@@ -821,13 +817,7 @@ int* mouseDown;
     return 0;
 }
 
-long handle_ButtonPress(ep, dragObjp, tool, resize_corner, mouseDown, from_x, from_y)
-XButtonEvent* ep;
-VObj** dragObjp;
-int tool;
-int* resize_corner;
-int* mouseDown;
-int *from_x, *from_y;
+long handle_ButtonPress(XButtonEvent* ep, VObj** dragObjp, int tool, int* resize_corner, int* mouseDown, int * from_x, int * from_y)
 {
     int root_x, root_y;
 
@@ -1017,12 +1007,7 @@ int *from_x, *from_y;
     }
 }
 
-long handle_ButtonRelease(ep, dragObjp, tool, resize_corner, mouseDown)
-XButtonEvent* ep;
-VObj** dragObjp;
-int tool;
-int* resize_corner;
-int* mouseDown;
+long handle_ButtonRelease(XButtonEvent* ep, VObj** dragObjp, int tool, int* resize_corner, int* mouseDown)
 {
     Window w;
 
@@ -1158,13 +1143,7 @@ int* mouseDown;
     }
 }
 
-long handle_MotionNotify(ep, dragObjp, tool, resize_corner, mouseDown, from_x, from_y)
-XEvent* ep;
-VObj** dragObjp;
-int tool;
-int* resize_corner;
-int* mouseDown;
-int *from_x, *from_y;
+long handle_MotionNotify(XEvent* ep, VObj** dragObjp, int tool, int* resize_corner, int* mouseDown, int * from_x, int * from_y)
 {
     if (((XMotionEvent*)ep)->is_hint != NotifyHint)
         return 0;
@@ -1355,8 +1334,7 @@ handle_ExposeNotify(ep) XExposeEvent* ep;
 }
 #endif
 
-long handle_ResizeRequest(ep)
-XResizeRequestEvent* ep;
+long handle_ResizeRequest(XResizeRequestEvent* ep)
 {
     VObj* obj = findWindowObject(ep->window);
 
@@ -1369,8 +1347,7 @@ XResizeRequestEvent* ep;
     }
 }
 
-long handle_ConfigureNotify(ep)
-XConfigureEvent* ep;
+long handle_ConfigureNotify(XConfigureEvent* ep)
 {
     VObj* obj = findWindowObject(ep->window);
 
@@ -1388,8 +1365,7 @@ XConfigureEvent* ep;
     }
 }
 
-char* eventChar(e)
-XKeyEvent* e;
+char* eventChar(XKeyEvent* e)
 {
     KeySym ks;
 
@@ -1458,9 +1434,7 @@ void processPeekKeys() {
     }
 }
 
-int checkParam(self, resize_corner)
-VObj* self;
-int resize_corner;
+int checkParam(VObj* self, int resize_corner)
 {
     if (GET_width(self) < 1) {
         SET_width(self, 1);
@@ -1481,12 +1455,8 @@ int resize_corner;
     return resize_corner;
 }
 
-long scheduleEvent(delay, func, obj, argc, argv)
-int delay; /* milliseconds */
-long (*func)();
-VObj* obj;
-int argc;
-Packet* argv;
+long scheduleEvent(int delay, long (*func)(), VObj* obj, int argc, Packet* argv)
+/* delay: milliseconds */
 {
     TimeInfo *ltip = NULL, *tip, *new;
 
@@ -1537,8 +1507,7 @@ Packet* argv;
     return (long)new;
 }
 
-int cancelEvent(timeInfoID)
-long timeInfoID;
+int cancelEvent(long timeInfoID)
 {
     TimeInfo *ltip = NULL, *tip;
 
@@ -1558,8 +1527,7 @@ long timeInfoID;
     return 0;
 }
 
-int cancelEventByObject(obj)
-VObj* obj;
+int cancelEventByObject(VObj* obj)
 {
     TimeInfo *ltip = NULL, *tip, *ntip;
 

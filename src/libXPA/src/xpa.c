@@ -586,8 +586,7 @@ unsigned long cr; /* Border color   */
     return gc;
 }
 
-static int depth(entrys)
-xpa_entry* entrys;
+static int depth(xpa_entry* entrys)
 /*
  * Examines menu specification and returns the maximum depth.
  */

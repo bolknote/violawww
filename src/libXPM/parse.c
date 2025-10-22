@@ -43,10 +43,7 @@ char* xpmColorKeys[] = {
  * This function parses an Xpm file or data and store the found informations
  * in an an xpmInternAttrib structure which is returned.
  */
-int xpmParseData(data, attrib_return, attributes)
-xpmData* data;
-xpmInternAttrib* attrib_return;
-XpmAttributes* attributes;
+int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* attributes)
 {
     /* variables to return */
     unsigned int width, height;

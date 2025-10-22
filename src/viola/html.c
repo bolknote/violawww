@@ -247,9 +247,7 @@ int html_backtrack() {
     return 1;
 }
 
-int html_search(self, keyword)
-VObj* self;
-char* keyword;
+int html_search(VObj* self, char* keyword)
 {
     HText* htext;
     TFStruct *oldtf, *tf;
@@ -350,8 +348,7 @@ char* keyword;
     return 1;
 }
 
-char* html_pathSimplify(path)
-char* path;
+char* html_pathSimplify(char* path)
 {
     HTSimplify(path);
     return path;
@@ -1158,9 +1155,7 @@ PUBLIC HTAnchor* HText_linkSelTo ARGS2(HText*, me, HTAnchor*, anchor) {
  *
  * initializes and sets up a text field structure
  */
-TFStruct* html_setUpTFStruct(self, text)
-VObj* self;
-char* text;
+TFStruct* html_setUpTFStruct(VObj* self, char* text)
 {
     TFStruct* tf = GET__TFStruct(self);
 
@@ -1221,9 +1216,7 @@ char* text;
     return tf;
 }
 
-TFStruct* html_updateTFStruct(self, address)
-VObj* self;
-char* address;
+TFStruct* html_updateTFStruct(VObj* self, char* address)
 {
     TFStruct* tf = GET__TFStruct(self);
     int fontID = GET__font(self);
@@ -1297,12 +1290,7 @@ char* address;
 /*
  * return new htext, if different document
  */
-HText* html_loadDocument(self, address, title, simpleAddress, anchorSearch)
-VObj* self;
-char* address;
-char** title;
-char** simpleAddress;
-char** anchorSearch;
+HText* html_loadDocument(VObj* self, char* address, char** title, char** simpleAddress, char** anchorSearch)
 {
     TFLineNode* currentp = NULL;
     TFLineNode* oldp;
@@ -1523,12 +1511,7 @@ char** anchorSearch;
 /*
  * return status (YES/NO)
  */
-int html_fetchDocument(self, address, simpleAddress, anchorSearch, fp)
-VObj* self;
-char* address;
-char** simpleAddress;
-char** anchorSearch;
-FILE* fp;
+int html_fetchDocument(VObj* self, char* address, char** simpleAddress, char** anchorSearch, FILE* fp)
 {
     int i;
     char *cp, anchorInfo[64];
@@ -1610,9 +1593,7 @@ int moveToSelectedAnchor ARGS2(HText*, text, char*, anchorInfo) {
     return -1;
 }
 
-HText* html_findHTextByAddress(self, address)
-VObj* self;
-char* address;
+HText* html_findHTextByAddress(VObj* self, char* address)
 {
     HTList* list;
     HText* htext;
@@ -1635,9 +1616,7 @@ char* address;
     return NULL;
 }
 
-HText* html_updateHTextTFStruct(oldtf, newtf)
-TFStruct* oldtf;
-TFStruct* newtf;
+HText* html_updateHTextTFStruct(TFStruct* oldtf, TFStruct* newtf)
 {
     HTList* list;
     HText* htext;
@@ -1657,9 +1636,7 @@ TFStruct* newtf;
 /*
  * given address, return associated title
  */
-char* html_get_title(self, address)
-VObj* self;
-char* address;
+char* html_get_title(VObj* self, char* address)
 {
     HText* text;
 
@@ -1675,8 +1652,7 @@ char* address;
 /*
  * given address, return html source text
  */
-char* html_get_src(address)
-char* address;
+char* html_get_src(char* address)
 {
     return NULL;
 }
@@ -1684,9 +1660,7 @@ char* address;
 /*
  * for force updates
  */
-int html_deleteDoc(self, address)
-VObj* self;
-char* address;
+int html_deleteDoc(VObj* self, char* address)
 {
     HText* text;
 
@@ -1697,15 +1671,13 @@ char* address;
     return 0;
 }
 
-int html_setCacheLimit(n)
-int n;
+int html_setCacheLimit(int n)
 {
     loaded_limit = n;
     return n;
 }
 
-int html_clearCache(self)
-VObj* self;
+int html_clearCache(VObj* self)
 {
     HTList* list;
     HText* htext;
@@ -1855,15 +1827,13 @@ int setHTMLStyle() {
 }
 #endif
 
-char* html_headerInfo(self)
-VObj* self;
+char* html_headerInfo(VObj* self)
 {
     char* cp;
     return NULL;
 }
 
-char* html_WWWNameOfFile(name)
-char* name;
+char* html_WWWNameOfFile(char* name)
 {
     return (char*)WWW_nameOfFile(name);
 }

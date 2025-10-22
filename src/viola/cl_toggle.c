@@ -154,11 +154,7 @@ long helper_toggle_get(VObj* self, Packet* result, int argc, Packet argv[], long
     return helper_XBM_get(self, result, argc, argv, labelID);
 }
 
-long meth_toggle_get(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_toggle_get(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_toggle_get(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
@@ -188,20 +184,12 @@ long helper_toggle_set(VObj* self, Packet* result, int argc, Packet argv[], long
     }
     return helper_XBM_set(self, result, argc, argv, labelID);
 }
-long meth_toggle_set(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_toggle_set(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return helper_toggle_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
 
-long meth_toggle_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_toggle_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w = GET_window(self);
     Pixmap pixmap;
@@ -245,11 +233,7 @@ Packet argv[];
     return 1;
 }
 
-long meth_toggle_toggle(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long meth_toggle_toggle(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (GET_toggleState(self))
         SET_toggleState(self, 0);

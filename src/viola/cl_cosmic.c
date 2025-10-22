@@ -51,8 +51,7 @@
 #include "viola.h"
 #include <string.h>
 
-int notSecure(self)
-VObj* self;
+int notSecure(VObj* self)
 {
     if (GET_security(self) > 0) {
         fprintf(stderr, "loadFile(): execution denied to object '%s' (security=%d)\n",

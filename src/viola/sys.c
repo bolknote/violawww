@@ -24,8 +24,7 @@ int init_sys() {
 }
 
 /* return 1 on success */
-int sys_alarm(sec)
-int sec;
+int sys_alarm(int sec)
 {
     /*
             alarm((unsigned)sec);
@@ -33,14 +32,12 @@ int sec;
     return 0;
 }
 
-int sys_date(year, month, day)
-int *year, *month, *day;
+int sys_date(int * year, int * month, int * day)
 {
     return 0;
 }
 
-int sys_time(hour, minute, sec)
-int *hour, *minute, *sec;
+int sys_time(int * hour, int * minute, int * sec)
 {
     return 0;
 }
@@ -87,9 +84,7 @@ MemoryGroup *newMemoryGroup(defaultSize)
 }
 */
 #ifdef MEM_USE
-char* _Vmalloc(group, size)
-MemoryGroup* group;
-int size;
+char* _Vmalloc(MemoryGroup* group, int size)
 {
     if (!group->heap) {
         group->heap = (MemoryGroupHeap*)malloc(sizeof(struct MemoryGroupHeap));

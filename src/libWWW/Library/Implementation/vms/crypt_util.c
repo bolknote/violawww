@@ -622,8 +622,7 @@ STATIC void ufc_mk_keytab(key) char* key;
  * Undo an extra E selection and do final permutations
  */
 
-ufc_long* _ufc_dofinalperm(l1, l2, r1, r2)
-ufc_long l1, l2, r1, r2;
+ufc_long* _ufc_dofinalperm(ufc_long l1, ufc_long l2, ufc_long r1, ufc_long r2)
 {
     ufc_long v1, v2, x;
     static ufc_long ary[2];
@@ -687,9 +686,7 @@ ufc_long l1, l2, r1, r2;
  * prefixing with the salt
  */
 
-STATIC char* output_conversion(v1, v2, salt)
-ufc_long v1, v2;
-char* salt;
+STATIC char* output_conversion(ufc_long v1, ufc_long v2, char* salt)
 {
     static char outbuf[14];
     int i, s, shf;
@@ -722,8 +719,7 @@ ufc_long* _ufc_doit();
  * UNIX crypt function
  */
 
-char* crypt(key, salt)
-char *key, *salt;
+char* crypt(char * key, char * salt)
 {
     ufc_long* s;
     char ktab[9];
@@ -760,9 +756,7 @@ char *key, *salt;
  * They don't need to call init_des.
  */
 
-char* fcrypt(key, salt)
-char* key;
-char* salt;
+char* fcrypt(char* key, char* salt)
 {
     return crypt(key, salt);
 }
@@ -881,8 +875,7 @@ void setkey(key) char* key;
  * Ultrix crypt16 function, thanks to pcl@convex.oxford.ac.uk (Paul Leyland)
  */
 
-char* crypt16(key, salt)
-char *key, *salt;
+char* crypt16(char * key, char * salt)
 {
     ufc_long *s, *t;
     char ktab[9], ttab[9];

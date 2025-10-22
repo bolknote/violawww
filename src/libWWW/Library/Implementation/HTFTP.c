@@ -171,8 +171,7 @@ PRIVATE char next_data_char NOARGS {
 #ifdef __STDC__
 PRIVATE int close_connection(connection* con)
 #else
-PRIVATE int close_connection(con)
-connection* con;
+PRIVATE int close_connection(connection* con)
 #endif
 {
     connection* scan;
@@ -218,8 +217,7 @@ connection* con;
 #ifdef __STDC__
 PRIVATE int response(char* cmd)
 #else
-PRIVATE int response(cmd)
-char* cmd;
+PRIVATE int response(char* cmd)
 #endif
 {
     int result; /* Three-digit decimal code */

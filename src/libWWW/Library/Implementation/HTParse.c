@@ -28,8 +28,7 @@ struct struct_parts {
 #ifdef __STDC__
 char* HTStrip(char* s)
 #else
-char* HTStrip(s)
-char* s;
+char* HTStrip(char* s)
 #endif
 {
 #define SPACE(c) ((c == ' ') || (c == '\t') || (c == '\n'))
@@ -153,10 +152,7 @@ struct struct_parts* parts;
 #ifdef __STDC__
 char* HTParse(const char* aName, const char* relatedName, int wanted)
 #else
-char* HTParse(aName, relatedName, wanted)
-char* aName;
-char* relatedName;
-int wanted;
+char* HTParse(char* aName, char* relatedName, int wanted)
 #endif
 
 {
@@ -342,9 +338,7 @@ void HTSimplify(filename) char* filename;
 #ifdef __STDC__
 char* HTRelative(const char* aName, const char* relatedName)
 #else
-char* HTRelative(aName, relatedName)
-char* aName;
-char* relatedName;
+char* HTRelative(char* aName, char* relatedName)
 #endif
 {
     char* result = 0;

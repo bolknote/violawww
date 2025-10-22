@@ -112,12 +112,7 @@ char* tail(char* path) {
     return (t);
 }
 
-Image* processImage(disp, scrn, image, options, verbose)
-Display* disp;
-int scrn;
-Image* image;
-ImageOptions* options;
-unsigned int verbose;
+Image* processImage(Display* disp, int scrn, Image* image, ImageOptions* options, unsigned int verbose)
 {
     Image* tmpimage;
     XColor xcolor;
@@ -270,9 +265,9 @@ typedef unsigned char cuc; /* char variety used in algorithm */
 char* /* returns -> leftmost occurrence,
          or null pointer if not present */
 /* NOT USED */
-___strstr(s1, s2)
-char* s1; /* -> string to be searched */
-char* s2; /* -> search-pattern string */
+___strstr(char* s1, char* s2)
+/* s1: -> string to be searched */
+/* s2: -> search-pattern string */
 {
     cuc* t;                            /* -> text character being tested */
     cuc* p;                            /* -> pattern char being tested */

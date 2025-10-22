@@ -71,8 +71,7 @@ int INPUTbuffi;
 char INPUTbuff[INPUTBUFFSIZE];
 #endif
 
-int init_loader(path)
-char* path;
+int init_loader(char* path)
 {
     if (path) {
         if (setViolaPath(path) > 0) {
@@ -90,8 +89,7 @@ char* path;
  *	0, if not set.
  *	-i, if exceed VIOLA_PATH_ARRAY_SIZE (which is = i)
  */
-int setViolaPath(newPathStr)
-char* newPathStr;
+int setViolaPath(char* newPathStr)
 {
     int i, stri;
     char *cp, pathStr[BUFF_SIZE], buff[BUFF_SIZE];
@@ -118,9 +116,7 @@ char* newPathStr;
  * 		-1 if failed to open object file
  *		use VIOLA_PATH if path is not given (NULL)
  */
-int load_object(filename, pathname)
-char* filename;
-char* pathname;
+int load_object(char* filename, char* pathname)
 {
     FILE* fp;
     long slotv[100][2];
@@ -213,10 +209,7 @@ char* pathname;
  *
  * someday, the reading ought to be buffer read...
  */
-int load_objects_slots(fp, slotv, slotc)
-FILE* fp;
-long (*slotv)[100][2];
-int* slotc;
+int load_objects_slots(FILE* fp, long (*slotv)[100][2], int* slotc)
 {
     char label[SLOT_LABEL_SIZE], *dynaBuff;
     int labeli, sloti, dynaBuffi;
@@ -366,11 +359,7 @@ int* slotc;
  * Size of slot labels are limited to SLOT_LABEL_SIZE characters.
  * Size of slot content has no limitation.
  */
-int load_objects_slots_fromBuiltInCache(slotsInfo, slotsInfoIdx, slotv, slotc)
-SlotStruct* slotsInfo;
-int* slotsInfoIdx;
-long (*slotv)[100][2];
-int* slotc;
+int load_objects_slots_fromBuiltInCache(SlotStruct* slotsInfo, int* slotsInfoIdx, long (*slotv)[100][2], int* slotc)
 {
     HashEntry* entry;
     char *label, *cp;
@@ -411,8 +400,7 @@ int* slotc;
 
 /* load from objects specified in objs.c, if it's there.
  */
-int loadFromBuiltInCache(filename)
-char* filename;
+int loadFromBuiltInCache(char* filename)
 {
     long slotv[100][2];
     int slotc;

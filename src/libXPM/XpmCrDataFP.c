@@ -20,12 +20,7 @@
 #endif
 #endif
 
-int XpmCreateDataFromPixmap(display, data_return, pixmap, shapemask, attributes)
-Display* display;
-char*** data_return;
-Pixmap pixmap;
-Pixmap shapemask;
-XpmAttributes* attributes;
+int XpmCreateDataFromPixmap(Display* display, char*** data_return, Pixmap pixmap, Pixmap shapemask, XpmAttributes* attributes)
 {
     XImage* image = NULL;
     XImage* shapeimage = NULL;

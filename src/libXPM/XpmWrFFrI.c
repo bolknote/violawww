@@ -22,12 +22,7 @@
 
 LFUNC(WriteData, int, (xpmData * mdata, xpmInternAttrib* attrib, XpmAttributes* attributes));
 
-int XpmWriteFileFromImage(display, filename, image, shapeimage, attributes)
-Display* display;
-char* filename;
-XImage* image;
-XImage* shapeimage;
-XpmAttributes* attributes;
+int XpmWriteFileFromImage(Display* display, char* filename, XImage* image, XImage* shapeimage, XpmAttributes* attributes)
 {
     xpmData mdata;
     char *name, *end_name, *begin_name = NULL;
@@ -79,10 +74,7 @@ XpmAttributes* attributes;
     return (ErrorStatus);
 }
 
-static int WriteData(mdata, attrib, attributes)
-xpmData* mdata;
-xpmInternAttrib* attrib;
-XpmAttributes* attributes;
+static int WriteData(xpmData* mdata, xpmInternAttrib* attrib, XpmAttributes* attributes)
 {
     /* calculation variables */
     xpmRgbName rgbn[MAX_RGBNAMES];

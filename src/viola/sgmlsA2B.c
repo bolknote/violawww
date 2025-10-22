@@ -107,9 +107,7 @@ emitInt(i) int i;
     fprintf(stdout, "%c", (int)(i & 255));
 }
 
-char* filterCtrl(inStr, size)
-char* inStr;
-int* size;
+char* filterCtrl(char* inStr, int* size)
 {
     char c, *cp, *outStr;
 
@@ -176,8 +174,7 @@ int* size;
     return outStr;
 }
 
-int findTagID(tagName)
-char* tagName;
+int findTagID(char* tagName)
 {
     int i;
 

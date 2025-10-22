@@ -17,10 +17,7 @@
 /* Forward declaration to avoid including stdlib.h which causes OSByteOrder conflicts on macOS */
 extern void exit(int);
 
-Image* clip(simage, clipx, clipy, clipw, cliph, verbose)
-Image* simage;
-unsigned int clipx, clipy, clipw, cliph;
-unsigned int verbose;
+Image* clip(Image* simage, unsigned int clipx, unsigned int clipy, unsigned int clipw, unsigned int cliph, unsigned int verbose)
 {
     Image* image;
     unsigned int x, y;

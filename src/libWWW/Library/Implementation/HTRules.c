@@ -65,10 +65,7 @@ PRIVATE rule* rule_tail = 0; /* Pointer to last on list */
 #ifdef __STDC__
 PUBLIC int HTAddRule(HTRuleOp op, const char* pattern, const char* equiv)
 #else
-int HTAddRule(op, pattern, equiv)
-HTRuleOp op;
-char* pattern;
-char* equiv;
+int HTAddRule(HTRuleOp op, char* pattern, char* equiv)
 #endif
 { /* BYTE_ADDRESSING removed and memory check - AS - 1 Sep 93 */
     rule* temp;
@@ -167,8 +164,7 @@ int HTClearRules()
 #ifdef __STDC__
 char* HTTranslate(const char* required)
 #else
-char* HTTranslate(required)
-char* required;
+char* HTTranslate(char* required)
 #endif
 {
     rule* r;

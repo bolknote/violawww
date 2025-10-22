@@ -11,12 +11,7 @@
 #include "xpmP.h"
 #include <stdlib.h>
 
-int XpmCreateImageFromData(display, data, image_return, shapeimage_return, attributes)
-Display* display;
-char** data;
-XImage** image_return;
-XImage** shapeimage_return;
-XpmAttributes* attributes;
+int XpmCreateImageFromData(Display* display, char** data, XImage** image_return, XImage** shapeimage_return, XpmAttributes* attributes)
 {
     xpmData mdata;
     int ErrorStatus;

@@ -28,12 +28,7 @@ int fcount = 0;
  * class-offset-id, of pointers to each class's method... thus, the only
  * search required is in the hashing to get the dispatch array.
  */
-long callMeth(self, result, argc, argv, funcid)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int funcid;
+long callMeth(VObj* self, Packet* result, int argc, Packet argv[], int funcid)
 {
     ClassInfo* cip = GET__classInfo(self);
     /*	MethodInfo *mip;*/
@@ -56,9 +51,7 @@ int funcid;
     return 0;
 }
 
-long findMeth(self, funcid)
-VObj* self;
-int funcid;
+long findMeth(VObj* self, int funcid)
 {
     ClassInfo* cip = GET__classInfo(self);
     HashEntry* entry = &(cip->mht->entries[funcid % cip->mht->size]);
@@ -74,12 +67,7 @@ int funcid;
 }
 
 #ifdef oldstuffunuseddonwantgoodbyerusty
-long callMeth(self, result, argc, argv, fid)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
-int fid;
+long callMeth(VObj* self, Packet* result, int argc, Packet argv[], int fid)
 {
     ClassInfo* cip;
     MethodInfo* mip;

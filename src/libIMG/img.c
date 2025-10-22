@@ -22,7 +22,7 @@ static int RowCount;          /* current row */
 static int ColCount;          /* current column */
 
 static int IMG_ReadHeader(); /* Read file header */
-static void IMG_WriteByte(); /* Write output byte */
+static void IMG_WriteByte(unsigned char c, int cols, unsigned int bpl); /* Write output byte */
 
 /*
 **  imgIdent
@@ -32,9 +32,7 @@ static void IMG_WriteByte(); /* Write output byte */
 **	Returns 1 if file is a GEM Image, 0 otherwise
 */
 
-unsigned int imgIdent(fullname, name)
-
-char *fullname, *name;
+unsigned int imgIdent(char* fullname, char* name)
 {
     ZFILE* zf;            /* Input file */
     IMG_Header header;    /* GEM Image header info */
@@ -61,10 +59,7 @@ char *fullname, *name;
 **	Returns pointer to allocated struct if successful, NULL otherwise
 */
 
-Image* imgLoad(fullname, name, verbose)
-
-char *fullname, *name;
-unsigned int verbose;
+Image* imgLoad(char* fullname, char* name, unsigned int verbose)
 {
     int i;                                  /* Random index */
     ZFILE* zf;                              /* Input file */
@@ -255,11 +250,7 @@ static int IMG_ReadHeader(ZFILE* zf, IMG_Header* h) {
 **	Returns no value (void function)
 */
 
-static void IMG_WriteByte(c, cols, bpl)
-
-    unsigned char c;
-int cols;
-unsigned int bpl;
+static void IMG_WriteByte(unsigned char c, int cols, unsigned int bpl)
 {
     int i;
     unsigned char* ptr;

@@ -25,10 +25,7 @@ static int pixmapErrorTrap(Display* disp, XErrorEvent* pErrorEvent) {
     return (0);
 }
 
-Pixmap ximageToPixmap(disp, parent, ximageinfo)
-Display* disp;
-Window parent;
-XImageInfo* ximageinfo;
+Pixmap ximageToPixmap(Display* disp, Window parent, XImageInfo* ximageinfo)
 {
     int (*old_handler)();
     Pixmap pixmap;
@@ -53,10 +50,7 @@ XImageInfo* ximageinfo;
  * by looking at the structure ourselves.
  */
 
-static unsigned int bitsPerPixelAtDepth(disp, scrn, depth)
-Display* disp;
-int scrn;
-unsigned int depth;
+static unsigned int bitsPerPixelAtDepth(Display* disp, int scrn, unsigned int depth)
 {
 #if 0 /* the way things are */
   unsigned int a;
@@ -88,15 +82,9 @@ unsigned int depth;
     return 1;
 }
 
-XImageInfo* imageToXImage(disp, scrn, visual, ddepth, image, private_cmap, fit, verbose)
-Display* disp;
-int scrn;
-Visual* visual;      /* visual to use */
-unsigned int ddepth; /* depth of the visual to use */
-Image* image;
-unsigned int private_cmap;
-unsigned int fit;
-unsigned int verbose;
+XImageInfo* imageToXImage(Display* disp, int scrn, Visual* visual, unsigned int ddepth, Image* image, unsigned int private_cmap, unsigned int fit, unsigned int verbose)
+/* visual: visual to use */
+/* ddepth: depth of the visual to use */
 {
     Pixel *index, *redvalue, *greenvalue, *bluevalue;
     unsigned int a, b, newmap, x, y, linelen, dpixlen, dbits;

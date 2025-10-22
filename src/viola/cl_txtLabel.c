@@ -124,29 +124,17 @@ ClassInfo class_txtLabel = {
     &class_txt,                                     /* super class info		*/
 };
 
-long int meth_txtLabel_config(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtLabel_config(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_txt_config(self, result, argc, argv);
 }
 
-long int meth_txtLabel_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtLabel_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_txt_initialize(self, result, argc, argv);
 }
 
-long int meth_txtLabel_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtLabel_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     Window w;
 

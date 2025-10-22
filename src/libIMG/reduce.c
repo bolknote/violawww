@@ -41,9 +41,7 @@ void initSquareTable() {
     squareInit = 1;
 }
 
-unsigned long colorDistance(rgb, a, b)
-RGBMap* rgb;
-Pixel a, b;
+unsigned long colorDistance(RGBMap* rgb, Pixel a, Pixel b)
 {
     return (squareTable[DIST(*(rgb->red + a), *(rgb->red + b)) >> 1] +
             squareTable[DIST(*(rgb->green + a), *(rgb->green + b)) >> 1] +
@@ -88,8 +86,7 @@ struct color_area {
 /* predicate functions for qsort
  */
 
-static int sortRGB(p1, p2)
-unsigned short *p1, *p2;
+static int sortRGB(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -116,8 +113,7 @@ unsigned short *p1, *p2;
         return (1);
 }
 
-static int sortRBG(p1, p2)
-unsigned short *p1, *p2;
+static int sortRBG(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -144,8 +140,7 @@ unsigned short *p1, *p2;
         return (1);
 }
 
-static int sortGRB(p1, p2)
-unsigned short *p1, *p2;
+static int sortGRB(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -172,8 +167,7 @@ unsigned short *p1, *p2;
         return (1);
 }
 
-static int sortGBR(p1, p2)
-unsigned short *p1, *p2;
+static int sortGBR(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -200,8 +194,7 @@ unsigned short *p1, *p2;
         return (1);
 }
 
-static int sortBRG(p1, p2)
-unsigned short *p1, *p2;
+static int sortBRG(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -228,8 +221,7 @@ unsigned short *p1, *p2;
         return (1);
 }
 
-static int sortBGR(p1, p2)
-unsigned short *p1, *p2;
+static int sortBGR(unsigned short* p1, unsigned short* p2)
 {
     unsigned int red1, green1, blue1, red2, green2, blue2;
 
@@ -367,9 +359,7 @@ struct color_area **rlargest, **rsmallest, *area;
     *rsmallest = smallest;
 }
 
-Image* reduce(image, n, verbose)
-Image* image;
-unsigned int n, verbose;
+Image* reduce(Image* image, unsigned int n, unsigned int verbose)
 {
     unsigned long pixel_counts[32768]; /* pixel occurrance histogram */
     unsigned short pixel_array[32768];

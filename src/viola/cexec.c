@@ -140,8 +140,7 @@ long incrementExecStack() {
     return (long)execStack;
 }
 
-int getlistcount(attrp)
-Attr* attrp;
+int getlistcount(Attr* attrp)
 {
     for (i = 0, attrp2 = (Attr*)((Packet*)(attrp->val))->info.a; attrp2; attrp2 = attrp2->next)
         i++;
@@ -156,8 +155,7 @@ void dumpStack() {
     }
 }
 
-Packet* getlistitem(attrp)
-Attr* attrp;
+Packet* getlistitem(Attr* attrp)
 {
     if (!attrp)
         return NULL;
@@ -184,8 +182,7 @@ Attr* attrp;
 
 /* must be called before makeArgList. Makes sure that the arg variable exists
  */
-Attr* makeArgAttr(self)
-VObj* self;
+Attr* makeArgAttr(VObj* self)
 {
     Attr* argAttr = GET__argAttr(self);
     Attr *attrp, *attrlist = NULL;
@@ -231,9 +228,7 @@ VObj* self;
     return argAttr;
 }
 
-int makeArgList(self, argc)
-VObj* self;
-int argc;
+int makeArgList(VObj* self, int argc)
 {
     int i;
     Attr *argAttr, *attrp, *attrlist = NULL;
@@ -2096,8 +2091,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
     return &reg1;
 }
 
-Packet* execObjScript(obj)
-VObj* obj;
+Packet* execObjScript(VObj* obj)
 {
     union PCode* pcode = GET__script(obj);
 
@@ -2316,10 +2310,7 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
     return result;
 }
 
-Packet* execScript(obj, result, script)
-VObj* obj;
-Packet* result;
-char* script;
+Packet* execScript(VObj* obj, Packet* result, char* script)
 {
     union PCode* pcode;
     extern AST* theAST;
@@ -2485,10 +2476,7 @@ Packet *spp, *pp;
         ++pp;                                                                                      \
     }
 
-long sendMessagePackets(self, packets, packetc)
-VObj* self;
-Packet* packets;
-int packetc;
+long sendMessagePackets(VObj* self, Packet* packets, int packetc)
 {
     int i;
     long save_stackExecIdx = stackExecIdx;
@@ -2517,11 +2505,7 @@ int packetc;
     return 1;
 }
 
-long sendMessagePackets_result(self, packets, packetc, result)
-VObj* self;
-Packet* packets;
-int packetc;
-Packet* result;
+long sendMessagePackets_result(VObj* self, Packet* packets, int packetc, Packet* result)
 {
     int i;
     long save_stackExecIdx = stackExecIdx;
@@ -2615,10 +2599,7 @@ long sendTokenMessageAndInts(VObj* self, int tok, long* intArray, int intCount) 
     return 1;
 }
 
-long sendTokenMessage_result(self, tok, result)
-VObj* self;
-int tok;
-Packet* result;
+long sendTokenMessage_result(VObj* self, int tok, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2647,9 +2628,7 @@ Packet* result;
     return 1;
 }
 
-long sendTokenMessage(self, tok)
-VObj* self;
-int tok;
+long sendTokenMessage(VObj* self, int tok)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2673,9 +2652,7 @@ int tok;
     return 1;
 }
 
-long sendMessage1(self, messg)
-VObj* self;
-char* messg;
+long sendMessage1(VObj* self, char* messg)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2742,10 +2719,7 @@ long sendMessage1N1str(VObj* self, char* messg, char* s1)
     return 1;
 }
 
-long sendMessage1N2str(self, messg, s1, s2)
-VObj* self;
-char* messg;
-char *s1, *s2;
+long sendMessage1N2str(VObj* self, char* messg, char * s1, char * s2)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2773,10 +2747,7 @@ char *s1, *s2;
     return 1;
 }
 
-long sendMessage1N1int(self, messg, a)
-VObj* self;
-char* messg;
-int a;
+long sendMessage1N1int(VObj* self, char* messg, int a)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2802,11 +2773,7 @@ int a;
     return 1;
 }
 
-long sendMessage1N1int_result(self, messg, val, result)
-VObj* self;
-char* messg;
-int val;
-Packet* result;
+long sendMessage1N1int_result(VObj* self, char* messg, int val, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2837,10 +2804,7 @@ Packet* result;
     return 1;
 }
 
-long sendTokenMessageN1int(self, tok, a)
-VObj* self;
-int tok;
-int a;
+long sendTokenMessageN1int(VObj* self, int tok, int a)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2866,10 +2830,7 @@ int a;
     return 1;
 }
 
-long sendMessage1N2int(self, messg, a, b)
-VObj* self;
-char* messg;
-int a, b;
+long sendMessage1N2int(VObj* self, char* messg, int a, int b)
 {
     int buff[2];
 
@@ -2878,10 +2839,7 @@ int a, b;
     return sendMessageAndInts(self, messg, buff, 2);
 }
 
-long sendMessage1N4int(self, messg, a, b, c, d)
-VObj* self;
-char* messg;
-int a, b, c, d;
+long sendMessage1N4int(VObj* self, char* messg, int a, int b, int c, int d)
 {
     int buff[4];
 
@@ -2892,9 +2850,7 @@ int a, b, c, d;
     return sendMessageAndInts(self, messg, buff, 4);
 }
 
-long sendMessage1chr(self, c1)
-VObj* self;
-char c1;
+long sendMessage1chr(VObj* self, char c1)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2918,10 +2874,7 @@ char c1;
     return 1;
 }
 
-long sendMessage1_result(self, messg, result)
-VObj* self;
-char* messg;
-Packet* result;
+long sendMessage1_result(VObj* self, char* messg, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2950,10 +2903,7 @@ Packet* result;
     return 1;
 }
 
-long sendMessage1chr_result(self, c1, result)
-VObj* self;
-char c1;
-Packet* result;
+long sendMessage1chr_result(VObj* self, char c1, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -2982,10 +2932,7 @@ Packet* result;
     return 1;
 }
 
-long sendMessage1N1str_result(self, messg, s1, result)
-VObj* self;
-char *messg, *s1;
-Packet* result;
+long sendMessage1N1str_result(VObj* self, char * messg, char * s1, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -3016,10 +2963,7 @@ Packet* result;
     return 1;
 }
 
-long sendMessage1N2str_result(self, messg, s1, s2, result)
-VObj* self;
-char *messg, *s1, *s2;
-Packet* result;
+long sendMessage1N2str_result(VObj* self, char * messg, char * s1, char * s2, Packet* result)
 {
     long save_stackExecIdx = stackExecIdx;
     long save_stackBaseIdx = stackBaseIdx;
@@ -3078,9 +3022,7 @@ int getVariable(Attr* varlist, char* name, Packet* result) {
     return 0;
 }
 
-long getVariable_id(varlist, varid)
-Attr* varlist;
-int varid;
+long getVariable_id(Attr* varlist, int varid)
 {
     /* note: if the identifier is not even in the dictionary, then no
      * such variable exists -- all variable IDs are entered into the dict
@@ -3182,11 +3124,7 @@ Attr *setVariable(varlistp, name, resultp)
 
 int destroyVariable(Attr* varlist, char* name, int retp) { return 0; }
 
-long sendMessageAndIntsByName(objName, messg, intArray, intCount)
-char* objName;
-char* messg;
-int* intArray;
-int intCount;
+long sendMessageAndIntsByName(char* objName, char* messg, int* intArray, int intCount)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3196,9 +3134,7 @@ int intCount;
     return sendMessageAndInts(theObj, messg, intArray, intCount);
 }
 
-long sendMessage1ByName(objName, messg)
-char* objName;
-char* messg;
+long sendMessage1ByName(char* objName, char* messg)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3208,10 +3144,7 @@ char* messg;
     return sendMessage1(theObj, messg);
 }
 
-long sendMessage1N1strByName(objName, messg, s1)
-char* objName;
-char* messg;
-char* s1;
+long sendMessage1N1strByName(char* objName, char* messg, char* s1)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3221,10 +3154,7 @@ char* s1;
     return sendMessage1N1str(theObj, messg, s1);
 }
 
-long sendMessage1N2strByName(objName, messg, s1, s2)
-char* objName;
-char* messg;
-char *s1, *s2;
+long sendMessage1N2strByName(char* objName, char* messg, char * s1, char * s2)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3234,10 +3164,7 @@ char *s1, *s2;
     return sendMessage1N2str(theObj, messg, s1, s2);
 }
 
-long sendMessage1N1intByName(objName, messg, a)
-char* objName;
-char* messg;
-int a;
+long sendMessage1N1intByName(char* objName, char* messg, int a)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3247,10 +3174,7 @@ int a;
     return sendMessage1N1int(theObj, messg, a);
 }
 
-long sendMessage1N2intByName(objName, messg, a, b)
-char* objName;
-char* messg;
-int a, b;
+long sendMessage1N2intByName(char* objName, char* messg, int a, int b)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3260,10 +3184,7 @@ int a, b;
     return sendMessage1N2int(theObj, messg, a, b);
 }
 
-long sendMessage1N4intByName(objName, messg, a, b, c, d)
-char* objName;
-char* messg;
-int a, b, c, d;
+long sendMessage1N4intByName(char* objName, char* messg, int a, int b, int c, int d)
 {
     VObj* theObj = findObject(getIdent(objName));
 
@@ -3300,8 +3221,7 @@ for (; cip; cip = cip->superClass) {
 */
 
 #ifdef NOT_USED
-int ASSERT(assertion, mesg)
-char* mesg;
+int ASSERT(int assertion, char* mesg)
 {
     if (assertion == 0) {
         fprintf(stderr, "%s", mesg);

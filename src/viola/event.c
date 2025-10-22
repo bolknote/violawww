@@ -29,9 +29,7 @@ void processPeekKeys()
 */
 
 /*
-int checkParam(param, resize_corner)
-     Param *param;
-     int resize_corner;
+int checkParam(Param * param, int resize_corner)
 {
   if (ParamWidth(param) < 1) {
     ParamWidth(param) = 1;

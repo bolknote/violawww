@@ -328,12 +328,7 @@ char* argv[];
     }
 }
 
-DocViewInfo* makeBrowserInterface(shell, shellName, parentInfo, argc, argv)
-Widget shell;
-char* shellName;
-DocViewInfo* parentInfo;
-int argc;
-char* argv[];
+DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[])
 {
     Widget mainWin;
     Widget menuBar;
@@ -696,9 +691,7 @@ char* argv[];
 }
 
 #ifdef UNUSED
-Widget makeButtons(form, helpLabel, docViewInfo)
-Widget form, helpLabel;
-DocViewInfo* docViewInfo;
+Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
 {
     Widget buttonBox, button;
     ClientData* clientData;
@@ -881,8 +874,7 @@ void freeDocViewInfo(void* vdvi) {
 }
 
 /*
-Boolean compareBookmarkName(key, data)
-    void *key, *data;
+Boolean compareBookmarkName(void * key, void * data)
 {
     Bookmark *bmKey = (Bookmark *) key;
     Bookmark *bmData = (Bookmark *) data;
@@ -896,8 +888,7 @@ Boolean compareBookmarkName(key, data)
 }
 
 
-Boolean compareBookmarkDoc(key, data)
-    void *key, *data;
+Boolean compareBookmarkDoc(void * key, void * data)
 {
     Bookmark *bmKey = (Bookmark *) key;
     Bookmark *bmData = (Bookmark *) data;
@@ -974,8 +965,7 @@ char* argv[];
  * Constructs a Motif compound string with a large font title and a small
  * font subtitle.  The resultant label has two lines of text.
  */
-XmString makeXMSTitle(title, subTitle)
-char *title, *subTitle;
+XmString makeXMSTitle(char * title, char * subTitle)
 {
     XmString titleXMS, subTitleXMS, resultXMS;
 

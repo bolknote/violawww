@@ -26,9 +26,7 @@ extern int errno;
 /* load a named image
  */
 
-Image* loadImage(name, verbose)
-char* name;
-unsigned int verbose;
+Image* loadImage(char* name, unsigned int verbose)
 {
     char fullname[BUFSIZ];
     Image* image;

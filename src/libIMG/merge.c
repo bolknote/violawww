@@ -18,10 +18,7 @@
  * 24-bit.  this saves a lot of space.
  */
 
-static Image* bitmapToBitmap(src, dest, atx, aty, clipw, cliph, verbose)
-Image *src, *dest;
-unsigned int atx, aty, clipw, cliph;
-unsigned int verbose;
+static Image* bitmapToBitmap(Image* src, Image* dest, unsigned int atx, unsigned int aty, unsigned int clipw, unsigned int cliph, unsigned int verbose)
 {
     unsigned int destlinelen, srclinelen;
     unsigned int deststart;
@@ -75,10 +72,7 @@ unsigned int verbose;
     return (dest);
 }
 
-static Image* anyToTrue(src, dest, atx, aty, clipw, cliph, verbose)
-Image *src, *dest;
-unsigned int atx, aty, clipw, cliph;
-unsigned int verbose;
+static Image* anyToTrue(Image* src, Image* dest, unsigned int atx, unsigned int aty, unsigned int clipw, unsigned int cliph, unsigned int verbose)
 {
     Pixel fg, bg;
     unsigned int destlinelen, srclinelen;
@@ -169,11 +163,7 @@ unsigned int verbose;
 /* put src image on dest image
  */
 
-Image* merge(dest, src, atx, aty, verbose)
-Image* dest;
-Image* src;
-int atx, aty;
-unsigned int verbose;
+Image* merge(Image* dest, Image* src, int atx, int aty, unsigned int verbose)
 {
     int clipw, cliph;
     int clipped = 0;

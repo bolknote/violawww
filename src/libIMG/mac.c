@@ -121,8 +121,7 @@ static int macin_close_file() {
  * semi-graceful fatal error mechanism
  */
 
-static macin_fatal(msg)
-     char *msg;
+static void macin_fatal(char* msg)
 {
   printf("Error reading MacPaint file: %s\n", msg);
   exit(0);
@@ -143,9 +142,7 @@ static void tellAboutImage(name) char* name;
     printf("%s is a %dx%d MacPaint image\n", name, macin_img_width, macin_img_height);
 }
 
-Image* macLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* macLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     Image* image;
@@ -214,8 +211,7 @@ unsigned int verbose;
     return (image);
 }
 
-int macIdent(fullname, name)
-char *fullname, *name;
+int macIdent(char* fullname, char* name)
 {
     ZFILE* zf;
     unsigned int ret;

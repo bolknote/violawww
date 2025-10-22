@@ -85,10 +85,7 @@ static int curbit;
 tableentry* whash[HASHSIZE];
 tableentry* bhash[HASHSIZE];
 
-int g3_addtohash(hash, te, n, a, b)
-tableentry* hash[];
-tableentry* te;
-int n, a, b;
+int g3_addtohash(tableentry* hash[], tableentry* te, int n, int a, int b)
 {
     unsigned int pos;
 
@@ -108,10 +105,7 @@ int n, a, b;
     }
 }
 
-tableentry* g3_hashfind(hash, length, code, a, b)
-tableentry* hash[];
-int length, code;
-int a, b;
+tableentry* g3_hashfind(tableentry* hash[], int length, int code, int a, int b)
 {
     unsigned int pos;
     tableentry* te;
@@ -287,9 +281,7 @@ int g3_rawgetbit(ZFILE* fd) {
     return b;
 }
 
-int g3_bitson(b, c, n)
-bit* b;
-int c, n;
+int g3_bitson(bit* b, int c, int n)
 {
     int i, col;
     bit* bP;
@@ -399,9 +391,7 @@ tryagain:
     return (ret);
 }
 
-Image* g3Load(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* g3Load(char* fullname, char* name, unsigned int verbose)
 {
 
     ZFILE* fd;
@@ -485,8 +475,7 @@ unsigned int verbose;
  * it was always getting false positives so now it loads the whole image in
  * to see if it's reasonable.
  */
-int g3Ident(fullname, name)
-char *fullname, *name;
+int g3Ident(char* fullname, char* name)
 {
     Image* image;
 

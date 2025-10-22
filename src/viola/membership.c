@@ -1,8 +1,6 @@
 #include "membership.h"
 
-int isMember(mhp, val)
-MHInfo* mhp;
-long val;
+int isMember(MHInfo* mhp, long val)
 {
     int byte = mhp->bits[val % mhp->bitsSize];
     int nthBits = val % sizeof(long);

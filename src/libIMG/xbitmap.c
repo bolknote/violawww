@@ -134,9 +134,7 @@ static void badFile(name) char* name;
     exit(1);
 }
 
-Image* xbitmapLoad(fullname, name, verbose)
-char *fullname, *name;
-unsigned int verbose;
+Image* xbitmapLoad(char* fullname, char* name, unsigned int verbose)
 {
     ZFILE* zf;
     Image* image;
@@ -254,8 +252,7 @@ unsigned int verbose;
  * x bitmaps anyway given their size
  */
 
-int xbitmapIdent(fullname, name)
-char *fullname, *name;
+int xbitmapIdent(char* fullname, char* name)
 {
     Image* image;
 

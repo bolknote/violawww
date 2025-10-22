@@ -20,12 +20,7 @@
 #endif
 #endif
 
-int XpmWriteFileFromPixmap(display, filename, pixmap, shapemask, attributes)
-Display* display;
-char* filename;
-Pixmap pixmap;
-Pixmap shapemask;
-XpmAttributes* attributes;
+int XpmWriteFileFromPixmap(Display* display, char* filename, Pixmap pixmap, Pixmap shapemask, XpmAttributes* attributes)
 {
     XImage* image = NULL;
     XImage* shapeimage = NULL;

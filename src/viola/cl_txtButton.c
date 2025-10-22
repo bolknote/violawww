@@ -128,20 +128,12 @@ ClassInfo class_txtButton = {
     &class_txt,                                       /* super class info		*/
 };
 
-long int meth_txtButton_initialize(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtButton_initialize(VObj* self, Packet* result, int argc, Packet argv[])
 {
     return meth_txt_initialize(self, result, argc, argv);
 }
 
-long int meth_txtButton_render(self, result, argc, argv)
-VObj* self;
-Packet* result;
-int argc;
-Packet argv[];
+long int meth_txtButton_render(VObj* self, Packet* result, int argc, Packet argv[])
 {
     if (meth_txt_render(self, result, argc, argv)) {
         long fontID = GET__font(self);

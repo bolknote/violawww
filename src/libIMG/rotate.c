@@ -37,10 +37,10 @@ int* new_pos; /* Destination bit position */
 /* rotate()
  * rotates an image
  */
-Image* rotate(simage, rotate, verbose)
-Image* simage; /* Image to rotate             */
-int rotate;    /* Number of degrees to rotate */
-unsigned int verbose;
+Image* rotate(Image* simage, int rotate, unsigned int verbose)
+/* simage: Image to rotate             */
+/* rotate: Number of degrees to rotate */
+/* verbose */
 {
     char buf[BUFSIZ]; /* New title                   */
     Image* image1;    /* Source image                */

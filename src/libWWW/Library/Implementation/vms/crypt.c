@@ -38,8 +38,7 @@ extern long32 _ufc_sb0[], _ufc_sb1[], _ufc_sb2[], _ufc_sb3[];
 
 static ufc_long ary[4];
 
-ufc_long* _ufc_doit(l1, l2, r1, r2, itr)
-ufc_long l1, l2, r1, r2, itr;
+ufc_long* _ufc_doit(ufc_long l1, ufc_long l2, ufc_long r1, ufc_long r2, ufc_long itr)
 {
     int i;
     long32 s, *k;
@@ -102,8 +101,7 @@ extern long64 _ufc_sb0[], _ufc_sb1[], _ufc_sb2[], _ufc_sb3[];
 
 static ufc_long ary[4];
 
-ufc_long* _ufc_doit(l1, l2, r1, r2, itr)
-ufc_long l1, l2, r1, r2, itr;
+ufc_long* _ufc_doit(ufc_long l1, ufc_long l2, ufc_long r1, ufc_long r2, ufc_long itr)
 {
     int i;
     long64 l, r, s, *k;

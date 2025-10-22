@@ -101,9 +101,7 @@ char* (*tagAttrID2Name_f)();
     return stgLib;
 }
 
-STGGroup* STG_makeGroup(lib, gspec)
-STGLib* lib;
-char* gspec;
+STGGroup* STG_makeGroup(STGLib* lib, char* gspec)
 {
     char* cp = gspec;
     STGGroup* group = (STGGroup*)malloc(sizeof(struct STGGroup));
@@ -162,9 +160,7 @@ STGMajor *appendMajor(firstChild, child)
 }
 */
 
-STGStrList* addID(firstChild, id)
-STGStrList** firstChild;
-char* id;
+STGStrList* addID(STGStrList** firstChild, char* id)
 {
     STGStrList* child = (STGStrList*)malloc(sizeof(struct STGStrList));
 
@@ -183,9 +179,7 @@ char* id;
 
 /* compress add*() to macro
  */
-STGGroup* addGroup(firstChild, child)
-STGGroup** firstChild;
-STGGroup* child;
+STGGroup* addGroup(STGGroup** firstChild, STGGroup* child)
 {
     if (*firstChild)
         child->next = *firstChild;
@@ -193,9 +187,7 @@ STGGroup* child;
     return child;
 }
 
-STGMajor* addMajor(firstChild, child)
-STGMajor** firstChild;
-STGMajor* child;
+STGMajor* addMajor(STGMajor** firstChild, STGMajor* child)
 {
     if (*firstChild)
         child->next = *firstChild;
@@ -203,9 +195,7 @@ STGMajor* child;
     return child;
 }
 
-STGMinor* addMinor(firstChild, child)
-STGMinor** firstChild;
-STGMinor* child;
+STGMinor* addMinor(STGMinor** firstChild, STGMinor* child)
 {
     if (TRACE) printf("### addMinor: firstChild=%p *firstChild=%p child=%p\n", 
                      firstChild, *firstChild, child);
@@ -226,9 +216,7 @@ STGMinor* child;
 )
 */
 
-STGMajor* parseMajor(superMajor, s)
-STGMajor* superMajor;
-char** s;
+STGMajor* parseMajor(STGMajor* superMajor, char** s)
 {
     ParseContext ctx;  /* Local context - recursion-safe */
     STGMajor* major = (STGMajor*)malloc(sizeof(struct STGMajor));
@@ -358,9 +346,7 @@ char** s;
     return major;
 }
 
-STGMinor* parseMinor(s, major)
-char** s;
-STGMajor* major;
+STGMinor* parseMinor(char** s, STGMajor* major)
 {
     ParseContext ctx;
     STGMinor* minor = (STGMinor*)malloc(sizeof(struct STGMinor));
@@ -517,9 +503,7 @@ ex 3:
  * For: {STYLE WARNING ...} matches attr="STYLE" attrVal="WARNING"
  * Returns matching minor or NULL
  */
-STGMinor* matchMinor(major, attrName, attrVal)
-STGMajor* major;
-char *attrName, *attrVal;
+STGMinor* matchMinor(STGMajor* major, char * attrName, char * attrVal)
 {
     STGMinor* minor;
     STGStrList* ids;
@@ -568,12 +552,7 @@ char *attrName, *attrVal;
 }
 
 /* return: 1== OK, can stop now further searches */
-int matchMajor(major, tag, attr, max, matchResults, matchCount)
-STGMajor* major;
-char *tag, *attr;
-int max;
-STGResult* matchResults;
-int* matchCount;
+int matchMajor(STGMajor* major, char * tag, char * attr, int max, STGResult* matchResults, int* matchCount)
 {
     STGStrList* ids;
     STGMajor* cmajor;
@@ -628,12 +607,7 @@ int* matchCount;
  *			0 means no style found.
  * 			>1 means context isn't specific enough.
  */
-int STG_findStyle(group, context, contextCount, results, maxResults)
-STGGroup* group;
-char* context[];
-int contextCount;
-STGResult results[];
-int maxResults;
+int STG_findStyle(STGGroup* group, char* context[], int contextCount, STGResult results[], int maxResults)
 {
     char *tag, *attr;
     int i, j, inContext, matchCount = 0;
@@ -739,10 +713,7 @@ int maxResults;
     return matchCount;
 }
 
-STGAssert* assertAttr(firstAssert, name, val)
-STGAssert** firstAssert;
-char* name;
-char* val;
+STGAssert* assertAttr(STGAssert** firstAssert, char* name, char* val)
 {
     STGAssert* new = (STGAssert*)malloc(sizeof(struct STGAssert));
 
@@ -770,9 +741,7 @@ char* val;
 /* Forward declarations for memory management */
 static void free_major_tree(STGMajor* major);
 
-int nextToken(ctx, s)
-ParseContext* ctx;
-char** s;
+int nextToken(ParseContext* ctx, char** s)
 {
 zoro:
     switch (**s) {
@@ -852,10 +821,7 @@ zoro:
 }
 
 /* Find assert in minor, then fallback to major hierarchy */
-STGAssert* STGFindAssertWithMinor(major, minor, attrName)
-STGMajor* major;
-STGMinor* minor;
-char* attrName;
+STGAssert* STGFindAssertWithMinor(STGMajor* major, STGMinor* minor, char* attrName)
 {
     STGAssert* assert;
     
@@ -889,9 +855,7 @@ char* attrName;
 }
 
 /* Original function - for backward compatibility */
-STGAssert* STGFindAssert(major, attrName)
-STGMajor* major;
-char* attrName;
+STGAssert* STGFindAssert(STGMajor* major, char* attrName)
 {
     return STGFindAssertWithMinor(major, NULL, attrName);
 }

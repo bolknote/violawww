@@ -11,13 +11,7 @@
 #include "xpmP.h"
 #include <stdlib.h>
 
-int XpmReadFileToPixmap(display, d, filename, pixmap_return, shapemask_return, attributes)
-Display* display;
-Drawable d;
-char* filename;
-Pixmap* pixmap_return;
-Pixmap* shapemask_return;
-XpmAttributes* attributes;
+int XpmReadFileToPixmap(Display* display, Drawable d, char* filename, Pixmap* pixmap_return, Pixmap* shapemask_return, XpmAttributes* attributes)
 {
     XImage *image, **imageptr = NULL;
     XImage *shapeimage, **shapeimageptr = NULL;

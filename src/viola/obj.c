@@ -62,15 +62,13 @@ void dumpVObjList(olist) VObjList* olist;
 }
 
 /*MACRONIZED
-int validObjectP(self)
-        VObj *self;
+int validObjectP(VObj * self)
 {
         return (objObj2ExistP->get(objObj2ExistP, self) ? 1 : 0);
 }
 */
 
-VObj* findObject(objNameStrID)
-int objNameStrID;
+VObj* findObject(int objNameStrID)
 {
     HashEntry* entry = objID2Obj->get(objID2Obj, objNameStrID);
     if (entry)
@@ -84,9 +82,7 @@ int objNameStrID;
  * NOTE: olist always point to atleast one VObjList structure, which may or
  *      may not point to any object.
  */
-VObjList* appendObjToList(olist, obj)
-VObjList* olist;
-VObj* obj;
+VObjList* appendObjToList(VObjList* olist, VObj* obj)
 {
     VObjList* newl;
 
@@ -157,10 +153,7 @@ void freeAllObjects() {
 
 #ifdef fuandafagdsg
 
-OLIST* linkStrList(self, listName, strList)
-VObj self;
-char* listName;
-char* strList;
+OLIST* linkStrList(VObj self, char* listName, char* strList)
 {
     VObj obj;
     OLIST* olist = NULL;
@@ -188,11 +181,7 @@ char* strList;
     return olist;
 }
 
-VObj copyObjLink(self, clone, slotName, objFile, CID)
-VObj self, clone;
-char* slotName;
-char* objFile;
-long CID;
+VObj copyObjLink(VObj self, VObj clone, char* slotName, char* objFile, long CID)
 {
     VObj obj = Get_ptr(self, slotName, VObj);
     char* objName;
@@ -214,11 +203,7 @@ long CID;
     return NULL;
 }
 
-OLIST* copyObjListLink(self, clone, listName, objFile, CID)
-VObj self, clone;
-char* listName;
-char* objFile;
-long CID;
+OLIST* copyObjListLink(VObj self, VObj clone, char* listName, char* objFile, long CID)
 {
     VObj obj;
     OLIST *olist, *colist;

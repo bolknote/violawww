@@ -1032,13 +1032,14 @@ void CB_HTML_etag(element_number) int element_number;
                 SGMLBuildDoc_span = parent_bstate->sub_y;
 
             /* Pass style attribute to object before calling D method */
-            if (bstate->styleAttr) {
+            if (bstate->styleAttr && bstate->obj) {
                 extern int WWW_TraceFlag;
                 if (WWW_TraceFlag) printf("### CB_HTML_etag: sending setStyleAttr with %s\n", bstate->styleAttr);
                 sendMessage1N1str(bstate->obj, "setStyleAttr", bstate->styleAttr);
+                bstate->styleAttr = NULL; /* Reset after use to avoid reuse */
             }
 
-            if (parent_bstate != bstate->obj)
+            if (parent_bstate != bstate->obj && bstate->obj)
                 span = getVSpan(bstate->obj, STR_D);
             else
                 span = 0;

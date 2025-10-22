@@ -300,7 +300,6 @@ static int gifin_get_pixel(int* pel) {
     return GIFIN_SUCCESS;
 }
 
-#if 0
 /*
  * close an open GIF image
  */
@@ -325,7 +324,6 @@ static int gifin_close_image(void)
   /* done! */
   return GIFIN_SUCCESS;
 }
-#endif
 
 /*
  * close an open GIF file
@@ -435,6 +433,8 @@ static int gifin_add_string(int p, int e) {
     }
 
     table_size += 1;
+    
+    return 0;
 }
 
 /*
@@ -548,6 +548,7 @@ Image* gifLoad(char* fullname, char* name, unsigned int verbose)
                 pixptr += image->pixlen;
             }
     }
+    gifin_close_image();
     gifin_close_file();
     zclose(zf);
     image->title = dupString(name);
@@ -564,6 +565,7 @@ int gifIdent(char* fullname, char* name)
     if ((gifin_open_file(zf) == GIFIN_SUCCESS) && (gifin_open_image() == GIFIN_SUCCESS)) {
         tellAboutImage(name);
         ret = 1;
+        gifin_close_image();
     } else
         ret = 0;
     gifin_close_file();

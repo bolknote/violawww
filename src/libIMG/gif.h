@@ -42,9 +42,7 @@ typedef unsigned char BYTE;
 static int gifin_open_file();
 static int gifin_open_image();
 static int gifin_get_pixel();
-#if 0
 static int gifin_close_image();
-#endif
 static int gifin_close_file();
 static int gifin_load_cmap();
 static int gifin_skip_extension();

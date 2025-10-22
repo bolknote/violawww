@@ -214,7 +214,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
         return 0;
     }
 
-    for (*ptymajorp = 'p'; *ptymajorp <= 'z'; *ptymajorp++) {
+    for (*ptymajorp = 'p'; *ptymajorp <= 'z'; ++*ptymajorp) {
         for (cp = "0123456789abcdef"; *cp; cp++) {
             *ptyminorp = *cp;
 
@@ -255,8 +255,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
                 args[0] = GET_path(self);
                 n = makeArgv(&args[1], GET_args(self));
                 args[n + 1] = NULL;
-
-                switch (pid = vfork()) {
+                switch (pid = fork()) {
                 case -1: /* Error */
                     MERROR(self, "startClient: ");
                     perror("fork failed");
@@ -278,7 +277,6 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
                         close(fd_client);
 
                     execv(GET_path(self), args);
-                    MERROR(self, "exec: ");
                     perror(GET_path(self));
                     _exit(-1);
 

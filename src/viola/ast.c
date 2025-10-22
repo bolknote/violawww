@@ -87,10 +87,10 @@ char* ASTTypeStr[] = {"EXPR_PLUS",  /* the EXPR's must be grouped in the front. 
                       "REF",
                       "LIST_REF",
 
-                      "METH_SELF",
-                      "METH_PARENT",
-                      "METH_SEND",
-                      {0}};
+                     "METH_SELF",
+                     "METH_PARENT",
+                     "METH_SEND",
+                     NULL};
 
 int my_yyinput(buf, max_size)
 char* buf;

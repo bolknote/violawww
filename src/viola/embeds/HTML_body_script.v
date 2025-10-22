@@ -175,7 +175,10 @@ for (i=0; i<arg[]; i++) print("arg", i, " = ", arg[i], "\n");print("...end\n");
 			i = STG_attr(tagPtr, "border");
 			if (i) {
 				set("border", 6);
-				set("BDColor", get("FGColor"));/*XXX*/
+				/* Only set BDColor from FGColor if not already set by STG */
+				if (get("BDColor") == 0) {
+					set("BDColor", get("FGColor"));
+				}
 			}
 		}
 		return;

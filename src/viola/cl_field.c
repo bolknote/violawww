@@ -912,7 +912,10 @@ long meth_field_expose(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-long meth_field_flush(VObj* self, Packet* result, int argc, Packet argv[]) { XFlush(display); }
+long meth_field_flush(VObj* self, Packet* result, int argc, Packet argv[]) {
+    XFlush(display);
+    return 1;
+}
 
 long meth_field_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     /* unsafe to free, b/c cloning now merely copies pointer value, not content */

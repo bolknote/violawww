@@ -170,6 +170,14 @@ int offset;
     return size;
 }
 
+/* Flush SGML document build buffers
+ * Resets the data buffer to initial state
+ */
+void SGMLBuildDoc_flush() {
+    dataBuffIdx = 0;
+    dataBuffIdxStackIdx = -1;
+}
+
 /***BINARY VERSION
  ****************************************************/
 

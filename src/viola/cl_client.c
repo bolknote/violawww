@@ -198,11 +198,11 @@ long meth_client_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     callMeth(self, result, 0, NULL, STR_endClient);
 
-    if (cp = GET_inDelimStr1(self))
+    if ((cp = GET_inDelimStr1(self)))
         free(cp);
-    if (cp = GET_inDelimStr2(self))
+    if ((cp = GET_inDelimStr2(self)))
         free(cp);
-    if (cp = GET_outDelimStr(self))
+    if ((cp = GET_outDelimStr(self)))
         free(cp);
 
     meth_field_freeSelf(self, result, argc, argv);

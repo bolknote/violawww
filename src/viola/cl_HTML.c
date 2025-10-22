@@ -216,7 +216,7 @@ long meth_HTML_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     if (!meth_txt_initialize(self, result, argc, argv))
         return 0;
-    if (tf = html_setUpTFStruct(self, NULL)) {
+    if ((tf = html_setUpTFStruct(self, NULL))) {
         html_updateTFStruct(self, NULL);
         scanVerticalMetrics(tf);
         if (!helper_txtDisp_updateShownInfo(tf))

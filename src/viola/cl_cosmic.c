@@ -279,7 +279,7 @@ long meth_cosmic_create(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (slotc <= 0)
         return 0;
 
-    if (obj = instantiateObj(slotv, &slotc)) {
+    if ((obj = instantiateObj(slotv, &slotc))) {
         objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(obj))), (long)obj);
         objObj2ExistP->put_replace(objObj2ExistP, obj, 1);
         /*		SET__memoryGroup(obj, newMemoryGroup(1024));
@@ -383,7 +383,7 @@ long meth_cosmic_exist(VObj* self, Packet* result, int argc, Packet argv[]) {
     result->canFree = 0;
 
     if (obj) {
-        if (entry = objObj2ExistP->get(objObj2ExistP, (long)obj)) {
+        if ((entry = objObj2ExistP->get(objObj2ExistP, (long)obj))) {
             result->info.i = 1;
             return 1;
         }
@@ -547,7 +547,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         MethodInfo* mip;
         int i;
 
-        for (i = 0; cip = classList[i]; i++) {
+        for (i = 0; (cip = classList[i]); i++) {
             printf("\n%s :\n", (char*)symID2Str->get(symID2Str, cip->id)->val);
             for (cip2 = cip; cip2; cip2 = cip2->superClass) {
                 for (mip = cip2->methods; mip->id; mip++) {
@@ -696,7 +696,7 @@ long meth_cosmic_save(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (notSecure(self))
         return 0;
 
-    while (parent = GET__parent(obj))
+    while ((parent = GET__parent(obj)))
         obj = parent;
 
     strcpy(fileName, GET_name(obj));
@@ -737,7 +737,7 @@ long meth_cosmic_saveAs(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (argc != 1)
         return 0;
 
-    while (parent = GET__parent(obj))
+    while ((parent = GET__parent(obj)))
         obj = parent;
 
     cp = PkInfo2Str(&argv[0]);

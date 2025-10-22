@@ -69,7 +69,6 @@ extern int notSecure();
 extern double cos(), sin();
 int flag_cliprompt = 1;
 
-#define DEBUG FALSE
 #define RADIAN_TO_DEGREE_RATIO 0.017453293
 
 struct StrInfo init_obj_script; /* initialized in class.c */
@@ -1612,8 +1611,9 @@ long meth_generic_SGMLBuildDoc_span(VObj* self, Packet* result, int argc, Packet
 }
 
 long meth_generic_SGMLBuildDoc_flush(VObj* self, Packet* result, int argc, Packet argv[]) {
-    /*	return SGMLBuildDoc_flush();
-     */
+    SGMLBuildDoc_flush();
+    clearPacket(result);
+    return 1;
 }
 
 long meth_generic_SGMLBuildDoc_insertObj(VObj* self, Packet* result, int argc, Packet argv[]) {
@@ -1652,6 +1652,7 @@ long meth_generic_SGMLMathFormater(VObj* self, Packet* result, int argc, Packet 
     if (argc == 3) {
         return HTMLMathFormater(self, &argv[0], &argv[1], (int)PkInfo2Int(&argv[2]));
     }
+    return 0;
 }
 
 /*
@@ -1784,7 +1785,7 @@ long meth_generic_accessible(VObj* self, Packet* result, int argc, Packet argv[]
     if (notSecure(self))
         return 0;
     result->type = PKT_STR;
-    if (path = SaveString(vl_expandPath(argv[0].info.s, buff))) {
+    if ((path = SaveString(vl_expandPath(argv[0].info.s, buff)))) {
         accessible = access(path, R_OK);
         if ((accessible & R_OK) == 0) {
             result->info.s = path;
@@ -2178,7 +2179,7 @@ long meth_generic_compressSpaces(VObj* self, Packet* result, int argc, Packet ar
             for (;;) {
                 if (e == p1) {
                     while (c = *p1, !ISSPACE(c) && (c != '\0'))
-                        *p1++;
+                        ++p1;
                     e = p1;
                 } else {
                     while (c = *p1, !ISSPACE(c) && (*p1 != '\0'))
@@ -2217,7 +2218,7 @@ long meth_generic_concatenate(VObj* self, Packet* result, int argc, Packet argv[
     result->type = PKT_STR;
     cp = PkInfos2Str(argc, argv);
     result->canFree = PK_CANFREE_STR;
-    if (result->info.s = SaveString(cp))
+    if ((result->info.s = SaveString(cp)))
         return 1;
     return 0;
 }
@@ -2919,7 +2920,7 @@ long meth_generic_initialize(VObj* self, Packet* result, int argc, Packet argv[]
 
     /* make internal pointer link to parent object */
     if (!GET__parent(self)) {
-        if (cp = GET_parent(self))
+        if ((cp = GET_parent(self)))
             if (*cp)
                 SET__parent(self, findObject(getIdent(cp)));
     }
@@ -3309,7 +3310,7 @@ long meth_generic_loadFile(VObj* self, Packet* result, int argc, Packet argv[]) 
         result->info.s = "";
         result->canFree = 0;
     }
-    if (cp = SaveString(vl_expandPath(cp, buff))) {
+    if ((cp = SaveString(vl_expandPath(cp, buff)))) {
         if (loadFile(cp, &retStrp) != -1) {
             if (retStrp) {
                 result->info.s = retStrp;
@@ -3490,7 +3491,7 @@ long meth_generic_nthLine(VObj* self, Packet* result, int argc, Packet argv[]) {
             return 0;
         }
         result->canFree = PK_CANFREE_STR;
-        if (result->info.s = getLines(li, hi, str, &size))
+        if ((result->info.s = getLines(li, hi, str, &size)))
             return 1;
     }
     result->info.s = "";
@@ -3881,7 +3882,7 @@ long meth_generic_saveFile(VObj* self, Packet* result, int argc, Packet argv[]) 
 
     result->type = PKT_INT;
     result->canFree = 0;
-    if (cp = SaveString(vl_expandPath(PkInfo2Str(&argv[0]), buff))) {
+    if ((cp = SaveString(vl_expandPath(PkInfo2Str(&argv[0]), buff)))) {
         if (saveFile(cp, PkInfo2Str(&argv[1])) != -1) {
             free(cp);
             result->info.i = 1;
@@ -4056,8 +4057,8 @@ long helper_generic_set(VObj* self, Packet* result, int argc, Packet argv[], lon
         SET_parent(self, result->info.s);
         result->type = PKT_STR;
         result->canFree = 0;
-        if (entry = symStr2ID->get(symStr2ID, (long)result->info.s))
-            if (obj = findObject(entry->val)) {
+        if ((entry = symStr2ID->get(symStr2ID, (long)result->info.s)))
+            if ((obj = findObject(entry->val))) {
                 SET__parent(self, obj);
                 return 1;
             }
@@ -4358,7 +4359,7 @@ long meth_generic_target(VObj* self, Packet* result, int argc, Packet argv[]) {
     }
     cp = PkInfo2Str(&argv[0]);
     if (cp)
-        if (VTargetObj = findObject(getIdent(cp))) {
+        if ((VTargetObj = findObject(getIdent(cp)))) {
             sendMessage1(VResourceObj, "targetSet");
             result->info.o = VTargetObj;
             result->type = PKT_OBJ;
@@ -4434,7 +4435,7 @@ long meth_generic_tool(VObj* self, Packet* result, int argc, Packet argv[]) {
         result->canFree = 0;
         return 1;
     }
-    if (cp = PkInfos2Str(argc, argv)) {
+    if ((cp = PkInfos2Str(argc, argv))) {
         for (i = 0; toolID2Str[i]; i++) {
             if (!STRCMP(cp, toolID2Str[i])) {
                 currentTool = i;
@@ -4664,7 +4665,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
                 if (!text) {
                     return 0;
                 }
-                if (evalResult.canFree & PK_CANFREE_STR == 0) {
+                if ((evalResult.canFree & PK_CANFREE_STR) == 0) {
                     text = saveString(evalResult.info.s);
                 }
 
@@ -4862,7 +4863,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
             text = arg2->info.s;
             if (!inPreP) {
                 /* eliminate leading space */
-                for (text; *text; text++)
+                for (; *text; text++)
                     if (isprint(*text))
                         break;
             }

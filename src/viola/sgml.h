@@ -48,6 +48,7 @@ int SGMLInit();
 VObj* SGMLBuildDoc();
 VObj* SGMLBuildDoc_B();
 int SGMLBuildDoc_setBuff();
+void SGMLBuildDoc_flush();
 int SGMLTileDoc();
 int SGMLFindAnchorOffset();
 void SGMLBuildDoc_insertObj();

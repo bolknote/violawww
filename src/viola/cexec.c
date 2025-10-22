@@ -148,7 +148,7 @@ Attr* attrp;
     return (int)i;
 }
 
-dumpStack() {
+void dumpStack() {
     for (i = 0; i < stackExecIdx; i++) {
         printf(": %ld\t ", i);
         dumpPacket(&execStack[i]);
@@ -668,7 +668,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                     VObj* obj;
                     int stat;
 
-                    if (entry = objID2Obj->get(objID2Obj, funcid)) {
+                    if ((entry = objID2Obj->get(objID2Obj, funcid))) {
                         obj = (VObj*)entry->val;
                         /*
                         printf("found object:%s...\n", GET_name((VObj*)entry->val));
@@ -699,7 +699,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                     }
                     /*fprintf(stderr, "accessing %s.\n", fname);*/
                     load_object(fname, NULL);
-                    if (entry = objID2Obj->get(objID2Obj, storeIdent(saveString(oname)))) {
+                    if ((entry = objID2Obj->get(objID2Obj, storeIdent(saveString(oname))))) {
                         obj = (VObj*)entry->val;
                         makeArgList(obj, argc);
                         execObjScript(obj);
@@ -3060,7 +3060,7 @@ int getVariable(Attr* varlist, char* name, Packet* result) {
     /* note: if the identifier is not even in the dictionary, then no
      * such variable exists -- all variable IDs are entered into the dict
      */
-    if (entry = symStr2ID->get(symStr2ID, (long)name)) {
+    if ((entry = symStr2ID->get(symStr2ID, (long)name))) {
         varid = entry->val;
 
         for (; varlist; varlist = varlist->next) {
@@ -3105,7 +3105,7 @@ Attr* setVariable_STR(Attr* varlist, char* name, char* valp, int canFree) {
     long varid;
     Packet* pk;
 
-    if (entry = symStr2ID->get(symStr2ID, (long)name)) {
+    if ((entry = symStr2ID->get(symStr2ID, (long)name))) {
         varid = entry->val;
 
         for (; varlist; varlist = varlist->next) {

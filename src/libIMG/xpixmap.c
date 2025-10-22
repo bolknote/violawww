@@ -74,7 +74,7 @@ Image* xpixmapLoad(char* fullname, char* name, unsigned int verbose)
             return (NULL);
         }
         if (!strncmp(buf, "#define", 7)) {
-            if (sscanf(buf, "#define %8191s %d", what, &value) != 2) {
+            if (sscanf(buf, "#define %1023s %d", what, &value) != 2) {
                 zclose(zf);
                 return (NULL);
             }
@@ -107,7 +107,7 @@ Image* xpixmapLoad(char* fullname, char* name, unsigned int verbose)
                     continue;
                 cpp = value;
             }
-        } else if ((sscanf(buf, "static char * %8191s", what) == 1) && (p = rindex(what, '_')) &&
+        } else if ((sscanf(buf, "static char * %1023s", what) == 1) && (p = rindex(what, '_')) &&
                    !strcmp(++p, "colors[]"))
             break;
     }
@@ -190,7 +190,7 @@ Image* xpixmapLoad(char* fullname, char* name, unsigned int verbose)
     for (;;) {
         if (!zgets((byte*)buf, BUFSIZ - 1, zf))
             corrupted(fullname, zf);
-        if (sscanf(buf, "static char * %8191s", what) == 1)
+        if (sscanf(buf, "static char * %1023s", what) == 1)
             break;
     }
 

@@ -964,7 +964,7 @@ long helper_field_get(VObj* self, Packet* result, int argc, Packet argv[], long 
     switch (labelID) {
     case STR_BDColor: {
         ColorInfo* ci = GET__colorInfo(self);
-        if (ci && ci->fg && ci->bd->name) {
+        if (ci && ci->bd && ci->bd->name) {
             result->info.s = SaveString(ci->bd->name);
             result->type = PKT_STR;
             result->canFree = PK_CANFREE_STR;
@@ -973,7 +973,7 @@ long helper_field_get(VObj* self, Packet* result, int argc, Packet argv[], long 
     }
     case STR_BGColor: {
         ColorInfo* ci = GET__colorInfo(self);
-        if (ci && ci->fg && ci->bg->name) {
+        if (ci && ci->bg && ci->bg->name) {
             result->info.s = SaveString(ci->bg->name);
             result->type = PKT_STR;
             result->canFree = PK_CANFREE_STR;
@@ -991,7 +991,7 @@ long helper_field_get(VObj* self, Packet* result, int argc, Packet argv[], long 
     }
     case STR_CRColor: {
         ColorInfo* ci = GET__colorInfo(self);
-        if (ci && ci->fg && ci->cr->name) {
+        if (ci && ci->cr && ci->cr->name) {
             result->info.s = SaveString(ci->cr->name);
             result->type = PKT_STR;
             result->canFree = PK_CANFREE_STR;

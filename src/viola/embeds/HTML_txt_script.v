@@ -193,6 +193,9 @@ print("TXT: height=", get("height"), "................................\n");
 */
 		}
 
+		/* Initialize deco before calling setStyles to prevent using garbage value */
+		deco = 0;
+		
 		/* setStyleAttr was already called before D, so savedStyleAttr is ready */
 		send(self(), "setStyles", parent());
 
@@ -360,13 +363,20 @@ print("TXT: height=", get("height"), "................................\n");
 	break;
 	case "setStyles":
 		useTagInfo_align = 1;
+		
+		/* Initialize variables to avoid using uninitialized values */
+		styleAttr = 0;
+		deco = 0;
+		fontSlant = 0;
+		fontSize = 0;
+		fontSpacing = 0;
 
 		/* Check if element has a style attribute for minor matching */
 		/* Can be passed as arg[2] or from savedStyleAttr variable */
 		argc = arg[];
 		if (argc >= 3) {
 			styleAttr = arg[2];
-		} else {
+		} else if (savedStyleAttr) {
 			styleAttr = savedStyleAttr;
 		}
 		
@@ -653,6 +663,7 @@ print("TXT: height=", get("height"), "................................\n");
 	case "init":
 		usual();
 		SGMLBuildDoc_setColors();
+		savedStyleAttr = 0; /* Initialize to prevent using uninitialized value */
 		return;
 	break;
 	}

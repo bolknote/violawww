@@ -21,3 +21,4 @@ src/viola/embeds/*.h
 
 # macOS
 .DS_Store
+*.log

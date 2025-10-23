@@ -107,8 +107,8 @@ extern void freePossibleDangler();
 #define copyPacket(to, from)                                                                       \
     if (to != from)                                                                                \
     _copyPacket(to, from)
-extern void _copyPacket();
+extern void _copyPacket(Packet* to, Packet* from);
 
 extern void returnPacket();
 extern void returnPackets();
-extern void dumpPacket();
+extern void dumpPacket(Packet* packet);

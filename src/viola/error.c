@@ -52,12 +52,12 @@ strNIntPair errMessgList[] = {
 
 void clearErrors() { errc = 0; }
 
-char* messageToUserWithObj(VObj* self, char* messg)
+char* messageToUserWithObj(void* self, char* messg)
 {
     return 0;
 }
 
-char* messageToUser(VObj* self, int type, char* messg)
+char* messageToUser(void* self, int type, char* messg)
 {
     if (posting) {
 

@@ -127,7 +127,7 @@ typedef struct ClientDataStruct {
 } ClientData;
 
 Boolean compareDocViewName();
-Boolean compareDocViewShell();
+_Bool compareDocViewShell(void *vkey, void *vdata);
 void freeDocViewInfo();
 
 typedef struct BookmarkStruct {

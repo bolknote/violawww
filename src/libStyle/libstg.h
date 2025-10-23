@@ -67,8 +67,8 @@ STGAssert* assertAttr(STGAssert** firstAssert, char* name, char* val);
 struct ParseContext;
 int nextToken(struct ParseContext* ctx, char** s);
 
-STGLib* STG_init(int (*tagNameCmp_f)(), int (*tagName2ID_f)(), char* (*tagID2Name_f)(), 
-                 int (*tagAttrNameCmp_f)(), int (*tagAttrName2ID_f)(), char* (*tagAttrID2Name_f)());
+STGLib* STG_init(int (*tagNameCmp_f)(), long (*tagName2ID_f)(), char* (*tagID2Name_f)(), 
+                 int (*tagAttrNameCmp_f)(), long (*tagAttrName2ID_f)(), char* (*tagAttrID2Name_f)());
 STGGroup* STG_makeGroup(STGLib* lib, char* gspec);
 int STG_findStyle(STGGroup* group, char* context[], int contextCount, STGResult results[], int maxResults);
 STGAssert* STGFindAssert(STGMajor* major, char* attrName);

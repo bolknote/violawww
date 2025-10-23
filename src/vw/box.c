@@ -16,8 +16,8 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
 
-#define _NOBOOLEAN_
 #include "box.h"
 
 extern void* malloc(unsigned long);
@@ -64,7 +64,7 @@ void putInBox(Box** box, void* item) {
     }
 }
 
-void* getFromBox(Box** box, void* key, CompareFunction compare, Boolean findFirstOne) {
+void* getFromBox(Box** box, void* key, CompareFunction compare, _Bool findFirstOne) {
     static int whichOne = 1;
     int i = 0;
     Box* bp = *box;
@@ -92,7 +92,7 @@ void* getFromBox(Box** box, void* key, CompareFunction compare, Boolean findFirs
     }
 }
 
-void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction freeData, Boolean deleteAllItems) {
+void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction freeData, _Bool deleteAllItems) {
     Box* bp = *box;
     Box* prev = NULL;
 
@@ -123,9 +123,9 @@ void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction f
 void deleteBox(Box* box, FreeFunction freeData) {
     if (!box)
         return;
-    deleteFromBox(&box, NULL, alwaysTrue, freeData, TRUE);
+    deleteFromBox(&box, NULL, alwaysTrue, freeData, true);
 }
 
-Boolean alwaysTrue(void *vkey, void *vdata) {
-    return (TRUE);
+_Bool alwaysTrue(void *vkey, void *vdata) {
+    return true;
 }

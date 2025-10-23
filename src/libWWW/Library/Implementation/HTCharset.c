@@ -1,8 +1,13 @@
 /*  HTCharset.c - Character encoding conversion and transliteration
 **
+**  Hybrid transliteration chain:
+**    ICU chain: Russian-Latin/BGN → Any-Latin
+**    - BGN handles Cyrillic (щ→shch, я→ya, readable for English)
+**    - Any-Latin handles everything else (Greek→Latin, Arabic→Latin, 中文→pinyin, etc.)
+**
 **  Three-pass conversion:
 **    1. iconv: Source encoding → UTF-8 (e.g., windows-1251 → UTF-8)
-**    2. ICU: Any-Latin (Cyrillic → Latin, Greek → Latin, Chinese → Pinyin)
+**    2. ICU: Russian-Latin/BGN; Any-Latin (chain transliteration)
 **    3. iconv: UTF-8 → ISO-8859-1//TRANSLIT (• → *, " → ", keeps é ü ñ)
 */
 
@@ -24,18 +29,19 @@ static iconv_t utf8_to_latin1 = (iconv_t)-1;
 
 static void init_converters() {
     UErrorCode status;
-    UChar id_buf[128];
-    int32_t id_len;
+    UChar id_buf[256];
     
-    /* Initialize ICU for PASS 1: transliterate scripts to Latin */
+    /* Initialize hybrid transliterator as a chain:
+    ** Russian-Latin/BGN handles Cyrillic (щ→shch, я→ya)
+    ** Any-Latin handles everything else (Greek, Arabic, Chinese, etc.)
+    ** Chain ensures both are applied in sequence */
     if (any_to_latin == NULL) {
         status = U_ZERO_ERROR;
-        u_uastrcpy(id_buf, "Any-Latin");
-        id_len = u_strlen(id_buf);
+        u_uastrcpy(id_buf, "Russian-Latin/BGN; Any-Latin");
         
         any_to_latin = utrans_openU(
             id_buf,
-            id_len,
+            u_strlen(id_buf),
             UTRANS_FORWARD,
             NULL, 0,
             NULL,
@@ -72,7 +78,10 @@ char* HTCharset_utf8_to_ascii(const char* utf8_str) {
 }
 
 /* Convert UTF-8 buffer to ISO-8859-1 in-place, returns new size
-** Two-pass: 1) ICU Any-Latin  2) iconv UTF-8 → ISO-8859-1//TRANSLIT
+** Hybrid chain approach: Russian-Latin/BGN → Any-Latin
+**   - BGN handles Cyrillic (щ→shch, я→ya, readable for English)
+**   - Any-Latin handles everything else (Greek, Arabic, Chinese, etc.)
+** Two-pass: 1) ICU chain transliteration  2) iconv UTF-8 → ISO-8859-1//TRANSLIT
 ** WARNING: Output may be up to 2x larger than input due to transliteration
 **          Caller must ensure str buffer has enough space
 */
@@ -97,7 +106,7 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     if (any_to_latin == NULL || utf8_to_latin1 == (iconv_t)-1)
         return size;
     
-    /* === PASS 1: ICU Any-Latin (Привет → Privet, 中文 → Zhōng wén, etc) === */
+    /* === PASS 1: ICU chain transliteration (BGN for Cyrillic, Any-Latin for rest) === */
     status = U_ZERO_ERROR;
     u_strFromUTF8(ubuf, sizeof(ubuf)/sizeof(UChar), &ulen, str, size, &status);
     if (U_FAILURE(status))

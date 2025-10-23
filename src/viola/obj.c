@@ -68,7 +68,7 @@ int validObjectP(VObj * self)
 }
 */
 
-VObj* findObject(int objNameStrID)
+VObj* findObject(long objNameStrID)
 {
     HashEntry* entry = objID2Obj->get(objID2Obj, objNameStrID);
     if (entry)

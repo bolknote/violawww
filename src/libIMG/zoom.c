@@ -18,10 +18,10 @@ static unsigned int* buildIndex(unsigned int width, unsigned int zoom, unsigned 
     unsigned int a;
 
     if (!zoom) {
-        fzoom = 100.0;
+        fzoom = 100.0f;
         *rwidth = width;
     } else {
-        fzoom = (float)zoom / 100.0;
+        fzoom = (float)zoom / 100.0f;
         *rwidth = (unsigned int)(fzoom * width);
     }
     index = (unsigned int*)lmalloc(sizeof(unsigned int) * *rwidth);

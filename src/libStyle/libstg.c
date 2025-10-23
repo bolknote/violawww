@@ -827,8 +827,8 @@ STGAssert* STGFindAssertWithMinor(STGMajor* major, STGMinor* minor, char* attrNa
     
     /* First check minor (most specific) */
     if (minor) {
-        if (TRACE) printf("### STGFindAssertWithMinor: searching in minor for %s(%d)\n",
-                         stg_tagAttrID2Name(attrName), attrName);
+        if (TRACE) printf("### STGFindAssertWithMinor: searching in minor for %s(%p)\n",
+                         stg_tagAttrID2Name(attrName), (void*)attrName);
         for (assert = minor->firstAssert; assert; assert = assert->next) {
             if (TRACE) printf("###   minor has: %s = %s\n", 
                              stg_tagAttrID2Name(assert->name), assert->val);

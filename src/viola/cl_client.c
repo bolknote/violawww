@@ -342,7 +342,7 @@ long meth_client_input(VObj* self, Packet* result, int argc, Packet argv[]) {
                 if (mode) {
                     buff[c] = '\0';
                 } else {
-                    buff[c - mstrlen + 1] = '\0';
+                    buff[c - (int)mstrlen + 1] = '\0';
                 }
                 result->type = PKT_STR;
                 result->canFree = PK_CANFREE_STR;
@@ -364,7 +364,7 @@ long meth_client_input(VObj* self, Packet* result, int argc, Packet argv[]) {
                 if (mode) {
                     buff[c] = '\0';
                 } else {
-                    buff[c - mstrlen2 + 1] = '\0';
+                    buff[c - (int)mstrlen2 + 1] = '\0';
                 }
                 result->type = PKT_STR;
                 result->canFree = PK_CANFREE_STR;

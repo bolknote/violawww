@@ -54,25 +54,26 @@ typedef struct STGLib {
     struct STGGroup* first;
 } STGLib;
 
-void STG_dumpLib();
-void STG_dumpGroup();
-void STG_dumpMajor();
-void STG_dumpMinor();
-STGMajor* parseMajor();
-STGMinor* parseMinor();
-STGGroup* addGroup();
-STGMajor* addMajor();
-STGMinor* addMinor();
-STGAssert* assertAttr();
-int nextToken();
+void STG_dumpLib(STGLib* lib);
+void STG_dumpGroup(STGGroup* group);
+void STG_dumpMajor(STGMajor* major, int level);
+void STG_dumpMinor(STGMinor* minor, int level);
+STGMajor* parseMajor(STGMajor* superMajor, char** s);
+STGMinor* parseMinor(char** s, STGMajor* major);
+STGGroup* addGroup(STGGroup** firstChild, STGGroup* child);
+STGMajor* addMajor(STGMajor** firstChild, STGMajor* child);
+STGMinor* addMinor(STGMinor** firstChild, STGMinor* child);
+STGAssert* assertAttr(STGAssert** firstAssert, char* name, char* val);
+struct ParseContext;
+int nextToken(struct ParseContext* ctx, char** s);
 
-STGLib* STG_init();
-STGGroup* STG_makeGroup();
-int STG_findStyle();
-int STG_findStyle1();
-STGAssert* STGFindAssert();
-STGAssert* STGFindAssertWithMinor();
-STGMinor* matchMinor();
+STGLib* STG_init(int (*tagNameCmp_f)(), int (*tagName2ID_f)(), char* (*tagID2Name_f)(), 
+                 int (*tagAttrNameCmp_f)(), int (*tagAttrName2ID_f)(), char* (*tagAttrID2Name_f)());
+STGGroup* STG_makeGroup(STGLib* lib, char* gspec);
+int STG_findStyle(STGGroup* group, char* context[], int contextCount, STGResult results[], int maxResults);
+STGAssert* STGFindAssert(STGMajor* major, char* attrName);
+STGAssert* STGFindAssertWithMinor(STGMajor* major, STGMinor* minor, char* attrName);
+STGMinor* matchMinor(STGMajor* major, char* attrName, char* attrVal);
 
-int freeGroup();
-int freeLib();
+int freeGroup(STGLib* lib, STGGroup** group);
+int freeLib(STGLib* lib);

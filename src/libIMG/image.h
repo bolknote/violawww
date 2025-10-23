@@ -150,12 +150,12 @@ Image* merge(); /* merge.c */
 
 extern unsigned long DepthToColorsTable[]; /* new.c */
 unsigned long colorsToDepth();
-char* dupString();
+char* dupString(char* s);
 Image* newBitImage();
 Image* newRGBImage();
 Image* newTrueImage();
-void freeImage();
-void freeImageData();
+void freeImage(Image* image);
+void freeImageData(Image* image);
 void newRGBMapData();
 void freeRGBMapData();
 byte* lcalloc(unsigned int size);
@@ -169,7 +169,7 @@ Image* expand();
 
 Image* rotate(); /* rotate.c */
 
-Image* smooth(); /* smooth.c */
+Image* smooth(Image* image, int iterations, int verbose); /* smooth.c */
 
 /* doMemToVal and doMemToValLSB used to be void type but some compilers
  * (particularly the 4.1.1 SunOS compiler) couldn't handle the
@@ -190,7 +190,7 @@ void zclose(ZFILE* zf);
 void znocache(ZFILE* zf);
 void zreset(char* filename);
 
-Image* zoom(); /* zoom.c */
+Image* zoom(Image* oimage, unsigned int xzoom, unsigned int yzoom, int verbose); /* zoom.c */
 
 /* this returns the (approximate) intensity of an RGB triple
  */

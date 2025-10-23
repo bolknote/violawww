@@ -1,4 +1,5 @@
 #include "obj.h"
+#include "packet.h"
 
 extern int cmd_history;
 extern int verbose;
@@ -17,10 +18,9 @@ int makeArgv();
 
 char* PkInfos2Str();
 
-char* PkInfo2Str();
-char PkInfo2Chr();
-char PkInfo2Char();
-long PkInfo2Int();
-float PkInfo2Flt();
-VObj* PkInfo2Obj();
+char* PkInfo2Str(Packet* pk);
+char PkInfo2Char(Packet* pk);
+long PkInfo2Int(Packet* pk);
+float PkInfo2Flt(Packet* pk);
+VObj* PkInfo2Obj(Packet* pk);
 VObj* getObject();

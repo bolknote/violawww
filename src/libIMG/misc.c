@@ -230,7 +230,7 @@ int errorHandler(Display* disp, XErrorEvent* error) {
     char errortext[BUFSIZ];
 
     XGetErrorText(disp, error->error_code, errortext, BUFSIZ);
-    fprintf(stderr, "xloadimage: X Error: %s on 0x%x\n", errortext, error->resourceid);
+    fprintf(stderr, "xloadimage: X Error: %s on 0x%lx\n", errortext, error->resourceid);
     if (_Xdebug) /* if -debug mode is enabled, dump a core when we hit this */
         abort();
     else

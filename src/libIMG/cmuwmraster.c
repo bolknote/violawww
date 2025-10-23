@@ -19,7 +19,7 @@
 /* SUPPRESS 558 */
 
 int babble(char* name, struct cmuwm_header* headerp) {
-    printf("%s is a %dx%d %d plane CMU WM raster\n", name, memToVal(headerp->width, sizeof(long)),
+    printf("%s is a %lux%lu %lu plane CMU WM raster\n", name, memToVal(headerp->width, sizeof(long)),
            memToVal(headerp->height, sizeof(long)), memToVal(headerp->depth, sizeof(short)));
 }
 
@@ -93,7 +93,7 @@ Image* cmuwmLoad(char* fullname, char* name, unsigned int verbose)
     }
 
     if (memToVal(header.depth, sizeof(short)) != 1) {
-        fprintf(stderr, "CMU WM raster %s is of depth %d, must be 1", name, header.depth);
+        fprintf(stderr, "CMU WM raster %s is of depth %lu, must be 1", name, memToVal(header.depth, sizeof(short)));
         return (NULL);
     }
 

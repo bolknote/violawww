@@ -445,7 +445,7 @@ retry:
             sprintf(line, "Content-type: application/x-www-form-urlencoded%s", crlf);
             StrAllocCat(command, line);
 
-            sprintf(line, "Content-length: %d%s", strlen(http_dataToPost), crlf);
+            sprintf(line, "Content-length: %zu%s", strlen(http_dataToPost), crlf);
             StrAllocCat(command, line);
 
             StrAllocCat(command, crlf);

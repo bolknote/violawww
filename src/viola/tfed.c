@@ -5490,7 +5490,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         XCopyArea(display, TFWINDOW, TFWINDOW, gc_copy, tf->xUL, tf->yUL + upper, tf->width,
                   tf->height - upper - span, tf->xUL, tf->yUL + upper + span);
         if (verbose)
-            fprintf(stdout, "tfed: 6 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
+            fprintf(stdout, "tfed: 6 XClearArea w=%lx %d %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                     tf->yUL + upper, tf->width, span, False);
         XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, span, False);
         return 1;
@@ -5513,7 +5513,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         XCopyArea(display, TFWINDOW, TFWINDOW, gc_copy, tf->xUL, tf->yUL + upper, tf->width,
                   tf->height - upper - span, tf->xUL, tf->yUL + upper + span);
         if (verbose)
-            fprintf(stdout, "tfed: 7 XClearArea w=%lx %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
+            fprintf(stdout, "tfed: 7 XClearArea w=%lx %d %d %d %d %d\n", (unsigned long)TFWINDOW, tf->xUL,
                     tf->yUL + upper, tf->width, span, False);
         XClearArea(display, TFWINDOW, tf->xUL, tf->yUL + upper, tf->width, span, False);
         return 1;

@@ -323,13 +323,13 @@ void violaIdleEvent() {
             if ((obj = objFDList[i])) {
                 if (verbose) {
                     sprintf(buff, "data in socket number = %d, obj = %s\n", i, GET_name(obj));
-                    fprintf(stderr, buff);
+                    fprintf(stderr, "%s", buff);
                     messageToUser(NULL, MESSAGE_DEBUG, buff);
                 }
                 sendMessage1(obj, "input");
             } else {
                 sprintf(buff, "data in fd = %d, but no associated object. closing it.\n", i);
-                fprintf(stderr, buff);
+                fprintf(stderr, "%s", buff);
                 close(i);
             }
             bits--;
@@ -426,7 +426,7 @@ int eventLoop() {
 
                     if (verbose) {
                         sprintf(buff, "data in socket number = %d, obj = %s\n", i, GET_name(obj));
-                        fprintf(stderr, buff);
+                        fprintf(stderr, "%s", buff);
 
                         messageToUser(NULL, MESSAGE_DEBUG, buff);
                     }
@@ -438,7 +438,7 @@ int eventLoop() {
                                                             messageToUser(NULL, MESSAGE_DEBUG,
                        buff);
                     */
-                    fprintf(stderr, buff);
+                    fprintf(stderr, "%s", buff);
                     close(i);
                 }
                 bits--;

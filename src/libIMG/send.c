@@ -20,7 +20,7 @@ static int pixmapErrorTrap(Display* disp, XErrorEvent* pErrorEvent) {
     char buf[MAXERRORLEN + 1];
     GotError = 1;
     XGetErrorText(disp, pErrorEvent->error_code, buf, MAXERRORLEN);
-    printf("serial #%d (request code %d) Got Error %s\n", pErrorEvent->serial,
+    printf("serial #%lu (request code %d) Got Error %s\n", pErrorEvent->serial,
            pErrorEvent->request_code, buf);
     return (0);
 }

@@ -143,7 +143,7 @@ void dumpPacket(packet) Packet* packet;
     case PKT_ARY:
         if (packet->info.y) {
             int i;
-            printf("size=%d: ", packet->info.y->size);
+            printf("size=%ld: ", packet->info.y->size);
             for (i = 0; i < packet->info.y->size; i++) {
                 printf("%ld ", packet->info.y->info[i]);
             }

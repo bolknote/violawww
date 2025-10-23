@@ -32,12 +32,12 @@ enum { FALSE = 0, TRUE };
 /*
  * CompareFunction(void *key, void *data);
  */
-typedef Boolean (*CompareFunction)();
+typedef Boolean (*CompareFunction)(void *key, void *data);
 
 /*
  * FreeFunction(void *item);
  */
-typedef void (*FreeFunction)();
+typedef void (*FreeFunction)(void *item);
 
 /*
  * putInBox(Box **box, void *item)

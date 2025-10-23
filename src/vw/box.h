@@ -24,15 +24,10 @@ typedef struct LLNode {
     struct LLNode* next;
 } LLNode, Box;
 
-#ifdef _NOBOOLEAN_
-typedef long Boolean;
-enum { FALSE = 0, TRUE };
-#endif /* _NOBOOLEAN_ */
-
 /*
  * CompareFunction(void *key, void *data);
  */
-typedef Boolean (*CompareFunction)(void *key, void *data);
+typedef _Bool (*CompareFunction)(void *key, void *data);
 
 /*
  * FreeFunction(void *item);
@@ -48,18 +43,18 @@ void putInBox(Box** box, void* item);
  * getFromBox(Box **box,
  *            void *key,
  *            CompareFunction compare,
- *            Boolean findFirstOne)
+ *            _Bool findFirstOne)
  */
-void* getFromBox(Box** box, void* key, CompareFunction compare, Boolean findFirstOne);
+void* getFromBox(Box** box, void* key, CompareFunction compare, _Bool findFirstOne);
 
 /*
  * deleteFromBox(Box **box,
  *               void *key,
  *               CompareFunction compare,
  *               FreeFunction freeitem,
- *               Boolean deleteAllItems)
+ *               _Bool deleteAllItems)
  */
-void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction freeData, Boolean deleteAllItems);
+void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction freeData, _Bool deleteAllItems);
 
 /*
  * cloneBox(Box *box)
@@ -75,6 +70,6 @@ void deleteBox(Box* box, FreeFunction freeData);
 /*
  * alwaysTrue()
  */
-Boolean alwaysTrue(void *vkey, void *vdata);
+_Bool alwaysTrue(void *vkey, void *vdata);
 
 #endif /* _BOX_H_ */

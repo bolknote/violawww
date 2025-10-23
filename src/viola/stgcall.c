@@ -200,7 +200,7 @@ int getSTGInfo_attrFromResult(long resultPtr, char* attrName, Packet* result)
         return 0;
     
     /* Use new function that checks minor first, then major */
-    assert = STGFindAssertWithMinor(stgRes->smajor, stgRes->sminor, tagName2ID(attrName));
+    assert = STGFindAssertWithMinor(stgRes->smajor, stgRes->sminor, (char*)(long)tagName2ID(attrName));
     if (assert) {
         result->info.s = assert->val;
         result->type = PKT_STR;
@@ -220,7 +220,7 @@ int getSTGInfo_attr(STGMajor* tagPtr, char* attrName, Packet* result)
         return 0;
     if (!attrName)
         return 0;
-    assert = STGFindAssert(tagPtr, tagName2ID(attrName));
+    assert = STGFindAssert(tagPtr, (char*)(long)tagName2ID(attrName));
     if (assert) {
         result->info.s = assert->val;
         result->type = PKT_STR;
@@ -260,7 +260,7 @@ int getSTGInfo(char* tagName, char* attrName, Packet* result)
     stat = STG_findStyle(stgGroup, context, 1, results, 1);
 
     if (stat) {
-        assert = STGFindAssert(results[0].smajor, attrName);
+        assert = STGFindAssert(results[0].smajor, (char*)(long)tagName2ID(attrName));
         if (assert) {
             result->info.s = assert->val;
             result->type = PKT_STR;

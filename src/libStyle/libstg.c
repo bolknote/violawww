@@ -57,10 +57,10 @@ STGInfo stgInfo;
 char stack_char = '\0';
 
 int (*stg_tagNameCmp)();
-int (*stg_tagName2ID)();
+long (*stg_tagName2ID)();
 char* (*stg_tagID2Name)();
 int (*stg_tagAttrNameCmp)();
-int (*stg_tagAttrName2ID)();
+long (*stg_tagAttrName2ID)();
 char* (*stg_tagAttrID2Name)();
 
 /* Initialize parser context */
@@ -80,13 +80,8 @@ static inline void swap_buffers(ParseContext* ctx) {
     ctx->stack_str = tmp;
 }
 
-STGLib* STG_init(tagNameCmp_f, tagName2ID_f, tagID2Name_f, tagAttrNameCmp_f, tagAttrName2ID_f,
-                 tagAttrID2Name_f) int (*tagNameCmp_f)();
-int (*tagName2ID_f)();
-char* (*tagID2Name_f)();
-int (*tagAttrNameCmp_f)();
-int (*tagAttrName2ID_f)();
-char* (*tagAttrID2Name_f)();
+STGLib* STG_init(int (*tagNameCmp_f)(), long (*tagName2ID_f)(), char* (*tagID2Name_f)(), 
+                 int (*tagAttrNameCmp_f)(), long (*tagAttrName2ID_f)(), char* (*tagAttrID2Name_f)())
 {
     STGLib* stgLib = (STGLib*)malloc(sizeof(struct STGLib));
     stgLib->first = NULL;

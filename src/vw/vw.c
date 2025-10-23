@@ -842,17 +842,17 @@ Boolean compareDocViewName(vkey, vdata) void *vkey, *vdata;
     return (FALSE);
 }
 
-Boolean compareDocViewShell(vkey, vdata) void *vkey, *vdata;
+_Bool compareDocViewShell(void *vkey, void *vdata)
 {
     Widget* shell = (Widget*)vkey;
     DocViewInfo* dvData = (DocViewInfo*)vdata;
 
     if (!vkey || !vdata)
-        return (FALSE);
+        return 0;
 
     if (*shell == dvData->shell)
-        return (TRUE);
-    return (FALSE);
+        return 1;
+    return 0;
 }
 
 void freeDocViewInfo(void* vdvi) {

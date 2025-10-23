@@ -1,7 +1,9 @@
 /*
  * biop.h
  */
-int biOp();
+typedef struct Packet Packet;
+
+int biOp(int op, Packet* p1, Packet* p2);
 
 void convError();
 void int2float();

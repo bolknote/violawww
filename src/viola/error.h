@@ -37,7 +37,7 @@ enum {
 #define IERROR printf
 #define MERROR messageToUserWithObj
 
-char* messageToUserWithObj();
+char* messageToUserWithObj(void* self, char* messg);
 extern int errc;
 extern void clearErrors();
-extern char* messageToUser();
+extern char* messageToUser(void* self, int type, char* messg);

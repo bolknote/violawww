@@ -286,9 +286,19 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
 
     /* If load failed, try Wayback Machine (but not if already loading from archive) */
     if (status < 0) {
-        /* Extract hostname to check if we're already on web.archive.org */
+        /* Extract protocol and hostname to check if this is appropriate for Web Archive */
+        char* protocol = HTParse(full_address, "", PARSE_ACCESS);
         char* hostname = HTParse(full_address, "", PARSE_HOST);
         int is_archive = 0;
+        int is_http_protocol = 0;
+        
+        /* Web Archive only works with HTTP and HTTPS protocols */
+        if (protocol) {
+            if (strcasecmp(protocol, "http") == 0 || strcasecmp(protocol, "https") == 0) {
+                is_http_protocol = 1;
+            }
+            free(protocol);
+        }
         
         if (hostname) {
             /* Check if hostname is web.archive.org */
@@ -298,7 +308,7 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
             free(hostname);
         }
         
-        if (!is_archive) {
+        if (!is_archive && is_http_protocol) {
             if (TRACE) {
                 fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 
                         status, full_address);

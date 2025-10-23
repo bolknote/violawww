@@ -59,9 +59,9 @@
 
 #ifdef hpux
 #include <time.h>
-#else hpux
+#else // hpux
 #include <sys/time.h>
-#endif hpux
+#endif // hpux
 
 #include "HTML_share.h"
 

@@ -39,9 +39,9 @@
 
 #ifdef hpux
 #include <time.h>
-#else hpux
+#else // hpux
 #include <sys/time.h>
-#endif hpux
+#endif // hpux
 
 int total_secs = 0;
 int total_usecs = 0;
@@ -2130,14 +2130,14 @@ Packet* execObjScript(VObj* obj)
         fclose(fp);
         fp = fopen(tmpfile, "r");
         yyin = fp;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
 #ifdef SCRIPT_FROM_FILENOT
         if (flex_called) {
             my_init_lex(yyin);
         }
         flex_called = 1;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
         /*
                         fprintf(stderr,
@@ -2152,7 +2152,7 @@ Packet* execObjScript(VObj* obj)
 #ifdef SCRIPT_FROM_FILENOT
         fclose(fp);
         unlink(tmpfile);
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
         /* collect identifiers and assign reference offset */
         if (!assignReferences(theAST, &pcode_buff[PCODE_IDX_INSTR], &pc_limit))
@@ -2239,14 +2239,14 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
         fclose(fp);
         fp = fopen(tmpfile, "r");
         yyin = fp;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
 #ifdef SCRIPT_FROM_FILENOT
         if (flex_called) {
             my_init_lex(yyin);
         }
         flex_called = 1;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
         /* pass 1: build AST */
         clearASTStack();
@@ -2256,7 +2256,7 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
 #ifdef SCRIPT_FROM_FILENOT
         fclose(fp);
         unlink(tmpfile);
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
         if (flag_printAST)
             printAST(theAST, 0);
@@ -2339,14 +2339,14 @@ Packet* execScript(VObj* obj, Packet* result, char* script)
     fclose(fp);
     fp = fopen(tmpfile, "r");
     yyin = fp;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
 #ifdef SCRIPT_FROM_FILENOT
     if (flex_called) {
         my_init_lex(yyin);
     }
     flex_called = 1;
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
     /* pass 1: build AST */
     clearASTStack();
@@ -2356,7 +2356,7 @@ Packet* execScript(VObj* obj, Packet* result, char* script)
 #ifdef SCRIPT_FROM_FILENOT
     fclose(fp);
     unlink(tmpfile);
-#endif SCRIPT_FROM_FILENOT
+#endif // SCRIPT_FROM_FILENOT
 
     if (flag_printAST)
         printAST(theAST, 0);

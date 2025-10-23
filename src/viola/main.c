@@ -11,8 +11,9 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
-void main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     initViola(argc, argv, (char*)NULL, (Display*)NULL, (Screen*)NULL, (Window)0);
+    return 0;
 }
 
 /* the libWWW calls these routines to report HTTP loading progress

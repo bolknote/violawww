@@ -44,7 +44,7 @@ extern long securityMode;
 /*int validObjectP();*/
 #define validObjectP(self) objObj2ExistP->get(objObj2ExistP, self)
 
-VObj* findObject();
+VObj* findObject(long objNameStrID);
 VObjList* appendObjToList();
 void freeAllObjects();
 

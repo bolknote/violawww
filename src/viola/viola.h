@@ -19,7 +19,7 @@
 
 extern int perishableActiveHelp;
 
-char* initViola();
+char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen* screen, Window parentWindow);
 void violaProcessEvent();
 void violaIdleEvent();
 void freeViolaResources();

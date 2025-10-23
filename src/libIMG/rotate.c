@@ -127,7 +127,7 @@ Image* rotate(Image* simage, int rotate, unsigned int verbose)
                              yptr[x] + ((image1->height - y - 1) * image1->pixlen), image1->pixlen);
                     sp += image1->pixlen;
                 }
-            lfree(yptr);
+            lfree((byte*)yptr);
             break;
         default:
             printf("rotate: Unsupported image type\n");

@@ -373,7 +373,7 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
                     for (i = 0; i < image->rgb.used; i++) {
                         /*	    if (cols[i]==0xffff) { */ /* an unallocated pixel ??*/
                         int j, d, mdist, close;
-                        unsigned long r, g, b;
+                        int r, g, b;
 
                         mdist = 100000;
                         close = -1;
@@ -381,8 +381,8 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
                         g = *(image->rgb.green + i);
                         b = *(image->rgb.blue + i);
                         for (j = 0; j < dc; j++) {
-                            d = abs(r - (ctab[j].red)) + abs(g - (ctab[j].green)) +
-                                abs(b - (ctab[j].blue));
+                            d = abs(r - (int)(ctab[j].red)) + abs(g - (int)(ctab[j].green)) +
+                                abs(b - (int)(ctab[j].blue));
                             /*
                                           d = abs(r - (ctab[j].red>>8)) +
                                             abs(g - (ctab[j].green>>8)) +

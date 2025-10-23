@@ -70,7 +70,7 @@ typedef struct StrInfo {
 extern int init_packet();
 extern Packet* makePacket();
 extern Packet* borrowPacket();
-extern Packet* clearPacket();
+extern Packet* clearPacket(Packet* packet);
 
 /*extern void nullPacket();*/
 #define nullPacket(packet)                                                                         \

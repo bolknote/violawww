@@ -35,4 +35,4 @@ void urlToggleSelection();
 void urlGetSelection();
 void urlGiveUpSelection();
 
-#endif _SELECTION_H_
+#endif // _SELECTION_H_

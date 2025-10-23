@@ -1463,7 +1463,7 @@ Pixmap GLMakeXBMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
     bitmapfd._flag = stdin->_flag;
     bitmapfd._file = _IOREAD | _IOSTRG;
 #endif
-#endif USETEMPFILE
+#endif // USETEMPFILE
 
 #ifndef USETEMPFILE
     if (XmuReadBitmapData(&bitmapfd, width, height, &data, hotx, hoty) == BitmapSuccess) {
@@ -1487,7 +1487,7 @@ Pixmap GLMakeXBMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
         return bitmap;
     }
     unlink(tmpfile);
-#endif USETEMPFILE
+#endif // USETEMPFILE
     return 0;
 }
 

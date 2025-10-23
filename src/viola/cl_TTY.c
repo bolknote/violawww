@@ -290,7 +290,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
             }
         }
     }
-#endif i386
+#endif // i386
     result->info.i = 0;
     return 0;
 }

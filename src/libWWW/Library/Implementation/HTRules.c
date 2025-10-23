@@ -223,7 +223,7 @@ char* HTTranslate(char* required)
 
             /* continue translating rules */
         } break;
-#endif ACCESS_AUTH
+#endif // ACCESS_AUTH
 
         case HT_Pass: /* Authorised */
             if (!r->equiv) {

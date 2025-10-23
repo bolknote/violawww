@@ -798,7 +798,7 @@ int tfed_processMouseInput(VObj* self)
                 }
                 initColor = 0;
             }
-#endif NOT
+#endif // NOT
             if (cx != prev_cx || cy != prev_cy) {
                 /*				printf("range row,col: %d,%d - %d,%d\n",
                                                         init_cy, init_cx, cy, cx);
@@ -4743,7 +4743,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
             if (tf->csr_py < 0) {
 #ifdef MOVELINE_VERBOSE
                 printf("moveLine 2\n");
-#endif moveOffset(tf, delta, &buffi);
+#endif // moveOffset(tf, delta, &buffi);
             } else if (tf->csr_py > tf->yLR) {
 #ifdef MOVELINE_VERBOSE
                 printf("moveLine 3\n");

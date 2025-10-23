@@ -423,7 +423,7 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
                       urlSelectionClear, (XtPointer) title);
     */
 
-#endif UNUSED
+#endif // UNUSED
 
     /* Dynamic help area. */
     messageText = XtVaCreateManagedWidget(

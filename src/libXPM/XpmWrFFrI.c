@@ -120,7 +120,7 @@ static int WriteData(xpmData* mdata, xpmInternAttrib* attrib, XpmAttributes* att
     if (xpmDataTypes[n].Eos)
         fprintf(mdata->stream.file, "%c", xpmDataTypes[n].Eos);
 
-    fprintf(mdata->stream.file, xpmDataTypes[n].Strs);
+    fprintf(mdata->stream.file, "%s", xpmDataTypes[n].Strs);
 
     /*
      * print colors
@@ -150,7 +150,7 @@ static int WriteData(xpmData* mdata, xpmInternAttrib* attrib, XpmAttributes* att
         if (xpmDataTypes[n].Eos)
             fprintf(mdata->stream.file, "%c", xpmDataTypes[n].Eos);
 
-        fprintf(mdata->stream.file, xpmDataTypes[n].Strs);
+        fprintf(mdata->stream.file, "%s", xpmDataTypes[n].Strs);
         d = 1;
     } else
         d = 0;
@@ -196,7 +196,7 @@ static int WriteData(xpmData* mdata, xpmInternAttrib* attrib, XpmAttributes* att
         if (xpmDataTypes[n].Eos)
             fprintf(mdata->stream.file, "%c", xpmDataTypes[n].Eos);
 
-        fprintf(mdata->stream.file, xpmDataTypes[n].Strs);
+        fprintf(mdata->stream.file, "%s", xpmDataTypes[n].Strs);
     }
 
     /*
@@ -222,10 +222,10 @@ static int WriteData(xpmData* mdata, xpmInternAttrib* attrib, XpmAttributes* att
             fprintf(mdata->stream.file, "%c", xpmDataTypes[n].Eos);
 
         if (y < attrib->height - 1)
-            fprintf(mdata->stream.file, xpmDataTypes[n].Strs);
+            fprintf(mdata->stream.file, "%s", xpmDataTypes[n].Strs);
     }
 
-    fprintf(mdata->stream.file, xpmDataTypes[n].Eoa);
+    fprintf(mdata->stream.file, "%s", xpmDataTypes[n].Eoa);
 
     xpmFreeRgbNames(rgbn, rgbn_max);
 

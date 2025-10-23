@@ -31,7 +31,7 @@ void urlSelectionClear();
 Boolean urlDoSelectionRequest();
 void urlLoseSelection();
 void urlFinishSelection();
-void urlToggleSelection();
+void urlToggleSelection(Widget widget, DocViewInfo* dvi);
 void urlGetSelection();
 void urlGiveUpSelection();
 

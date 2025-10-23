@@ -16,7 +16,7 @@
 extern void* malloc(unsigned long);
 extern void free(void*);
 extern char* strcpy(char*, const char*);
-extern char* saveString();
+extern char* saveString(char* str);
 extern int WWW_TraceFlag;
 
 #define TRACE (WWW_TraceFlag)
@@ -56,12 +56,12 @@ typedef struct ParseContext {
 STGInfo stgInfo;
 char stack_char = '\0';
 
-int (*stg_tagNameCmp)();
-long (*stg_tagName2ID)();
-char* (*stg_tagID2Name)();
-int (*stg_tagAttrNameCmp)();
-long (*stg_tagAttrName2ID)();
-char* (*stg_tagAttrID2Name)();
+int (*stg_tagNameCmp)(char *, char *);
+long (*stg_tagName2ID)(char *);
+char* (*stg_tagID2Name)(char *);
+int (*stg_tagAttrNameCmp)(char *, char *);
+long (*stg_tagAttrName2ID)(char *);
+char* (*stg_tagAttrID2Name)(char *);
 
 /* Initialize parser context */
 static inline void init_parse_context(ParseContext* ctx) {
@@ -399,15 +399,13 @@ STGMinor* parseMinor(char** s, STGMajor* major)
     return minor;
 }
 
-void STG_dumpAssert(assert, level) STGAssert* assert;
-int level;
+void STG_dumpAssert(STGAssert* assert, int level)
 {
     PRINT_INDENTS(level);
-    printf("%s (%d) = %s    \n", stg_tagAttrID2Name(assert->name), assert->name, assert->val);
+    printf("%s (%ld) = %s    \n", stg_tagAttrID2Name(assert->name), (long)assert->name, assert->val);
 }
 
-void STG_dumpMinor(minor, level) STGMinor* minor;
-int level;
+void STG_dumpMinor(STGMinor* minor, int level)
 {
     STGAssert* assert;
     STGStrList* ids;
@@ -418,7 +416,7 @@ int level;
     PRINT_INDENTS(level);
     printf("--Minor: ");
     for (ids = minor->IDList; ids; ids = ids->next)
-        printf("%s (%d), ", stg_tagID2Name(ids->val), ids->val);
+        printf("%s (%ld), ", stg_tagID2Name(ids->val), (long)ids->val);
     printf("\n");
     
     for (assert = minor->firstAssert; assert; assert = assert->next) {
@@ -428,8 +426,7 @@ int level;
     printf("---------\n");
 }
 
-void STG_dumpMajor(major, level) STGMajor* major;
-int level;
+void STG_dumpMajor(STGMajor* major, int level)
 {
     STGMinor* minor;
     STGMajor* cmajor;
@@ -442,7 +439,7 @@ int level;
     PRINT_INDENTS(level);
     printf("Major: ");
     for (ids = major->IDList; ids; ids = ids->next)
-        printf("%s (%d), ", stg_tagID2Name(ids->val), ids->val);
+        printf("%s (%ld), ", stg_tagID2Name(ids->val), (long)ids->val);
     printf("\n");
 
     for (assert = major->firstAssert; assert; assert = assert->next) {
@@ -457,7 +454,7 @@ int level;
     }
 }
 
-void STG_dumpGroup(group) STGGroup* group;
+void STG_dumpGroup(STGGroup* group)
 {
     STGMajor* major;
     int level = 0;
@@ -466,7 +463,7 @@ void STG_dumpGroup(group) STGGroup* group;
     }
 }
 
-void STG_dumpLib(lib) STGLib* lib;
+void STG_dumpLib(STGLib* lib)
 {
     STGGroup* group;
 
@@ -512,9 +509,9 @@ STGMinor* matchMinor(STGMajor* major, char * attrName, char * attrVal)
         return NULL;
     }
     
-    if (TRACE) printf("### matchMinor: Looking for attrName=%s(%d) attrVal=%s(%d)\n",
-                      stg_tagID2Name(attrName), attrName,
-                      stg_tagID2Name(attrVal), attrVal);
+    if (TRACE) printf("### matchMinor: Looking for attrName=%s(%ld) attrVal=%s(%ld)\n",
+                      stg_tagID2Name(attrName), (long)attrName,
+                      stg_tagID2Name(attrVal), (long)attrVal);
     
     for (minor = major->firstMinorChild; minor; minor = minor->next) {
         attrNameMatch = 0;
@@ -524,7 +521,7 @@ STGMinor* matchMinor(STGMajor* major, char * attrName, char * attrVal)
         
         /* Check if minor IDList contains both attrName and attrVal */
         for (ids = minor->IDList; ids; ids = ids->next) {
-            if (TRACE) printf("###   ID: %s(%d)\n", stg_tagID2Name(ids->val), ids->val);
+            if (TRACE) printf("###   ID: %s(%ld)\n", stg_tagID2Name(ids->val), (long)ids->val);
             
             if (stg_tagNameCmp(ids->val, attrName)) {
                 attrNameMatch = 1;
@@ -572,8 +569,8 @@ int matchMajor(STGMajor* major, char * tag, char * attr, int max, STGResult* mat
                     /* attr format expected: "attrName:attrValue" or just store both */
                     /* For now we assume attr contains the attribute value like "WARNING" */
                     /* and we search for minors with STYLE/WARNING pattern */
-                    if (TRACE) printf("### matchMajor: tag matched, looking for minor with attr=%s(%d)\n",
-                                     stg_tagID2Name(attr), attr);
+                    if (TRACE) printf("### matchMajor: tag matched, looking for minor with attr=%s(%ld)\n",
+                                     stg_tagID2Name(attr), (long)attr);
                     minor = matchMinor(major, (char*)(long)stg_tagName2ID("STYLE"), attr);
                     if (TRACE) printf("### matchMajor: matchMinor returned %p\n", minor);
                 }

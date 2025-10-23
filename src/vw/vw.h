@@ -128,7 +128,7 @@ typedef struct ClientDataStruct {
 
 Boolean compareDocViewName();
 _Bool compareDocViewShell(void *vkey, void *vdata);
-void freeDocViewInfo();
+void freeDocViewInfo(void* vdvi);
 
 typedef struct BookmarkStruct {
     char* name;
@@ -141,8 +141,8 @@ Boolean compareBookmarkDoc();
 void freeBookmark();
 
 /* --- PROTOTYPES ---------------------------------------------------------- */
-DocViewInfo* makeBrowserInterface();
-void closeAppShell();
+DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[]);
+void closeAppShell(DocViewInfo* docViewInfo);
 char* makeString();
 void setHelp(Widget widget, Widget helpLabel, char* helpText);
 XmString makeXMSTitle();

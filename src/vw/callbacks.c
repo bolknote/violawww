@@ -738,8 +738,7 @@ void openDocument(Widget widget, XtPointer clientD, XtPointer callData) {
  */
 static int calledDrag;
 
-void scrollBarConfig(sbar, thumbPercent, positionPercent) Widget sbar;
-int thumbPercent, positionPercent;
+void scrollBarConfig(Widget sbar, int thumbPercent, int positionPercent)
 {
     int sliderSize, maximum;
 

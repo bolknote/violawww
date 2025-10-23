@@ -215,10 +215,7 @@ void catalogButtonMotionEH(Widget widget, XtPointer clientData, XEvent* event, B
      */
 }
 
-void catalogExposureEH(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
+void catalogExposureEH(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont)
 {
     int i, nitems;
     Catalog* catalog = (Catalog*)clientData;
@@ -231,34 +228,23 @@ Boolean* cont;
         drawItem(catalog->canvas, catalog->currentFolder->items[i]);
 }
 
-void cleanupFolder(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void cleanupFolder(Widget widget, XtPointer clientData, XtPointer callData)
 {
 }
 
-void alphabetizeFolder(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void alphabetizeFolder(Widget widget, XtPointer clientData, XtPointer callData)
 {
 }
 
-void catalogSelectItem(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
+void catalogSelectItem(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont)
 {
 }
 
-void catalogDrag(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
+void catalogDrag(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont)
 {
 }
 
-void catalogSelectMultipleItems(widget, clientData, event, cont) Widget widget;
-XtPointer clientData;
-XEvent* event;
-Boolean* cont;
+void catalogSelectMultipleItems(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont)
 {
 }
 

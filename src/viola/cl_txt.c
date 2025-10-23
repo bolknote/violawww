@@ -215,7 +215,7 @@ long meth_txt_initialize(VObj* self, Packet* result, int argc, Packet argv[])
     if (cp = GET_font(self)) {
         for (i = 0; i <= numberOfFontIDs; i++) {
             /*XXX gotta hash/tokenize this... */
-            if (!STRCMP(FontRef(i), cp)) {
+            if (!strcmp(FontRef(i), cp)) {
                 SET__font(self, i);
                 return 1;
             }
@@ -242,7 +242,7 @@ long helper_txt_set(VObj* self, Packet* result, int argc, Packet argv[], long la
         cp = PkInfo2Str(&argv[1]);
         for (i = 0; i <= numberOfFontIDs; i++) {
             /*XXX gotta hash/tokenize this... */
-            if (!STRCMP(FontRef(i), cp)) {
+            if (!strcmp(FontRef(i), cp)) {
                 SET__font(self, i);
                 result->info.s = saveString(cp);
                 SET_font(self, result->info.s);

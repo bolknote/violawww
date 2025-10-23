@@ -794,42 +794,42 @@ int init_fonts() {
 
                 FontRef(numberOfFontIDs) = fontSet;
 
-                if (!STRCMP(fontSet, "fixed")) {
+                if (!strcmp(fontSet, "fixed")) {
                     fontID_fixed = numberOfFontIDs;
 
-                } else if (!STRCMP(fontSet, "normal")) {
+                } else if (!strcmp(fontSet, "normal")) {
                     fontID_normal = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "normal_large")) {
+                } else if (!strcmp(fontSet, "normal_large")) {
                     fontID_normal_large = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "normal_largest")) {
+                } else if (!strcmp(fontSet, "normal_largest")) {
                     fontID_normal_largest = numberOfFontIDs;
 
-                } else if (!STRCMP(fontSet, "bold")) {
+                } else if (!strcmp(fontSet, "bold")) {
                     fontID_bold = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "bold_large")) {
+                } else if (!strcmp(fontSet, "bold_large")) {
                     fontID_bold_large = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "bold_largest")) {
+                } else if (!strcmp(fontSet, "bold_largest")) {
                     fontID_bold_largest = numberOfFontIDs;
 
-                } else if (!STRCMP(fontSet, "italic")) {
+                } else if (!strcmp(fontSet, "italic")) {
                     fontID_italic = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "italic_large")) {
+                } else if (!strcmp(fontSet, "italic_large")) {
                     fontID_italic_large = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "italic_largest")) {
+                } else if (!strcmp(fontSet, "italic_largest")) {
                     fontID_italic_largest = numberOfFontIDs;
 
-                } else if (!STRCMP(fontSet, "banner")) {
+                } else if (!strcmp(fontSet, "banner")) {
                     fontID_banner = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "banner_large")) {
+                } else if (!strcmp(fontSet, "banner_large")) {
                     fontID_banner_large = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "banner_largest")) {
+                } else if (!strcmp(fontSet, "banner_largest")) {
                     fontID_banner_largest = numberOfFontIDs;
 
-                } else if (!STRCMP(fontSet, "symbol")) {
+                } else if (!strcmp(fontSet, "symbol")) {
                     fontID_symbol = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "symbol_large")) {
+                } else if (!strcmp(fontSet, "symbol_large")) {
                     fontID_symbol_large = numberOfFontIDs;
-                } else if (!STRCMP(fontSet, "symbol_largest")) {
+                } else if (!strcmp(fontSet, "symbol_largest")) {
                     fontID_symbol_largest = numberOfFontIDs;
                 }
             }
@@ -2387,7 +2387,7 @@ ColorInfo* GLPrepareObjColor(VObj* self)
     /*
             if ((colorInfo->fg != NULL) && (colorInfo->bg != NULL))
               if (colorInfo->fg->xcolor.pixel == colorInfo->bg->xcolor.pixel)
-                    if (STRCMP(colorInfo->fg->name, colorInfo->bg->name))
+                    if (strcmp(colorInfo->fg->name, colorInfo->bg->name))
                             if (colorInfo->fg->xcolor.pixel == DefaultFGPixel)
                                     colorInfo->fg->xcolor.pixel = DefaultBGPixel;
                             else

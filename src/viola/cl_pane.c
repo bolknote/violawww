@@ -469,7 +469,7 @@ long helper_pane_set(VObj* self, Packet* result, int argc, Packet argv[], long l
 
         result->type = PKT_STR;
         for (i = 0; paneConfigStr[i]; i++) {
-            if (!STRCMP(paneConfigStr[i], cp)) {
+            if (!strcmp(paneConfigStr[i], cp)) {
                 if (GET_paneConfig(self))
                     free(GET_paneConfig(self));
                 /*not necessary*/ SET_paneConfig(self, saveString(cp));

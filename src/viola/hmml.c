@@ -54,7 +54,7 @@ VObj* SGMLMakeDocObj(char* source, VObj* parent, char* name, int width)
     trimEdge(subTagp);
 
     for (i = 0; SGMLForms[i]; i++) {
-        if (!STRCMP(SGMLForms[i]->DTDName, subTagp)) {
+        if (!strcmp(SGMLForms[i]->DTDName, subTagp)) {
             docMappingInfo = SGMLForms[i];
             break;
         }

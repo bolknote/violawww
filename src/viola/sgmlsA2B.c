@@ -179,7 +179,7 @@ int findTagID(char* tagName)
     int i;
 
     for (i = 0; i < tagDictCount; i++) {
-        if (!STRCMP(tagDict[i], tagName))
+        if (!strcmp(tagDict[i], tagName))
             return i;
     }
     return -1; /* error! */
@@ -214,7 +214,7 @@ int level;
             /*			printf("OTAG=\"%s\"\n", tagName);*/
 
             for (i = 0; i < tagDictCount; i++) {
-                if (!STRCMP(tagDict[i], tagName))
+                if (!strcmp(tagDict[i], tagName))
                     break;
             }
             if (i >= tagDictCount) {
@@ -318,19 +318,19 @@ int attrsCount;
             attrValue[ai] = '\0';
         }
 
-        if (!STRCMP(attrType, "IMPLIED")) {
+        if (!strcmp(attrType, "IMPLIED")) {
             attrTypeID = SGMLS_ATTR_IMPLIED;
-        } else if (!STRCMP(attrType, "CDATA")) {
+        } else if (!strcmp(attrType, "CDATA")) {
             attrTypeID = SGMLS_ATTR_CDATA;
-        } else if (!STRCMP(attrType, "TOKEN")) {
+        } else if (!strcmp(attrType, "TOKEN")) {
             attrTypeID = SGMLS_ATTR_TOKEN;
-        } else if (!STRCMP(attrType, "ID")) {
+        } else if (!strcmp(attrType, "ID")) {
             attrTypeID = SGMLS_ATTR_ID;
-        } else if (!STRCMP(attrType, "IDREF")) {
+        } else if (!strcmp(attrType, "IDREF")) {
             attrTypeID = SGMLS_ATTR_IDREF;
-        } else if (!STRCMP(attrType, "ENTITY")) {
+        } else if (!strcmp(attrType, "ENTITY")) {
             attrTypeID = SGMLS_ATTR_ENTITY;
-        } else if (!STRCMP(attrType, "NOTATION")) {
+        } else if (!strcmp(attrType, "NOTATION")) {
             attrTypeID = SGMLS_ATTR_NOTATION;
         } else {
             attrTypeID = -1;

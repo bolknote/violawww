@@ -725,7 +725,7 @@ int eqStr(char* cmpStr, char* fixedStr) {
 
     strcpy(sp, cmpStr);
     trimEdgeSpaces(sp);
-    if (!STRCMP(sp, fixedStr)) {
+    if (!strcmp(sp, fixedStr)) {
         free(sp);
         return 1;
     }

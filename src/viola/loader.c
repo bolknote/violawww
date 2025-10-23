@@ -419,7 +419,7 @@ int loadFromBuiltInCache(char* filename)
     for (i = 0;; i++) {
         if (!objsNames[i].name)
             return -1;
-        if (!STRCMP(objsNames[i].name, filename)) {
+        if (!strcmp(objsNames[i].name, filename)) {
             slotsInfo = objsNames[i].slots;
             break;
         }

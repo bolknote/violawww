@@ -317,16 +317,16 @@ long meth_cosmic_detach(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_cosmic_debug(VObj* self, Packet* result, int argc, Packet argv[]) {
     clearPacket(result);
-    if (!STRCMP(PkInfo2Str(&argv[0]), "pa")) {
+    if (!strcmp(PkInfo2Str(&argv[0]), "pa")) {
         extern int flag_printAST;
         flag_printAST = (int)PkInfo2Int(&argv[1]);
-    } else if (!STRCMP(PkInfo2Str(&argv[0]), "pc")) {
+    } else if (!strcmp(PkInfo2Str(&argv[0]), "pc")) {
         extern int flag_printPCode;
         flag_printPCode = (int)PkInfo2Int(&argv[1]);
-    } else if (!STRCMP(PkInfo2Str(&argv[0]), "pe")) {
+    } else if (!strcmp(PkInfo2Str(&argv[0]), "pe")) {
         extern int flag_printExec;
         flag_printExec = (int)PkInfo2Int(&argv[1]);
-    } else if (!STRCMP(PkInfo2Str(&argv[0]), "dumpPCode")) {
+    } else if (!strcmp(PkInfo2Str(&argv[0]), "dumpPCode")) {
         long pc = 0;
         union PCode* pcode = GET__script(self);
 
@@ -459,7 +459,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         return dumpObj(self, fprintf, stdout, 0, 0);
     }
     cp = PkInfo2Str(&argv[0]);
-    if (!STRCMP(cp, "listMethods")) {
+    if (!strcmp(cp, "listMethods")) {
         ClassInfo* cip;
         MethodInfo* mip;
         FILE* fp;
@@ -490,7 +490,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
             result->canFree = PK_CANFREE_STR;
         }
 
-    } else if (!STRCMP(cp, "listNPSlots")) {
+    } else if (!strcmp(cp, "listNPSlots")) {
         ClassInfo* cip;
         SlotInfo* sip;
         int i;
@@ -512,7 +512,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         result->type = PKT_STR;
         result->canFree = PK_CANFREE_STR;
 
-    } else if (!STRCMP(cp, "listNCSlots")) {
+    } else if (!strcmp(cp, "listNCSlots")) {
         ClassInfo* cip;
         SlotInfo* sip;
         int i;
@@ -532,15 +532,15 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         result->type = PKT_STR;
         result->canFree = PK_CANFREE_STR;
 
-    } else if (!STRCMP(cp, "listSlotsRW")) {
+    } else if (!strcmp(cp, "listSlotsRW")) {
         return dumpObj(self, fprintf, stdout, SLOT_RW, 0);
-    } else if (!STRCMP(cp, "listSlotsR")) {
+    } else if (!strcmp(cp, "listSlotsR")) {
         return dumpObj(self, fprintf, stdout, SLOT_R, 0);
-    } else if (!STRCMP(cp, "listSlotsW")) {
+    } else if (!strcmp(cp, "listSlotsW")) {
         return dumpObj(self, fprintf, stdout, SLOT_W, 0);
-    } else if (!STRCMP(cp, "listAllObjects")) {
+    } else if (!strcmp(cp, "listAllObjects")) {
 
-    } else if (!STRCMP(cp, "listAllMethods")) {
+    } else if (!strcmp(cp, "listAllMethods")) {
         extern HashTable *symStr2ID, *symID2Str;
         ClassInfo *cip, *cip2;
         MethodInfo* mip;

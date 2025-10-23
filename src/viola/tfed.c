@@ -6801,11 +6801,11 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
                 break;
             }
         }
-        if (!STRCMP(ext, ".xbm"))
+        if (!strcmp(ext, ".xbm"))
             pic->type = TFPic_XBM;
-        else if (!STRCMP(ext, ".gif"))
+        else if (!strcmp(ext, ".gif"))
             pic->type = TFPic_GIF;
-        else if (!STRCMP(ext, ".xpm"))
+        else if (!strcmp(ext, ".xpm"))
             pic->type = TFPic_XPM;
         else {
             /* play dumb and put no the dunsel icon */

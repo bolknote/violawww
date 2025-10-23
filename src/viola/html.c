@@ -1794,18 +1794,18 @@ int setHTMLStyle() {
                        &left, &right, &before, &after);
 
                 for (style = styleSheet->styles; style; style = style->next) {
-                    if (!STRCMP(tagName, style->SGMLTag)) {
+                    if (!strcmp(tagName, style->SGMLTag)) {
 
                         for (i = 0; i < numberOfFontIDs; i++) {
-                            if (!STRCMP(FontRef(i), font))
+                            if (!strcmp(FontRef(i), font))
                                 style->font = i;
                         }
 
-                        if (!STRCMP(align, "left"))
+                        if (!strcmp(align, "left"))
                             style->alignment = HT_LEFT;
-                        else if (!STRCMP(align, "right"))
+                        else if (!strcmp(align, "right"))
                             style->alignment = HT_RIGHT;
-                        else if (!STRCMP(align, "center"))
+                        else if (!strcmp(align, "center"))
                             style->alignment = HT_CENTER;
                         else
                             fprintf(stderr, "unknown alignment style: %s\n", align);

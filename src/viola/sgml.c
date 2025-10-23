@@ -329,7 +329,7 @@ SGMLTagMappingInfo* findTagMappingInfo(SGMLTagMappingInfo tmi[], char* tagName)
 {
     int i;
     for (i = 0; tmi[i].tag; i++) {
-        if (!STRCMP(tmi[i].tag, tagName))
+        if (!strcmp(tmi[i].tag, tagName))
             return &tmi[i];
     }
     return NULL;
@@ -389,7 +389,7 @@ VObj* SGMLBuildDoc(char* srcp, char* url, VObj* parent, char* name, int width, c
     strcpy(dtd, tagName);
 
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             dmi = &SGMLForms[i];
             break;
         }
@@ -549,12 +549,12 @@ VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, cha
         for (i = 0; i < elemAttrStackCount; i++) {
             name = elemAttrStack_name[i];
             /* should just generalize... */
-            if (!STRCMP(name, "NAME")) {
+            if (!strcmp(name, "NAME")) {
                 if (elemAttrStack_val[i]) {
                     SET_content2(obj, elemAttrStack_val[i]);
                     elemAttrStack_val[i] = NULL;
                 }
-            } else if (!STRCMP(name, "HREF")) {
+            } else if (!strcmp(name, "HREF")) {
                 if (elemAttrStack_val[i]) {
                     sendMessage1N1str(obj, "setRef", elemAttrStack_val[i]);
                 }
@@ -935,7 +935,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
     }
 
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             dmi = &SGMLForms[i];
             break;
         }
@@ -974,7 +974,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
 
         localizingTagIDMap[i] = -1;
         for (tmiIndex = 0; tagMappingInfo[tmiIndex].tag; tmiIndex++) {
-            if (!STRCMP(data, tagMappingInfo[tmiIndex].tag)) {
+            if (!strcmp(data, tagMappingInfo[tmiIndex].tag)) {
                 localizingTagIDMap[i] = tmiIndex;
                 break;
             }
@@ -982,7 +982,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
         if (localizingTagIDMap[i] == -1) {
             fprintf(stdout, "ERROR: unknown tag <%s>. Using <P>\n", data);
             for (tmiIndex = 0; tagMappingInfo[tmiIndex].tag; tmiIndex++) {
-                if (!STRCMP("P", tagMappingInfo[tmiIndex].tag)) {
+                if (!strcmp("P", tagMappingInfo[tmiIndex].tag)) {
                     localizingTagIDMap[i] = tmiIndex;
                     break;
                 }
@@ -1000,7 +1000,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
                     itag = tagDict[i];
                     localizingTagIDMap[i] = -1;
                     for (tmiIndex = 0; tagMappingInfo[tmiIndex].tag; tmiIndex++) {
-                            if (!STRCMP(itag, tagMappingInfo[tmiIndex].tag)) {
+                            if (!strcmp(itag, tagMappingInfo[tmiIndex].tag)) {
                                     localizingTagIDMap[i] = tmiIndex;
                                     break;
                             }
@@ -1210,10 +1210,10 @@ VObj* SGMLBuild_B(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, i
                                 "Attr NOT IMPLIED: value={%s}\n", cp);
 */
 #ifdef OBSOLETE
-                if (!STRCMP(attrName, "NAME")) {
+                if (!strcmp(attrName, "NAME")) {
                     if (obj)
                         SET_content2(obj, cp);
-                } else if (!STRCMP(attrName, "HREF")) {
+                } else if (!strcmp(attrName, "HREF")) {
                     if (obj)
                         sendMessage1N1str(obj, "setRef", cp);
                 }
@@ -1635,7 +1635,7 @@ int getSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* result)
     SGMLTagMappingInfo* tagMappingInfo = NULL;
 
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             tagMappingInfo = SGMLForms[i].tagMap;
             break;
         }
@@ -1652,7 +1652,7 @@ int getSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* result)
     }
 
     for (i = 0; tagMappingInfo[i].tag; i++) {
-        if (!STRCMP(tagMappingInfo[i].tag, tagName)) {
+        if (!strcmp(tagMappingInfo[i].tag, tagName)) {
             tmi = &tagMappingInfo[i];
             break;
         }
@@ -1663,19 +1663,19 @@ int getSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* result)
         return 0;
     }
     if (attrName) {
-        if (!STRCMP(attrName, "top")) {
+        if (!strcmp(attrName, "top")) {
             result->info.i = tmi->top;
             result->type = PKT_INT;
             result->canFree = 0;
-        } else if (!STRCMP(attrName, "bottom")) {
+        } else if (!strcmp(attrName, "bottom")) {
             result->info.i = tmi->bottom;
             result->type = PKT_INT;
             result->canFree = 0;
-        } else if (!STRCMP(attrName, "left")) {
+        } else if (!strcmp(attrName, "left")) {
             result->info.i = tmi->left;
             result->type = PKT_INT;
             result->canFree = 0;
-        } else if (!STRCMP(attrName, "right")) {
+        } else if (!strcmp(attrName, "right")) {
             result->info.i = tmi->right;
             result->type = PKT_INT;
             result->canFree = 0;
@@ -1722,7 +1722,7 @@ int setSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* value)
     SGMLTagMappingInfo* tagMappingInfo = NULL;
 
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             tagMappingInfo = SGMLForms[i].tagMap;
             break;
         }
@@ -1733,7 +1733,7 @@ int setSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* value)
     }
 
     for (i = 0; tagMappingInfo[i].tag; i++) {
-        if (!STRCMP(tagMappingInfo[i].tag, tagName)) {
+        if (!strcmp(tagMappingInfo[i].tag, tagName)) {
             tmi = &tagMappingInfo[i];
             break;
         }
@@ -1742,13 +1742,13 @@ int setSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* value)
         fprintf(stderr, "getSGMLStyle: Don't know about tag '%s'\n", tagName);
         return 0;
     }
-    if (!STRCMP(attrName, "top")) {
+    if (!strcmp(attrName, "top")) {
         tmi->top = PkInfo2Int(value);
-    } else if (!STRCMP(attrName, "bottom")) {
+    } else if (!strcmp(attrName, "bottom")) {
         tmi->bottom = PkInfo2Int(value);
-    } else if (!STRCMP(attrName, "left")) {
+    } else if (!strcmp(attrName, "left")) {
         tmi->left = PkInfo2Int(value);
-    } else if (!STRCMP(attrName, "right")) {
+    } else if (!strcmp(attrName, "right")) {
         tmi->right = PkInfo2Int(value);
     } else {
         /* etcetra */
@@ -1772,7 +1772,7 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
 
     /*XXX hardcoding HTML stylesheet, for now, to simplify distribution
      */
-    if (!STRCMP(dtd, "HTML")) {
+    if (!strcmp(dtd, "HTML")) {
         retStrp = HTML_stylesheet_str; /* in HTML_style.c */
     } else {
         cp = SaveString(vl_expandPath(stylesheet, buff));
@@ -1785,7 +1785,7 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
     }
 
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             fprintf(stderr, "setSGMLStylesheet: already set for DTD %s\n", dtd);
             return 0;
         }
@@ -1861,7 +1861,7 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
                                                 for (tmiIdx = 0;
                                                      tagMappingInfo[tmiIdx].tag;
                                                      tmiIdx++) {
-                                                        if (!STRCMP(tagName,
+                                                        if (!strcmp(tagName,
                                                                tagMappingInfo[tmiIdx].tag)) {
                                                                 tmi = &tagMappingInfo[tmiIdx];
                                                                 tmi->type = SaveString(type);
@@ -1896,7 +1896,7 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
     tmi = &tagMappingInfo[tmiIdx];
     tmi->tag = NULL;
 
-    if (STRCMP(dtd, "HTML")) {
+    if (strcmp(dtd, "HTML")) {
         free(retStrp);
     }
     return dmi;

@@ -559,9 +559,9 @@ long meth_field_deepObjectListSend(VObj* self, Packet* result, int argc, Packet 
     VObjList* olist = NULL;
     char* listName = PkInfo2Str(argv);
 
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         olist = GET__shownDepend(self);
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         olist = GET__shownNotify(self);
     } else {
         return meth_generic_deepObjectListSend(self, result, argc, argv);
@@ -887,7 +887,7 @@ long meth_field_eventMask(VObj* self, Packet* result, int argc, Packet argv[]) {
                 /*				printf("(%s)(%s)\n",
                                                         &lbuff[1], eventMaskName[k].name);
                 */
-                if (!STRCMP((&lbuff[1]), (eventMaskName[k].name))) {
+                if (!strcmp((&lbuff[1]), (eventMaskName[k].name))) {
                     if (*lbuff == '+')
                         currentMask |= eventMaskName[k].mask;
                     else
@@ -1494,7 +1494,7 @@ long meth_field_objectListAppend(VObj* self, Packet* result, int argc, Packet ar
     result->type = PKT_OBJ;
     result->canFree = 0;
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownDepend(self);
         if (obj) {
@@ -1502,7 +1502,7 @@ long meth_field_objectListAppend(VObj* self, Packet* result, int argc, Packet ar
             result->info.o = obj;
             return 1;
         }
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownNotify(self);
         if (obj) {
@@ -1531,9 +1531,9 @@ long meth_field_objectListCount(VObj* self, Packet* result, int argc, Packet arg
     VObjList* olist = NULL;
 
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         olist = GET__shownDepend(self);
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         olist = GET__shownNotify(self);
     } else {
         return meth_generic_objectListCount(self, result, argc, argv);
@@ -1563,7 +1563,7 @@ long meth_field_objectListDelete(VObj* self, Packet* result, int argc, Packet ar
     char* listName = PkInfo2Str(argv);
 
     clearPacket(result);
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownDepend(self);
         if (olist && obj) {
@@ -1571,7 +1571,7 @@ long meth_field_objectListDelete(VObj* self, Packet* result, int argc, Packet ar
             SET__shownDepend(self, olist);
             return 1;
         }
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownNotify(self);
         if (olist && obj) {
@@ -1600,7 +1600,7 @@ long meth_field_objectListPrepend(VObj* self, Packet* result, int argc, Packet a
     result->type = PKT_OBJ;
     result->canFree = 0;
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownDepend(self);
         if (obj) {
@@ -1608,7 +1608,7 @@ long meth_field_objectListPrepend(VObj* self, Packet* result, int argc, Packet a
             result->info.o = obj;
             return 1;
         }
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownNotify(self);
         if (obj) {
@@ -1631,9 +1631,9 @@ long meth_field_objectListSend(VObj* self, Packet* result, int argc, Packet argv
     VObjList* olist = NULL;
     char* listName = PkInfo2Str(argv);
 
-    if (!STRCMP(listName, "shownDepend")) {
+    if (!strcmp(listName, "shownDepend")) {
         olist = GET__shownDepend(self);
-    } else if (!STRCMP(listName, "shownNotify")) {
+    } else if (!strcmp(listName, "shownNotify")) {
         olist = GET__shownNotify(self);
     } else {
         return meth_generic_objectListSend(self, result, argc, argv);

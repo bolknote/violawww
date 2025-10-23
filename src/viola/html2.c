@@ -143,7 +143,7 @@ SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo* tagMappingInfo, char* tag)
     int i;
 
     for (i = 0; tagMappingInfo[i].tag; i++)
-        if (!STRCMP(tag, tagMappingInfo[i].tag))
+        if (!strcmp(tag, tagMappingInfo[i].tag))
             return &tagMappingInfo[i];
     return NULL;
 }
@@ -232,14 +232,14 @@ void CB_HTML_new() {
     /* Reset ignore tag flag */
     inside_ignore_tag = 0;
 
-    if (!STRCMP(dtd, "HTML")) {
+    if (!strcmp(dtd, "HTML")) {
         /*		sgmldtd = HTML_dtd;*/
     } else {
         fprintf(stderr, "Unknown DTD %s, not hard coded!\n", dtd);
         return;
     }
     for (i = 0; SGMLForms[i].DTDName; i++) {
-        if (!STRCMP(SGMLForms[i].DTDName, dtd)) {
+        if (!strcmp(SGMLForms[i].DTDName, dtd)) {
             dmi = &SGMLForms[i];
             break;
         }
@@ -275,7 +275,7 @@ void CB_HTML_new() {
             idx = -1;
             for (j = 0; tagMappingInfo[j].tag; j++) {
 
-                if (!STRCMP(tag, tagMappingInfo[j].tag)) {
+                if (!strcmp(tag, tagMappingInfo[j].tag)) {
                     idx = j;
                     break;
                 }
@@ -1160,7 +1160,7 @@ void CB_HTML_end() {
     /* do binary search, atleast! */
     for (i = 0; i < HTML_ELEMENTS; i++) {
         htagp = &HTML_dtd.tags[i];
-        if (htagp && htagp->name && !STRCMP(tag, htagp->name)) {
+        if (htagp && htagp->name && !strcmp(tag, htagp->name)) {
             CB_HTML_etag(i);
             return;
         }

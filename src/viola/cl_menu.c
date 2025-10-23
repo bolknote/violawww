@@ -578,10 +578,10 @@ static unsigned long res_color(VObj* self, Display* disp, char* name,
     white = WhitePixel(disp, DefaultScreen(disp));
     def_cmap = DefaultColormap(disp, DefaultScreen(disp));
 
-    if (STRCMP(name, "black") == 0) {
+    if (strcmp(name, "black") == 0) {
         clr.pixel = black;
         XQueryColor(disp, def_cmap, &clr);
-    } else if (STRCMP(name, "white") == 0) {
+    } else if (strcmp(name, "white") == 0) {
         clr.pixel = white;
         XQueryColor(disp, def_cmap, &clr);
     } else {

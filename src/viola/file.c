@@ -90,7 +90,7 @@ char* getEnvironVars(char* argv[], char* name, char* content)
             for (i = 0; (label[i] = argv[ai][i]) != '='; i++)
                 ;
             label[i] = '\0';
-            if (!STRCMP(name, label)) {
+            if (!strcmp(name, label)) {
                 strcpy(content, &argv[ai][++i]);
                 /*				fprintf(stderr, "name=[%s] content= [%s]\n", name,
                  * content);*/

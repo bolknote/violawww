@@ -2389,7 +2389,7 @@ long meth_generic_cursorShape(VObj* self, Packet* result, int argc, Packet argv[
     }
 
     result->canFree = 0;
-    if (!STRCMP(shape, "busy")) {
+    if (!strcmp(shape, "busy")) {
         result->info.s = "busy";
         GLChangeToBusyMouseCursor(GET_window(self));
     } else {
@@ -2426,7 +2426,7 @@ long meth_generic_deepObjectListSend(VObj* self, Packet* result, int argc, Packe
     char* listName;
 
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         olist = GET__children(self);
     }
     while (olist) {
@@ -2692,7 +2692,7 @@ long meth_generic_float(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return: 1 if successful, 0 if error occured
  */
 long meth_generic_format(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (!STRCMP(PkInfo2Str(&argv[1]), "split")) {
+    if (!strcmp(PkInfo2Str(&argv[1]), "split")) {
     }
     /*
             result->type = PKT_STR;
@@ -3017,7 +3017,7 @@ long meth_generic_objectListAppend(VObj* self, Packet* result, int argc, Packet 
     result->type = PKT_OBJ;
     result->canFree = 0;
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__children(self);
         if (obj) {
@@ -3066,7 +3066,7 @@ long meth_generic_objectListCount(VObj* self, Packet* result, int argc, Packet a
     VObjList* olist = NULL;
 
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         olist = GET__children(self);
     }
     result->type = PKT_INT;
@@ -3117,7 +3117,7 @@ long meth_generic_objectListDelete(VObj* self, Packet* result, int argc, Packet 
     char* listName = PkInfo2Str(argv);
 
     clearPacket(result);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__children(self);
         if (olist && obj) {
@@ -3165,7 +3165,7 @@ long meth_generic_objectListPrepend(VObj* self, Packet* result, int argc, Packet
     result->type = PKT_OBJ;
     result->canFree = 0;
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__children(self);
         if (obj) {
@@ -3228,7 +3228,7 @@ long meth_generic_objectListSend(VObj* self, Packet* result, int argc, Packet ar
     char* listName;
 
     listName = PkInfo2Str(&argv[0]);
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         olist = GET__children(self);
     }
     while (olist) {
@@ -3275,7 +3275,7 @@ long meth_generic_objectPosition(VObj* self, Packet* result, int argc, Packet ar
     obj = PkInfo2Obj(&argv[0]);
     listName = PkInfo2Str(&argv[1]);
 
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         olist = GET__children(self);
     }
 
@@ -3519,7 +3519,7 @@ long meth_generic_nthObjectInList(VObj* self, Packet* result, int argc, Packet a
     n = PkInfo2Int(&argv[0]);
     listName = PkInfo2Str(&argv[1]);
 
-    if (!STRCMP(listName, "children")) {
+    if (!strcmp(listName, "children")) {
         olist = GET__children(self);
     }
 
@@ -4438,7 +4438,7 @@ long meth_generic_tool(VObj* self, Packet* result, int argc, Packet argv[]) {
     }
     if ((cp = PkInfos2Str(argc, argv))) {
         for (i = 0; toolID2Str[i]; i++) {
-            if (!STRCMP(cp, toolID2Str[i])) {
+            if (!strcmp(cp, toolID2Str[i])) {
                 currentTool = i;
                 result->info.s = toolID2Str[currentTool];
                 result->canFree = 0;
@@ -4741,7 +4741,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
         if (!tmi) {
             int i;
             for (i = 0; SGMLForms[i].DTDName; i++) {
-                if (!STRCMP(SGMLForms[i].DTDName, "HTML")) {
+                if (!strcmp(SGMLForms[i].DTDName, "HTML")) {
                     dmi = &SGMLForms[i];
                     break;
                 }
@@ -4779,7 +4779,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
         result->canFree = 0;
         return 1;
 
-    } else if (!STRCMP(mesg, "setRef")) {
+    } else if (!strcmp(mesg, "setRef")) {
 
         /*************************************************************
          * case "setRef":
@@ -4788,7 +4788,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
          ************************************************************/
         return 1;
 
-    } else if (!STRCMP(mesg, "make")) {
+    } else if (!strcmp(mesg, "make")) {
 
         /*************************************************************
          * case "make":
@@ -4895,7 +4895,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
         if (!tmi) {
             int i;
             for (i = 0; SGMLForms[i].DTDName; i++) {
-                if (!STRCMP(SGMLForms[i].DTDName, "HTML")) {
+                if (!strcmp(SGMLForms[i].DTDName, "HTML")) {
                     dmi = &SGMLForms[i];
                     break;
                 }
@@ -4916,7 +4916,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
         result->type = PKT_INT;
         return 1;
 
-    } else if (!STRCMP(mesg, "config")) {
+    } else if (!strcmp(mesg, "config")) {
 
         /*************************************************************
          * case "config":
@@ -4925,13 +4925,13 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
          ************************************************************/
         return 1;
 
-    } else if (!STRCMP(mesg, "clone")) {
+    } else if (!strcmp(mesg, "clone")) {
 
         return txtDisp_HTML_txt_clone(self, result, argv);
 
 #ifdef NOT_CORRECT
 
-    } else if (!STRCMP(mesg, "gotoAnchor")) {
+    } else if (!strcmp(mesg, "gotoAnchor")) {
 
         /*************************************************************
 XXXX INVALID
@@ -4957,7 +4957,7 @@ XXXX INVALID
 
         nullPacket(&evalResult);
 
-        if (!STRCMP(anchor, GET_content2(self))) {
+        if (!strcmp(anchor, GET_content2(self))) {
             result->info.i = GET_y(self);
             result->type = PKT_INT;
             result->canFree = 0;
@@ -4975,7 +4975,7 @@ XXXX INVALID
         result->canFree = 0;
         return 1;
 #endif
-    } else if (!STRCMP(mesg, "follow_href")) {
+    } else if (!strcmp(mesg, "follow_href")) {
         /* return send(parent(), "show_request_by_child",
          * 		arg[1], docURL);
          */
@@ -4992,11 +4992,11 @@ XXXX INVALID
         }
         return 1;
 
-    } else if (!STRCMP(mesg, "buttonRelease")) {
+    } else if (!strcmp(mesg, "buttonRelease")) {
 
         return txtDisp_HTML_txt_buttonRelease(self, result, argv);
 
-    } else if (!STRCMP(mesg, "expose")) {
+    } else if (!strcmp(mesg, "expose")) {
         /*************************************************************
          * just to cut thru usual() script etc... for faster response.
          ************************************************************/
@@ -5042,19 +5042,19 @@ long meth_generic_code_HTML_header_large(VObj* self, Packet* result, int argc, P
         return txtDisp_HTML_header_R(self, result, argv, "H1");
     } else if (*mesg == 'A') {
         return txtDisp_HTML_header_A(self, result, argv);
-    } else if (!STRCMP(mesg, "clone")) {
+    } else if (!strcmp(mesg, "clone")) {
         return txtDisp_HTML_txt_clone(self, result, argv);
-    } else if (!STRCMP(mesg, "setRef")) {
+    } else if (!strcmp(mesg, "setRef")) {
         return 1;
     } else if (*mesg == 'I') {
         return 1;
-    } else if (!STRCMP(mesg, "config")) {
+    } else if (!strcmp(mesg, "config")) {
         return 1;
-    } else if (!STRCMP(mesg, "gotoAnchor")) {
+    } else if (!strcmp(mesg, "gotoAnchor")) {
         return 0;
-    } else if (!STRCMP(mesg, "buttonRelease")) {
+    } else if (!strcmp(mesg, "buttonRelease")) {
         return txtDisp_HTML_txt_buttonRelease(self, result, argv);
-    } else if (!STRCMP(mesg, "expose")) {
+    } else if (!strcmp(mesg, "expose")) {
         /* just to cut thru usual() script etc for faster response */
         return txtDisp_HTML_txt_expose(self, result, argv);
     }

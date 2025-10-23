@@ -226,7 +226,7 @@ int txtDisp_HTML_header_R(VObj* self, Packet* result, Packet* argv, char* tag)
     if (!tmi) {
         int i;
         for (i = 0; SGMLForms[i].DTDName; i++) {
-            if (!STRCMP(SGMLForms[i].DTDName, "HTML")) {
+            if (!strcmp(SGMLForms[i].DTDName, "HTML")) {
                 dmi = &SGMLForms[i];
                 break;
             }

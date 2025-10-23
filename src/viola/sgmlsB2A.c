@@ -73,7 +73,7 @@ int findTagID(char* tagName)
     int i;
 
     for (i = 0; i < tagDictCount; i++) {
-        if (!STRCMP(tagDict[i], tagName))
+        if (!strcmp(tagDict[i], tagName))
             return i;
     }
     return -1; /* error! */

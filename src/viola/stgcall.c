@@ -260,7 +260,7 @@ int getSTGInfo(char* tagName, char* attrName, Packet* result)
     stat = STG_findStyle(stgGroup, context, 1, results, 1);
 
     if (stat) {
-        assert = STGFindAssert(results[0].smajor, tagName, attrName);
+        assert = STGFindAssert(results[0].smajor, attrName);
         if (assert) {
             result->info.s = assert->val;
             result->type = PKT_STR;

@@ -571,7 +571,7 @@ ATTR* method_stack_set(OBJ self, Packetp result, char* attrName, Packetp attrVal
         messageToUser(self, MESSAGE_ERROR, buff);
     }
 
-    if (!STRCMP(attrName, "visible")) {
+    if (!strcmp(attrName, "visible")) {
         if (ObjActive(self)) {
             OBJ BCard, FCard;
 
@@ -586,7 +586,7 @@ ATTR* method_stack_set(OBJ self, Packetp result, char* attrName, Packetp attrVal
             }
         }
 
-    } else if (!STRCMP(attrName, "param")) {
+    } else if (!strcmp(attrName, "param")) {
         /*
                         int active = ObjActive(self);
                         int visible = ObjVisible(self);
@@ -609,7 +609,7 @@ ATTR* method_stack_set(OBJ self, Packetp result, char* attrName, Packetp attrVal
                                 callMethod(olist->o, "set", result, attrName, attrValResult,
                          flag);
         */
-    } else if (!STRCMP(attrName, "currentCard")) {
+    } else if (!strcmp(attrName, "currentCard")) {
         Set_ptr(self, attrName, PkObject(attrValResult));
 
     } else {

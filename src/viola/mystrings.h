@@ -35,10 +35,6 @@ extern int GBuffSize[];
 /* MAX_LONG must be multiples of 10.b/c some functions use that property...*/
 #define MAX_LONG 1000000000
 
-/* strcmp alias:
- * compares the first two characters first, then if both match, call strcmp().
- */
-#define STRCMP(a, b) ((*a == *b) ? ((*(a + 1) == *(b + 1)) ? (strcmp(a, b)) : 1) : 1)
 #define PUTSTR(str) fputc(str, stdout)
 
 #define ISSPACE(c) (c == ' ' || c == '\t' || c == '\n' || c == '\r')

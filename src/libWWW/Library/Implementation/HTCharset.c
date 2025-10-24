@@ -131,7 +131,7 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size) {
     /* === PASS 2: iconv UTF-8 → ISO-8859-1//TRANSLIT (• → *, keeps é ü ñ) === */
     inptr = tempbuf;
     outptr = outbuf;
-    inleft = outlen;
+    inleft = (size_t)outlen;
     outleft = sizeof(outbuf) - 1;
     
     iconv(utf8_to_latin1, &inptr, &inleft, &outptr, &outleft);
@@ -185,7 +185,7 @@ int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insiz
     
     inptr = (char*)inbuf;
     outptr = utf8buf;
-    inleft = insize;
+    inleft = (size_t)insize;
     outleft = sizeof(utf8buf) - 1;
     
     if (iconv(cd, &inptr, &inleft, &outptr, &outleft) == (size_t)-1) {

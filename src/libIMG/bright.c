@@ -39,7 +39,7 @@ unsigned int verbose;
         fflush(stdout);
     }
 
-    fperc = (float)percent / 100.0;
+    fperc = (float)percent / 100.0f;
 
     switch (image->type) {
     case IRGB:
@@ -132,7 +132,7 @@ unsigned int verbose;
         printf("scaling %d:%d to 0:255...", min, max);
         fflush(stdout);
     }
-    factor = 256.0 / (max - min);
+    factor = 256.0f / (max - min);
     for (a = min; a <= max; a++) {
         new = (float)(a - min) * factor;
         array[a] = (new > 255 ? 255 : new);

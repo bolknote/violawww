@@ -365,7 +365,7 @@ PUBLIC float HTStackValue ARGS4(HTFormat, rep_in, HTFormat, rep_out, float, init
         }
     }
 
-    return -1e30; /* Really bad */
+    return -1e30f; /* Really bad */
 }
 
 /*	Push data from a socket down a stream

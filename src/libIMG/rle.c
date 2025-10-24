@@ -166,23 +166,23 @@ Image* rleLoad(char* fullname, char* name, unsigned int verbose)
 
     debug("rleLoad: get_setup called ok\n");
     if (iflag == 1)              /* -i flag */
-        img_gam = 1.0 / img_gam; /* convert to display gamma */
+        img_gam = 1.0f / img_gam; /* convert to display gamma */
 
     /* If no image gamma on command line, check comments in file */
     if (!iflag) {
         char* v;
         if ((v = rle_getcom("image_gamma", &sv_globals)) != NULL) {
-            img_gam = atof(v);
+            img_gam = (float)atof(v);
             /* Protect against bogus information */
             if (img_gam == 0.0)
-                img_gam = 1.0;
+                img_gam = 1.0f;
             else
-                img_gam = 1.0 / img_gam; /* convert to display gamma */
+                img_gam = 1.0f / img_gam; /* convert to display gamma */
         } else if ((v = rle_getcom("display_gamma", &sv_globals)) != NULL) {
-            img_gam = atof(v);
+            img_gam = (float)atof(v);
             /* Protect */
             if (img_gam == 0.0)
-                img_gam = 1.0;
+                img_gam = 1.0f;
         }
     }
 

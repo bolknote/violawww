@@ -613,7 +613,7 @@ expr	:	get_stmt
 				$2->attribute.info.i *= -1;
 				$$ = $2;
 			} else if ($2->type == AST_FLOAT) {
-				$2->attribute.info.f *= -1.0;
+				$2->attribute.info.f *= -1.0f;
 				$$ = $2;
 			} else {
 				$$ = makeAST(AST_UMINUS);

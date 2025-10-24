@@ -852,7 +852,7 @@ donereading:
         io_ungetc(c);
 
     if (floating_pointp) {
-        yylval.f = atof(intbuf);
+        yylval.f = (float)atof(intbuf);
         return FLOATCONST;
     }
     yylval.i = atoi(intbuf);

@@ -409,7 +409,7 @@ PUBLIC float HTFileValue ARGS1(CONST char*, filename)
             return suff->quality; /* OK -- found */
         }
     }
-    return 0.3; /* Dunno! */
+    return 0.3f; /* Dunno! */
 }
 
 /*	Determine write access to a file

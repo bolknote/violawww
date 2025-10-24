@@ -41,19 +41,19 @@ PUBLIC void HTFormatInit NOARGS {
     HTSetConversion("application/x-wais-source", "*", HTWSRCConvert, 1.0, 0.0, 0.0);
     HTSetConversion("text/html", "text/x-c", HTMLToC, 0.5, 0.0, 0.0);
     HTSetConversion("text/html", "text/plain", HTMLToPlain, 0.5, 0.0, 0.0);
-    HTSetConversion("text/html", "www/present", HTMLPresent, 1.0, 0.0, 0.0);
-    HTSetConversion("text/fosi", "www/present", FOSIPresent, 1.0, 0.0, 0.0);
-    HTSetConversion("text/plain", "text/html", HTPlainToHTML, 1.0, 0.0, 0.0);
-    HTSetConversion("text/plain", "www/present", HTPlainPresent, 1.0, 0.0, 0.0);
-    HTSetConversion("application/octet-stream", "www/present", HTPlainPresent, 0.1, 0.0, 0.0);
+    HTSetConversion("text/html", "www/present", HTMLPresent, 1.0f, 0.0f, 0.0f);
+    HTSetConversion("text/fosi", "www/present", FOSIPresent, 1.0f, 0.0f, 0.0f);
+    HTSetConversion("text/plain", "text/html", HTPlainToHTML, 1.0f, 0.0f, 0.0f);
+    HTSetConversion("text/plain", "www/present", HTPlainPresent, 1.0f, 0.0f, 0.0f);
+    HTSetConversion("application/octet-stream", "www/present", HTPlainPresent, 0.1f, 0.0f, 0.0f);
     /*    HTSetConversion("application/octet-stream","www/present",	HTSaveLocally,	0.1, 0.0,
      * 0.0);*/
-    HTSetConversion("www/unknown", "www/present", HTSaveLocally, 0.3, 0.0, 0.0);
-    HTSetConversion("www/source", "www/present", HTSaveLocally, 0.3, 0.0, 0.0);
-    HTSetConversion("image/x-xbitmap", "application/octet-stream", HTSaveLocally, 0.3, 0.0, 0.0);
-    HTSetConversion("image/gif", "application/octet-stream", HTSaveLocally, 0.3, 0.0, 0.0);
-    HTSetConversion("image/x-xpixmap", "application/octet-stream", HTSaveLocally, 0.3, 0.0, 0.0);
-    HTSetConversion("audio/basic", "application/octet-stream", HTSaveLocally, 0.3, 0.0, 0.0);
+    HTSetConversion("www/unknown", "www/present", HTSaveLocally, 0.3f, 0.0f, 0.0f);
+    HTSetConversion("www/source", "www/present", HTSaveLocally, 0.3f, 0.0f, 0.0f);
+    HTSetConversion("image/x-xbitmap", "application/octet-stream", HTSaveLocally, 0.3f, 0.0f, 0.0f);
+    HTSetConversion("image/gif", "application/octet-stream", HTSaveLocally, 0.3f, 0.0f, 0.0f);
+    HTSetConversion("image/x-xpixmap", "application/octet-stream", HTSaveLocally, 0.3f, 0.0f, 0.0f);
+    HTSetConversion("audio/basic", "application/octet-stream", HTSaveLocally, 0.3f, 0.0f, 0.0f);
 }
 
 /*	Define a basic set of suffixes
@@ -75,11 +75,11 @@ PUBLIC void HTFileInit NOARGS {
                                                                     /* not recursive	*/
     HTSetSuffix(".bin", "application/octet-stream", "binary", 1.0); /* Uninterpreted binary	*/
     HTSetSuffix(".oda", "application/oda", "binary", 1.0);
-    HTSetSuffix(".pdf", "application/pdf", "binary", 1.0);
-    HTSetSuffix(".ai", "application/postscript", "8bit", 0.5); /* Adobe Illustrator	*/
-    HTSetSuffix(".PS", "application/postscript", "8bit", 0.8); /* PostScript		*/
-    HTSetSuffix(".eps", "application/postscript", "8bit", 0.8);
-    HTSetSuffix(".ps", "application/postscript", "8bit", 0.8);
+    HTSetSuffix(".pdf", "application/pdf", "binary", 1.0f);
+    HTSetSuffix(".ai", "application/postscript", "8bit", 0.5f); /* Adobe Illustrator	*/
+    HTSetSuffix(".PS", "application/postscript", "8bit", 0.8f); /* PostScript		*/
+    HTSetSuffix(".eps", "application/postscript", "8bit", 0.8f);
+    HTSetSuffix(".ps", "application/postscript", "8bit", 0.8f);
     HTSetSuffix(".rtf", "application/x-rtf", "7bit", 1.0);        /* RTF			*/
     HTSetSuffix(".Z", "application/x-compressed", "binary", 1.0); /* Compressed data	*/
     HTSetSuffix(".csh", "application/x-csh", "7bit", 0.5);        /* C-shell script	*/
@@ -144,10 +144,10 @@ PUBLIC void HTFileInit NOARGS {
     HTSetSuffix(".m", "text/plain", "7bit", 0.5);                  /* Objective-C source	*/
     HTSetSuffix(".f90", "text/plain", "7bit", 0.5);                /* Fortran 90 source	*/
     HTSetSuffix(".txt", "text/plain", "7bit", 0.5);                /* Plain text		*/
-    HTSetSuffix(".rtx", "text/richtext", "7bit", 1.0);             /* MIME Richtext format	*/
-    HTSetSuffix(".tsv", "text/tab-separated-values", "7bit", 1.0); /* Tab-separated values	*/
-    HTSetSuffix(".etx", "text/x-setext", "7bit", 0.9);             /* Struct Enchanced Txt	*/
-    HTSetSuffix(".MPG", "video/mpeg", "binary", 1.0);              /* MPEG			*/
+    HTSetSuffix(".rtx", "text/richtext", "7bit", 1.0f);             /* MIME Richtext format	*/
+    HTSetSuffix(".tsv", "text/tab-separated-values", "7bit", 1.0f); /* Tab-separated values	*/
+    HTSetSuffix(".etx", "text/x-setext", "7bit", 0.9f);             /* Struct Enchanced Txt	*/
+    HTSetSuffix(".MPG", "video/mpeg", "binary", 1.0f);              /* MPEG			*/
     HTSetSuffix(".mpg", "video/mpeg", "binary", 1.0);
     HTSetSuffix(".MPE", "video/mpeg", "binary", 1.0);
     HTSetSuffix(".mpe", "video/mpeg", "binary", 1.0);
@@ -155,10 +155,10 @@ PUBLIC void HTFileInit NOARGS {
     HTSetSuffix(".mpeg", "video/mpeg", "binary", 1.0);
     HTSetSuffix(".qt", "video/quicktime", "binary", 1.0); /* QuickTime		*/
     HTSetSuffix(".mov", "video/quicktime", "binary", 1.0);
-    HTSetSuffix(".avi", "video/x-msvideo", "binary", 1.0);     /* MS Video for Windows	*/
-    HTSetSuffix(".movie", "video/x-sgi-movie", "binary", 1.0); /* SGI "moviepalyer"	*/
+    HTSetSuffix(".avi", "video/x-msvideo", "binary", 1.0f);     /* MS Video for Windows	*/
+    HTSetSuffix(".movie", "video/x-sgi-movie", "binary", 1.0f); /* SGI "moviepalyer"	*/
 
-    HTSetSuffix("*.*", "application/octet-stream", "binary", 0.1);
-    HTSetSuffix("*", "text/plain", "7bit", 0.5);
+    HTSetSuffix("*.*", "application/octet-stream", "binary", 0.1f);
+    HTSetSuffix("*", "text/plain", "7bit", 0.5f);
 }
 #endif /* NO_INIT */

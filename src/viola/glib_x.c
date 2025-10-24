@@ -379,15 +379,15 @@ int initDefaultColor(char* colorname, unsigned long defpixel, unsigned long* pix
         }
     }
 
-    *pixel_lighter = GLShadeColor(color.red, color.green, color.blue, 1.4);
+    *pixel_lighter = GLShadeColor(color.red, color.green, color.blue, 1.4f);
     if (*pixel_lighter == -1)
         *pixel_lighter = *pixel;
 
-    *pixel_darker = GLShadeColor(color.red, color.green, color.blue, 0.8);
+    *pixel_darker = GLShadeColor(color.red, color.green, color.blue, 0.8f);
     if (*pixel_darker == -1)
         *pixel_darker = *pixel;
 
-    *pixel_darkest = GLShadeColor(color.red, color.green, color.blue, 0.6);
+    *pixel_darkest = GLShadeColor(color.red, color.green, color.blue, 0.6f);
     if (*pixel_darkest == -1)
         *pixel_darkest = *pixel;
 

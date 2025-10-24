@@ -920,7 +920,6 @@ PUBLIC int HTLoadFile ARGS4(CONST char*, addr, HTParentAnchor*, anchor, HTFormat
     } /* scope of fp */
     } /* local unix file system */
 #endif
-#endif
 
 #ifndef DECNET
     /*	Now, as transparently mounted access has failed, we try FTP.

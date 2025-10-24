@@ -332,6 +332,8 @@ $(VW_DIR)/%.o: $(VW_DIR)/%.c
 clean:
 	@echo "=== Cleaning object files and dependencies ==="
 	find $(SRC_DIR) \( -name '*.o' -o -name '*.d' \) -delete
+	@echo "=== Cleaning generated embed headers ==="
+	find $(VIOLA_DIR)/embeds -name '*.v.h' -delete
 	@echo "Done"
 
 .PHONY: distclean

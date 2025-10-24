@@ -23,8 +23,6 @@
 
 #if defined(SYSV) || defined(VMS)
 #define rindex strrchr
-#else
-char* rindex();
 #endif
 
 extern Display* Disp; /* X display, null if in "identify" mode */
@@ -32,8 +30,7 @@ extern int Scrn;      /* X screen number */
 
 #define XPM_FORMAT 1
 
-static void corrupted(fullname, zf) char* fullname;
-ZFILE* zf;
+static void corrupted(char* fullname, ZFILE* zf)
 {
     zclose(zf);
     printf("%s: X Pixmap file is corrupted\n", fullname);
@@ -117,7 +114,7 @@ Image* xpixmapLoad(char* fullname, char* name, unsigned int verbose)
         return (NULL);
     }
 
-    if (p = rindex(what, '_')) { /* get the name in the image if there is */
+    if ((p = rindex(what, '_'))) { /* get the name in the image if there is */
         *p = '\0';               /* one */
         imagetitle = dupString(what);
     } else {

@@ -70,7 +70,7 @@ void memoryExhausted();
 void internalError();
 void version();
 void usage();
-void goodImage();
+void goodImage(Image* image, char* func);
 Image* processImage();
 int errorHandler();
 

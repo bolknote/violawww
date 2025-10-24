@@ -18,11 +18,6 @@
 #include <mnemosyne.h>
 #endif
 
-#ifdef VMS
-#include "decw$include:Intrinsic.h"
-#include "decw$include:Xlib.h"
-#include "sys$library:stdio.h"
-#else
 /* there is a better way, right? */
 #ifdef hpux
 #include <Intrinsic.h>
@@ -32,17 +27,12 @@
 #include <X11/Xlib.h>
 #endif
 #include <stdio.h>
-#endif
 
 #include "xpm.h"
 
 /* we keep the same codes as for Bitmap management */
 #ifndef _XUTIL_H_
-#ifdef VMS
-#include "decw$include:Xutil.h"
-#else
 #include <X11/Xutil.h>
-#endif
 #endif
 
 #ifdef SYSV

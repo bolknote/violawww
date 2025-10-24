@@ -7,17 +7,10 @@
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
 
-#ifdef VMS
-#include "decw$include:Intrinsic.h"
-#include "decw$include:Shell.h"
-#include "decw$include:Xlib.h"
-#include "decw$include:shape.h"
-#else
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/StringDefs.h>
 #include <X11/extensions/shape.h>
-#endif
 
 #include "xpm.h"
 

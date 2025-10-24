@@ -11,23 +11,13 @@
 #ifndef XPM_h
 #define XPM_h
 
-#ifdef VMS
-#include "decw$include:Intrinsic.h"
-#include "decw$include:Xlib.h"
-#include "sys$library:stdio.h"
-#else
 #include <X11/Intrinsic.h>
 #include <X11/Xlib.h>
 #include <stdio.h>
-#endif
 
 /* we keep the same codes as for Bitmap management */
 #ifndef _XUTIL_H_
-#ifdef VMS
-#include "decw$include:Xutil.h"
-#else
 #include <X11/Xutil.h>
-#endif
 #endif
 
 /* Return ErrorStatus codes:

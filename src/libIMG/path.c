@@ -16,9 +16,7 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/stat.h>
-#ifndef VMS
 #include <pwd.h>
-#endif
 #include <errno.h>
 #ifdef SYSV
 #include <unistd.h>
@@ -112,24 +110,18 @@ static void readPathsAndExts(name) char* name;
 
 void loadPathsAndExts() {
     static int havepaths = 0;
-#ifndef VMS
     struct passwd* pw;
-#endif
     char buf[BUFSIZ];
 
     if (havepaths)
         return;
     havepaths = 1;
 
-#ifdef VMS
-    sprintf(buf, "/sys$scratch/.xloadimagerc");
-#else  /* !VMS */
     if (!(pw = (struct passwd*)getpwuid(getuid()))) {
         printf("Can't find your password file entry?!?\n");
         return;
     }
     sprintf(buf, "%s/.xloadimagerc", pw->pw_dir);
-#endif /* !VMS */
     if (!access(buf, R_OK)) {
         readPathsAndExts(buf);
         return; /* don't read system file if user has one */

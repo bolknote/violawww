@@ -16,13 +16,8 @@ xpmDataType xpmDataTypes[] = {"",         "!",      "\n",    '\0',   '\n', "",  
                               "C",        "/*",     "*/",    '"',    '"',  ",\n", "static char *",
                               "[] = {\n", "};\n",   "Lisp",  ";",    "\n", '"',   '"',
                               "\n",       "(setq ", " '(\n", "))\n",
-#ifdef VMS
                               '\0',       '\0',     '\0',    '\0',   '\0', '\0',  '\0',
                               '\0',       '\0'
-#else
-                              '\0',       '\0',     '\0',    '\0',   '\0', '\0',  '\0',
-                              '\0',       '\0'
-#endif
 };
 
 int XpmReadFileToImage(Display* display, char* filename, XImage** image_return, XImage** shapeimage_return, XpmAttributes* attributes)

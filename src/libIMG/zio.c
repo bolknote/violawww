@@ -16,10 +16,6 @@
 #include <string.h>
 #include <strings.h>
 
-#ifdef VMS
-#define NO_UNCOMPRESS /* VMS doesn't have uncompress */
-#endif
-
 #define MAX_ZFILES 32
 
 static ZFILE ZFileTable[MAX_ZFILES];
@@ -214,13 +210,7 @@ ZFILE* zopen(char* name) {
      */
 
     zf->type = ZSTANDARD;
-    if (!
-#ifdef VMS
-        (zf->stream = fopen(name, "r", "ctx=bin", "ctx=stm", "rfm=stmlf"))
-#else
-        (zf->stream = fopen(name, "r"))
-#endif
-    ) {
+    if (!(zf->stream = fopen(name, "r"))) {
         lfree(zf->filename);
         zf->filename = NULL;
         return (NULL);

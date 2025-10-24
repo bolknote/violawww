@@ -14,7 +14,7 @@
 #include "copyright.h"
 #include <stdio.h>
 
-#if defined(SYSV) || defined(VMS)
+#if defined(SYSV)
 #include <string.h>
 #ifndef index /* some SysV's do this for you */
 #define index strchr
@@ -25,14 +25,9 @@
 #ifndef HAS_MEMCPY
 #define HAS_MEMCPY
 #endif
-#else  /* !SYSV && !VMS */
+#else  /* !SYSV */
 /*#include <strings.h>*/
-#endif /* !SYSV && !VMS */
-
-#ifdef VMS
-#define R_OK 4
-#define NO_UNCOMPRESS
-#endif
+#endif /* !SYSV */
 
 #ifdef HAS_MEMCPY
 

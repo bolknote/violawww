@@ -69,7 +69,6 @@ Standard C library for malloc() etc
 #endif
 #endif
 
-#ifndef VMS
 #ifndef ultrix
 #ifdef NeXT
 #include <libc.h> /* NeXT */
@@ -82,11 +81,6 @@ Standard C library for malloc() etc
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h> /* ANSI */ /* BSN */
-#endif
-
-#else /* VMS */
-#include <ctype.h>
-#include <stdio.h>
 #endif
 
 /*

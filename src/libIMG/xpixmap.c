@@ -21,7 +21,7 @@
 /* SUPPRESS 530 */
 /* SUPPRESS 560 */
 
-#if defined(SYSV) || defined(VMS)
+#if defined(SYSV)
 #define rindex strrchr
 #endif
 

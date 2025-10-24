@@ -22,11 +22,6 @@
 #include <ctype.h>
 
 typedef struct _HyperDoc Hyperdoc;
-#ifdef VMS
-struct _HyperDoc {
-    int junk; /* VMS cannot handle pointers to undefined structs */
-};
-#endif
 
 PRIVATE HTList** adult_table = 0; /* Point to table of lists of all parents */
 

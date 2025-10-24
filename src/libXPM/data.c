@@ -16,13 +16,8 @@ static char* RCS_Id = "$Id: xpm.shar,v 3.0 1991/10/04 10:38:20 lehors Exp $";
 
 #include "xpmP.h"
 #include <stdlib.h>
-#ifdef VMS
-#include "sys$library:ctype.h"
-#include "sys$library:stat.h"
-#else
 #include <ctype.h>
 #include <sys/stat.h>
-#endif
 
 LFUNC(atoui, unsigned int, (char* p, unsigned int l, unsigned int* ui_return));
 

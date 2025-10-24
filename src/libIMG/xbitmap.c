@@ -21,7 +21,7 @@
 
 /* SUPPRESS 560 */
 
-#if defined(SYSV) || defined(VMS)
+#if defined(SYSV)
 #include <string.h>
 #define rindex strrchr
 #else

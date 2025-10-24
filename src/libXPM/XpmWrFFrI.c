@@ -10,14 +10,10 @@
 
 #include "xpmP.h"
 #include <stdlib.h>
-#ifdef VMS
-#include "sys$library:string.h"
-#else
 #ifdef SYSV
 #include <string.h>
 #else
 #include <strings.h>
-#endif
 #endif
 
 LFUNC(WriteData, int, (xpmData * mdata, xpmInternAttrib* attrib, XpmAttributes* attributes));
@@ -33,14 +29,10 @@ int XpmWriteFileFromImage(Display* display, char* filename, XImage* image, XImag
         return (ErrorStatus);
 
     if (filename) {
-#ifdef VMS
-        name = filename;
-#else
         if (!(name = strchr(filename, '/')))
             name = filename;
         else
             name++;
-#endif
         if (end_name = strchr(name, '.')) {
             begin_name = name;
             name = (char*)malloc((unsigned int)(end_name - begin_name) + 1);

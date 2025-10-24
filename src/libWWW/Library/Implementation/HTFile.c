@@ -1,21 +1,12 @@
 /*			File Access				HTFile.c
 **			===========
 **
-**	This is unix-specific code in general, with some VMS bits.
 **	These are routines for file access used by browsers.
 **
 ** History:
 **	   Feb 91	Written Tim Berners-Lee CERN/CN
 **	   Apr 91	vms-vms access included using DECnet syntax
 **	26 Jun 92 (JFG) When running over DECnet, suppressed FTP.
-**			Fixed access bug for relative names on VMS.
-**	   Sep 93 (MD)  Access to VMS files allows sharing.
-**	15 Nov 93 (MD)	Moved HTVMSname to HTVMSUTILS.C
-**
-** Bugs:
-**	FTP: Cannot access VMS files from a unix machine.
-**      How can we know that the
-**	target machine runs VMS?
 */
 
 #include "HTFile.h" /* Implemented here */
@@ -25,11 +16,6 @@
 #define MULTI_SUFFIX ".multi" /* Extension for scanning formats */
 
 #include "HTUtils.h"
-
-#ifdef VMS
-#include "HTVMSUtils.h"
-#endif /* VMS */
-
 #include "HTParse.h"
 #include "HTTCP.h"
 #include "tcp.h"
@@ -76,11 +62,7 @@ PUBLIC int HTDirAccess = HT_DIR_OK;
 PUBLIC int HTDirReadme = HT_DIR_README_TOP;
 
 PRIVATE char* HTMountRoot = "/Net/"; /* Where to find mounts */
-#ifdef VMS
-PRIVATE char* HTCacheRoot = "/WWW$SCRATCH"; /* Where to cache things */
-#else
 PRIVATE char* HTCacheRoot = "/tmp/W3_Cache_"; /* Where to cache things */
-#endif
 
 /* PRIVATE char *HTSaveRoot  = "$(HOME)/WWW/";*/ /* Where to save things */
 
@@ -266,15 +248,8 @@ PUBLIC char* HTLocalName ARGS1(CONST char*, name) {
     } else { /* other access */
         char* result;
         CONST char* home = (CONST char*)getenv("HOME");
-#ifdef VMS
-        if (!home)
-            home = HTCacheRoot;
-        else
-            home = HTVMS_wwwName(home);
-#else  /* not VMS */
         if (!home)
             home = "/tmp";
-#endif /* not VMS */
         result = (char*)malloc(strlen(home) + strlen(access) + strlen(host) + strlen(path) + 6 + 1);
         if (result == NULL)
             outofmem(__FILE__, "HTLocalName");
@@ -448,9 +423,6 @@ PUBLIC float HTFileValue ARGS1(CONST char*, filename)
 **	2.	Isn't there a quicker way?
 */
 
-#ifdef VMS
-#define NO_GROUPS
-#endif
 #ifdef NO_UNIX_IO
 #define NO_GROUPS
 #endif
@@ -631,42 +603,6 @@ PUBLIC int HTLoadFile ARGS4(CONST char*, addr, HTParentAnchor*, anchor, HTFormat
     free(newname);
 
     format = HTFileFormat(filename, &encoding);
-
-#ifdef VMS
-    /* Assume that the file is in Unix-style syntax if it contains a '/'
-       after the leading one @@ */
-    {
-        FILE* fp;
-        char* vmsname = strchr(filename + 1, '/') ? HTVMS_name(nodename, filename) : filename + 1;
-        fp = fopen(vmsname, "r", "shr=put", "shr=upd");
-
-        /*	If the file wasn't VMS syntax, then perhaps it is ultrix
-         */
-        if (!fp) {
-            char ultrixname[INFINITY];
-            if (TRACE)
-                fprintf(stderr, "HTFile: Can't open as %s\n", vmsname);
-            sprintf(ultrixname, "%s::\"%s\"", nodename, filename);
-            fp = fopen(ultrixname, "r", "shr=put", "shr=upd");
-            if (!fp) {
-                if (TRACE)
-                    fprintf(stderr, "HTFile: Can't open as %s\n", ultrixname);
-            }
-        }
-        if (fp) {
-            if (HTEditable(vmsname)) {
-                HTAtom* put = HTAtom_for("PUT");
-                HTList* methods = HTAnchor_methods(anchor);
-                if (HTList_indexOf(methods, put) == (-1)) {
-                    HTList_addObject(methods, put);
-                }
-            }
-            HTParseFile(format, format_out, anchor, fp, sink);
-            fclose(fp);
-            return HT_LOADED;
-        } /* If successfull open */
-    }
-#else
 
     free(filename);
 

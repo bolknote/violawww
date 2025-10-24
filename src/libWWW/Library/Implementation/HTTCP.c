@@ -40,20 +40,11 @@ PRIVATE char* hostname = 0; /* The name of this host */
 **	returns		a negative status in the unix way.
 */
 #ifndef PCNFS
-#ifdef VMS
-extern int uerrno;                        /* Deposit of error info (as per errno.h) */
-extern volatile noshare int socket_errno; /* socket VMS error info
-                                             (used for translation of vmserrno) */
-extern volatile noshare int vmserrno;     /* Deposit of VMS error info */
-extern volatile noshare int errno;        /* noshare to avoid PSECT conflict */
-#else                                     /* VMS */
 #ifndef errno
 extern int errno;
 #endif /* errno */
-#endif /* VMS */
 
 #ifndef VM
-#ifndef VMS
 #ifndef NeXT
 #ifndef THINK_C
 #ifndef __DARWIN__
@@ -62,7 +53,6 @@ extern int sys_nerr;
 #endif /* __DARWIN__ */
 #endif /* think c */
 #endif /* NeXT */
-#endif /* VMS */
 #endif /* VM */
 
 #endif /* PCNFS */
@@ -76,24 +66,10 @@ PUBLIC int HTInetStatus(char* where)
 PUBLIC int HTInetStatus(char* where)
 #endif
 {
-#ifdef VMS
-#ifdef MULTINET
-    socket_errno = vmserrno;
-#endif
-#endif
-
     CTRACE(tfp, "TCP: Error %d in `errno' after call to %s() failed.\n\t%s\n", errno, where,
 
 #ifdef VM
            "(Error number not translated)"); /* What Is the VM equiv? */
-#define ER_NO_TRANS_DONE
-#endif
-#ifdef VMS
-#ifdef MULTINET
-            vms_errno_string());
-#else
-            "(Error number not translated)");
-#endif
 #define ER_NO_TRANS_DONE
 #endif
 #ifdef NeXT
@@ -109,19 +85,7 @@ PUBLIC int HTInetStatus(char* where)
             errno < sys_nerr ? sys_errlist[errno] : "Unknown error" );
 #endif
 
-#ifdef VMS
-#ifndef MULTINET
-            CTRACE(tfp, "         Unix error number (uerrno) = %ld dec\n", uerrno);
-            CTRACE(tfp, "         VMS error (vmserrno)       = %lx hex\n", vmserrno);
-#endif
-#endif
-
-#ifdef VMS
-            /* uerrno and errno happen to be zero if vmserrno <> 0 */
-            return -vmserrno;
-#else
     return -errno;
-#endif
 }
 
 /*	Parse a cardinal value				       parse_cardinal()
@@ -203,13 +167,13 @@ PUBLIC int HTParseInet ARGS2(SockA*, sin, CONST char*, str) {
 
 #ifdef unix
             sin->sin_port = htons(atol(port));
-#else /* VMS */
+#else
 #ifdef DECNET
             sin->sdn_objnum = (unsigned char)(strtol(port, (char**)0, 10));
 #else
             sin->sin_port = htons(strtol(port, (char**)0, 10));
 #endif /* Decnet */
-#endif /* Unix vs. VMS */
+#endif /* Unix */
 
         } else {
 

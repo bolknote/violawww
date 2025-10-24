@@ -15,16 +15,11 @@
 
 #include "xpmP.h"
 #include <stdlib.h>
-#ifdef VMS
-#include "sys$library:ctype.h"
-#include "sys$library:string.h"
-#else
 #include <ctype.h>
 #ifdef SYSV
 #include <string.h>
 #else
 #include <strings.h>
-#endif
 #endif
 
 /*

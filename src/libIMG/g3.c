@@ -54,9 +54,6 @@ extern int g3_bitson();
 
 #define BITS_TO_BYTES(bits) (bits / 8) + ((bits - ((bits / 8) * 8) ? 1 : 0))
 #define TABSIZE(tab) (sizeof(tab) / sizeof(struct tableentry))
-#ifdef VMS
-#define cols vmscols
-#endif
 
 /****
  **

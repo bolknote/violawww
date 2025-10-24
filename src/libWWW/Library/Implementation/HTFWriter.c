@@ -194,9 +194,6 @@ PUBLIC HTStream* HTSaveAndExecute ARGS3(HTPresentation*, pres, HTParentAnchor*,
 #ifdef unix
 #define REMOVE_COMMAND "/bin/rm -f %s\n"
 #endif
-#ifdef VMS
-#define REMOVE_COMMAND "delete/noconfirm/nolog %s.."
-#endif
 
 #ifdef REMOVE_COMMAND
 {

@@ -10,14 +10,10 @@
 
 #include "xpmP.h"
 #include <stdlib.h>
-#ifdef VMS
-#include "sys$library:string.h"
-#else
 #ifdef SYSV
 #include <string.h>
 #else
 #include <strings.h>
-#endif
 #endif
 
 int XpmCreateDataFromPixmap(Display* display, char*** data_return, Pixmap pixmap, Pixmap shapemask, XpmAttributes* attributes)

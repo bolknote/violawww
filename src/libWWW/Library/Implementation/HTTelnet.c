@@ -125,23 +125,6 @@ PRIVATE int remote_session ARGS2(char*, access, char*, host) {
 #endif
 #endif
 
-#ifdef MULTINET /* VMS varieties */
-    if (login_protocol == telnet) {
-        sprintf(command, "TELNET %s%s %s", port ? "/PORT=" : "", port ? port : "", hostname);
-    } else if (login_protocol == tn3270) {
-        sprintf(command, "TELNET/TN3270 %s%s %s", port ? "/PORT=" : "", port ? port : "", hostname);
-    } else {
-        sprintf(command, "RLOGIN%s%s%s%s %s", /*lm 930713 */
-                user ? "/USERNAME=" : "", user ? user : "", port ? "/PORT=" : "", port ? port : "",
-                hostname);
-    }
-    if (TRACE)
-        fprintf(stderr, "HTaccess: Command is: %s\n", command);
-    system(command);
-    return HT_NO_DATA; /* Ok - it was done but no data */
-#define TELNET_DONE
-#endif
-
 #ifdef UCX
 #define SIMPLE_TELNET
 #endif

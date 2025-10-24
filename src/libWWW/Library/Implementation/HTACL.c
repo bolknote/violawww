@@ -163,11 +163,7 @@ PUBLIC GroupDef* HTAA_getAclEntry ARGS3(FILE*, acl_file, CONST char*, pathname, 
         outofmem(__FILE__, "HTAA_getAuthorizedGroups");
 
     while (EOF != HTAAFile_readField(acl_file, buf, len + 1)) {
-#ifdef VMS
-        if (HTAA_templateCaseMatch(buf, filename)) {
-#else  /* not VMS */
         if (HTAA_templateMatch(buf, filename)) {
-#endif /* not VMS */
             HTList* methods = HTList_new();
             HTAAFile_readList(acl_file, methods, MAX_METHODNAME_LEN);
             if (TRACE) {

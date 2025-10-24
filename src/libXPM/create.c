@@ -11,11 +11,7 @@
 
 #include "xpmP.h"
 #include <stdlib.h>
-#ifdef VMS
-#include "sys$library:ctype.h"
-#else
 #include <ctype.h>
-#endif
 
 LFUNC(SetColor, int,
       (Display * display, Colormap colormap, char* colorname, unsigned int color_index,

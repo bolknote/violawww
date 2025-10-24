@@ -516,7 +516,7 @@ long int meth_txtDisp_currentTag(VObj* self, Packet* result, int argc, Packet ar
 
     result->type = PKT_STR;
     if (tf) {
-        if (cp = tfed_get_currentTag(tf)) {
+        if ((cp = tfed_get_currentTag(tf))) {
             result->info.s = SaveString(cp);
             result->canFree = PK_CANFREE_STR;
         }

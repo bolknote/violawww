@@ -626,7 +626,7 @@ int tool;
         /*safer & slower:
                         obj = findWindowObject((XMapEvent*)eep->window);
         */
-        if (entry = window2Obj->get(window2Obj, (long)(XMapEvent*)eep->window)) {
+        if ((entry = window2Obj->get(window2Obj, (long)(XMapEvent*)eep->window))) {
             obj = (VObj*)entry->val;
         } else {
             obj = NULL;
@@ -1080,7 +1080,7 @@ long handle_ButtonRelease(XButtonEvent* ep, VObj** dragObjp, int tool, int* resi
             GLRootPosition(w, &child_rx, &child_ry);
             unMapObject(*dragObjp);
 
-            if (pw = GLQueryWindow()) {
+            if ((pw = GLQueryWindow())) {
                 GLRootPosition(pw, &parent_rx, &parent_ry);
             } else {
                 MERROR(*dragObjp, "reparent tool can't find the new parent window.\n");

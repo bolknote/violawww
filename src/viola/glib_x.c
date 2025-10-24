@@ -1301,7 +1301,7 @@ int GLDefineNewFont(FontInfo* fontInfo, int id, char* fontReferenceName, char* f
 
     clist = XListFonts(display, fontPatternName, 1, &i);
     if (i > 0) {
-        if (font = XLoadFont(display, clist[0])) {
+        if ((font = XLoadFont(display, clist[0]))) {
             FontFont(id) = font;
             FontRef(id) = saveString(fontReferenceName);
             FontSpec(id) = saveString(clist[0]);
@@ -2083,7 +2083,7 @@ int width, height;
 ColorInfo* GLInitColorInfo() {
     ColorInfo* colorInfo;
 
-    if (colorInfo = (ColorInfo*)malloc(sizeof(struct ColorInfoStruct))) {
+    if ((colorInfo = (ColorInfo*)malloc(sizeof(struct ColorInfoStruct)))) {
         colorInfo->fg = colorInfo->bg = colorInfo->cr = colorInfo->bd = NULL;
     }
     return colorInfo;
@@ -2735,7 +2735,7 @@ ColorStruct* getColorStruct(char* str)
 {
     HashEntry* entry;
 
-    if (entry = colorNameShareDB->get(colorNameShareDB, (long)str))
+    if ((entry = colorNameShareDB->get(colorNameShareDB, (long)str)))
         return (ColorStruct*)entry->val;
 
     return NULL;

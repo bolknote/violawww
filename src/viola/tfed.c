@@ -2159,7 +2159,7 @@ int TFC2StrStrcpy(char* strTo, TFChar* tfcArrayFrom)
 {
     int i;
 
-    for (i = 0; strTo[i] = TFCChar(tfcArrayFrom + i); i++)
+    for (i = 0; (strTo[i] = TFCChar(tfcArrayFrom + i)); i++)
         ;
     strTo[i] = '\0';
 
@@ -2241,7 +2241,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
 
     /* find line delimeters (i, j) in source
      */
-    for (tfcp = source->linep; c = TFCChar(tfcp); tfcp++)
+    for (tfcp = source->linep; (c = TFCChar(tfcp)); tfcp++)
         if (c == '\n' || c == '\r')
             break;
     j = (int)(tfcp - source->linep);
@@ -2318,7 +2318,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
 #endif
         while (j <= source->length) {
             /* find line delimeter in source */
-            for (tfcp = source->linep + i; c = TFCChar(tfcp); tfcp++)
+            for (tfcp = source->linep + i; (c = TFCChar(tfcp)); tfcp++)
                 if (c == '\n' || c == '\r')
                     break;
             j = (int)(tfcp - source->linep);

@@ -344,7 +344,7 @@ int AllBlank(char* str)
     if (str) {
         char c;
 
-        while (c = *(str++)) {
+        while ((c = *(str++))) {
             if (!ISSPACE(c))
                 return 0;
         }
@@ -411,7 +411,7 @@ char* trimEdgeSpaces(char* str)
     if (!str[0])
         return str;
 
-    for (cp = str; c = *cp; cp++) {
+    for (cp = str; (c = *cp); cp++) {
         if (!ISSPACE(c)) {
             cp2 = str;
             if (cp > str) {
@@ -630,7 +630,7 @@ char* append(char * orig, char * append)
     if (!orig || !append)
         return orig;
 
-    if (sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 1))) {
+    if ((sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 1)))) {
         strcpy(sp, orig);
         strcat(sp, append);
         if (orig)
@@ -651,7 +651,7 @@ char* appendLine(char * orig, char * append)
     if (!orig || !append)
         return orig;
 
-    if (sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 2))) {
+    if ((sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 2)))) {
         strcpy(sp, orig);
         strcat(sp, append);
         strcat(sp, "\n");
@@ -711,7 +711,7 @@ char* str;
     if (!str)
         return NULL;
 
-    if (sp = (char*)Vmalloc(group, sizeof(char) * (strlen(str) + 1))) {
+    if ((sp = (char*)Vmalloc(group, sizeof(char) * (strlen(str) + 1)))) {
         strcpy(sp, str);
         return sp;
     } else {
@@ -851,7 +851,7 @@ char* deBracket(char* list) {
         char c;
         size_t len;
 
-        for (i = 0; c = list[i]; i++) {
+        for (i = 0; (c = list[i]); i++) {
             if (c == '{') {
                 list[i] = ' ';
                 break;

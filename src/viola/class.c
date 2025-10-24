@@ -158,7 +158,7 @@ int init_class() {
     /*	init_obj_script.s = saveString("usual();");
             init_obj_script.refc = 1;
     */
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         /* count the number of slots defined in each new class */
         cip->common_newcount = 0;
         for (j = 0, sip = (SlotInfo*)cip->slots[0]; sip[j++].id; cip->common_newcount++)
@@ -168,7 +168,7 @@ int init_class() {
             ;
     }
 
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         cip->totalcount = 0;
         cip->common_totalcount = 0;
         for (tcip = cip; tcip; tcip = tcip->superClass) {
@@ -178,7 +178,7 @@ int init_class() {
     }
 
     /* allocate and initialize slot lookup tables */
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         cip->common_slookup = (SlotInfo**)malloc(sizeof(struct SlotInfo*) * cip->common_totalcount);
         cip->slookup = (SlotInfo**)malloc(sizeof(struct SlotInfo*) * cip->totalcount);
         if (cip->common_totalcount > 0)
@@ -198,7 +198,7 @@ int init_class() {
     */
     /* overrides inherited slot info with local class ones
      */
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         overRideSlotLookUpTable(cip, 0, cip->common_slookup, cip->common_totalcount);
         overRideSlotLookUpTable(cip, 1, cip->slookup, cip->totalcount);
         initSlotOffsetInfo(cip, 0);
@@ -215,7 +215,7 @@ int init_class() {
     allmhp.collisions = 0;
     allmhp.refc = 0;
 
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         int bitsSize;
         HashEntry* entry;
         HashTable* methHashTable;
@@ -237,12 +237,12 @@ int init_class() {
             initHashTable(127, hash_int, cmp_int, NULL, NULL, getHashEntry_int, putHashEntry_int,
                           putHashEntry_replace_int, removeHashEntry_int);
 
-        for (mip = cip->methods; id = mip->id; mip++) {
+        for (mip = cip->methods; (id = mip->id); mip++) {
             setMember(&(cip->mhp), id);
             setMember(&(allmhp), id);
         }
         for (tcip = cip; tcip; tcip = tcip->superClass) {
-            for (mip = tcip->methods; id = mip->id; mip++) {
+            for (mip = tcip->methods; (id = mip->id); mip++) {
                 putHashEntry_cancelable_int(methHashTable, mip->id, (long)mip->method);
             }
         }
@@ -267,7 +267,7 @@ int init_class() {
     /*
      * build common objects
      */
-    for (i = 0; cip = classList[i]; i++) {
+    for (i = 0; (cip = classList[i]); i++) {
         obj = (VObj*)malloc(sizeof(long) * cip->common_totalcount);
         for (j = 0; j < cip->common_totalcount; j++)
             initSlot(obj, &obj[j], cip->common_slookup[j], cip->common_slookup[j]->val);
@@ -450,7 +450,7 @@ ClassInfo* getClassInfoByID(int classid)
     HashEntry* entry;
     int i;
 
-    for (i = 0; cip = classList[i]; i++)
+    for (i = 0; (cip = classList[i]); i++)
         if (classid == cip->id)
             return cip;
 
@@ -465,7 +465,7 @@ ClassInfo* getClassInfoByName(char* className)
 
     if ((entry = symStr2ID->get(symStr2ID, (long)className))) {
         classid = entry->val;
-        for (i = 0; cip = classList[i++]; cip++)
+        for (i = 0; (cip = classList[i++]); cip++)
             if (classid == cip->id)
                 return cip;
     }

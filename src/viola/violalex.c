@@ -78,7 +78,7 @@ long getIdent(char* identStr)
 {
     HashEntry* entry;
 
-    if (entry = symStr2ID->get(symStr2ID, (long)identStr))
+    if ((entry = symStr2ID->get(symStr2ID, (long)identStr)))
         return entry->val;
 
     return 0;
@@ -232,7 +232,7 @@ int dumpProximityErrorLine(char* buff, int* i)
 {
     char c, j;
 
-    for (j = 0; c = yyscript[(*i)++]; j++) {
+    for (j = 0; (c = yyscript[(*i)++]); j++) {
         if (c == '\n') {
             buff[j] = '\0';
             return 1;

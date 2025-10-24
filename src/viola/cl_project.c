@@ -132,7 +132,7 @@ long helper_project_set(VObj* self, Packet* result, int argc, Packet argv[], lon
         if (!(result->info.s = SaveString(argv[1].info.s)))
             return 0;
 
-        if (cp = GET_projectIcon(self))
+        if ((cp = GET_projectIcon(self)))
             free(cp);
         SET_projectIcon(self, result->info.s);
 

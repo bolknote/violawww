@@ -290,7 +290,7 @@ long meth_stack_nextCard(VObj* self, Packet* result, int argc, Packet argv[])
     VObj* stackObj = findStackObj(self);
 
     olist = GET__FCardList(stackObj);
-    if (currentCard = GET__currentCard(stackObj)) {
+    if ((currentCard = GET__currentCard(stackObj))) {
         /* find the next object */
         VObjList* l = olist;
 
@@ -331,7 +331,7 @@ long meth_stack_previousCard(VObj* self, Packet* result, int argc, Packet argv[]
     VObj* stackObj = findStackObj(self);
 
     olist = GET__FCardList(stackObj);
-    if (currentCard = GET__currentCard(stackObj)) {
+    if ((currentCard = GET__currentCard(stackObj))) {
         /* find the next object */
         VObjList* l = olist;
 
@@ -413,7 +413,7 @@ long meth_stack_setCurrentCard(VObj* self, Packet* result, int argc, Packet argv
     }
     /* lights on
      */
-    if (obj = PkInfo2Obj(&argv[0])) {
+    if ((obj = PkInfo2Obj(&argv[0]))) {
 
         pks[1].info.i = 1;
         SET__parent(obj, self);

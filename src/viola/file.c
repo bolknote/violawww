@@ -54,7 +54,7 @@ char* vl_expandPath(char* path, char* buffer)
             /* ie: "~wei/viola" */
 
             /* get user's name */
-            for (; c = path[i + 1]; i++) {
+            for (; (c = path[i + 1]); i++) {
                 if (isalpha(c))
                     userName[i] = c;
                 else
@@ -62,7 +62,7 @@ char* vl_expandPath(char* path, char* buffer)
             }
             userName[i] = '\0';
         }
-        if (info = getpwnam(userName)) {
+        if ((info = getpwnam(userName))) {
             strcpy(buffer, info->pw_dir);
             strcat(buffer, &path[i + 1]);
             return buffer;

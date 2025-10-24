@@ -40,7 +40,7 @@ Image* loadImage(char* name, unsigned int verbose)
         return (NULL);
     }
     for (a = 0; ImageTypes[a].loader; a++)
-        if (image = ImageTypes[a].loader(fullname, name, verbose)) {
+        if ((image = ImageTypes[a].loader(fullname, name, verbose))) {
             zreset(NULL);
             return (image);
         }

@@ -177,7 +177,7 @@ int facesIdent(char* fullname, char* name)
 {
     Image* image;
 
-    if (image = facesLoad(fullname, name, 1)) {
+    if ((image = facesLoad(fullname, name, 1))) {
         freeImage(image);
         return (1);
     }

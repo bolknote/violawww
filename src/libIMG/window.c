@@ -247,7 +247,7 @@ static char* iconName(char* s) {
      * want to change this.
      */
 
-    if (t = rindex(buf, '/')) {
+    if ((t = rindex(buf, '/'))) {
         for (s = buf, t++; *t; s++, t++)
             *s = *t;
         *s = '\0';

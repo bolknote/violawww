@@ -33,7 +33,7 @@ int XpmWriteFileFromImage(Display* display, char* filename, XImage* image, XImag
             name = filename;
         else
             name++;
-        if (end_name = strchr(name, '.')) {
+        if ((end_name = strchr(name, '.'))) {
             begin_name = name;
             name = (char*)malloc((unsigned int)(end_name - begin_name) + 1);
             if (!name) {

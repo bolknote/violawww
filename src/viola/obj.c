@@ -87,7 +87,7 @@ VObjList* appendObjToList(VObjList* olist, VObj* obj)
     VObjList* newl;
 
     /* allocate node for base_set list */
-    if (newl = (VObjList*)malloc(sizeof(VObjList))) {
+    if ((newl = (VObjList*)malloc(sizeof(VObjList)))) {
         newl->next = NULL;
         newl->o = obj;
         if (olist) {

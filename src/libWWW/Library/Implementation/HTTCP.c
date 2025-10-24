@@ -161,7 +161,7 @@ PUBLIC int HTParseInet ARGS2(SockA*, sin, CONST char*, str) {
 
     /*	Parse port number if present
      */
-    if (port = strchr(host, ':')) {
+    if ((port = strchr(host, ':'))) {
         *port++ = 0; /* Chop off port */
         if (port[0] >= '0' && port[0] <= '9') {
 

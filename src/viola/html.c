@@ -273,7 +273,7 @@ int html_search(VObj* self, char* keyword)
     StrAllocCat(newAddress, "?");
     StrAllocCat(newAddress, p);
 
-    if (htext = html_findHTextByAddress(self, newAddress)) {
+    if ((htext = html_findHTextByAddress(self, newAddress))) {
         tf = htext->tfstruct;
     } else {
         tf = (TFStruct*)Vmalloc(GET__memoryGroup(self), sizeof(struct TFStruct));
@@ -1330,7 +1330,7 @@ HText* html_loadDocument(VObj* self, char* address, char** title, char** simpleA
         }
     }
 
-    if (htext = html_findHTextByAddress(self, *simpleAddress)) {
+    if ((htext = html_findHTextByAddress(self, *simpleAddress))) {
         tf = htext->tfstruct;
         status = 1;
 
@@ -1642,7 +1642,7 @@ char* html_get_title(VObj* self, char* address)
 
     trimEdgeSpaces(address);
 
-    if (text = html_findHTextByAddress(self, address)) {
+    if ((text = html_findHTextByAddress(self, address))) {
         if (text->title)
             return text->title;
     }
@@ -1664,7 +1664,7 @@ int html_deleteDoc(VObj* self, char* address)
 {
     HText* text;
 
-    if (text = html_findHTextByAddress(self, address)) {
+    if ((text = html_findHTextByAddress(self, address))) {
         if (HTList_removeObject(loaded_texts, text) == YES)
             return 1;
     }

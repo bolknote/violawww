@@ -83,7 +83,7 @@ PUBLIC HTChildAnchor* HTAnchor_findChild ARGS2(HTParentAnchor*, parent, CONST ch
     }
     if ((kids = parent->children)) { /* parent has children : search them */
         if (tag && *tag) {         /* TBL */
-            while (child = HTList_nextObject(kids)) {
+            while ((child = HTList_nextObject(kids))) {
                 if (equivalent(child->tag, tag)) { /* Case sensitive 920226 */
                     if (TRACE)
                         fprintf(stderr,
@@ -175,7 +175,7 @@ HTAnchor* HTAnchor_findAddress ARGS1(CONST char*, address) {
 
         /* Search list for anchor */
         grownups = adults;
-        while (foundAnchor = HTList_nextObject(grownups)) {
+        while ((foundAnchor = HTList_nextObject(grownups))) {
             if (equivalent(foundAnchor->address, address)) {
                 if (TRACE)
                     fprintf(stderr, "Anchor %p with address `%s' already exists.\n",
@@ -218,7 +218,7 @@ PRIVATE void deleteLinks ARGS1(HTAnchor*, me) {
     }
     if (me->links) { /* Extra destinations */
         HTLink* target;
-        while (target = HTList_removeLastObject(me->links)) {
+        while ((target = HTList_removeLastObject(me->links))) {
             HTParentAnchor* parent = target->dest->parent;
             HTList_removeObject(parent->sources, me);
             if (!parent->document) /* Test here to avoid calling overhead */
@@ -240,14 +240,14 @@ PUBLIC BOOL HTAnchor_delete ARGS1(HTParentAnchor*, me) {
     if (!HTList_isEmpty(me->sources)) { /* There are still incoming links */
         /* Delete all outgoing links from children, if any */
         HTList* kids = me->children;
-        while (child = HTList_nextObject(kids))
+        while ((child = HTList_nextObject(kids)))
             deleteLinks((HTAnchor*)child);
         return NO; /* Parent not deleted */
     }
 
     /* No more incoming links : kill everything */
     /* First, recursively delete children */
-    while (child = HTList_removeLastObject(me->children)) {
+    while ((child = HTList_removeLastObject(me->children))) {
         deleteLinks((HTAnchor*)child);
         free(child->tag);
         free(child);
@@ -382,7 +382,7 @@ HTAnchor* HTAnchor_followTypedLink ARGS2(HTAnchor*, me, HTLinkType*, type) {
     if (me->links) {
         HTList* links = me->links;
         HTLink* link;
-        while (link = HTList_nextObject(links))
+        while ((link = HTList_nextObject(links)))
             if (link->type == type)
                 return link->dest;
     }

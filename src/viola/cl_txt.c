@@ -212,7 +212,7 @@ long meth_txt_initialize(VObj* self, Packet* result, int argc, Packet argv[])
     }
     /*	if (getVariable(GET__varList(VFontResourceObj), GET_font(self), &cp)) {
      */
-    if (cp = GET_font(self)) {
+    if ((cp = GET_font(self))) {
         for (i = 0; i <= numberOfFontIDs; i++) {
             /*XXX gotta hash/tokenize this... */
             if (!strcmp(FontRef(i), cp)) {

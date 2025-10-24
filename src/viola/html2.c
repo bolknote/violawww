@@ -170,7 +170,7 @@ VObj* html2_parseHTMLDocument(VObj* self, char* address, char** simpleAddress, c
 
     /* extract anchor info, if any */
     *anchorSearch = "";
-    for (i = 0; c = address[i]; i++) {
+    for (i = 0; (c = address[i]); i++) {
         if (c == '#') {
             strcpy(anchorInfo, address + i + 1);
             *anchorSearch = saveString(anchorInfo);
@@ -1289,7 +1289,7 @@ char* encodeURL(char* str)
 {
     char *s, *buffp = URLEncodeBuff, *encode;
 
-    while (encode = URLEncodeSeq[*str++])
+    while ((encode = URLEncodeSeq[*str++]))
         do {
             *buffp++ = *encode++;
         } while (*encode);

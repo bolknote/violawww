@@ -113,7 +113,7 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
         /*
          * read color keys and values
          */
-        while (l = xpmNextWord(data, buf)) {
+        while ((l = xpmNextWord(data, buf))) {
             for (key = 1; key < NKEYS + 1; key++)
                 if (!strncmp(xpmColorKeys[key - 1], buf, l))
                     break;

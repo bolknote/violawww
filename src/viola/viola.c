@@ -161,10 +161,10 @@ char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen
     if (vObjFile)
         startObj[startObjCount++] = vObjFile;
 
-    if (violaPath = getEnvironVars(environ, "VIOLA_PATH", buff))
+    if ((violaPath = getEnvironVars(environ, "VIOLA_PATH", buff)))
         violaPath = saveString(violaPath);
 
-    if (sgmlPath = getEnvironVars(environ, "VIOLA_SGML", buff))
+    if ((sgmlPath = getEnvironVars(environ, "VIOLA_SGML", buff)))
         sgmlPath = saveString(sgmlPath);
 
     parseCommandLine(argc, argv, startObj, &startObjCount, &violaPath,

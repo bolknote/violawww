@@ -240,7 +240,7 @@ int INPUT_LINE_filtered(char* buff)
 {
     char c, *cp = buff;
 
-    while (c = INPUTC()) {
+    while ((c = INPUTC())) {
         if (c == '\n') {
             break;
         } else if (c != '\\') {
@@ -894,7 +894,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
      */
     if (sgml_verbose)
         fprintf(stdout, "Header {");
-    while (c = INPUTC()) {
+    while ((c = INPUTC())) {
         if (c == '\0')
             break;
         if (sgml_verbose)

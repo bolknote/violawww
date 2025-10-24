@@ -256,7 +256,7 @@ int xbitmapIdent(char* fullname, char* name)
 {
     Image* image;
 
-    if (image = xbitmapLoad(fullname, name, (unsigned int)1)) {
+    if ((image = xbitmapLoad(fullname, name, (unsigned int)1))) {
         freeImage(image);
         return (1);
     }

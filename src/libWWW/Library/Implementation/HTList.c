@@ -85,7 +85,7 @@ void* HTList_removeFirstObject ARGS1(HTList*, me) {
 int HTList_count ARGS1(HTList*, me) {
     int count = 0;
     if (me)
-        while (me = me->next)
+        while ((me = me->next))
             count++;
     return count;
 }

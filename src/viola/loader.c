@@ -104,7 +104,7 @@ int setViolaPath(char* newPathStr)
         } else {
             if (viola_path[i])
                 free(viola_path[i]);
-            if (cp = vl_expandPath(pathStr, buff))
+            if ((cp = vl_expandPath(pathStr, buff)))
                 viola_path[i] = SaveString(cp);
         }
     }
@@ -161,7 +161,7 @@ int load_object(char* filename, char* pathname)
         slotc = 0;
         status = load_objects_slots(fp, slotv, &slotc);
         if (slotc > 0) {
-            if (obj = instantiateObj(slotv, &slotc)) {
+            if ((obj = instantiateObj(slotv, &slotc))) {
                 objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(obj))), (long)obj);
                 objObj2ExistP->put_replace(objObj2ExistP, (long)obj, 1);
                 newObj[newObjCount++] = obj;
@@ -308,7 +308,7 @@ int load_objects_slots(FILE* fp, long (*slotv)[100][2], int* slotc)
             lc = c;
         }
     donecontent:
-        if (entry = symStr2ID->get(symStr2ID, (long)label)) {
+        if ((entry = symStr2ID->get(symStr2ID, (long)label))) {
             (*slotv)[*slotc][0] = (long)(entry->val);
         } else {
             fprintf(stderr, "unknown slot label:\"%s\"\n", label);
@@ -384,7 +384,7 @@ int load_objects_slots_fromBuiltInCache(SlotStruct* slotsInfo, int* slotsInfoIdx
             }
         }
 
-        if (entry = symStr2ID->get(symStr2ID, (long)label)) {
+        if ((entry = symStr2ID->get(symStr2ID, (long)label))) {
             (*slotv)[*slotc][0] = (long)(entry->val);
         } else {
             fprintf(stderr, "unknown slot label:\"%s\"\n", label);
@@ -431,7 +431,7 @@ int loadFromBuiltInCache(char* filename)
         slotc = 0;
         status = load_objects_slots_fromBuiltInCache(slotsInfo, &slotsInfoIdx, slotv, &slotc);
         if (slotc > 0) {
-            if (obj = instantiateObj(slotv, &slotc)) {
+            if ((obj = instantiateObj(slotv, &slotc))) {
                 char* objname = GET_name(obj);
                 if (!objname) {
                     fprintf(stderr, "Object has NULL name\n");

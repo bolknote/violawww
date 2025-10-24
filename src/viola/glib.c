@@ -88,7 +88,7 @@ VObj* findWindowObject(Window w)
     /*
             printf("find window=0x%x...",(long)(eventWindow(e)));
     */
-    if (entry = window2Obj->get(window2Obj, w)) {
+    if ((entry = window2Obj->get(window2Obj, w))) {
         lastSuccessSearchW = w;
         lastSuccessSearchObj = (VObj*)entry->val;
 

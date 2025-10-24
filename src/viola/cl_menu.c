@@ -224,7 +224,7 @@ long meth_menu_render(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (!meth_field_render(self, result, argc, argv))
         return 0;
 
-    if (w = GET_window(self)) {
+    if ((w = GET_window(self))) {
         char* str = GET_label(self);
         long fontID = GET__font(self);
         int x, y;

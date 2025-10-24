@@ -133,8 +133,8 @@ Image* normalize();
 
 void compress(); /* compress.c */
 
-Image* dither(); /* dither.c */
-Image* approx(); /* approximate colors (in dither.c)*/
+Image* dither(Image* cimage, unsigned int verbose); /* dither.c */
+Image* approx(Image* cimage, unsigned int verbose); /* approximate colors (in dither.c)*/
 
 void fill(); /* fill.c */
 
@@ -144,16 +144,16 @@ Image* halftone(); /* halftone.c */
 
 Image* loadImage(); /* imagetypes.c */
 void identifyImage();
-void goodImage();
+void goodImage(Image* image, char* func);
 
 Image* merge(); /* merge.c */
 
 extern unsigned long DepthToColorsTable[]; /* new.c */
 unsigned long colorsToDepth();
 char* dupString(char* s);
-Image* newBitImage();
-Image* newRGBImage();
-Image* newTrueImage();
+Image* newBitImage(unsigned int width, unsigned int height);
+Image* newRGBImage(unsigned int width, unsigned int height, unsigned int depth);
+Image* newTrueImage(unsigned int width, unsigned int height);
 void freeImage(Image* image);
 void freeImageData(Image* image);
 void newRGBMapData();

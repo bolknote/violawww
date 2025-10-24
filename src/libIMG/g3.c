@@ -480,7 +480,7 @@ int g3Ident(char* fullname, char* name)
     Image* image;
 
     g3_verb = 0;
-    if (image = g3Load(fullname, name, 1)) {
+    if ((image = g3Load(fullname, name, 1))) {
         freeImage(image);
         return (1);
     }

@@ -99,7 +99,7 @@ Cursor* cursor;
  */
 
 static void placeImage(disp, width, height, winwidth, winheight, rx, ry) Display* disp;
-int width, height, winwidth, winheight;
+unsigned int width, height, winwidth, winheight;
 int *rx, *ry; /* supplied and returned */
 {
     int pixx, pixy;
@@ -108,18 +108,18 @@ int *rx, *ry; /* supplied and returned */
     pixy = *ry;
 
     if (winwidth > width)
-        pixx = (winwidth - width) / 2;
+        pixx = (int)(winwidth - width) / 2;
     else {
-        if ((pixx < 0) && (pixx + width < winwidth))
-            pixx = winwidth - width;
+        if ((pixx < 0) && ((unsigned int)(pixx + (int)width) < winwidth))
+            pixx = (int)winwidth - (int)width;
         if (pixx > 0)
             pixx = 0;
     }
     if (winheight > height)
-        pixy = (winheight - height) / 2;
+        pixy = (int)(winheight - height) / 2;
     else {
-        if ((pixy < 0) && (pixy + height < winheight))
-            pixy = winheight - height;
+        if ((pixy < 0) && ((unsigned int)(pixy + (int)height) < winheight))
+            pixy = (int)winheight - (int)height;
         if (pixy > 0)
             pixy = 0;
     }
@@ -512,7 +512,7 @@ unsigned int verbose;
     int pixx = -1, pixy = -1;
     int lastx, lasty, mousex, mousey;
     int paint;
-    static int old_width = -1, old_height = -1;
+    static unsigned int old_width = 0, old_height = 0;
     static Atom proto_atom = None, delete_atom = None;
     union {
         XEvent event;
@@ -867,7 +867,7 @@ unsigned int verbose;
             mousex = event.button.x;
             mousey = event.button.y;
             /*XSync(disp, False); */
-            while (XCheckTypedEvent(disp, MotionNotify, &event) == True) {
+            while (XCheckTypedEvent(disp, MotionNotify, &event.event) == True) {
                 mousex = event.button.x;
                 mousey = event.button.y;
             }
@@ -879,8 +879,8 @@ unsigned int verbose;
             break;
 
         case ConfigureNotify:
-            winwidth = old_width = event.configure.width;
-            winheight = old_height = event.configure.height;
+            winwidth = old_width = (unsigned int)event.configure.width;
+            winheight = old_height = (unsigned int)event.configure.height;
 
             placeImage(disp, image->width, image->height, winwidth, winheight, &pixx, &pixy);
 
@@ -893,7 +893,7 @@ unsigned int verbose;
 
         case DestroyNotify:
             cleanUpImage(disp, scrn, swa_view.cursor, pixmap, image, ximageinfo);
-            return ('\0');
+            return (NULL);
 
         case Expose:
             blitImage(ximageinfo, image->width, image->height, event.expose.x, event.expose.y,

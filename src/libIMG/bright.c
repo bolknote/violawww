@@ -150,7 +150,7 @@ Image* normalize(Image* image, unsigned int verbose) {
     byte *srcptr, *destptr;
     byte array[256];
 
-    goodImage(image);
+    goodImage(image, "normalize");
     if (BITMAPP(image))
         return (image);
 

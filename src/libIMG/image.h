@@ -129,7 +129,7 @@ Image* clip(); /* clip.c */
 void brighten(); /* bright.c */
 void equalize();
 void gray();
-Image* normalize();
+Image* normalize(Image* image, unsigned int verbose);
 
 void compress(); /* compress.c */
 

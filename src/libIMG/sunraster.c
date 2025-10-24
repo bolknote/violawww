@@ -207,8 +207,7 @@ Image* sunRasterLoad(char* fullname, char* name, unsigned int verbose)
         break;
     case 24:
     case 32:
-        image = newTrueImage(memToVal(header.width, 4), memToVal(header.height, 4),
-                             memToVal(header.depth, 4));
+        image = newTrueImage(memToVal(header.width, 4), memToVal(header.height, 4));
         break;
     default:
         printf("sunRasterLoad: Bad depth %d (only 1, 8, 24 are valid)\n", depth);
@@ -226,7 +225,7 @@ Image* sunRasterLoad(char* fullname, char* name, unsigned int verbose)
     /*
      *  Handle color...
      */
-    if (mapsize = memToVal(header.maplen, 4)) {
+    if ((mapsize = memToVal(header.maplen, 4))) {
         map = lmalloc(mapsize);
         if (zread(zf, map, mapsize) < mapsize) {
             printf("sunRasterLoad: Bad read on colormap\n");

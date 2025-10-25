@@ -347,8 +347,6 @@ PRIVATE void change_paragraph_style ARGS2(HTStructured*, me, HTStyle*, style) {
 PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 #ifdef VIOLA
 
-    /* Debug: Print all characters */
-    /* fprintf(stderr, "DEBUG: HTML_put_character: '%c'\n", c); */
 
     if (majorBuffi >= MAJORBUFF - 1) {
         /* Flush buffer to prevent overflow */

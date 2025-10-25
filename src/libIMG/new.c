@@ -198,7 +198,7 @@ byte* lcalloc(unsigned int size) {
     return (area);
 }
 
-void lfree(area) byte* area;
+void lfree(byte* area)
 {
     free(area);
 }

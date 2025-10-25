@@ -131,17 +131,17 @@ void compress(); /* compress.c */
 Image* dither(Image* cimage, unsigned int verbose); /* dither.c */
 Image* approx(Image* cimage, unsigned int verbose); /* approximate colors (in dither.c)*/
 
-void fill(); /* fill.c */
+void fill(Image* image, unsigned int fx, unsigned int fy, unsigned int fw, unsigned int fh, Pixel pixval); /* fill.c */
 
 void fold(); /* fold.c */
 
 Image* halftone(); /* halftone.c */
 
-Image* loadImage(); /* imagetypes.c */
-void identifyImage();
+Image* loadImage(char* name, unsigned int verbose); /* imagetypes.c */
+void identifyImage(char* name);
 void goodImage(Image* image, char* func);
 
-Image* merge(); /* merge.c */
+Image* merge(Image* dest, Image* src, int atx, int aty, unsigned int verbose); /* merge.c */
 
 extern unsigned long DepthToColorsTable[]; /* new.c */
 unsigned long colorsToDepth();

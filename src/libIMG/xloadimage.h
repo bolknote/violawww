@@ -12,6 +12,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdio.h>
+#define DefaultDepth(dpy, scr) ((unsigned int)(ScreenOfDisplay(dpy,scr)->root_depth))
 #endif
 
 #include "image.h"
@@ -71,7 +72,7 @@ void internalError();
 void version();
 void usage();
 void goodImage(Image* image, char* func);
-Image* processImage();
+Image* processImage(Display* disp, int scrn, Image* image, ImageOptions* options, unsigned int verbose);
 int errorHandler();
 
 char* expandPath(); /* path.c */

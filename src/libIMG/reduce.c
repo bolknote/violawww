@@ -525,7 +525,7 @@ Image* reduce(Image* image, unsigned int n, unsigned int verbose)
     new_image->rgb.used = allocated;
     new_image->rgb.compressed = 1;
 
-    lfree(areas);
+    lfree((byte*)areas);
 
     /* copy old image into new image
      */

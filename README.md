@@ -90,7 +90,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - CDX API integration for earliest snapshots
 - Transparent loading of archived sites with proper base URL handling
 - **Files**: `HTWayback.h`, `HTWayback.c`
-- **Test**: `test/test_wayback.c`
+- **Tests**: `test/test_wayback.c`, `test/test_wayback_detection.c`
 
 #### Multi-Encoding Transliteration Support
 - Automatic character encoding detection from HTTP headers (`x-archive-guessed-charset`, `Content-Type`)
@@ -228,6 +228,17 @@ When a domain doesn't resolve (DNS error), ViolaWWW automatically:
 - **Format**: Plain text (space-separated fields)
 - **Timeout**: 5 seconds for archive.org queries
 - **Base URL**: Automatically updates for proper relative link resolution
+- **Smart Detection**: Prevents infinite loops by detecting Web Archive URLs and skipping fallback
+
+### Web Archive URL Detection
+
+The system intelligently detects when a URL is already from the Web Archive to prevent infinite loops:
+
+- ✅ Detects `https://web.archive.org/web/TIMESTAMP/URL` patterns
+- ✅ Handles both HTTP and HTTPS Web Archive URLs
+- ✅ Supports subdomains (e.g., `subdomain.web.archive.org`)
+- ✅ Skips Wayback fallback for already-archived URLs
+- ✅ Prevents recursive archive queries
 
 ---
 
@@ -358,6 +369,9 @@ make test
 
 # Web Archive integration
 ./test/test_wayback
+
+# Web Archive URL detection
+./test/test_wayback_detection
 
 # HTTPS functionality (manual)
 ./src/vw/vw test_https.html

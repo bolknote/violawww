@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection
 
 .PHONY: all test clean $(TESTS)
 
@@ -45,6 +45,7 @@ test:
 	-@$(MAKE) test-xpm-injection >$(BUILD_DIR)/test-xpm-injection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-xpm-injection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-xpm-injection: FAIL")
 	-@$(MAKE) test-htcharset >$(BUILD_DIR)/test-htcharset.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-htcharset: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-htcharset: FAIL")
 	-@$(MAKE) test-wayback >$(BUILD_DIR)/test-wayback.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback: FAIL")
+	-@$(MAKE) test-wayback-detection >$(BUILD_DIR)/test-wayback-detection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback-detection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback-detection: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -120,6 +121,13 @@ test-wayback: test_wayback.c $(PROJECT_ROOT)/src/libWWW/libwww.a
 		-lm $(ICU_LIBS) $(SSL_LIBS)
 	@./$(BUILD_DIR)/test_wayback
 
+test-wayback-detection: test_wayback_detection.c
+	@echo ""
+	@echo "Building Web Archive URL detection tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_wayback_detection test_wayback_detection.c
+	@./$(BUILD_DIR)/test_wayback_detection
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -140,4 +148,5 @@ help:
 	@echo "  test-xpm-injection   - XPM security (command injection)"
 	@echo "  test-htcharset       - Character set tests (requires ICU)"
 	@echo "  test-wayback         - Wayback machine URL tests"
+	@echo "  test-wayback-detection - Web Archive URL detection tests"
 

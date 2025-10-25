@@ -308,6 +308,17 @@ PRIVATE BOOL HTLoadDocument ARGS4(CONST char*, full_address, HTParentAnchor*, an
             free(hostname);
         }
         
+        /* Additional check: detect if URL is already a Web Archive URL by pattern */
+        /* Web Archive URLs have the pattern: https://web.archive.org/web/TIMESTAMP/ORIGINAL_URL */
+        if (!is_archive && full_address) {
+            if (strstr(full_address, "web.archive.org/web/") != NULL) {
+                is_archive = 1;
+                if (TRACE) {
+                    fprintf(stderr, "HTAccess: Detected Web Archive URL pattern, skipping Wayback fallback\n");
+                }
+            }
+        }
+        
         if (!is_archive && is_http_protocol) {
             if (TRACE) {
                 fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 

@@ -20,7 +20,7 @@ char* xpmColorKeys[] = {
     "c",  /* key #5: color visual */
 };
 
-/* function call in case of error, frees only localy allocated variables */
+// function call in case of error, frees only localy allocated variables
 #undef RETURN
 #define RETURN(status)                                                                             \
     {                                                                                              \
@@ -39,10 +39,8 @@ char* xpmColorKeys[] = {
         return (status);                                                                           \
     }
 
-/*
- * This function parses an Xpm file or data and store the found informations
- * in an an xpmInternAttrib structure which is returned.
- */
+// This function parses an Xpm file or data and store the found informations
+// in an xpmInternAttrib structure which is returned.
 int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* attributes)
 {
     /* variables to return */
@@ -57,16 +55,12 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
     char* pixels_cmt = NULL;
 
     /* calculation variables */
-    unsigned int rncolors = 0; /* read number of colors, it is
-                                * different to ncolors to avoid
-                                * problem when freeing the
-                                * colorTable in case an error
-                                * occurs while reading the hints
-                                * line */
-    unsigned int key;          /* color key */
+    // read number of colors, it is different to ncolors to avoid
+    // problem when freeing the colorTable in case an error
+    // occurs while reading the hints line
+    unsigned int rncolors = 0;
     char *chars = NULL, buf[BUFSIZ];
     unsigned int* iptr;
-    unsigned int a, b, x, y, l;
 
     /*
      * read hints: width, height, ncolors, chars_per_pixel
@@ -88,32 +82,28 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
     if (attributes && (attributes->valuemask & XpmReturnInfos))
         xpmGetCmt(data, &hints_cmt);
 
-    /*
-     * read colors
-     */
+    // read colors
     colorTable = (char***)calloc(ncolors, sizeof(char**));
     if (!colorTable)
         RETURN(XpmNoMemory);
 
-    for (a = 0; a < ncolors; a++) {
-        xpmNextString(data); /* skip the line */
+    for (unsigned int a = 0; a < ncolors; a++) {
+        xpmNextString(data); // skip the line
         colorTable[a] = (char**)calloc((NKEYS + 1), sizeof(char*));
         if (!colorTable[a])
             RETURN(XpmNoMemory);
 
-        /*
-         * read pixel value
-         */
+        // read pixel value
         *colorTable[a] = (char*)malloc(cpp);
         if (!*colorTable[a])
             RETURN(XpmNoMemory);
-        for (b = 0; b < cpp; b++)
+        for (unsigned int b = 0; b < cpp; b++)
             colorTable[a][0][b] = xpmGetC(data);
 
-        /*
-         * read color keys and values
-         */
+        // read color keys and values
+        unsigned int l;
         while ((l = xpmNextWord(data, buf))) {
+            unsigned int key;
             for (key = 1; key < NKEYS + 1; key++)
                 if (!strncmp(xpmColorKeys[key - 1], buf, l))
                     break;
@@ -124,7 +114,7 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
                 strncpy(colorTable[a][key], buf, l);
                 colorTable[a][key][l] = '\0';
             } else
-                RETURN(XpmFileInvalid); /* key without value */
+                RETURN(XpmFileInvalid); // key without value
         }
     }
 
@@ -134,9 +124,7 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
     if (attributes && (attributes->valuemask & XpmReturnInfos))
         xpmGetCmt(data, &colors_cmt);
 
-    /*
-     * read pixels and index them on color number
-     */
+    // read pixels and index them on color number
     pixelindex = (unsigned int*)malloc(sizeof(unsigned int) * width * height);
     if (!pixelindex)
         RETURN(XpmNoMemory);
@@ -147,16 +135,18 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
     if (!chars)
         RETURN(XpmNoMemory);
 
-    for (y = 0; y < height; y++) {
+    for (unsigned int y = 0; y < height; y++) {
         xpmNextString(data);
-        for (x = 0; x < width; x++, iptr++) {
-            for (a = 0; a < cpp; a++)
+        for (unsigned int x = 0; x < width; x++, iptr++) {
+            for (unsigned int a = 0; a < cpp; a++)
                 chars[a] = xpmGetC(data);
+            
+            unsigned int a;
             for (a = 0; a < ncolors; a++)
                 if (!strncmp(colorTable[a][0], chars, cpp))
                     break;
             if (a == ncolors)
-                RETURN(XpmFileInvalid); /* no color matches */
+                RETURN(XpmFileInvalid); // no color matches
             *iptr = a;
         }
     }

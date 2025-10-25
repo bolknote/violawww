@@ -23,9 +23,9 @@ LFUNC(atoui, unsigned int, (char* p, unsigned int l, unsigned int* ui_return));
 
 static unsigned int atoui(char* p, unsigned int l, unsigned int* ui_return)
 {
-    int n, i;
-
-    n = 0;
+    int n = 0;
+    
+    int i;
     for (i = 0; i < l; i++)
         if (*p >= '0' && *p <= '9')
             n = n * 10 + *p++ - '0';
@@ -39,9 +39,7 @@ static unsigned int atoui(char* p, unsigned int l, unsigned int* ui_return)
         return 0;
 }
 
-/*
- * skip to the end of the current string and the beginning of the next one
- */
+// skip to the end of the current string and the beginning of the next one
 int xpmNextString(xpmData* mdata) {
     int c;
 
@@ -54,17 +52,15 @@ int xpmNextString(xpmData* mdata) {
         if (mdata->Eos)
             while ((c = xpmGetC(mdata)) != mdata->Eos && c != EOF)
                 ;
-        if (mdata->Bos) /* if not natural XPM2 */
+        if (mdata->Bos) // if not natural XPM2
             while ((c = xpmGetC(mdata)) != mdata->Bos && c != EOF)
                 ;
         break;
     }
 }
 
-/*
- * skip whitespace and compute the following unsigned int,
- * returns 1 if one is found and 0 if not
- */
+// skip whitespace and compute the following unsigned int,
+// returns 1 if one is found and 0 if not
 int xpmNextUI(xpmData* mdata, unsigned int* ui_return) {
     char buf[BUFSIZ];
     int l;

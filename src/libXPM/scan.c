@@ -19,11 +19,9 @@
 static char* printable = " .XoO+@#$%&*=-;:?>,<1234567890qwertyuipasdfghjklzxcvbnmMNBVCZ\
 ASDFGHJKLPIUYTREWQ!~^/()_`'][{}|";
 
-/*
- * printable begin with a space, so in most case, due to my algorythm, when
- * the number of different colors is less than MAXPRINTABLE, it will give a
- * char follow by "nothing" (a space) in the readable xpm file
- */
+// printable begin with a space, so in most case, due to my algorythm, when
+// the number of different colors is less than MAXPRINTABLE, it will give a
+// char follow by "nothing" (a space) in the readable xpm file
 
 typedef struct {
     Pixel* pixels;

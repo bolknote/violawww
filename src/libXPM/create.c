@@ -68,19 +68,16 @@ static int strcasecmp(char* s1, char* s2)
 
 #endif
 
-/*
- * set the color pixel related to the given colorname,
- * return 0 if success, 1 otherwise.
- */
-
-static int SetColor(display, colormap, colorname, color_index, image_pixel, mask_pixel,
-                    mask_pixel_index)
-Display* display;
-Colormap colormap;
-char* colorname;
-unsigned int color_index;
-Pixel *image_pixel, *mask_pixel;
-unsigned int* mask_pixel_index;
+// set the color pixel related to the given colorname,
+// return 0 if success, 1 otherwise.
+static int SetColor(
+    Display* display,
+    Colormap colormap,
+    char* colorname,
+    unsigned int color_index,
+    Pixel* image_pixel,
+    Pixel* mask_pixel,
+    unsigned int* mask_pixel_index)
 {
     XColor xcolor;
 
@@ -93,7 +90,7 @@ unsigned int* mask_pixel_index;
     } else {
         *image_pixel = 0;
         *mask_pixel = 0;
-        *mask_pixel_index = color_index; /* store the color table index */
+        *mask_pixel_index = color_index; // store the color table index
     }
     return (0);
 }
@@ -131,14 +128,8 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
     /* calculation variables */
     Pixel* image_pixels = NULL;
     Pixel* mask_pixels = NULL;
-    char* colorname;
-    unsigned int a, b, l;
-    Boolean pixel_defined;
-    unsigned int key;
 
-    /*
-     * retrieve information from the XpmAttributes
-     */
+    // retrieve information from the XpmAttributes
     if (attributes && attributes->valuemask & XpmColorSymbols) {
         colorsymbols = attributes->colorsymbols;
         numsymbols = attributes->numsymbols;
@@ -162,11 +153,8 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
 
     ErrorStatus = XpmSuccess;
 
-    /*
-     * alloc pixels index tables
-     */
-
-    key = xpmVisualType(visual);
+    // alloc pixels index tables
+    unsigned int key = xpmVisualType(visual);
     image_pixels = (Pixel*)malloc(sizeof(Pixel) * attrib->ncolors);
     if (!image_pixels)
         RETURN(XpmNoMemory);
@@ -177,16 +165,13 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
 
     mask_pixel = UNDEF_PIXEL;
 
-    /*
-     * get pixel colors, store them in index tables
-     */
-    for (a = 0; a < attrib->ncolors; a++) {
-        colorname = NULL;
-        pixel_defined = False;
+    // get pixel colors, store them in index tables
+    for (unsigned int a = 0; a < attrib->ncolors; a++) {
+        char* colorname = NULL;
+        Boolean pixel_defined = False;
+        unsigned int l = 0; // declare l here for wider scope
 
-        /*
-         * look for a defined symbol
-         */
+        // look for a defined symbol
         if (numsymbols && attrib->colorTable[a][1]) {
             for (l = 0; l < numsymbols; l++)
                 if (!strcmp(colorsymbols[l].name, attrib->colorTable[a][1]))
@@ -198,16 +183,17 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
                     pixel_defined = True;
             }
         }
-        if (!pixel_defined) { /* pixel not given as symbol value */
+        if (!pixel_defined) { // pixel not given as symbol value
 
-            if (colorname) { /* colorname given as symbol value */
+            if (colorname) { // colorname given as symbol value
                 if (!SetColor(display, colormap, colorname, a, &image_pixels[a], &mask_pixels[a],
                               &mask_pixel))
                     pixel_defined = True;
                 else
                     ErrorStatus = XpmColorError;
             }
-            b = key;
+            
+            unsigned int b = key;
             while (!pixel_defined && b > 1) {
                 if (attrib->colorTable[a][b]) {
                     if (!SetColor(display, colormap, attrib->colorTable[a][b], a, &image_pixels[a],
@@ -297,7 +283,7 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
             if (pixels) {
                 p1 = image_pixels;
                 p2 = pixels;
-                for (a = 0; a < attrib->ncolors; a++, p1++)
+                for (unsigned int a = 0; a < attrib->ncolors; a++, p1++)
                     if (a != mask_pixel)
                         *p2++ = *p1;
                 attributes->pixels = pixels;

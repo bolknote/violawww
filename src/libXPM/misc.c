@@ -11,17 +11,12 @@
 #include "xpmP.h"
 #include <stdlib.h>
 
-/*
- * Free the computed color table
- */
-
+// Free the computed color table
 int xpmFreeColorTable(char*** colorTable, int ncolors) {
-    int a, b;
-
     if (colorTable) {
-        for (a = 0; a < ncolors; a++)
+        for (int a = 0; a < ncolors; a++)
             if (colorTable[a]) {
-                for (b = 0; b < (NKEYS + 1); b++)
+                for (int b = 0; b < (NKEYS + 1); b++)
                     if (colorTable[a][b])
                         free(colorTable[a][b]);
                 free(colorTable[a]);
@@ -45,13 +40,8 @@ int xpmInitInternAttrib(xpmInternAttrib* attrib) {
     attrib->mask_pixel = UNDEF_PIXEL;
 }
 
-/*
- * Free the xpmInternAttrib pointers which have been allocated
- */
-
+// Free the xpmInternAttrib pointers which have been allocated
 int xpmFreeInternAttrib(xpmInternAttrib* attrib) {
-    unsigned int a;
-
     if (attrib->colorTable)
         xpmFreeColorTable(attrib->colorTable, attrib->ncolors);
     if (attrib->pixelindex)
@@ -59,7 +49,7 @@ int xpmFreeInternAttrib(xpmInternAttrib* attrib) {
     if (attrib->xcolors)
         free(attrib->xcolors);
     if (attrib->colorStrings) {
-        for (a = 0; a < attrib->ncolors; a++)
+        for (unsigned int a = 0; a < attrib->ncolors; a++)
             if (attrib->colorStrings[a])
                 free(attrib->colorStrings[a]);
         free(attrib->colorStrings);

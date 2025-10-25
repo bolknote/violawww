@@ -16,24 +16,29 @@
 #include <string.h>
 #include <strings.h>
 
-/* this converts a TLA-style pixel into a 15-bit true color pixel
- */
+// this converts a TLA-style pixel into a 15-bit true color pixel
+static inline Pixel tla_to_15bit(RGBMap table, Pixel pixel) {
+    return ((table.red[pixel] & 0xf800) >> 1) | 
+           ((table.green[pixel] & 0xf800) >> 6) | 
+           ((table.blue[pixel] & 0xf800) >> 11);
+}
 
-#define TLA_TO_15BIT(TABLE, PIXEL)                                                                 \
-    ((((TABLE).red[PIXEL] & 0xf800) >> 1) | (((TABLE).green[PIXEL] & 0xf800) >> 6) |               \
-     (((TABLE).blue[PIXEL] & 0xf800) >> 11))
+// these functions extract color intensities from a 15-bit true color pixel
+static inline unsigned int red_intensity(Pixel p) {
+    return (p & 0x7c00) >> 10;
+}
 
-/* these macros extract color intensities from a 15-bit true color pixel
- */
+static inline unsigned int green_intensity(Pixel p) {
+    return (p & 0x03e0) >> 5;
+}
 
-#define RED_INTENSITY(P) (((P) & 0x7c00) >> 10)
-#define GREEN_INTENSITY(P) (((P) & 0x03e0) >> 5)
-#define BLUE_INTENSITY(P) ((P) & 0x001f)
+static inline unsigned int blue_intensity(Pixel p) {
+    return p & 0x001f;
+}
 
 #define NIL_PIXEL 0xffffffff
 
-void compress(image, verbose) Image* image;
-unsigned int verbose;
+void compress(Image* image, unsigned int verbose)
 {
     Pixel hash_table[32768];
     Pixel* pixel_table;
@@ -80,7 +85,7 @@ unsigned int verbose;
              */
 
             if (pixel_map[oldpixval] == NIL_PIXEL) {
-                index = TLA_TO_15BIT(image->rgb, oldpixval);
+                index = tla_to_15bit(image->rgb, oldpixval);
 
                 /* nothing similar
                  */

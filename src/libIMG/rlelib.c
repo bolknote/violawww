@@ -227,9 +227,9 @@ struct sv_globals sv_globals = {
 };
 
 /* ARGSUSED */
-void NullputEof(globals) struct sv_globals* globals;
+void NullputEof(struct sv_globals* globals)
 {
-    /* do nothing */
+    // do nothing
 }
 
 /*
@@ -398,7 +398,7 @@ union {
  * TAG( RunSetup )
  * Put out initial setup data for RLE svfb files.
  */
-void RunSetup(globals) struct sv_globals* globals;
+void RunSetup(struct sv_globals* globals)
 {
 }
 
@@ -406,8 +406,7 @@ void RunSetup(globals) struct sv_globals* globals;
  * TAG( RunSkipBlankLines )
  * Skip one or more blank lines in the RLE file.
  */
-void RunSkipBlankLines(nblank, globals) int nblank;
-struct sv_globals* globals;
+void RunSkipBlankLines(int nblank, struct sv_globals* globals)
 {
 }
 
@@ -416,8 +415,7 @@ struct sv_globals* globals;
  * Select a color and do carriage return.
  * color: 0 = Red, 1 = Green, 2 = Blue.
  */
-void RunSetColor(c, globals) int c;
-struct sv_globals* globals;
+void RunSetColor(int c, struct sv_globals* globals)
 {
 }
 
@@ -427,10 +425,7 @@ struct sv_globals* globals;
  */
 
 /* ARGSUSED */
-void RunSkipPixels(nskip, last, wasrun, globals) int nskip;
-int last;
-int wasrun;
-struct sv_globals* globals;
+void RunSkipPixels(int nskip, int last, int wasrun, struct sv_globals* globals)
 {
 }
 
@@ -439,8 +434,7 @@ struct sv_globals* globals;
  * Perform a newline action.  Since CR is implied by the Set Color
  * operation, only generate code if the newline flag is true.
  */
-void RunNewScanLine(flag, globals) int flag;
-struct sv_globals* globals;
+void RunNewScanLine(int flag, struct sv_globals* globals)
 {
 }
 
@@ -448,9 +442,7 @@ struct sv_globals* globals;
  * TAG( Runputdata )
  * Put one or more pixels of byte data into the output file.
  */
-void Runputdata(buf, n, globals) rle_pixel* buf;
-int n;
-struct sv_globals* globals;
+void Runputdata(rle_pixel* buf, int n, struct sv_globals* globals)
 {
 }
 
@@ -460,10 +452,7 @@ struct sv_globals* globals;
  */
 
 /* ARGSUSED */
-void Runputrun(color, n, last, globals) int color;
-int n;
-int last;
-struct sv_globals* globals;
+void Runputrun(int color, int n, int last, struct sv_globals* globals)
 {
 }
 
@@ -471,12 +460,12 @@ struct sv_globals* globals;
  * TAG( RunputEof )
  * Output an EOF opcode
  */
-void RunputEof(globals) struct sv_globals* globals;
+void RunputEof(struct sv_globals* globals)
 {
 }
 
 /*ARGSUSED*/
-void DefaultBlockHook(globals) struct sv_globals* globals;
+void DefaultBlockHook(struct sv_globals* globals)
 {
 }
 
@@ -956,9 +945,7 @@ int rle_get_error(int code, char* pgmname, char* fname)
  * Algorithm:
  * 	sv_get_setup does all the work.
  */
-void rle_get_setup_ok(globals, prog_name, file_name) struct sv_globals* globals;
-char* prog_name;
-char* file_name;
+void rle_get_setup_ok(struct sv_globals* globals, char* prog_name, char* file_name)
 {
     int code;
 
@@ -983,7 +970,7 @@ char* file_name;
  * Algorithm:
  *	[None]
  */
-void rle_debug(on_off) int on_off;
+void rle_debug(int on_off)
 {
     debug_f = on_off;
 }
@@ -1170,10 +1157,9 @@ int rle_getrow(struct sv_globals* globals, rle_pixel* scanline[])
     return globals->sv_private.get.scan_y;
 }
 
-/* Fill buffer at s with n copies of character c.  N must be <= 65535*/
+// Fill buffer at s with n copies of character c.  N must be <= 65535
 /* ARGSUSED */
-static void bfill(s, n, c) char* s;
-int n, c;
+static void bfill(char* s, int n, int c)
 {
 #ifdef vax
     asm("   movc5   $0,*4(ap),12(ap),8(ap),*4(ap)");
@@ -1263,12 +1249,7 @@ int dith_size = 16;
  *	    DMAP(r,col,row) + DMAP(g,col,row)*levels + DMAP(b,col,row)*levels^2
  *	if you don't want function call overhead.
  */
-void dithermap(levels, gamma, rgbmap, divN, modN, magic) int levels;
-double gamma;
-int rgbmap[][3];
-int divN[256];
-int modN[256];
-int magic[16][16];
+void dithermap(int levels, double gamma, int rgbmap[][3], int divN[256], int modN[256], int magic[16][16])
 {
     double N;
     int i;
@@ -1321,12 +1302,7 @@ int magic[16][16];
  *	On a 1-bit display, use
  *	    divN[val] > magic[col][row] ? 1 : 0
  */
-void bwdithermap(levels, gamma, bwmap, divN, modN, magic) int levels;
-double gamma;
-int bwmap[];
-int divN[256];
-int modN[256];
-int magic[16][16];
+void bwdithermap(int levels, double gamma, int bwmap[], int divN[256], int modN[256], int magic[16][16])
 {
     double N;
     int i;
@@ -1454,8 +1430,7 @@ int magic16x16[16][16] = {
  * Algorithm:
  * 	Chose sub cell of 16 by 16 magic square
  */
-void make_magic(size, magic) int size;
-int magic[16][16];
+void make_magic(int size, int magic[16][16])
 {
     int j, i, li, bi, bx, by;
     int xx, yy;

@@ -163,12 +163,11 @@ int makeArgv(char* argv[], char* argline)
  */
 char* PkInfos2Str(int argc, Packet argv[])
 {
-    int i;
     char sbuff[64000]; /*XXX*/
 
     buff[0] = '\0';
 
-    for (i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         switch (argv[i].type) {
         case PKT_STR:
             sprintf(sbuff, "%s", argv[i].info.s);
@@ -242,9 +241,8 @@ char* PkInfo2Str(Packet* pk)
         break;
     case PKT_ARY:
         if (pk->info.y) {
-            int n;
             Array* array = pk->info.y;
-            for (n = 0; n < array->size; n++)
+            for (int n = 0; n < array->size; n++)
                 sprintf(buff, "%ld ", array->info[n]);
         }
         break;

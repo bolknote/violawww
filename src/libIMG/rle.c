@@ -368,11 +368,13 @@ Image* rleLoad(char* fullname, char* name, unsigned int verbose)
     return (image);
 }
 
-#define DMAP(v, x, y) (modN[v] > magic[x][y] ? divN[v] + 1 : divN[v])
+// dithering map function - uses global modN, magic, divN
+static inline int dmap(int v, int x, int y) {
+    return modN[v] > magic[x][y] ? divN[v] + 1 : divN[v];
+}
 
-/* run the black and white through its map */
-void bw_m_line(dp, number) int number;
-unsigned char* dp;
+// run the black and white through its map
+void bw_m_line(unsigned char* dp, int number)
 {
     unsigned char* r;
     int i;
@@ -382,9 +384,8 @@ unsigned char* dp;
     }
 }
 
-/* convert a colour line with map to 8 bits per pixel */
-void c_m_line(dp, number, line) int number, line;
-unsigned char* dp;
+// convert a colour line with map to 8 bits per pixel
+void c_m_line(unsigned char* dp, int number, int line)
 {
     unsigned char *r, *g, *b;
     int i, col, row;
@@ -393,8 +394,8 @@ unsigned char* dp;
         for (row = line % dith_size, col = x_min % dith_size, i = number, r = &scan[0][0],
             g = &scan[1][0], b = &scan[2][0];
              i > 0; i--, r++, g++, b++, dp++, col = ((col + 1) % dith_size)) {
-            *dp = DMAP(fmaps[0][*r], col, row) + DMAP(fmaps[1][*g], col, row) * 6 +
-                  DMAP(fmaps[2][*b], col, row) * 36;
+            *dp = dmap(fmaps[0][*r], col, row) + dmap(fmaps[1][*g], col, row) * 6 +
+                  dmap(fmaps[2][*b], col, row) * 36;
         }
     } else {
         int red, green, blue;

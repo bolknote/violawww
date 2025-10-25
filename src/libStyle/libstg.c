@@ -19,8 +19,14 @@ extern int WWW_TraceFlag;
 
 #define TRACE (WWW_TraceFlag)
 
-#define ISSPACE(c) (c == ' ' || c == '\t' || c == '\n')
-#define ISTOKEN(c) (c == '=' || c == ',' || c == '(' || c == ')' || c == '{' || c == '}')
+// Character classification helpers
+static inline int is_space(char c) {
+    return c == ' ' || c == '\t' || c == '\n';
+}
+
+static inline int is_token(char c) {
+    return c == '=' || c == ',' || c == '(' || c == ')' || c == '{' || c == '}';
+}
 
 #define INDENT_SPACES 80
 char indent_spaces[INDENT_SPACES] = {
@@ -113,8 +119,8 @@ STGGroup* STG_makeGroup(STGLib* lib, char* gspec)
     addGroup(&lib->first, group);
 
     while (*cp) {
-        if (ISSPACE(*cp)) {
-            while (ISSPACE(*cp))
+        if (is_space(*cp)) {
+            while (is_space(*cp))
                 cp++;
         } else if (*cp == '(') {
             if (TRACE) printf("### makeGroup: found '(', calling parseMajor\n");
@@ -767,7 +773,7 @@ zoro:
             ctx->stack_op = stgInfo.info.t;
 
         ctx->stgInfo_buffIdx = 0;
-        while (!ISSPACE(*cp) && !ISTOKEN(*cp) && *cp) {
+        while (!is_space(*cp) && !is_token(*cp) && *cp) {
             ctx->stgInfo_buff[ctx->stgInfo_buffIdx++] = *cp;
             ++cp;
         }

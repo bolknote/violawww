@@ -137,7 +137,7 @@ static void macin_fatal(char* msg)
  * descriptive but I don't care
  */
 
-static void tellAboutImage(name) char* name;
+static void tellAboutImage(char* name)
 {
     printf("%s is a %dx%d MacPaint image\n", name, macin_img_width, macin_img_height);
 }

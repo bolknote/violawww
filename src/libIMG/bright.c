@@ -17,12 +17,9 @@
 /* Forward declarations */
 void make_gamma(double gamma, int gammamap[256]);
 
-/* alter an image's brightness by a given percentage
- */
+// alter an image's brightness by a given percentage
 
-void brighten(image, percent, verbose) Image* image;
-unsigned int percent;
-unsigned int verbose;
+void brighten(Image* image, unsigned int percent, unsigned int verbose)
 {
     int a;
     unsigned int newrgb;
@@ -74,9 +71,7 @@ unsigned int verbose;
         printf("done\n");
 }
 
-void gammacorrect(image, disp_gam, verbose) Image* image;
-float disp_gam;
-unsigned int verbose;
+void gammacorrect(Image* image, float disp_gam, unsigned int verbose)
 {
     int a;
     int gammamap[256];
@@ -117,12 +112,9 @@ unsigned int verbose;
         printf("done\n");
 }
 
-/* this initializes a lookup table for doing normalization
- */
+// this initializes a lookup table for doing normalization
 
-static void setupNormalizationArray(min, max, array, verbose) unsigned int min, max;
-byte* array;
-unsigned int verbose;
+static void setupNormalizationArray(unsigned int min, unsigned int max, byte* array, unsigned int verbose)
 {
     int a;
     unsigned int new;
@@ -244,8 +236,7 @@ Image* normalize(Image* image, unsigned int verbose) {
 /* convert to grayscale
  */
 
-void gray(image, verbose) Image* image;
-int verbose;
+void gray(Image* image, int verbose)
 {
     int a;
     unsigned int size;

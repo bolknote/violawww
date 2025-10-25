@@ -49,10 +49,9 @@ Image* loadImage(char* name, unsigned int verbose)
     return (NULL);
 }
 
-/* identify what kind of image a named image is
- */
+// identify what kind of image a named image is
 
-void identifyImage(name) char* name;
+void identifyImage(char* name)
 {
     char fullname[BUFSIZ];
     int a;
@@ -85,8 +84,7 @@ void supportedImageTypes() {
         printf("  %s\n", ImageTypes[a].name);
 }
 
-void goodImage(image, func) Image* image;
-char* func;
+void goodImage(Image* image, char* func)
 {
     if (!image) {
         printf("%s: nil image\n", func);

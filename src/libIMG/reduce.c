@@ -23,7 +23,10 @@
 #include <string.h>
 #include <strings.h>
 
-#define DIST(A, B) ((A) < (B) ? (B) - (A) : (A) - (B))
+// find the distance between two values
+static inline unsigned int dist(unsigned int a, unsigned int b) {
+    return a < b ? b - a : a - b;
+}
 
 /* find the distance between two colors.  we loose some accuracy here because
  * a triple squared short may not fit in a long.  we use a table lookup
@@ -43,9 +46,9 @@ void initSquareTable() {
 
 unsigned long colorDistance(RGBMap* rgb, Pixel a, Pixel b)
 {
-    return (squareTable[DIST(*(rgb->red + a), *(rgb->red + b)) >> 1] +
-            squareTable[DIST(*(rgb->green + a), *(rgb->green + b)) >> 1] +
-            squareTable[DIST(*(rgb->blue + a), *(rgb->blue + b)) >> 1]);
+    return (squareTable[dist(*(rgb->red + a), *(rgb->red + b)) >> 1] +
+            squareTable[dist(*(rgb->green + a), *(rgb->green + b)) >> 1] +
+            squareTable[dist(*(rgb->blue + a), *(rgb->blue + b)) >> 1]);
 }
 
 /* this converts a TLA-style pixel into a 15-bit true color pixel
@@ -248,12 +251,10 @@ static int sortBGR(unsigned short* p1, unsigned short* p2)
         return (1);
 }
 
-/* this does calculations on a color area following a split and inserts
- * the color area in the list of color areas.
- */
+// this does calculations on a color area following a split and inserts
+// the color area in the list of color areas.
 
-static void insertColorArea(pixel_counts, rlargest, rsmallest, area) unsigned long* pixel_counts;
-struct color_area **rlargest, **rsmallest, *area;
+static void insertColorArea(unsigned long* pixel_counts, struct color_area **rlargest, struct color_area **rsmallest, struct color_area *area)
 {
     int a;
     unsigned int red, green, blue;

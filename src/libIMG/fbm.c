@@ -182,7 +182,7 @@ static void fbmin_fatal(char* msg)
  * descriptive but I don't care
  */
 
-static void tellAboutImage(name) char* name;
+static void tellAboutImage(char* name)
 {
     printf("%s is a %dx%d FBM image with %d colors\n", name, fbmin_img_width, fbmin_img_height,
            fbmin_img_clrlen / 3);

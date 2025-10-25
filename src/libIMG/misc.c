@@ -46,7 +46,7 @@ void memoryExhausted() {
         exit(1);
 }
 
-void internalError(sig) int sig;
+void internalError(int sig)
 {
     static int handling_error = 0;
     int a, b;
@@ -90,7 +90,7 @@ void version() {
     printf("Please send email to %s for\npraise or bug reports.\n", AUTHOR_EMAIL);
 }
 
-void usage(name) char* name;
+void usage(char* name)
 {
     version();
     printf("\nUsage: %s [global options] {[image options] image_name ...}\n\n", tail(name));

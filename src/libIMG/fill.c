@@ -14,9 +14,7 @@
 #include <string.h>
 #include <strings.h>
 
-void fill(image, fx, fy, fw, fh, pixval) Image* image;
-unsigned int fx, fy, fw, fh;
-Pixel pixval;
+void fill(Image* image, unsigned int fx, unsigned int fy, unsigned int fw, unsigned int fh, Pixel pixval)
 {
     unsigned int x, y;
     unsigned int linelen, start;

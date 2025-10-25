@@ -461,19 +461,18 @@ static int helpOnOption(char* option) {
     return (foundone);
 }
 
-static void literalMindedUser(s) char* s;
+static void literalMindedUser(char* s)
 {
     printf("The quotes around %s are unnecessary.  You don't have to be so\n\
 literal-minded!\n",
            s);
 }
 
-void help(option) char* option;
+void help(char* option)
 {
     char buf[BUFSIZ];
 
-    /* batch help facility
-     */
+    // batch help facility
 
     if (option) {
         if (!helpOnOption(option))

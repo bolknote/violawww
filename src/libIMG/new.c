@@ -151,7 +151,7 @@ Image* newTrueImage(unsigned int width, unsigned int height)
     return (image);
 }
 
-void freeImageData(image) Image* image;
+void freeImageData(Image* image)
 {
     if (image->title) {
         lfree((byte*)image->title);
@@ -162,7 +162,7 @@ void freeImageData(image) Image* image;
     lfree(image->data);
 }
 
-void freeImage(image) Image* image;
+void freeImage(Image* image)
 {
     freeImageData(image);
     lfree((byte*)image);

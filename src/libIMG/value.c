@@ -14,13 +14,10 @@
 #include "image.h"
 
 unsigned long doMemToVal(byte* p, unsigned int len) {
-    unsigned int a;
-    unsigned long i;
-
-    i = 0;
-    for (a = 0; a < len; a++)
+    unsigned long i = 0;
+    for (unsigned int a = 0; a < len; a++)
         i = (i << 8) + *(p++);
-    return (i);
+    return i;
 }
 
 unsigned long doValToMem(unsigned long val, byte* p, unsigned int len)
@@ -62,13 +59,10 @@ void flipBits(byte* p, unsigned int len)
     static byte flipped[256];
 
     if (!init) {
-        int a, b;
-        byte norm;
-
-        for (a = 0; a < 256; a++) {
+        for (int a = 0; a < 256; a++) {
             flipped[a] = 0;
-            norm = a;
-            for (b = 0; b < 8; b++) {
+            byte norm = a;
+            for (int b = 0; b < 8; b++) {
                 flipped[a] = (flipped[a] << 1) | (norm & 1);
                 norm >>= 1;
             }

@@ -38,7 +38,7 @@ static char* ExtToken = "extension=";
 #define PATHSECTION 1
 #define EXTSECTION 2
 
-static void readPathsAndExts(name) char* name;
+static void readPathsAndExts(char* name)
 {
     FILE* f;
     char tokenbuf[BUFSIZ];

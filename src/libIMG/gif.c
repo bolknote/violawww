@@ -453,7 +453,7 @@ static int gifin_fatal(char* msg) {
  * descriptive but I don't care
  */
 
-static void tellAboutImage(name) char* name;
+static void tellAboutImage(char* name)
 {
     printf("%s is a %dx%d %sGIF image with %d colors\n", name, gifin_img_width, gifin_img_height,
            (gifin_interlace_flag ? "interlaced " : ""),

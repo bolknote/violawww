@@ -20,7 +20,7 @@ OPENSSL_AVAILABLE := $(shell test -d "$(OPENSSL_PREFIX)/include" && echo yes || 
 
 # Compiler flags
 ARCH_FLAGS = -arch arm64
-CFLAGS = -Os $(ARCH_FLAGS) -std=gnu89 -Wno-everything -D__DARWIN__
+CFLAGS = -Os $(ARCH_FLAGS) -std=gnu17 -Wno-everything -D__DARWIN__
 CFLAGS_LIBS = -Os $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common \
               -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED
 

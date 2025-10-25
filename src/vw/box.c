@@ -16,29 +16,30 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include "box.h"
 
-extern void* malloc(unsigned long);
-extern void free(void*);
-
 Box* cloneBox(Box* box) {
-    Box *newone = NULL, *bp;
-
     if (!box)
         return (NULL);
 
-    newone = bp = (Box*)malloc(sizeof(Box));
-    bp->data = box->data;
-    bp->dataIsCopy = 1;
-    bp->next = NULL;
+    Box* newone = (Box*)malloc(sizeof(Box));
+    *newone = (Box){
+        .data = box->data,
+        .dataIsCopy = 1,
+        .next = NULL
+    };
+    Box* bp = newone;
 
     while (box->next) {
         bp->next = (Box*)malloc(sizeof(Box));
-        bp->next->data = box->next->data;
-        bp->next->dataIsCopy = 1;
-        bp->next->next = NULL;
+        *(bp->next) = (Box){
+            .data = box->next->data,
+            .dataIsCopy = 1,
+            .next = NULL
+        };
         box = box->next;
         bp = bp->next;
     }
@@ -49,19 +50,15 @@ Box* cloneBox(Box* box) {
 void putInBox(Box** box, void* item) {
     if (!item) {
         return;
-    } else {
-        Box* bp = (Box*)malloc(sizeof(Box));
-        bp->data = item;
-        bp->dataIsCopy = 0;
-
-        if (!*box) {
-            bp->next = NULL;
-            *box = bp;
-        } else {
-            bp->next = *box;
-            *box = bp;
-        }
     }
+    
+    Box* bp = (Box*)malloc(sizeof(Box));
+    *bp = (Box){
+        .data = item,
+        .dataIsCopy = 0,
+        .next = *box ? *box : NULL
+    };
+    *box = bp;
 }
 
 void* getFromBox(Box** box, void* key, CompareFunction compare, _Bool findFirstOne) {
@@ -93,9 +90,9 @@ void* getFromBox(Box** box, void* key, CompareFunction compare, _Bool findFirstO
 }
 
 void deleteFromBox(Box** box, void* key, CompareFunction compare, FreeFunction freeData, _Bool deleteAllItems) {
-    Box* bp = *box;
     Box* prev = NULL;
-
+    Box* bp = *box;
+    
     do {
         while (bp && !compare(key, bp->data)) {
             prev = bp;

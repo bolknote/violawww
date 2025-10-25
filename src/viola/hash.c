@@ -69,11 +69,8 @@ HashEntry* (*func_put)();
 HashEntry* (*func_put_replace)();
 long (*func_remove)();
 {
-    struct HashTable* ht;
-    HashEntry* entryp;
-    int i;
-
-    ht = (HashTable*)malloc(sizeof(struct HashTable));
+    struct HashTable* ht = (HashTable*)malloc(sizeof(struct HashTable));
+    
     if (ht) {
         ht->entries = (HashEntry*)malloc(sizeof(struct HashEntry) * size);
         ht->size = size;
@@ -86,41 +83,49 @@ long (*func_remove)();
         ht->put_replace = func_put_replace;
         ht->remove = func_remove;
 
-        for (entryp = ht->entries, i = size - 1; i >= 0; i--) {
-            entryp->next = NULL;
-            entryp->label = 0;
-            entryp->val = 0;
+        HashEntry* entryp = ht->entries;
+        for (int i = size - 1; i >= 0; i--) {
+            *entryp = (HashEntry){
+                .next = NULL,
+                .label = 0,
+                .val = 0
+            };
             entryp++;
         }
     }
     return ht;
 }
 
-#define PUT_HASH_ENTRY_BLOCK(ht, key, val)                                                         \
-    {                                                                                              \
-        HashEntry *entry, *base_entry, *new_entry;                                                 \
-        base_entry = &(ht->entries[key]);                                                          \
-        if (base_entry->label) {                                                                   \
-            for (entry = base_entry; entry->next; entry = entry->next)                             \
-                ;                                                                                  \
-            new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));                              \
-            if (new_entry) {                                                                       \
-                entry->next = new_entry;                                                           \
-                new_entry->label = (long)label;                                                    \
-                new_entry->val = val;                                                              \
-                new_entry->next = NULL;                                                            \
-            } else {                                                                               \
-                fprintf(stderr, "malloc failed.\n");                                               \
-            }                                                                                      \
-            entry->next = new_entry;                                                               \
-            return new_entry;                                                                      \
-        } else {                                                                                   \
-            base_entry->label = (long)label;                                                       \
-            base_entry->val = val;                                                                 \
-            base_entry->next = NULL;                                                               \
-            return base_entry;                                                                     \
-        }                                                                                          \
+static inline HashEntry* put_hash_entry_block(HashTable* ht, int key, long label, long val)
+{
+    HashEntry* base_entry = &(ht->entries[key]);
+    
+    if (base_entry->label) {
+        HashEntry* entry = base_entry;
+        while (entry->next)
+            entry = entry->next;
+        
+        HashEntry* new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));
+        if (new_entry) {
+            *new_entry = (HashEntry){
+                .label = label,
+                .val = val,
+                .next = NULL
+            };
+            entry->next = new_entry;
+        } else {
+            fprintf(stderr, "malloc failed.\n");
+        }
+        return new_entry;
+    } else {
+        *base_entry = (HashEntry){
+            .label = label,
+            .val = val,
+            .next = NULL
+        };
+        return base_entry;
     }
+}
 
 HashEntry* putHashEntry(HashTable* ht, long label, long val)
 {
@@ -132,14 +137,13 @@ HashEntry* putHashEntry(HashTable* ht, long label, long val)
                     printf("label=%d \tkey=%ld \tval='%s'\n", label, key, val);
             }
     */
-    PUT_HASH_ENTRY_BLOCK(ht, key, val);
+    return put_hash_entry_block(ht, key, label, val);
 }
 
 HashEntry* putHashEntry_int(HashTable* ht, long label, long val)
 {
     int key = label % ht->size;
-
-    PUT_HASH_ENTRY_BLOCK(ht, key, val);
+    return put_hash_entry_block(ht, key, label, val);
 }
 
 HashEntry* putHashEntry_str(HashTable* ht, char* label, long val)
@@ -151,88 +155,93 @@ HashEntry* putHashEntry_str(HashTable* ht, char* label, long val)
         key += *str++;
     key = key % ht->size;
 
-    PUT_HASH_ENTRY_BLOCK(ht, key, val);
+    return put_hash_entry_block(ht, key, (long)label, val);
 }
 
 HashEntry* putHashEntry_cancelable_int(HashTable* ht, long label, long val)
 {
-    int key;
-    HashEntry *entry, *base_entry, *new_entry;
-
-    key = label % ht->size;
-    base_entry = &(ht->entries[key]);
+    int key = label % ht->size;
+    HashEntry* base_entry = &(ht->entries[key]);
 
     if (base_entry->label) {
+        HashEntry* entry;
         for (entry = base_entry; entry->label; entry = entry->next) {
             if (entry->label == label) {
-                /* nevermind. entry of same id already exist */
+                // nevermind. entry of same id already exist
                 return base_entry;
             }
             if (!entry->next)
                 break;
         }
-        new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));
+        HashEntry* new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));
         if (new_entry) {
+            *new_entry = (HashEntry){
+                .label = label,
+                .val = val,
+                .next = NULL
+            };
             entry->next = new_entry;
-            new_entry->label = label;
-            new_entry->val = val;
-            new_entry->next = NULL;
         } else {
             fprintf(stderr, "malloc() failed.\n");
         }
-        entry->next = new_entry;
         return new_entry;
     } else {
-        base_entry->label = label;
-        base_entry->val = val;
-        base_entry->next = NULL;
+        *base_entry = (HashEntry){
+            .label = label,
+            .val = val,
+            .next = NULL
+        };
         return base_entry;
     }
 }
 
-#define PUT_HASH_ENTRY_REPLACE(ht, key, val, lbl)                                                  \
-    {                                                                                              \
-        HashEntry *entry, *base_entry, *new_entry;                                                 \
-        base_entry = &(ht->entries[key]);                                                          \
-                                                                                                   \
-        if (base_entry->label) {                                                                   \
-            for (entry = base_entry; entry->label; entry = entry->next) {                          \
-                if (entry->label == lbl) {                                                         \
-                    /* override */                                                                 \
-                    entry->val = val;                                                              \
-                    return base_entry;                                                             \
-                }                                                                                  \
-                if (!entry->next)                                                                  \
-                    break;                                                                         \
-            }                                                                                      \
-            new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));                              \
-            if (new_entry) {                                                                       \
-                new_entry->label = lbl;                                                            \
-                new_entry->val = val;                                                              \
-                new_entry->next = NULL;                                                            \
-            } else {                                                                               \
-                fprintf(stderr, "malloc() failed.\n");                                             \
-            }                                                                                      \
-            entry->next = new_entry;                                                               \
-            return new_entry;                                                                      \
-        } else {                                                                                   \
-            base_entry->label = lbl;                                                               \
-            base_entry->val = val;                                                                 \
-            base_entry->next = NULL;                                                               \
-            return base_entry;                                                                     \
-        }                                                                                          \
+static inline HashEntry* put_hash_entry_replace(HashTable* ht, int key, long label, long val)
+{
+    HashEntry* base_entry = &(ht->entries[key]);
+
+    if (base_entry->label) {
+        HashEntry* entry;
+        for (entry = base_entry; entry->label; entry = entry->next) {
+            if (entry->label == label) {
+                // override
+                entry->val = val;
+                return base_entry;
+            }
+            if (!entry->next)
+                break;
+        }
+        HashEntry* new_entry = (HashEntry*)malloc(sizeof(struct HashEntry));
+        if (new_entry) {
+            *new_entry = (HashEntry){
+                .label = label,
+                .val = val,
+                .next = NULL
+            };
+            entry->next = new_entry;
+        } else {
+            fprintf(stderr, "malloc() failed.\n");
+        }
+        return new_entry;
+    } else {
+        *base_entry = (HashEntry){
+            .label = label,
+            .val = val,
+            .next = NULL
+        };
+        return base_entry;
     }
+}
 
 HashEntry* putHashEntry_replace(HashTable* ht, long label, long val)
 {
     int key = ht->func_hash(ht, label);
-    PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
+    return put_hash_entry_replace(ht, key, label, val);
 }
 
 HashEntry* putHashEntry_replace_int(HashTable* ht, long label, long val)
 {
     int key = label % ht->size;
-    PUT_HASH_ENTRY_REPLACE(ht, key, val, label);
+    return put_hash_entry_replace(ht, key, label, val);
 }
 
 HashEntry* putHashEntry_replace_str(HashTable* ht, char* label, long val)
@@ -244,7 +253,7 @@ HashEntry* putHashEntry_replace_str(HashTable* ht, char* label, long val)
         key += *str++;
     key = key % ht->size;
 
-    PUT_HASH_ENTRY_REPLACE(ht, key, val, (long)label);
+    return put_hash_entry_replace(ht, key, (long)label, val);
 }
 
 #ifdef NOT_USED
@@ -317,18 +326,16 @@ HashEntry* getHashEntry(HashTable* ht, long label)
 
 HashEntry* getHashEntry_str(HashTable* ht, char* label)
 {
-    HashEntry* entry;
-    int key = 0;
-    char* str = label;
-
     if (label == 0)
         return NULL;
 
+    int key = 0;
+    char* str = label;
     while (*str)
         key += *str++;
     key = key % ht->size;
 
-    for (entry = &(ht->entries[key]); entry; entry = entry->next)
+    for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next)
         if (entry->label)
             if (((char*)entry->label)[0] == ((char*)label)[0])
                 if (!strcmp((char*)entry->label, (char*)label))
@@ -338,14 +345,11 @@ HashEntry* getHashEntry_str(HashTable* ht, char* label)
 
 HashEntry* getHashEntry_int(HashTable* ht, long label)
 {
-    HashEntry* entry;
-    int key;
-
     if (label == 0)
         return NULL;
 
-    key = label % ht->size;
-    for (entry = entry = &(ht->entries[key]); entry; entry = entry->next)
+    int key = label % ht->size;
+    for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next)
         if (entry->label == label)
             return entry;
 
@@ -403,16 +407,13 @@ int removeHashEntry(HashTable* ht, long label)
 
 int removeHashEntry_int(HashTable* ht, long label)
 {
-    int key;
-    HashEntry *entry, *prevEntry;
-
     if (label == 0)
         return 0;
 
-    key = label % ht->size;
+    int key = label % ht->size;
 
-    prevEntry = NULL;
-    for (entry = &(ht->entries[key]); entry; entry = entry->next) {
+    HashEntry* prevEntry = NULL;
+    for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next) {
         if (entry->label == label) {
             if (ht->func_freeLabel)
                 ht->func_freeLabel(entry->label);
@@ -440,21 +441,17 @@ int removeHashEntry_int(HashTable* ht, long label)
 
 int removeHashEntry_str(HashTable* ht, char* label)
 {
-    HashEntry *entry, *prevEntry;
-    int key;
-    char* str;
-
     if (label == 0)
         return 0;
 
-    str = label;
-    key = 0;
+    char* str = label;
+    int key = 0;
     while (*str)
         key += *str++;
     key = key % ht->size;
 
-    prevEntry = NULL;
-    for (entry = &(ht->entries[key]); entry; entry = entry->next) {
+    HashEntry* prevEntry = NULL;
+    for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next) {
         if (entry->label) {
             if (((char*)(entry->label))[0] == ((char*)label)[0]) {
                 if (!strcmp((char*)(entry->label), label)) {
@@ -486,13 +483,10 @@ int removeHashEntry_str(HashTable* ht, char* label)
 
 void dumpHashTable(ht) HashTable* ht;
 {
-    int i;
-    HashEntry* hp;
-
     printf("size = %d\n", ht->size);
 
-    for (i = 0; i < ht->size; i++) {
-        for (hp = &(ht->entries[i]); hp; hp = hp->next)
+    for (int i = 0; i < ht->size; i++) {
+        for (HashEntry* hp = &(ht->entries[i]); hp; hp = hp->next)
             if (hp->label)
                 if (ht->func_hash == hash_str) {
                     printf("%d\tlabel=\"%s\"\tval=%ld\n", i, (char*)hp->label, hp->val);

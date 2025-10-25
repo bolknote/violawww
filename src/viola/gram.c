@@ -1063,13 +1063,13 @@ static YYINT  *yylexemes = NULL;
 #endif /* YYBTYACC */
 #line 692 "gram.y"
 
-yyerror(s) 
-char *s;
+int yyerror(char *s)
 {
 	reportError();
+	return 0;
 }
 
-yywrap() {
+int yywrap(void) {
 	return 1;
 }
 

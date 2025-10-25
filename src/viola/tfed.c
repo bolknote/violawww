@@ -540,7 +540,7 @@ int tfed_render(VObj* self)
     return 0;
 }
 
-update_tf_color(tf) TFStruct* tf;
+void update_tf_color(TFStruct* tf)
 {
     GLClearSelection();
     GLPrepareObjColor(tf->self);
@@ -557,9 +557,7 @@ update_tf_color(tf) TFStruct* tf;
 /* mode: 0 just highlite
  *       1 delete
  */
-updateHilite(tf, x1, y1, x2, y2, mode) TFStruct* tf;
-int x1, y1, x2, y2;
-int mode;
+int updateHilite(TFStruct* tf, int x1, int y1, int x2, int y2, int mode)
 {
     int aux;
     unsigned long newstart, newend;
@@ -644,6 +642,7 @@ done:
     tf->highLiteFrom_cy = y1;
     tf->highLiteTo_cx = x2;
     tf->highLiteTo_cy = y2;
+    return 0;
 }
 
 char* tfed_processMouseMove(VObj* self)

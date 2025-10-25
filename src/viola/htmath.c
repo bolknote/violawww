@@ -1038,7 +1038,7 @@ MAST* build(MAST* self, MAST* parent, MInfo* minfo, int* minfoIdx, int level)
     }
 }
 
-make(minfo) MInfo* minfo;
+void make(MInfo* minfo)
 {
     int i;
     int minfoIdx = 0;

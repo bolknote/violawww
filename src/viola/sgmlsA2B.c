@@ -428,8 +428,7 @@ int attrsCount;
     return 1;
 }
 
-main(argc, argv) int argc;
-char** argv;
+int main(int argc, char** argv)
 {
     int c;
     FILE* fp;

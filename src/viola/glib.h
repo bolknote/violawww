@@ -35,7 +35,7 @@
 #define BORDER_SUBWINDOW_THICKNESS 0 /* exception */
 
 #define BORDER_STYLE_COUNT 10
-extern borderStyleThickness[];
+extern int borderStyleThickness[];
 
 /****************************************************************************
  */

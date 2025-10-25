@@ -1902,8 +1902,8 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
     return dmi;
 }
 
-startHTML() { /*	dataBuffIdxStack[++dataBuffIdxStackIdx] = dataBuffIdx;*/ }
-endHTML() { /*	--dataBuffIdxStackIdx;*/ }
+void startHTML(void) { /*	dataBuffIdxStack[++dataBuffIdxStackIdx] = dataBuffIdx;*/ }
+void endHTML(void) { /*	--dataBuffIdxStackIdx;*/ }
 
 SGMLDocMappingInfo* loadStyleSheet(char* dtd)
 {

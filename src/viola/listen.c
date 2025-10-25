@@ -8,8 +8,7 @@
 #define SOCKET_NAME 9999
 int socket_name = SOCKET_NAME;
 
-main(argc, argv) int argc;
-char* argv[];
+int main(int argc, char* argv[])
 {
     time_t *tloc, cur_time;
     int cc, skt_id, msg_sock, length, i, j;

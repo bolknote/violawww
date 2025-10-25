@@ -29,8 +29,7 @@ struct shar {
     struct shar* next;
 };
 
-main(argc, argv) int argc;
-char** argv;
+int main(int argc, char** argv)
 {
     int num_files, files_left;
     struct file* files;

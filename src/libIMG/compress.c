@@ -135,8 +135,8 @@ unsigned int verbose;
             valToMem(pixel_map[oldpixval], pixptr, image->pixlen);
             pixptr += image->pixlen;
         }
-    lfree(pixel_table);
-    lfree(pixel_map);
+    lfree((byte*)pixel_table);
+    lfree((byte*)pixel_map);
 
     if (badcount)
         if (verbose)

@@ -459,7 +459,7 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
             }
             if (a == 0) {
                 fprintf(stderr, "imageToXImage: Color allocation failed!\n");
-                lfree(index);
+                lfree((byte*)index);
                 if (XServerInGrip) {
                     XServerInGrip = 0;
                     XUngrabServer(disp);

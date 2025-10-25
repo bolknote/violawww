@@ -198,7 +198,7 @@ ZFILE* zopen(char* name) {
         zf->type = ZPIPE;
         sprintf(buf, "uncompress -c %s", name);
         if (!(zf->stream = popen(buf, "r"))) {
-            lfree(zf->filename);
+            lfree((byte*)zf->filename);
             zf->filename = NULL;
             return (NULL);
         }
@@ -211,7 +211,7 @@ ZFILE* zopen(char* name) {
 
     zf->type = ZSTANDARD;
     if (!(zf->stream = fopen(name, "r"))) {
-        lfree(zf->filename);
+        lfree((byte*)zf->filename);
         zf->filename = NULL;
         return (NULL);
     }

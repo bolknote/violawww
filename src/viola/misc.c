@@ -25,9 +25,11 @@ char strBuff[32];
  */
 int transferNumList2Array(char* numStr, int* array, int n)
 {
-    int count = 0, stri = 0, ai = 0;
+    int count = 0;
+    int stri = 0;
+    int ai = 0;
 
-    /* make sure to start out with number */
+    // make sure to start out with number
     while (*numStr)
         if (isdigit(*numStr))
             break;
@@ -53,8 +55,7 @@ int transferNumList2Array(char* numStr, int* array, int n)
 
 int argNumsToInt(Packet argv[], int n, int intBuff[])
 {
-    int i;
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         switch (argv[i].type) {
         case PKT_FLT:
             intBuff[i] = (int)(argv[i].info.f);
@@ -71,7 +72,7 @@ int argNumsToInt(Packet argv[], int n, int intBuff[])
             break;
         }
     }
-    return i;
+    return n;
 }
 
 VObjList* strOListToOList(char* str)

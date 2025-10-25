@@ -2667,13 +2667,29 @@ XImage* GLGIFResize(Window win, int w, int h, int actual_w, int actual_h, XImage
 
 int GLGIFDraw(Window w, XImage* img, int x, int y, int width, int height)
 {
+    int draw_width, draw_height;
+    
+    /* Limit drawing to actual image size to avoid reading beyond buffer */
+    if (img) {
+        draw_width = (width > img->width) ? img->width : width;
+        draw_height = (height > img->height) ? img->height : height;
+        
+        /* If window is bigger than image, clear the window first to avoid garbage */
+        if (width > img->width || height > img->height) {
+            XClearArea(display, w, x, y, width, height, False);
+        }
+    } else {
+        draw_width = width;
+        draw_height = height;
+    }
+    
 #ifdef USE_XGIF_PACKAGE
-    return XPutImage(display, w, gc, img, 0, 0, x, y, width, height);
+    return XPutImage(display, w, gc, img, 0, 0, x, y, draw_width, draw_height);
 #endif
 #ifdef USE_XLOADIMAGE_PACKAGE
     XSetBackground(display, gc, BGPixel); /* XXXX LAME and INEFFICIENT */
     XSetForeground(display, gc, FGPixel);
-    return XPutImage(display, w, gc, img, 0, 0, x, y, width, height);
+    return XPutImage(display, w, gc, img, 0, 0, x, y, draw_width, draw_height);
 #endif
 }
 

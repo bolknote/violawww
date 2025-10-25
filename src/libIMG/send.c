@@ -559,34 +559,41 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
             Pixel pixval, newpixval;
 
             ximageinfo->ximage = XCreateImage(disp, visual, ddepth, ZPixmap, 0, NULL, image->width,
-                                              image->height, 8, 0);
-            data = lmalloc(image->width * image->height * dpixlen);
+                                              image->height, 32, 0);
+            /* Use bytes_per_line from XImage to account for padding */
+            data = lmalloc(ximageinfo->ximage->bytes_per_line * image->height);
             ximageinfo->ximage->data = (char*)data;
             destptr = data;
             srcptr = image->data;
             switch (image->type) {
             case ITRUE:
-                for (y = 0; y < image->height; y++)
+                for (y = 0; y < image->height; y++) {
+                    byte* rowptr = destptr;
                     for (x = 0; x < image->width; x++) {
                         pixval = memToVal(srcptr, image->pixlen);
                         newpixval = redvalue[TRUE_RED(pixval)] | greenvalue[TRUE_GREEN(pixval)] |
                                     bluevalue[TRUE_BLUE(pixval)];
-                        valToMem(newpixval, destptr, dpixlen);
+                        valToMem(newpixval, rowptr, dpixlen);
                         srcptr += image->pixlen;
-                        destptr += dpixlen;
+                        rowptr += dpixlen;
                     }
+                    destptr += ximageinfo->ximage->bytes_per_line;
+                }
                 break;
             case IRGB:
-                for (y = 0; y < image->height; y++)
+                for (y = 0; y < image->height; y++) {
+                    byte* rowptr = destptr;
                     for (x = 0; x < image->width; x++) {
                         pixval = memToVal(srcptr, image->pixlen);
                         pixval = redvalue[image->rgb.red[pixval] >> 8] |
                                  greenvalue[image->rgb.green[pixval] >> 8] |
                                  bluevalue[image->rgb.blue[pixval] >> 8];
-                        valToMem(pixval, destptr, dpixlen);
+                        valToMem(pixval, rowptr, dpixlen);
                         srcptr += image->pixlen;
-                        destptr += dpixlen;
+                        rowptr += dpixlen;
                     }
+                    destptr += ximageinfo->ximage->bytes_per_line;
+                }
                 break;
             default: /* something's broken */
                 printf("Unexpected image type for DirectColor/TrueColor visual!\n");
@@ -644,22 +651,26 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
             } else {
                 byte *data, *srcptr, *destptr;
 
-                ximageinfo->ximage = XCreateImage(disp, visual, ddepth, ZPixmap, 0, NULL,
-                                                  image->width, image->height, 8, 0);
+            ximageinfo->ximage = XCreateImage(disp, visual, ddepth, ZPixmap, 0, NULL,
+                                              image->width, image->height, 32, 0);
 
-                dpixlen = (ximageinfo->ximage->bits_per_pixel + 7) / 8;
-                data = (byte*)lmalloc(image->width * image->height * dpixlen);
-                ximageinfo->ximage->data = (char*)data;
-                ximageinfo->ximage->byte_order = MSBFirst; /* trust me, i know what
-                                                            * i'm talking about */
-                srcptr = image->data;
-                destptr = data;
-                for (y = 0; y < image->height; y++)
-                    for (x = 0; x < image->width; x++) {
-                        valToMem(index[memToVal(srcptr, image->pixlen)], destptr, dpixlen);
-                        srcptr += image->pixlen;
-                        destptr += dpixlen;
-                    }
+            dpixlen = (ximageinfo->ximage->bits_per_pixel + 7) / 8;
+            /* Use bytes_per_line from XImage to account for padding */
+            data = (byte*)lmalloc(ximageinfo->ximage->bytes_per_line * image->height);
+            ximageinfo->ximage->data = (char*)data;
+            ximageinfo->ximage->byte_order = MSBFirst; /* trust me, i know what
+                                                        * i'm talking about */
+            srcptr = image->data;
+            destptr = data;
+            for (y = 0; y < image->height; y++) {
+                byte* rowptr = destptr;
+                for (x = 0; x < image->width; x++) {
+                    valToMem(index[memToVal(srcptr, image->pixlen)], rowptr, dpixlen);
+                    srcptr += image->pixlen;
+                    rowptr += dpixlen;
+                }
+                destptr += ximageinfo->ximage->bytes_per_line;
+            }
             }
             break;
         }

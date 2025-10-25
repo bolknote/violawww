@@ -424,15 +424,21 @@ static int gifin_push_string(int code) {
  */
 
 static int gifin_add_string(int p, int e) {
+    /* Don't add if table is full (4096 entries for 12-bit codes) */
+    if (table_size >= STAB_SIZE) {
+        return 0;
+    }
+    
     prefix[table_size] = p;
     extnsn[table_size] = e;
 
-    if ((table_size == code_mask) && (code_size < 12)) {
+    table_size++;
+    
+    /* Increase code size when table is full for current code size */
+    if ((table_size == (1 << code_size)) && (code_size < 12)) {
         code_size += 1;
         code_mask = (1 << code_size) - 1;
     }
-
-    table_size += 1;
     
     return 0;
 }
@@ -491,10 +497,10 @@ Image* gifLoad(char* fullname, char* name, unsigned int verbose)
      */
 
     if (gifin_l_cmap_flag) {
-        for (x = 0; x < image->rgb.size; x++) {
-            image->rgb.red[x] = gifin_g_cmap[GIF_RED][x] << 8;
-            image->rgb.green[x] = gifin_g_cmap[GIF_GRN][x] << 8;
-            image->rgb.blue[x] = gifin_g_cmap[GIF_BLU][x] << 8;
+        for (x = 0; x < gifin_l_ncolors; x++) {
+            image->rgb.red[x] = gifin_l_cmap[GIF_RED][x] << 8;
+            image->rgb.green[x] = gifin_l_cmap[GIF_GRN][x] << 8;
+            image->rgb.blue[x] = gifin_l_cmap[GIF_BLU][x] << 8;
         }
         image->rgb.used = gifin_l_ncolors;
     }

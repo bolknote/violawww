@@ -270,8 +270,7 @@ static Menu mainMenus[] = {
     NULL,
 };
 
-main(argc, argv) int argc;
-char* argv[];
+int main(int argc, char* argv[])
 {
     int i, loadCmdLineDoc = 0;
     DocViewInfo* dvip;

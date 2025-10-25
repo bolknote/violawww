@@ -528,7 +528,7 @@ extern char* sys_errlist[];
 extern int sys_nerr;
 #endif
 
-initUserWWW(www) char* www;
+void initUserWWW(char* www)
 {
     int Errno;
     char* cp;
@@ -572,7 +572,7 @@ initUserWWW(www) char* www;
 /*
  * To get a Viola object name from a file path name.
  */
-void scanTopObjName(fileName, returnName) char *fileName, *returnName;
+void scanTopObjName(char *fileName, char *returnName)
 {
     char* cp;
     int len;

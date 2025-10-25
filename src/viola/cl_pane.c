@@ -167,7 +167,7 @@ long meth_pane_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
 #define CHILD_GAP(i) geomBuff[i][3]
 #define CHILD_GAPO(i) geomBuff[i][4]
 #define CHILD_MAX 100 /*XXX*/
-helper_pane_config(self) VObj* self;
+void helper_pane_config(VObj* self)
 {
     VObjList *olist, *children = GET__children(self);
     int loopbreak = 999; /* precaution to infinite loop -- breaking limit */

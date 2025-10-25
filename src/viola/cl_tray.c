@@ -52,7 +52,7 @@ ClassInfo class_tray = {
     &class_field,                                   /* super class info		*/
 };
 
-helper_tray_config(VObj* self, long oldWidth, long oldHeight)
+void helper_tray_config(VObj* self, long oldWidth, long oldHeight)
 {
     VObjList *olist, *children = GET__children(self);
     float xratio, yratio;

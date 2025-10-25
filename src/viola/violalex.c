@@ -243,7 +243,7 @@ int dumpProximityErrorLine(char* buff, int* i)
     return 0;
 }
 
-reportError() {
+int reportError(void) {
     int i = 0, ln = 0, hasmore = 1;
     char c;
 

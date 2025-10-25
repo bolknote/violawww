@@ -690,13 +690,13 @@ string	:	STRINGCONST
 
 %%
 
-yyerror(s) 
-char *s;
+int yyerror(char *s)
 {
 	reportError();
+	return 0;
 }
 
-yywrap() {
+int yywrap(void) {
 	return 1;
 }
 

@@ -94,6 +94,11 @@ int sgml_verbose = 0;
 /* Flag to track if we're inside SCRIPT or STYLE tags */
 static int inside_ignore_tag = 0;
 
+/* Flag to track if we're inside Wayback Toolbar comments */
+static int inside_wayback_comment = 0;
+
+
+
 static char* URLEncodeSeq[] = {
     NULL,  "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09", "%0A", "%0B", "%0C",
     "%0D", "%0E", "%0F", "%10", "%11", "%12", "%13", "%14", "%15", "%16", "%17", "%18", "%19",
@@ -231,6 +236,9 @@ void CB_HTML_new() {
 
     /* Reset ignore tag flag */
     inside_ignore_tag = 0;
+    
+    /* Reset Wayback comment flag */
+    inside_wayback_comment = 0;
 
     if (!strcmp(dtd, "HTML")) {
         /*		sgmldtd = HTML_dtd;*/
@@ -339,8 +347,14 @@ int size;
     char tempbuf[8192];
     int converted_size;
 
+    
     /* Ignore data inside SCRIPT and STYLE tags */
     if (inside_ignore_tag) {
+        return;
+    }
+    
+    /* Ignore data inside Wayback Toolbar comments */
+    if (inside_wayback_comment) {
         return;
     }
 
@@ -447,6 +461,21 @@ HTTag* tagInfo;
     /* Ignore SCRIPT and STYLE opening tags - they are handled by SGML parser */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
         inside_ignore_tag = 1;
+        return;
+    }
+    
+    /* Handle Wayback Toolbar comments */
+    if (element_number == HTML_COMMENT) {
+        /* Check if this is a Wayback comment by examining the tag content */
+        if (tag && strstr(tag, "BEGIN WAYBACK TOOLBAR INSERT")) {
+            inside_wayback_comment = 1;
+            return;
+        }
+        if (tag && strstr(tag, "END WAYBACK TOOLBAR INSERT")) {
+            inside_wayback_comment = 0;
+            return;
+        }
+        /* For other comments, just ignore them */
         return;
     }
 
@@ -935,6 +964,11 @@ void CB_HTML_etag(element_number) int element_number;
     /* Ignore SCRIPT and STYLE closing tags - they are handled by SGML parser */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
         inside_ignore_tag = 0;
+        return;
+    }
+    
+    /* Handle Wayback Toolbar comments - no special handling needed for end tags */
+    if (element_number == HTML_COMMENT) {
         return;
     }
 

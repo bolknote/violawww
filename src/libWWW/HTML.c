@@ -347,10 +347,16 @@ PRIVATE void change_paragraph_style ARGS2(HTStructured*, me, HTStyle*, style) {
 PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 #ifdef VIOLA
 
+    /* Debug: Print all characters */
+    if (c == '<' || c == '!' || c == '-') {
+        fprintf(stderr, "DEBUG: HTML_put_character: '%c'\n", c);
+    }
+
     if (majorBuffi >= MAJORBUFF - 1) {
         /* Flush buffer to prevent overflow */
         majorBuff[majorBuffi] = '\0';
         if (majorBuffi > 0) {
+            fprintf(stderr, "DEBUG: HTML_put_character flushing buffer: '%s'\n", majorBuff);
             CB_HTML_data(majorBuff, majorBuffi);
             majorBuffi = 0;
         }

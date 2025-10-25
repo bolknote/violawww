@@ -360,7 +360,7 @@ unsigned int* rdepth;
     }
     if (!depth) { /* this shouldn't happen */
         printf("bestVisual: didn't find any depths?!?\n");
-        depth = DefaultDepth(disp, scrn);
+        depth = (unsigned int)DefaultDepth(disp, scrn);
     }
 
     /* given this depth, find the best possible visual
@@ -434,7 +434,7 @@ unsigned int* rdepth;
 
     if (!visual) { /* this shouldn't happen */
         fprintf(stderr, "bestVisual: couldn't find one?!?\n");
-        depth = DefaultDepth(disp, scrn);
+        depth = (unsigned int)DefaultDepth(disp, scrn);
         visual = DefaultVisual(disp, scrn);
     }
     *rvisual = visual;
@@ -564,7 +564,7 @@ unsigned int verbose;
 
     if (fit) {
         visual = DefaultVisual(disp, scrn);
-        depth = DefaultDepth(disp, scrn);
+        depth = (unsigned int)DefaultDepth(disp, scrn);
     } else {
 
         visual = (Visual*)NULL;

@@ -158,7 +158,7 @@ int xpmCreateImage(Display* display, xpmInternAttrib* attrib, XImage** image_ret
     if (attributes && attributes->valuemask & XpmDepth)
         depth = attributes->depth;
     else
-        depth = DefaultDepth(display, DefaultScreen(display));
+        depth = (unsigned int)DefaultDepth(display, DefaultScreen(display));
 
     ErrorStatus = XpmSuccess;
 

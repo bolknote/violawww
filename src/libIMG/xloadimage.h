@@ -12,7 +12,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdio.h>
-#define DefaultDepth(dpy, scr) ((unsigned int)(ScreenOfDisplay(dpy,scr)->root_depth))
 #endif
 
 #include "image.h"

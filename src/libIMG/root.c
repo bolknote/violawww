@@ -172,7 +172,7 @@ unsigned int verbose;
     freePrevious(disp, root);
 
     if (!(ximageinfo = imageToXImage(disp, scrn, DefaultVisual(disp, scrn),
-                                     DefaultDepth(disp, scrn), image, False, True, verbose))) {
+                                     (unsigned int)DefaultDepth(disp, scrn), image, False, True, verbose))) {
         fprintf(stderr, "Cannot convert Image to XImage\n");
         exit(1);
     }

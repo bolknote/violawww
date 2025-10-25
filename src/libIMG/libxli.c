@@ -183,7 +183,7 @@ int loadImg(char* imagename, /*Image** image,*/ XImageInfo** ximageinfo, int* wi
         if (DefaultDepth(disp, scrn) == 1)
             dispimage = newBitImage(winwidth, winheight);
         else {
-            dispimage = newRGBImage(winwidth, winheight, DefaultDepth(disp, scrn));
+            dispimage = newRGBImage(winwidth, winheight, (unsigned int)DefaultDepth(disp, scrn));
             dispimage->rgb.used = 1;
         }
         *(dispimage->rgb.red) = 65535; /* default border value is white */

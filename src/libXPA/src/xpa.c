@@ -209,13 +209,10 @@ typedef struct xpa_context_defn {
     struct xpa_context_defn* next; /* Linked for disposal */
 } xpa_context;
 
-/*
- * Error handling
- */
+// Error handling
 
-char* xpa_error(code)
-int code; /* Error code */
-/* Returns a textual description for `code'. */
+// Returns a textual description for `code'.
+char* xpa_error(int code)
 {
     switch (code) {
     case XPA_NOMEM:
@@ -243,8 +240,8 @@ int code; /* Error code */
     }
 }
 
-static void def_err_func(code) int code; /* Error code */
-/* Default error handler - prints a message and exits */
+// Default error handler - prints a message and exits
+static void def_err_func(int code)
 {
     (void)fprintf(stderr, "Fatal error in xpa: %s\n", xpa_error(code));
     abort();
@@ -252,23 +249,20 @@ static void def_err_func(code) int code; /* Error code */
 
 static void (*err_func)() = def_err_func;
 
-static void xpa_raise(code) int code; /* Error code */
+static void xpa_raise(int code)
 {
     if (err_func) {
         (*err_func)(code);
     }
 }
 
-void xpa_set_error(func) void (*func)(); /* New error function */
-/*
- * Sets the current xpa error function to `func'.  The function
- * should have the following form:
- *   void func(code)
- *   int code;
- * `code' will be one of the error codes given in xpa.h.  A
- * textual representation is available by calling xpa_error().
- * Specifying zero resets the function to the default.
- */
+// Sets the current xpa error function to `func'. The function
+// should have the following form:
+//   void func(int code);
+// `code' will be one of the error codes given in xpa.h. A
+// textual representation is available by calling xpa_error().
+// Specifying zero resets the function to the default.
+void xpa_set_error(void (*func)())
 {
     if (func) {
         err_func = func;
@@ -282,16 +276,12 @@ void xpa_set_error(func) void (*func)(); /* New error function */
 #define META_ASCII 0200
 #define AT_ASCII 0100
 
-static int key_string(buf, key)
-char* buf; /* Destination buffer (at least XPA_ACBUFL) */
-int key;   /* ASCII key description                    */
-/*
- * Builds a readable description for the ASCII character `key'.  If
- * it is a control character,  it is prefixed with a hat (^).  If
- * it is above 0177,  it is prefixed with 'M-'.  The description
- * is written into `buf' (which should be at least XPA_ACBUFL in length).
- * The actual length is returned.  There are ASCII dependencies here.
- */
+// Builds a readable description for the ASCII character `key'. If
+// it is a control character, it is prefixed with a hat (^). If
+// it is above 0177, it is prefixed with 'M-'. The description
+// is written into `buf' (which should be at least XPA_ACBUFL in length).
+// The actual length is returned. There are ASCII dependencies here.
+static int key_string(char* buf, int key)
 {
     int len = 0;
 
@@ -401,11 +391,8 @@ xpa_pb* pb;      /* Pullbox info             */
     return result;
 }
 
-static xpa_pb* new_pb(win, item, height)
-Window win;     /* Pullbox window  */
-xpa_item* item; /* Associated item */
-int height;     /* Height of box   */
-/* Creates a new pullbox structure */
+// Creates a new pullbox structure
+static xpa_pb* new_pb(Window win, xpa_item* item, int height)
 {
     xpa_pb* result = XPA_MEM(xpa_pb);
 
@@ -418,13 +405,8 @@ int height;     /* Height of box   */
     return result;
 }
 
-static xpa_title* new_title(win, str, metric, fullwidth, lev)
-Window win;          /* Title window  */
-char* str;           /* Title string  */
-XCharStruct* metric; /* String metric */
-int fullwidth;       /* Full width    */
-int lev;             /* Hierarchy lev */
-/* Creates a new title structure (string is automatically copied) */
+// Creates a new title structure (string is automatically copied)
+static xpa_title* new_title(Window win, char* str, XCharStruct* metric, int fullwidth, int lev)
 {
     xpa_title* result = XPA_MEM(xpa_title);
 
@@ -440,20 +422,16 @@ int lev;             /* Hierarchy lev */
 }
 
 #ifdef DEBUG
-static void out_menu(title, entrys, indent) char* title;
-xpa_entry* entrys;
-int indent;
-/* For debugging */
+// For debugging
+static void out_menu(char* title, xpa_entry* entrys, int indent)
 {
-    int i;
-
     if (title) {
-        for (i = 0; i < indent - 1; i++)
+        for (int i = 0; i < indent - 1; i++)
             putchar(' ');
         (void)printf("%s (pane name)\n", title);
     }
     while (entrys->item_name) {
-        for (i = 0; i < indent; i++)
+        for (int i = 0; i < indent; i++)
             putchar(' ');
         if (entrys->key_char > 0) {
             (void)printf("%s (%d=%c)\n", entrys->item_name, entrys->key_char, entrys->key_char);
@@ -467,9 +445,8 @@ int indent;
     }
 }
 
-static void out_detail(evt, str) XEvent* evt;
-char* str;
-/* Shows detail of leave event */
+// Shows detail of leave event
+static void out_detail(XEvent* evt, char* str)
 {
     (void)fputs(str, stdout);
     switch (evt->xcrossing.detail) {
@@ -520,15 +497,9 @@ unsigned long fg;  /* Foreground color   */
     return gc;
 }
 
-static GC bg_gc(disp, win, bg)
-Display* disp;    /* X Connection       */
-Window win;       /* What window to use */
-unsigned long bg; /* Background color   */
-/*
- * Creates or modifies a static graphics context to have the
- * specified values.  This one is generally used for filling
- * areas.
- */
+// Creates or modifies a static graphics context to have the
+// specified values. This one is generally used for filling areas.
+static GC bg_gc(Display* disp, Window win, unsigned long bg)
 {
     static GC gc = (GC)0;
     XGCValues gcvals;
@@ -542,15 +513,9 @@ unsigned long bg; /* Background color   */
     return gc;
 }
 
-static GC bd_gc(disp, win, bd)
-Display* disp;    /* X Connection       */
-Window win;       /* What window to use */
-unsigned long bd; /* Border color   */
-/*
- * Creates or modifies a static graphics context to have the
- * specified values.  This one is generally used for filling
- * areas.
- */
+// Creates or modifies a static graphics context to have the
+// specified values. This one is generally used for filling areas.
+static GC bd_gc(Display* disp, Window win, unsigned long bd)
 {
     static GC gc = (GC)0;
     XGCValues gcvals;
@@ -564,15 +529,9 @@ unsigned long bd; /* Border color   */
     return gc;
 }
 
-static GC cr_gc(disp, win, cr)
-Display* disp;    /* X Connection       */
-Window win;       /* What window to use */
-unsigned long cr; /* Border color   */
-/*
- * Creates or modifies a static graphics context to have the
- * specified values.  This one is generally used for filling
- * areas.
- */
+// Creates or modifies a static graphics context to have the
+// specified values. This one is generally used for filling areas.
+static GC cr_gc(Display* disp, Window win, unsigned long cr)
 {
     static GC gc = (GC)0;
     XGCValues gcvals;
@@ -586,18 +545,15 @@ unsigned long cr; /* Border color   */
     return gc;
 }
 
+// Examines menu specification and returns the maximum depth.
 static int depth(xpa_entry* entrys)
-/*
- * Examines menu specification and returns the maximum depth.
- */
 {
+    int max = 0;
+    
     xpa_entry* idx;
-    int max, d;
-
-    max = 0;
     for (idx = entrys; idx->item_name; idx++) {
         if (idx->sub_entrys) {
-            d = depth((xpa_entry*)idx->sub_entrys);
+            int d = depth((xpa_entry*)idx->sub_entrys);
             if (d > max)
                 max = d;
         }

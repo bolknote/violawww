@@ -347,30 +347,23 @@ int size;
     char tempbuf[8192];
     int converted_size;
 
-    /* Debug: Print all data content */
-    fprintf(stderr, "DEBUG: CB_HTML_data: '%.*s'\n", (int)size, str);
-    
     /* Check for HTML comments in the data */
     if (size >= 7 && strncmp(str, "<!--", 4) == 0) {
         char comment_buf[8192];
         if (size < sizeof(comment_buf)) {
             memcpy(comment_buf, str, size);
             comment_buf[size] = '\0';
-            fprintf(stderr, "DEBUG: Detected comment in data: '%s'\n", comment_buf);
             
             /* Check for Wayback Toolbar comments */
             if (strstr(comment_buf, "BEGIN WAYBACK TOOLBAR INSERT")) {
-                fprintf(stderr, "DEBUG: Found BEGIN WAYBACK - setting flag\n");
                 inside_wayback_comment = 1;
                 return;
             }
             if (strstr(comment_buf, "END WAYBACK TOOLBAR INSERT")) {
-                fprintf(stderr, "DEBUG: Found END WAYBACK - clearing flag\n");
                 inside_wayback_comment = 0;
                 return;
             }
             /* Ignore all other comments */
-            fprintf(stderr, "DEBUG: Ignoring regular comment\n");
             return;
         }
     }
@@ -382,7 +375,6 @@ int size;
     
     /* Ignore data inside Wayback Toolbar comments */
     if (inside_wayback_comment) {
-        fprintf(stderr, "DEBUG: Ignoring data inside Wayback comment: '%.*s'\n", (int)size, str);
         return;
     }
 

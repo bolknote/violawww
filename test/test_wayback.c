@@ -10,8 +10,8 @@
 #include <string.h>
 
 /* Include HTWayback from libWWW */
-#include "../src/libWWW/Library/Implementation/HTWayback.h"
-#include "../src/libWWW/Library/Implementation/HTUtils.h"
+#include "HTWayback.h"
+#include "HTUtils.h"
 
 /* Stubs for UI functions (not used in tests) */
 void showHelpMessageInMainWindow(char* message) {
@@ -37,10 +37,10 @@ typedef struct {
 /* Test cases */
 TestCase test_cases[] = {
     {
-        "http://www.hackzone.ru/",
+        "http://junix.kzn.ru/",
         "web.archive.org/web/",
-        "1997",  /* Should get snapshot from 1997 */
-        "hackzone.ru - archived since 1997"
+        "2000",  /* Should get snapshot from 2000 (20000304154013) */
+        "junix.kzn.ru - archived since 2000"
     },
     {
         "http://nonexistent-domain-xyz12345.invalid/",

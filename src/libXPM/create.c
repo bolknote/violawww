@@ -339,6 +339,13 @@ static int CreateXImage(Display* display, Visual* visual, unsigned int depth, un
 
     /* now that bytes_per_line must have been set properly alloc data */
 
+    /* Security: check for integer overflow in bytes_per_line * height */
+    if (height > 0 && (*image_return)->bytes_per_line > 0xFFFFFFFF / height) {
+        XDestroyImage(*image_return);
+        *image_return = NULL;
+        return (XpmNoMemory);
+    }
+
     (*image_return)->data = (char*)malloc((*image_return)->bytes_per_line * height);
 
     if (!(*image_return)->data) {

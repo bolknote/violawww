@@ -1,0 +1,7 @@
+/* XPM */
+static char * test_zero_xpm[] = {
+/* Test zero dimensions (should be rejected) */
+"0 0 1 1",
+"  c black"
+};
+

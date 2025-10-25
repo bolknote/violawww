@@ -72,6 +72,25 @@ int xpmParseData(xpmData* data, xpmInternAttrib* attrib_return, XpmAttributes* a
     ncolors = rncolors;
 
     /*
+     * Security: validate dimensions to prevent integer overflow and excessive memory allocation
+     * Limit to 65535x65535 pixels (reasonable maximum for early 90s browser)
+     */
+    if (width == 0 || height == 0 || width > 65535 || height > 65535)
+        RETURN(XpmFileInvalid);
+    
+    /* Check for integer overflow in width * height */
+    if (width > 0xFFFFFFFF / height)
+        RETURN(XpmFileInvalid);
+    
+    /* Validate color count - must be at least 1 and not excessive */
+    if (ncolors == 0 || ncolors > 32768)
+        RETURN(XpmFileInvalid);
+    
+    /* Validate chars per pixel - must be at least 1 and reasonable */
+    if (cpp == 0 || cpp > 16)
+        RETURN(XpmFileInvalid);
+
+    /*
      * read hotspot coordinates if any
      */
     hotspot = xpmNextUI(data, &x_hotspot) && xpmNextUI(data, &y_hotspot);

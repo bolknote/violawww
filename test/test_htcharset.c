@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include "../src/libWWW/Library/Implementation/HTCharset.h"
+#include "HTCharset.h"
 
 /* Stub for WWW_TraceFlag needed by HTCharset.c */
 int WWW_TraceFlag = 0;

@@ -1,0 +1,9 @@
+/* XPM */
+static char * test_colors_xpm[] = {
+/* Test excessive color count: 50000 colors (should be rejected) */
+"10 10 50000 1",
+"  c black",
+". c white",
+".........."
+};
+

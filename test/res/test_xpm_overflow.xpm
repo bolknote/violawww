@@ -1,0 +1,9 @@
+/* XPM */
+static char * test_overflow_xpm[] = {
+/* Test integer overflow: 0x10000 * 0x10000 = 0x100000000 (overflows to 0) */
+"65536 65536 2 1",
+"  c black",
+". c white",
+"................................................................"
+};
+

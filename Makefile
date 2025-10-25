@@ -401,77 +401,9 @@ check-libwww:
 # Unit tests
 .PHONY: test
 test:
-	@echo ""
-	@echo "======================================="
-	@echo "Running ViolaWWW Test Suite"
-	@echo "======================================="
-	@echo ""
-	@mkdir -p test/build
-	-@$(MAKE) test-stg-minors >test/build/test-stg-minors.log 2>&1 && echo "  ✓ test-stg-minors: PASS" || echo "  ✗ test-stg-minors: FAIL"
-	-@$(MAKE) test-stg-context >test/build/test-stg-context.log 2>&1 && echo "  ✓ test-stg-context: PASS" || echo "  ✗ test-stg-context: FAIL"
-	-@$(MAKE) test-htcharset >test/build/test-htcharset.log 2>&1 && echo "  ✓ test-htcharset: PASS" || echo "  ✗ test-htcharset: FAIL"
-	-@$(MAKE) test-wayback >test/build/test-wayback.log 2>&1 && echo "  ✓ test-wayback: PASS" || echo "  ✗ test-wayback: FAIL"
-	@echo ""
-	@echo "======================================="
-	@echo "Test Suite Summary"
-	@echo "======================================="
-	@cat test/build/test-*.log 2>/dev/null | grep -a -E "Results:|SUCCESS|FAILURE|Test Results:" | head -20 || true
-	@echo "======================================="
-	@echo ""
-	@echo "Cleaning up test artifacts..."
-	@rm -rf test/build
-
-.PHONY: test-htcharset
-test-htcharset: test/test_htcharset.c src/libWWW/HTCharset.o
-ifeq ($(ICU_AVAILABLE),yes)
-	@mkdir -p test/build
-	@echo "Building HTCharset tests..."
-	@$(CC) $(CFLAGS) $(ICU_INCLUDES) -I. \
-		-o test/build/test_htcharset test/test_htcharset.c \
-		src/libWWW/HTCharset.o \
-		$(ICU_LIBS)
-	@./test/build/test_htcharset
-else
-	@echo "⚠ ICU not available - skipping HTCharset tests"
-endif
-
-.PHONY: test-wayback
-test-wayback: test/test_wayback.c $(LIBWWW)
-	@echo ""
-	@echo "Building Wayback tests..."
-	@mkdir -p test/build
-	@$(CC) $(CFLAGS) -I$(LIBWWW_DIR) \
-		$(ICU_INCLUDES) $(SSL_INCLUDES) \
-		-o test/build/test_wayback test/test_wayback.c \
-		$(LIBWWW) \
-		-lm $(ICU_LIBS) $(SSL_LIBS)
-	@./test/build/test_wayback
-
-.PHONY: test-stg-minors
-test-stg-minors: test/test_stg_minors.c src/libStyle/libstg.o src/viola/mystrings.o
-	@echo ""
-	@echo "Building STG minors tests..."
-	@mkdir -p test/build
-	@$(CC) $(CFLAGS_LIBS) -Isrc/libStyle -Isrc/viola \
-		$(ICU_INCLUDES) $(SSL_INCLUDES) \
-		-o test/build/test_stg_minors test/test_stg_minors.c \
-		src/libStyle/libstg.o src/viola/mystrings.o \
-		$(ICU_LIBS)
-	@./test/build/test_stg_minors
-
-.PHONY: test-stg-context
-test-stg-context: test/test_stg_context.c src/libStyle/libstg.o src/viola/mystrings.o
-	@echo ""
-	@echo "Building STG context tests..."
-	@mkdir -p test/build
-	@$(CC) $(CFLAGS_LIBS) -Isrc/libStyle -Isrc/viola \
-		$(ICU_INCLUDES) $(SSL_INCLUDES) \
-		-o test/build/test_stg_context test/test_stg_context.c \
-		src/libStyle/libstg.o src/viola/mystrings.o \
-		$(ICU_LIBS)
-	@./test/build/test_stg_context
+	@$(MAKE) -C test test
 
 .PHONY: clean-test
 clean-test:
-	rm -rf test/build
+	@$(MAKE) -C test clean
 

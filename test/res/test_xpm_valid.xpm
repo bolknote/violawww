@@ -1,0 +1,16 @@
+/* XPM */
+static char * test_valid_xpm[] = {
+/* Valid XPM file for comparison */
+"8 8 2 1",
+"  c black",
+". c white",
+"........",
+"..    ..",
+".  ..  .",
+".  ..  .",
+".      .",
+".  ..  .",
+"..    ..",
+"........"
+};
+

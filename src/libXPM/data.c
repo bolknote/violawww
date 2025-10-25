@@ -20,6 +20,42 @@ static char* RCS_Id = "$Id: xpm.shar,v 3.0 1991/10/04 10:38:20 lehors Exp $";
 #include <sys/stat.h>
 
 LFUNC(atoui, unsigned int, (char* p, unsigned int l, unsigned int* ui_return));
+LFUNC(xpmValidateFilename, int, (char* filename));
+
+/*
+ * Validate filename to prevent command injection attacks
+ * Returns 1 if filename is safe, 0 otherwise
+ * Safe characters: alphanumeric, -, _, ., /
+ */
+static int xpmValidateFilename(char* filename)
+{
+    char* p = filename;
+    
+    if (!filename || !*filename)
+        return 0;
+    
+    /* Check for dangerous shell metacharacters */
+    while (*p) {
+        char c = *p;
+        
+        /* Allow alphanumeric */
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            p++;
+            continue;
+        }
+        
+        /* Allow safe punctuation */
+        if (c == '-' || c == '_' || c == '.' || c == '/') {
+            p++;
+            continue;
+        }
+        
+        /* Reject any other character (including shell metacharacters) */
+        return 0;
+    }
+    
+    return 1;
+}
 
 static unsigned int atoui(char* p, unsigned int l, unsigned int* ui_return)
 {
@@ -219,6 +255,10 @@ int xpmReadFile(char* filename, xpmData* mdata) {
         mdata->stream.file = (stdin);
         mdata->type = XPMFILE;
     } else {
+        /* Security: validate filename to prevent command injection */
+        if (!xpmValidateFilename(filename))
+            return (XpmOpenFailed);
+        
 #ifdef ZPIPE
         if ((strlen(filename) > 2) && !strcmp(".Z", filename + (strlen(filename) - 2))) {
             mdata->type = XPMPIPE;
@@ -269,6 +309,10 @@ int xpmWriteFile(char* filename, xpmData* mdata) {
         mdata->stream.file = (stdout);
         mdata->type = XPMFILE;
     } else {
+        /* Security: validate filename to prevent command injection */
+        if (!xpmValidateFilename(filename))
+            return (XpmOpenFailed);
+        
 #ifdef ZPIPE
         if (strlen(filename) > 2 && !strcmp(".Z", filename + (strlen(filename) - 2))) {
             sprintf(buf, "compress > %s", filename);

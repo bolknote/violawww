@@ -13,7 +13,7 @@
  * superClass	: NULL
  */
 #include "cl_cosmic.h"
-#include "../libWWW/Library/Implementation/HTParse.h"
+#include "../libWWW/HTParse.h"
 #include "attr.h"
 #include "cexec.h"
 #include "class.h"

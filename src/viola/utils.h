@@ -8,7 +8,7 @@
 */
 /*#define X_WCHAR 1*/
 
-#include "../libWWW/Library/Implementation/HTUtils.h"
+#include "../libWWW/HTUtils.h"
 #include <stdio.h>
 
 /* Override Sun's stddef.h with GCC's stdtypes.h (?) */

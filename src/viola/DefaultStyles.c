@@ -5,7 +5,7 @@
 */
 
 #include "DefaultStyles.h"
-#include "../libWWW/Library/Implementation/HTStyle.h" /* modified for viola */
+#include "../libWWW/HTStyle.h" /* modified for viola */
 
 #ifdef THIS_IS_OBSOLETE
 

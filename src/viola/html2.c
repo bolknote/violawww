@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "HTFont.h"
-#include "../libWWW/Library/Implementation/HTCharset.h"
+#include "../libWWW/HTCharset.h"
 
 #define convert_utf8_buffer(str, size) HTCharset_utf8_to_ascii_buffer(str, size)
 
@@ -27,20 +27,20 @@ int http_progress_total_bytes = 0;
 int http_progress_subtotal_bytes = 0;
 
 #undef HTSTRING_H
-#include "../libWWW/Library/Implementation/HTAccess.h"
-#include "../libWWW/Library/Implementation/HTAnchor.h"
-#include "../libWWW/Library/Implementation/HTHistory.h"
-#include "../libWWW/Library/Implementation/HTML.h"
-#include "../libWWW/Library/Implementation/HTMLDTD.h"
-#include "../libWWW/Library/Implementation/HTParse.h"
-#include "../libWWW/Library/Implementation/HTString.h"
-#include "../libWWW/Library/Implementation/HTTCP.h"
-#include "../libWWW/Library/Implementation/HText.h"
-#include "../libWWW/Library/Implementation/SGML.h"
+#include "../libWWW/HTAccess.h"
+#include "../libWWW/HTAnchor.h"
+#include "../libWWW/HTHistory.h"
+#include "../libWWW/HTML.h"
+#include "../libWWW/HTMLDTD.h"
+#include "../libWWW/HTParse.h"
+#include "../libWWW/HTString.h"
+#include "../libWWW/HTTCP.h"
+#include "../libWWW/HText.h"
+#include "../libWWW/SGML.h"
 
 #undef HTWRITE_H
-#include "../libWWW/Library/Implementation/HTFile.h"
-#include "../libWWW/Library/Implementation/HTWriter.h"
+#include "../libWWW/HTFile.h"
+#include "../libWWW/HTWriter.h"
 
 #include "DefaultStyles.h"
 #include "attr.h"

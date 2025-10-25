@@ -53,8 +53,8 @@
 #include <sys/file.h>
 #include <unistd.h>
 
-#include "../libWWW/Library/Implementation/HTParse.h"
-#include "../libWWW/Library/Implementation/HTTP.h"
+#include "../libWWW/HTParse.h"
+#include "../libWWW/HTTP.h"
 #include "stgcall.h"
 
 #ifdef hpux

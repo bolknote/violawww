@@ -1,4 +1,4 @@
-#include "../libWWW/Library/Implementation/HTStyle.h"
+#include "../libWWW/HTStyle.h"
 
 extern HTStyle HTStyleList;
 extern HTStyle HTStyleOrderedList;

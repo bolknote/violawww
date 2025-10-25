@@ -4,20 +4,20 @@
 #include <string.h>
 
 #undef HTSTRING_H
-#include "../libWWW/Library/Implementation/FOSI.h"
-#include "../libWWW/Library/Implementation/FOSIDTD.h"
-#include "../libWWW/Library/Implementation/HTAccess.h"
-#include "../libWWW/Library/Implementation/HTAnchor.h"
-#include "../libWWW/Library/Implementation/HTHistory.h"
-#include "../libWWW/Library/Implementation/HTParse.h"
-#include "../libWWW/Library/Implementation/HTString.h"
-#include "../libWWW/Library/Implementation/HTTCP.h"
-#include "../libWWW/Library/Implementation/HText.h"
-#include "../libWWW/Library/Implementation/SGML.h"
+#include "../libWWW/FOSI.h"
+#include "../libWWW/FOSIDTD.h"
+#include "../libWWW/HTAccess.h"
+#include "../libWWW/HTAnchor.h"
+#include "../libWWW/HTHistory.h"
+#include "../libWWW/HTParse.h"
+#include "../libWWW/HTString.h"
+#include "../libWWW/HTTCP.h"
+#include "../libWWW/HText.h"
+#include "../libWWW/SGML.h"
 
 #undef HTWRITE_H
-#include "../libWWW/Library/Implementation/HTFile.h"
-#include "../libWWW/Library/Implementation/HTWriter.h"
+#include "../libWWW/HTFile.h"
+#include "../libWWW/HTWriter.h"
 
 void CB_FOSI_new() { printf("CB_FOSI_new() called\n"); }
 

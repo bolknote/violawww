@@ -4,7 +4,6 @@
 *.a
 src/viola/viola
 src/vw/vw
-src/libWWW/Library/darwin/
 test/build/
 
 # Generated files

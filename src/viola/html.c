@@ -15,20 +15,20 @@
 #include "HTFont.h"
 
 #undef HTSTRING_H
-#include "../libWWW/Library/Implementation/HTAccess.h"
-#include "../libWWW/Library/Implementation/HTAnchor.h"
-#include "../libWWW/Library/Implementation/HTFormat.h"
-#include "../libWWW/Library/Implementation/HTHistory.h"
-#include "../libWWW/Library/Implementation/HTML.h"
-#include "../libWWW/Library/Implementation/HTParse.h"
-#include "../libWWW/Library/Implementation/HTString.h"
-#include "../libWWW/Library/Implementation/HTTCP.h"
-#include "../libWWW/Library/Implementation/HText.h"
+#include "../libWWW/HTAccess.h"
+#include "../libWWW/HTAnchor.h"
+#include "../libWWW/HTFormat.h"
+#include "../libWWW/HTHistory.h"
+#include "../libWWW/HTML.h"
+#include "../libWWW/HTParse.h"
+#include "../libWWW/HTString.h"
+#include "../libWWW/HTTCP.h"
+#include "../libWWW/HText.h"
 
 #undef HTWRITE_H
-#include "../libWWW/Library/Implementation/HTFWriter.h"
-#include "../libWWW/Library/Implementation/HTFile.h"
-#include "../libWWW/Library/Implementation/HTWriter.h"
+#include "../libWWW/HTFWriter.h"
+#include "../libWWW/HTFile.h"
+#include "../libWWW/HTWriter.h"
 
 #include "attr.h"
 #include "cexec.h"

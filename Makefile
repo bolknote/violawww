@@ -70,8 +70,7 @@ LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lm $(ICU_LIBS) $(SSL_LIBS)
 
 # Source directories
 SRC_DIR = src
-LIBWWW_DIR = $(SRC_DIR)/libWWW/Library/Implementation
-LIBWWW_DARWIN = $(SRC_DIR)/libWWW/Library/darwin
+LIBWWW_DIR = $(SRC_DIR)/libWWW
 LIBXPM_DIR = $(SRC_DIR)/libXPM
 LIBXPA_DIR = $(SRC_DIR)/libXPA/src
 LIBIMG_DIR = $(SRC_DIR)/libIMG
@@ -80,7 +79,7 @@ VIOLA_DIR = $(SRC_DIR)/viola
 VW_DIR = $(SRC_DIR)/vw
 
 # Library targets
-LIBWWW = $(LIBWWW_DARWIN)/libwww.a
+LIBWWW = $(LIBWWW_DIR)/libwww.a
 LIBXPM = $(LIBXPM_DIR)/libXpm.a
 LIBXPA = $(LIBXPA_DIR)/libXpa.a
 LIBIMG = $(LIBIMG_DIR)/libIMG.a
@@ -147,17 +146,15 @@ LIBWWW_SRCS = $(LIBWWW_DIR)/HTParse.c $(LIBWWW_DIR)/HTAccess.c $(LIBWWW_DIR)/HTT
               $(LIBWWW_DIR)/HTPasswd.c $(LIBWWW_DIR)/HTAuth.c $(LIBWWW_DIR)/HTAAFile.c \
               $(LIBWWW_DIR)/HTSSL.c $(LIBWWW_DIR)/HTTPS.c $(LIBWWW_DIR)/HTWayback.c \
               $(LIBWWW_DIR)/HTKeepAlive.c
-LIBWWW_OBJS = $(patsubst $(LIBWWW_DIR)/%.c,$(LIBWWW_DARWIN)/%.o,$(LIBWWW_SRCS))
+LIBWWW_OBJS = $(LIBWWW_SRCS:.c=.o)
 
 $(LIBWWW): $(LIBWWW_OBJS)
 	@echo "=== Building libWWW ==="
-	@mkdir -p $(LIBWWW_DARWIN)
 	$(AR) $@ $^
 	$(RANLIB) $@
 	@echo ""
 
-$(LIBWWW_DARWIN)/%.o: $(LIBWWW_DIR)/%.c
-	@mkdir -p $(LIBWWW_DARWIN)
+$(LIBWWW_DIR)/%.o: $(LIBWWW_DIR)/%.c
 	$(CC) $(CFLAGS) -I$(LIBWWW_DIR) $(ICU_INCLUDES) $(SSL_INCLUDES) -DACCESS_AUTH -DVIOLA -c $< -o $@
 
 # libXPM (XPM image support)
@@ -396,13 +393,10 @@ info:
 	@echo "  Viola:    $(VIOLA_DIR)"
 	@echo "  VW:       $(VW_DIR)"
 
-# Make sure libWWW has its own Makefile
+# Check libWWW directory exists
 .PHONY: check-libwww
 check-libwww:
-	@if [ ! -f $(LIBWWW_DIR)/Makefile ]; then \
-		echo "Creating libWWW Makefile..."; \
-		cd $(LIBWWW_DIR) && $(MAKE) -f ../../All/darwin/Makefile.include; \
-	fi
+	@test -d $(LIBWWW_DIR) || echo "libWWW directory not found"
 
 # Unit tests
 .PHONY: test
@@ -428,13 +422,13 @@ test:
 	@rm -rf test/build
 
 .PHONY: test-htcharset
-test-htcharset: test/test_htcharset.c src/libWWW/Library/darwin/HTCharset.o
+test-htcharset: test/test_htcharset.c src/libWWW/HTCharset.o
 ifeq ($(ICU_AVAILABLE),yes)
 	@mkdir -p test/build
 	@echo "Building HTCharset tests..."
 	@$(CC) $(CFLAGS) $(ICU_INCLUDES) -I. \
 		-o test/build/test_htcharset test/test_htcharset.c \
-		src/libWWW/Library/darwin/HTCharset.o \
+		src/libWWW/HTCharset.o \
 		$(ICU_LIBS)
 	@./test/build/test_htcharset
 else
@@ -446,7 +440,7 @@ test-wayback: test/test_wayback.c $(LIBWWW)
 	@echo ""
 	@echo "Building Wayback tests..."
 	@mkdir -p test/build
-	@$(CC) $(CFLAGS) -Isrc/libWWW/Library/Implementation \
+	@$(CC) $(CFLAGS) -I$(LIBWWW_DIR) \
 		$(ICU_INCLUDES) $(SSL_INCLUDES) \
 		-o test/build/test_wayback test/test_wayback.c \
 		$(LIBWWW) \

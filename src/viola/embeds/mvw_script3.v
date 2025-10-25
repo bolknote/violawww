@@ -123,17 +123,17 @@
 	break;
 	case "get_infoOnViolaWWW":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/vw/about_3.3.html");
+		 "https://web.archive.org/web/20040327020615/http://www.xcf.berkeley.edu/~wei/viola/vw/about_3.3.html");
 		return;
 	break;
 	case "get_helpOnViolaWWW":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/vw/help_xvw_3.3.html");
+		 "https://web.archive.org/web/20040328124311/http://www.xcf.berkeley.edu/~wei/viola/vw/help_xvw_3.3.html");
 		return;
 	break;
 	case "get_demoForViolaWWW":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/violaCentral.html");
+		 "https://web.archive.org/web/20040219022839/http://www.xcf.berkeley.edu/~wei/viola/violaCentral.html");
 		return;
 	break;
 	case "get_gnnWIC":
@@ -143,12 +143,12 @@
 	break;
 	case "get_cern":
 		send("www", "showHistoryDoc", 
-		 "http://info.cern.ch/hypertext/DataSources/WWW/Servers.html");
+		 "https://web.archive.org/web/20001110052300/http://webservices.web.cern.ch/WebServices/");
 		return;
 	break;
 	case "get_moreServers":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/metaCenters.html");
+		 "https://web.archive.org/web/20040111090639/http://www.xcf.berkeley.edu/~wei/viola/metaCenters.html");
 		return;
 	break;
 	case "printDoc":

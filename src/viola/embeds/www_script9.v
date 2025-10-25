@@ -93,22 +93,22 @@ print("\n");
 	break;
 	case "about":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/vw/about_3.3.html");
+		 "https://web.archive.org/web/20040327020615/http://www.xcf.berkeley.edu/~wei/viola/vw/about_3.3.html");
 		return;
 	break;
 	case "help":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/vw/help_xvw_3.3.html");
+		 "https://web.archive.org/web/20040328124311/http://www.xcf.berkeley.edu/~wei/viola/vw/help_xvw_3.3.html");
 		return;
 	break;
 	case "demos":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/violaCentral.html");
+		 "https://web.archive.org/web/20040219022839/http://www.xcf.berkeley.edu/~wei/viola/violaCentral.html");
 		return;
 	break;
 	case "metaCenters":
 		send("www", "showHistoryDoc", 
-		 "http://berkeley.ora.com/proj/viola/metaCenters.html");
+		 "https://web.archive.org/web/20040111090639/http://www.xcf.berkeley.edu/~wei/viola/metaCenters.html");
 		return;
 	break;
 	case "home":
@@ -229,7 +229,7 @@ print("\n");
 		if (isBlank(homeDoc) == 1)
 			homeDoc = environVar("WWW_HOME");
 		if (isBlank(homeDoc) == 1) 
-			homeDoc = "http://info.cern.ch/hypertext/WWW/TheProject.html";
+			homeDoc = "https://web.archive.org/web/20040307145205/http://www.xcf.berkeley.edu/~wei/viola/violaStartUp.html";
 		if (nthChar(homeDoc, 0) == '/')
 			homeDoc = concat("file:", homeDoc);
 

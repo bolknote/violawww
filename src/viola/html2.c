@@ -347,6 +347,33 @@ int size;
     char tempbuf[8192];
     int converted_size;
 
+    /* Debug: Print all data content */
+    fprintf(stderr, "DEBUG: CB_HTML_data: '%.*s'\n", (int)size, str);
+    
+    /* Check for HTML comments in the data */
+    if (size >= 7 && strncmp(str, "<!--", 4) == 0) {
+        char comment_buf[8192];
+        if (size < sizeof(comment_buf)) {
+            memcpy(comment_buf, str, size);
+            comment_buf[size] = '\0';
+            fprintf(stderr, "DEBUG: Detected comment in data: '%s'\n", comment_buf);
+            
+            /* Check for Wayback Toolbar comments */
+            if (strstr(comment_buf, "BEGIN WAYBACK TOOLBAR INSERT")) {
+                fprintf(stderr, "DEBUG: Found BEGIN WAYBACK - setting flag\n");
+                inside_wayback_comment = 1;
+                return;
+            }
+            if (strstr(comment_buf, "END WAYBACK TOOLBAR INSERT")) {
+                fprintf(stderr, "DEBUG: Found END WAYBACK - clearing flag\n");
+                inside_wayback_comment = 0;
+                return;
+            }
+            /* Ignore all other comments */
+            fprintf(stderr, "DEBUG: Ignoring regular comment\n");
+            return;
+        }
+    }
     
     /* Ignore data inside SCRIPT and STYLE tags */
     if (inside_ignore_tag) {
@@ -355,6 +382,7 @@ int size;
     
     /* Ignore data inside Wayback Toolbar comments */
     if (inside_wayback_comment) {
+        fprintf(stderr, "DEBUG: Ignoring data inside Wayback comment: '%.*s'\n", (int)size, str);
         return;
     }
 
@@ -458,6 +486,12 @@ HTTag* tagInfo;
     }
 #endif
 
+    if (tag) {
+        fprintf(stderr, "DEBUG: Found %s\n", tag);
+    }
+
+    fprintf(stderr, "DEBUG: element_number = %d\n", element_number);
+
     /* Ignore SCRIPT and STYLE opening tags - they are handled by SGML parser */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
         inside_ignore_tag = 1;
@@ -466,16 +500,39 @@ HTTag* tagInfo;
     
     /* Handle Wayback Toolbar comments */
     if (element_number == HTML_COMMENT) {
+        /* Debug: Print all comment content */
+        fprintf(stderr, "DEBUG: Found HTML comment\n");
+        fprintf(stderr, "DEBUG: tag = '%s'\n", tag ? tag : "NULL");
+        
+        /* Try to get comment content from value array */
+        if (value && value[0]) {
+            fprintf(stderr, "DEBUG: Comment content from value[0]: '%s'\n", value[0]);
+        }
+        
         /* Check if this is a Wayback comment by examining the tag content */
-        if (tag && strstr(tag, "BEGIN WAYBACK TOOLBAR INSERT")) {
-            inside_wayback_comment = 1;
-            return;
+        char* comment_text = NULL;
+        if (value && value[0]) {
+            comment_text = value[0];
+        } else if (tag) {
+            comment_text = tag;
         }
-        if (tag && strstr(tag, "END WAYBACK TOOLBAR INSERT")) {
-            inside_wayback_comment = 0;
-            return;
+        
+        if (comment_text) {
+            fprintf(stderr, "DEBUG: Using comment text: '%s'\n", comment_text);
+            if (strstr(comment_text, "BEGIN WAYBACK TOOLBAR INSERT")) {
+                fprintf(stderr, "DEBUG: Found BEGIN WAYBACK TOOLBAR INSERT - setting inside_wayback_comment = 1\n");
+                inside_wayback_comment = 1;
+                return;
+            }
+            if (strstr(comment_text, "END WAYBACK TOOLBAR INSERT")) {
+                fprintf(stderr, "DEBUG: Found END WAYBACK TOOLBAR INSERT - setting inside_wayback_comment = 0\n");
+                inside_wayback_comment = 0;
+                return;
+            }
         }
+        
         /* For other comments, just ignore them */
+        fprintf(stderr, "DEBUG: Ignoring non-Wayback comment\n");
         return;
     }
 
@@ -966,6 +1023,8 @@ void CB_HTML_etag(element_number) int element_number;
         inside_ignore_tag = 0;
         return;
     }
+
+    fprintf(stderr, "DEBUG: CB_HTML_etag: element_number = %d\n", element_number);
     
     /* Handle Wayback Toolbar comments - no special handling needed for end tags */
     if (element_number == HTML_COMMENT) {

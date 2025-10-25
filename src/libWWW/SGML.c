@@ -78,7 +78,9 @@ struct _HTStream {
         S_dquoted,
         S_end,
         S_entity,
-        S_junk_tag
+        S_junk_tag,
+        S_comment_start,
+        S_comment
     } state;
 #ifdef CALLERDATA
     void* callerData;
@@ -568,6 +570,13 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
                 context->state = S_end;
                 break;
             }
+            if (c == '!') {
+                /* Start of comment or other declaration */
+                fprintf(stderr, "DEBUG SGML: Found '!' after '<', switching to S_comment_start\n");
+                HTChunkPutc(string, c);
+                context->state = S_comment_start;
+                break;
+            }
             HTChunkTerminate(string);
 
             t = SGMLFindTag(dtd, string->data);
@@ -799,6 +808,61 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
         if (c == '>') {
             context->state = S_text;
         }
+        break;
+
+    case S_comment_start:
+        fprintf(stderr, "DEBUG SGML: S_comment_start, got char '%c'\n", c);
+        if (c == '-') {
+            fprintf(stderr, "DEBUG SGML: Found '-', switching to S_comment\n");
+            HTChunkPutc(string, c);
+            context->state = S_comment;
+        } else {
+            /* Not a comment, treat as unknown tag */
+            fprintf(stderr, "DEBUG SGML: Not a comment, switching to S_junk_tag\n");
+            context->state = S_junk_tag;
+        }
+        break;
+
+    case S_comment:
+        HTChunkPutc(string, c);
+        if (c == '>') {
+            /* Check if we have '-->' at the end */
+            if (string->size >= 3 && 
+                string->data[string->size-3] == '-' &&
+                string->data[string->size-2] == '-' &&
+                string->data[string->size-1] == '>') {
+                /* Comment ended, pass to HTML parser */
+                HTChunkTerminate(string);
+                fprintf(stderr, "SGML: Comment found: %s\n", string->data);
+                
+                /* Pass comment to HTML parser as special marker */
+                /* Format: <!--comment_content--> */
+                {
+                    char* comment_str = string->data;
+                    char full_comment[8192];
+                    int i, pos = 0;
+                    
+                    fprintf(stderr, "DEBUG SGML: Passing comment to HTML parser: ");
+                    
+                    /* Build full comment: <!--comment_content--> */
+                    full_comment[pos++] = '<';
+                    for (i = 0; i < string->size; i++) {
+                        full_comment[pos++] = comment_str[i];
+                        fprintf(stderr, "%c", comment_str[i]);
+                    }
+                    full_comment[pos] = '\0';
+                    fprintf(stderr, "\n");
+                    
+                    /* Call CB_HTML_data directly with the full comment */
+                    extern void CB_HTML_data(char* str, int size);
+                    CB_HTML_data(full_comment, pos);
+                }
+                
+                context->state = S_text;
+                string->size = 0;
+            }
+        }
+        break;
 
     } /* switch on context->state */
 

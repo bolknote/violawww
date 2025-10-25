@@ -25,9 +25,7 @@ unsigned long doMemToVal(byte* p, unsigned int len) {
 
 unsigned long doValToMem(unsigned long val, byte* p, unsigned int len)
 {
-    int a;
-
-    for (a = len - 1; a >= 0; a--) {
+    for (int a = (int)len - 1; a >= 0; a--) {
         *(p + a) = val & 0xff;
         val >>= 8;
     }
@@ -35,10 +33,10 @@ unsigned long doValToMem(unsigned long val, byte* p, unsigned int len)
 }
 
 unsigned long doMemToValLSB(byte* p, unsigned int len) {
-    int val, a;
+    unsigned long val;
 
     val = 0;
-    for (a = len - 1; a >= 0; a--)
+    for (int a = (int)len - 1; a >= 0; a--)
         val = (val << 8) + *(p + a);
     return (val);
 }
@@ -58,8 +56,7 @@ unsigned long doValToMemLSB(unsigned long val, byte* p, unsigned int len)
 /* this flips all the bits in a byte array at byte intervals
  */
 
-void flipBits(p, len) byte* p;
-unsigned int len;
+void flipBits(byte* p, unsigned int len)
 {
     static int init = 0;
     static byte flipped[256];

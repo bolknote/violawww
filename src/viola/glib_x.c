@@ -1518,7 +1518,7 @@ Pixmap GLMakeXPMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
     /* Set visual, colormap and depth for proper color rendering on 64-bit */
     attributes->visual = DefaultVisual(display, DefaultScreen(display));
     attributes->colormap = DefaultColormap(display, DefaultScreen(display));
-    attributes->depth = DefaultDepth(display, DefaultScreen(display));
+    attributes->depth = (unsigned int)DefaultDepth(display, DefaultScreen(display));
     attributes->valuemask |= XpmVisual | XpmColormap | XpmDepth;
 
     attributes->valuemask |= XpmReturnInfos;

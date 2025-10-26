@@ -272,18 +272,32 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
 
     total_read = 0;
     int read_attempts = 0;
+    int eagain_count = 0;
     while (total_read < 8191) {
         response_len = NETREAD(s, response_buffer + total_read, 8191 - total_read);
         read_attempts++;
         
         if (response_len < 0) {
-            if (TRACE) fprintf(stderr, "Wayback: Read error: errno=%d (%s)\n", errno, strerror(errno));
-            break;
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                /* Timeout or would block - retry a few times */
+                eagain_count++;
+                if (eagain_count < 3) {
+                    if (TRACE) fprintf(stderr, "Wayback: Read timeout, retrying... (attempt %d)\n", eagain_count);
+                    continue;
+                }
+                if (TRACE) fprintf(stderr, "Wayback: Read timeout after retries: errno=%d (%s)\n", errno, strerror(errno));
+                break;
+            } else {
+                if (TRACE) fprintf(stderr, "Wayback: Read error: errno=%d (%s)\n", errno, strerror(errno));
+                break;
+            }
         }
         if (response_len == 0) {
             break;  /* EOF */
         }
         
+        /* Successfully read some data, reset EAGAIN counter */
+        eagain_count = 0;
         total_read += response_len;
     }
     response_buffer[total_read] = '\0';
@@ -291,6 +305,7 @@ PUBLIC char* HTWaybackCheck PARAMS((CONST char* url)) {
 
     if (total_read == 0) {
         if (TRACE) fprintf(stderr, "Wayback: No response received\n");
+        safe_show_message("Web Archive: No response received");
         free(response_buffer);
         return NULL;
     }

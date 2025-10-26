@@ -358,16 +358,13 @@ int size;
         if (size < sizeof(comment_buf)) {
             memcpy(comment_buf, str, size);
             comment_buf[size] = '\0';
-            fprintf(stderr, "DEBUG: Found comment: '%s'\n", comment_buf);
             
             /* Check for Wayback Toolbar comments */
             if (strstr(comment_buf, "BEGIN WAYBACK TOOLBAR INSERT")) {
-                fprintf(stderr, "DEBUG: Found BEGIN WAYBACK - setting flag\n");
                 inside_wayback_comment = 1;
                 return;
             }
             if (strstr(comment_buf, "END WAYBACK TOOLBAR INSERT")) {
-                fprintf(stderr, "DEBUG: Found END WAYBACK - clearing flag\n");
                 inside_wayback_comment = 0;
                 return;
             }
@@ -377,12 +374,10 @@ int size;
                 strstr(comment_buf, "INTERNET ARCHIVE") ||
                 strstr(comment_buf, "WAYBACK MACHINE") ||
                 strstr(comment_buf, "JAVASCRIPT APPENDED BY WAYBACK")) {
-                fprintf(stderr, "DEBUG: Ignoring Wayback Machine comment\n");
                 return;
             }
             
             /* Ignore all other comments */
-            fprintf(stderr, "DEBUG: Ignoring regular comment\n");
             return;
         }
     }
@@ -394,7 +389,6 @@ int size;
     
     /* Ignore data inside Wayback Toolbar comments */
     if (inside_wayback_comment) {
-        fprintf(stderr, "DEBUG: Ignoring data inside Wayback comment: '%.*s'\n", (int)size, str);
         return;
     }
 

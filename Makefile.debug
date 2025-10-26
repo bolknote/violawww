@@ -1,5 +1,5 @@
-# ViolaWWW Browser Build System
-# Modern Makefile for macOS (Darwin)
+# ViolaWWW Browser Build System - Debug Version
+# Modern Makefile for macOS (Darwin) with memory debugging
 
 # Build configuration
 CC = cc
@@ -18,11 +18,11 @@ ICU_AVAILABLE := $(shell test -d "$(ICU_PREFIX)/include" && echo yes || echo no)
 # Check if OpenSSL is available
 OPENSSL_AVAILABLE := $(shell test -d "$(OPENSSL_PREFIX)/include" && echo yes || echo no)
 
-# Compiler flags
+# Debug compiler flags with memory debugging
 ARCH_FLAGS = -arch arm64
-CFLAGS = -Os $(ARCH_FLAGS) -std=gnu17 -Wno-everything -D__DARWIN__
-CFLAGS_LIBS = -Os $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common \
-              -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED
+CFLAGS = -g -O0 $(ARCH_FLAGS) -std=gnu17 -Wall -Wextra -D__DARWIN__ -DMALLOC_DEBUG
+CFLAGS_LIBS = -g -O0 $(ARCH_FLAGS) -Wall -Wextra -no-cpp-precomp -fno-common \
+              -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED -DMALLOC_DEBUG
 
 # Add ICU support if available
 ifeq ($(ICU_AVAILABLE),yes)
@@ -46,13 +46,6 @@ SSL_INCLUDES =
 SSL_LIBS =
 endif
 
-# 64-bit migration warning flags (use with: make WARN_64BIT=1)
-ifdef WARN_64BIT
-CFLAGS := $(filter-out -Wno-everything,$(CFLAGS))
-CFLAGS += -Wshorten-64-to-32 -Wconversion -Wformat -Wpointer-to-int-cast -Wint-to-pointer-cast
-CFLAGS_LIBS := $(filter-out -Wno-everything,$(CFLAGS_LIBS))
-CFLAGS_LIBS += -Wshorten-64-to-32 -Wconversion -Wformat -Wpointer-to-int-cast
-endif
 INCLUDES = -I$(BREW_PREFIX)/include \
            -I$(OPENMOTIF_PREFIX)/include \
            $(ICU_INCLUDES) \
@@ -95,6 +88,7 @@ all: config_info $(VW) $(VIOLA)
 
 .PHONY: config_info
 config_info:
+	@echo "=== Building in DEBUG mode with memory debugging ==="
 ifeq ($(ICU_AVAILABLE),no)
 	@echo "⚠ Building without ICU (UTF-8 will not be transliterated)"
 	@echo ""
@@ -108,18 +102,22 @@ endif
 # Help target
 .PHONY: help
 help:
-	@echo "ViolaWWW Browser Build System"
+	@echo "ViolaWWW Browser Build System - DEBUG VERSION"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  all        - Build everything (default)"
 	@echo "  viola      - Build Viola browser"
 	@echo "  vw         - Build VW browser (Motif interface)"
 	@echo "  libs       - Build all libraries"
-	@echo "  test       - Build and run all tests"
 	@echo "  clean      - Remove object files"
 	@echo "  distclean  - Remove all build artifacts"
-	@echo "  check-64bit - Check for 64-bit migration issues (long->int truncation)"
 	@echo "  help       - Show this help message"
+	@echo ""
+	@echo "Debug features enabled:"
+	@echo "  - Debug symbols (-g)"
+	@echo "  - No optimization (-O0)"
+	@echo "  - Memory debugging (MALLOC_DEBUG)"
+	@echo "  - All warnings enabled"
 
 # ============================================================================
 # Library targets
@@ -149,7 +147,7 @@ LIBWWW_SRCS = $(LIBWWW_DIR)/HTParse.c $(LIBWWW_DIR)/HTAccess.c $(LIBWWW_DIR)/HTT
 LIBWWW_OBJS = $(LIBWWW_SRCS:.c=.o)
 
 $(LIBWWW): $(LIBWWW_OBJS)
-	@echo "=== Building libWWW ==="
+	@echo "=== Building libWWW (DEBUG) ==="
 	$(AR) $@ $^
 	$(RANLIB) $@
 	@echo ""
@@ -167,7 +165,7 @@ LIBXPM_SRCS = $(LIBXPM_DIR)/data.c $(LIBXPM_DIR)/create.c $(LIBXPM_DIR)/visual.c
 LIBXPM_OBJS = $(LIBXPM_SRCS:.c=.o)
 
 $(LIBXPM): $(LIBXPM_OBJS)
-	@echo "=== Building libXpm ==="
+	@echo "=== Building libXpm (DEBUG) ==="
 	$(AR) $@ $^
 	$(RANLIB) $@
 	@echo ""
@@ -180,7 +178,7 @@ LIBXPA_SRCS = $(LIBXPA_DIR)/xpa.c
 LIBXPA_OBJS = $(LIBXPA_SRCS:.c=.o)
 
 $(LIBXPA): $(LIBXPA_OBJS)
-	@echo "=== Building libXpa ==="
+	@echo "=== Building libXpa (DEBUG) ==="
 	$(AR) $@ $^
 	$(RANLIB) $@
 	@echo ""
@@ -205,7 +203,7 @@ LIBIMG_SRCS = $(LIBIMG_DIR)/bright.c $(LIBIMG_DIR)/clip.c $(LIBIMG_DIR)/cmuwmras
 LIBIMG_OBJS = $(LIBIMG_SRCS:.c=.o)
 
 $(LIBIMG): $(LIBIMG_OBJS)
-	@echo "=== Building libIMG ==="
+	@echo "=== Building libIMG (DEBUG) ==="
 	$(AR) $@ $^
 	$(RANLIB) $@
 	@echo ""
@@ -215,7 +213,7 @@ $(LIBIMG_DIR)/%.o: $(LIBIMG_DIR)/%.c
 
 # libStyle (Style library) - single object file
 $(LIBSTYLE): $(LIBSTYLE_DIR)/libstg.c
-	@echo "=== Building libStyle ==="
+	@echo "=== Building libStyle (DEBUG) ==="
 	$(CC) $(CFLAGS_LIBS) $(INCLUDES) -I$(LIBSTYLE_DIR) -c $< -o $@
 	@echo ""
 
@@ -256,7 +254,7 @@ VIOLA_OBJS = $(VIOLA_SRCS:.c=.o)
 viola: $(VIOLA)
 
 $(VIOLA): $(VIOLA_OBJS) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
-	@echo "=== Linking Viola ==="
+	@echo "=== Linking Viola (DEBUG) ==="
 	$(CC) $(LDFLAGS) -o $@ $(VIOLA_OBJS) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE) $(LIBS)
 	@echo "=== Viola built successfully! ==="
 	@ls -lh $@
@@ -276,7 +274,6 @@ $(VIOLA_DIR)/embeds/%.v.h: $(VIOLA_DIR)/embeds/%.v
 $(VIOLA_DIR)/objs.o: $(VIOLA_DIR)/objs.c $(patsubst %.v,%.v.h,$(wildcard $(VIOLA_DIR)/embeds/*.v))
 
 # Generate gram.c from gram.y using byacc (Berkeley Yacc)
-# Note: We use byacc instead of GNU Bison for compatibility with old SunOS yacc
 $(VIOLA_DIR)/gram.c: $(VIOLA_DIR)/gram.y
 	@echo "=== Generating gram.c from gram.y with byacc ==="
 	@if ! command -v byacc >/dev/null 2>&1; then \
@@ -307,7 +304,7 @@ VIOLA_OBJS_NO_MAIN = $(filter-out $(VIOLA_DIR)/main.o, $(VIOLA_OBJS))
 vw: $(VW)
 
 $(VW): $(VW_OBJS) $(VIOLA_OBJS_NO_MAIN) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
-	@echo "=== Linking VW ==="
+	@echo "=== Linking VW (DEBUG) ==="
 	$(CC) $(LDFLAGS) -o $@ $(VW_OBJS) $(VIOLA_OBJS_NO_MAIN) \
 	    $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE) $(LIBS)
 	@echo "=== VW built successfully! ==="
@@ -340,70 +337,18 @@ distclean: clean
 	rm -f $(VIOLA) $(VW)
 	@echo "Done"
 
-.PHONY: install
-install: $(VW) $(VIOLA)
-	@echo "=== Installing binaries ==="
-	@mkdir -p $(HOME)/bin
-	install -m 755 $(VW) $(HOME)/bin/
-	install -m 755 $(VIOLA) $(HOME)/bin/
-	@echo "Installed to $(HOME)/bin/"
+# Debug targets
+.PHONY: debug-vw
+debug-vw: $(VW)
+	@echo "=== Starting VW with lldb ==="
+	lldb $(VW)
 
-# ============================================================================
-# Development helpers
-# ============================================================================
+.PHONY: valgrind-vw
+valgrind-vw: $(VW)
+	@echo "=== Starting VW with valgrind ==="
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes $(VW)
 
-.PHONY: check-64bit
-check-64bit:
-	@echo "=== Checking for 64-bit migration issues ==="
-	@echo "This will show warnings about long->int truncation and related problems"
-	@$(MAKE) clean
-	@$(MAKE) WARN_64BIT=1 all 2>&1 | tee 64bit-warnings.log
-	@echo ""
-	@echo "Warnings saved to: 64bit-warnings.log"
-
-.PHONY: rebuild
-rebuild: distclean all
-
-.PHONY: libs-clean
-libs-clean:
-	@echo "=== Cleaning libraries ==="
-	rm -f $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
-	find $(SRC_DIR)/libWWW $(SRC_DIR)/libXPM $(SRC_DIR)/libXPA $(SRC_DIR)/libIMG $(SRC_DIR)/libStyle -name '*.o' -delete
-	@echo "Done"
-
-.PHONY: info
-info:
-	@echo "ViolaWWW Build Configuration"
-	@echo "=============================="
-	@echo "CC:       $(CC)"
-	@echo "CFLAGS:   $(CFLAGS)"
-	@echo "LDFLAGS:  $(LDFLAGS)"
-	@echo "LIBS:     $(LIBS)"
-	@echo ""
-	@echo "Detected paths:"
-	@echo "  Homebrew:   $(BREW_PREFIX)"
-	@echo "  OpenMotif:  $(OPENMOTIF_PREFIX)"
-	@echo ""
-	@echo "Source directories:"
-	@echo "  libWWW:   $(LIBWWW_DIR)"
-	@echo "  libXPM:   $(LIBXPM_DIR)"
-	@echo "  libXPA:   $(LIBXPA_DIR)"
-	@echo "  libIMG:   $(LIBIMG_DIR)"
-	@echo "  libStyle: $(LIBSTYLE_DIR)"
-	@echo "  Viola:    $(VIOLA_DIR)"
-	@echo "  VW:       $(VW_DIR)"
-
-# Check libWWW directory exists
-.PHONY: check-libwww
-check-libwww:
-	@test -d $(LIBWWW_DIR) || echo "libWWW directory not found"
-
-# Unit tests
-.PHONY: test
-test:
-	@$(MAKE) -C test test
-
-.PHONY: clean-test
-clean-test:
-	@$(MAKE) -C test clean
-
+.PHONY: malloc-debug
+malloc-debug: $(VW)
+	@echo "=== Starting VW with malloc debugging ==="
+	MallocStackLogging=1 MallocScribble=1 MallocGuardEdges=1 $(VW)

@@ -23,6 +23,7 @@
 #include "classlist.h"
 #include "error.h"
 #include "event.h"
+#include "memory_debug.h"
 #include "glib.h"
 #include "hash.h"
 #include "ident.h"
@@ -206,8 +207,17 @@ long meth_socket_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])
         close(fd);
         objFDList[fd] = NULL;
     }
-    free(GET_host(self));
-    free(GET_port(self));
+    
+    /* Free host string if it was allocated */
+    char* host = GET_host(self);
+    if (host) {
+        FREE(host);
+        SET_host(self, NULL);
+    }
+    
+    /* Port is an int, not a pointer - don't free it */
+    /* free(GET_port(self)); */  /* This was the bug! */
+    
     meth_client_freeSelf(self, result, argc, argv);
 
     return 1;

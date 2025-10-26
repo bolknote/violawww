@@ -9,6 +9,7 @@
 
 #include "HTFont.h"
 #include "../libWWW/HTCharset.h"
+#include "memory_debug.h"
 
 #define convert_utf8_buffer(str, size) HTCharset_utf8_to_ascii_buffer(str, size)
 
@@ -141,7 +142,10 @@ int HotListLoadedP = 0;
 
 /***** end of hot list defs/decls *****/
 
-int init_html2() { return 1; }
+int init_html2() { 
+    init_memory_debug();
+    return 1; 
+}
 
 SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo* tagMappingInfo, char* tag)
 {
@@ -165,8 +169,9 @@ VObj* html2_parseHTMLDocument(VObj* self, char* address, char** simpleAddress, c
     trimEdgeSpaces(address);
 
     /* get full address, without anchor */
-    *simpleAddress = saveString(
-        HTParse(address, current_addr, PARSE_ACCESS | PARSE_HOST | PARSE_PATH | PARSE_PUNCTUATION));
+    char* parsed_addr = HTParse(address, current_addr, PARSE_ACCESS | PARSE_HOST | PARSE_PATH | PARSE_PUNCTUATION);
+    *simpleAddress = saveString(parsed_addr);
+    free(parsed_addr);  /* Free the result from HTParse */
     HTSimplify(*simpleAddress);
 
     if (current_addr)

@@ -1107,7 +1107,9 @@ long meth_generic_HTTPCurrentDocAddr(VObj* self, Packet* result, int argc, Packe
     extern char* current_addr;    /* from html.c */
     extern char* default_default; /* from html.c */
 
-    result->info.s = saveString(HTParse(current_addr, current_addr, PARSE_ALL));
+    char* parsed_addr = HTParse(current_addr, current_addr, PARSE_ALL);
+    result->info.s = saveString(parsed_addr);
+    free(parsed_addr);  /* Free the result from HTParse */
     result->type = PKT_STR;
     result->canFree = PK_CANFREE_STR;
     return 1;
@@ -1156,8 +1158,12 @@ long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc,
 
     packet0->type = packet1->type = packet2->type = packet3->type = packet4->type = PKT_STR;
 
-    packet0->info.s = saveString(HTParse(addr, relative, PARSE_ACCESS));
-    packet1->info.s = saveString(HTParse(addr, relative, PARSE_HOST));
+    char* parsed_access = HTParse(addr, relative, PARSE_ACCESS);
+    char* parsed_host = HTParse(addr, relative, PARSE_HOST);
+    packet0->info.s = saveString(parsed_access);
+    packet1->info.s = saveString(parsed_host);
+    free(parsed_access);  /* Free the result from HTParse */
+    free(parsed_host);    /* Free the result from HTParse */
     path = HTParse(addr, relative, PARSE_PATH | PARSE_PUNCTUATION);
 
     length = strlen(path);

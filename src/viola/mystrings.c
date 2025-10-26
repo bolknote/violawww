@@ -15,6 +15,7 @@
 #include "mystrings.h"
 #include "sys.h"
 #include "utils.h"
+#include "memory_debug.h"
 #include <ctype.h>
 #include <stdlib.h> /* для правильного объявления malloc */
 #include <string.h>
@@ -683,7 +684,7 @@ char* saveString(char* str) {
         return sp;
     }
 
-    sp = (char*)malloc(sizeof(char) * (strlen(str) + 1));
+    sp = (char*)MALLOC(sizeof(char) * (strlen(str) + 1));
     if (sp) {
         strcpy(sp, str);
         return sp;
@@ -693,7 +694,7 @@ char* saveString(char* str) {
 }
 
 char* saveStringN(char* str, int size) {
-    char* sp = (char*)malloc(sizeof(char) * size);
+    char* sp = (char*)MALLOC(sizeof(char) * size);
 
     if (sp) {
         strncpy(sp, str, size);

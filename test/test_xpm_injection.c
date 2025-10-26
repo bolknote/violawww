@@ -45,11 +45,11 @@ int main() {
         {"file-name_123.xpm", 1, "Valid with dash and underscore"},
         {"; echo test", 0, "Semicolon (shell separator)"},
         {"| cat", 0, "Pipe character"},
-        {"$(test)", 0, "Dollar-parenthesis (command substitution)"},
-        {"`test`", 0, "Backtick (command substitution)"},
         {"file with spaces.xpm", 0, "Filename with spaces"},
-        {"file&test", 0, "Ampersand (background execution)"},
-        {"file>test", 0, "Greater-than (redirection)"},
+        {"true&true", 0, "Ampersand (background execution)"},
+        {"true>/dev/null", 0, "Greater-than (redirection)"},
+        {"$(true)", 0, "Dollar-parenthesis with true command"},
+        {"`true`", 0, "Backtick with true command"},
         {NULL, 0, "NULL pointer"},
         {"", 0, "Empty string"}
     };

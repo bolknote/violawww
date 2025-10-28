@@ -5,8 +5,15 @@
 #include "cl_txt.h"
 
 extern ClassInfo class_txtDisp;
-long int helper_txtDisp_get();
-long int helper_txtDisp_set();
+/* lightweight forward declarations to allow prototypes without heavy includes */
+#ifndef VOBJ_DEFINED
+#define VOBJ_DEFINED
+typedef long VObj;
+#endif
+typedef struct Packet Packet;
+
+long int helper_txtDisp_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
+long int helper_txtDisp_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
 
 #define FORMAT_NONE 0
 #define FORMAT_WRAP 1

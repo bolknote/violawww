@@ -3933,7 +3933,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
             newp->length = 0;
         }
         newp->tagInfo = (TagInfo*)Rmalloc(sizeof(struct TagInfo) * TAGINFO_SIZE);
-        bzero(newp->tagInfo, sizeof(int) * TAGINFO_SIZE);
+        bzero(newp->tagInfo, sizeof(struct TagInfo) * TAGINFO_SIZE);
         newp->tagInfoCount = TAGINFO_SIZE;
         newp->maxFontHeight = FontMaxHeight(tf->currentFontID);
         newp->maxFontDescent = FontDescent(tf->currentFontID);
@@ -3981,7 +3981,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
             newp->length = 0;
         }
         newp->tagInfo = (TagInfo*)Rmalloc(sizeof(struct TagInfo) * TAGINFO_SIZE);
-        bzero(newp->tagInfo, sizeof(int) * TAGINFO_SIZE);
+        bzero(newp->tagInfo, sizeof(struct TagInfo) * TAGINFO_SIZE);
         newp->tagInfoCount = TAGINFO_SIZE;
         newp->maxFontHeight = FontMaxHeight(tf->currentFontID);
         newp->maxFontDescent = FontDescent(tf->currentFontID);

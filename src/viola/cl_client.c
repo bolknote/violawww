@@ -439,8 +439,8 @@ long meth_client_output(VObj* self, Packet* result, int argc, Packet argv[]) {
             return 0;
         }
         data = PkInfo2Str(&argv[0]);
-        length = (unsigned char)strlen(data);
-        result->info.i += length;
+        length = strlen(data);
+        result->info.i += (long) length;
         res = write(fd, data, length);
         if (res < 0) {
             MERROR(self, "write to client failed: failed.");
@@ -459,7 +459,7 @@ long meth_client_output(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_client_startClient(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     int fd = GET_clientFD(self);
-    long newfd;
+    int newfd;
 
     result->type = PKT_INT;
     result->canFree = 0;
@@ -477,15 +477,17 @@ long meth_client_startClient(VObj* self, Packet* result, int argc, Packet argv[]
         result->info.i = 0;
         return 0;
     }
-    newfd = result->info.i;
+
+    // value comes from socket_open, therefore it's long type, not int
+    newfd = (int)result->info.i;
 
     if (newfd < 0) {
         MERROR(self, "startClient: failed to start");
         return 0;
     } else {
-        SET_clientFD(self, (int)newfd);
-        objFDList[(int)newfd] = self;
-        FD_SET(fd, &read_mask);
+        SET_clientFD(self, newfd);
+        objFDList[newfd] = self;
+        FD_SET(newfd, &read_mask);
         return 1;
     }
 }

@@ -376,7 +376,15 @@ void float_minus(Packet* p1, Packet* p2)
 
 void str_minus(Packet* p1, Packet* p2)
 {
-    /* huh? */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    float v1 = s1 ? (float)atof(s1) : 0.0f;
+    float v2 = s2 ? (float)atof(s2) : 0.0f;
+    if (p1->canFree & PK_CANFREE_STR)
+        free(p1->info.s);
+    p1->type = PKT_FLT;
+    p1->info.f = v1 - v2;
+    p1->canFree = 0;
 }
 
 void int_mod(Packet* p1, Packet* p2)
@@ -399,7 +407,20 @@ void float_mod(Packet* p1, Packet* p2)
 
 void str_mod(Packet* p1, Packet* p2)
 {
-    /* hummm */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    long v1 = s1 ? atol(s1) : 0L;
+    long v2 = s2 ? atol(s2) : 0L;
+    if (v2 == 0) {
+        fprintf(stderr, "error: str_mod() div by zero.\n");
+    } else {
+        v1 = v1 % v2;
+    }
+    if (p1->canFree & PK_CANFREE_STR)
+        free(p1->info.s);
+    p1->type = PKT_INT;
+    p1->info.i = v1;
+    p1->canFree = 0;
 }
 
 void int_mult(Packet* p1, Packet* p2)
@@ -422,7 +443,15 @@ void float_mult(Packet* p1, Packet* p2)
 
 void str_mult(Packet* p1, Packet* p2)
 {
-    /* there is no possibility */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    float v1 = s1 ? (float)atof(s1) : 0.0f;
+    float v2 = s2 ? (float)atof(s2) : 0.0f;
+    if (p1->canFree & PK_CANFREE_STR)
+        free(p1->info.s);
+    p1->type = PKT_FLT;
+    p1->info.f = v1 * v2;
+    p1->canFree = 0;
 }
 
 void int_div(Packet* p1, Packet* p2)
@@ -460,7 +489,20 @@ void float_div(Packet* p1, Packet* p2)
 
 void str_div(Packet* p1, Packet* p2)
 {
-    /* get out of here! */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    float v1 = s1 ? (float)atof(s1) : 0.0f;
+    float v2 = s2 ? (float)atof(s2) : 0.0f;
+    if (v2 != 0.0f) {
+        if (p1->canFree & PK_CANFREE_STR)
+            free(p1->info.s);
+        p1->type = PKT_FLT;
+        p1->info.f = v1 / v2;
+        p1->canFree = 0;
+        return;
+    } else {
+        fprintf(stderr, "error: str_div() div by zero.\n");
+    }
 }
 
 void int_eq(Packet* p1, Packet* p2)
@@ -715,7 +757,15 @@ void float_and(Packet* p1, Packet* p2)
 
 void str_and(Packet* p1, Packet* p2)
 {
-    /* get with it. */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    int b1 = (s1 && *s1) ? 1 : 0;
+    int b2 = (s2 && *s2) ? 1 : 0;
+    if (p1->canFree & PK_CANFREE_STR)
+        free(p1->info.s);
+    p1->type = PKT_INT;
+    p1->info.i = b1 && b2;
+    p1->canFree = 0;
 }
 
 void int_or(Packet* p1, Packet* p2)
@@ -740,5 +790,13 @@ void float_or(Packet* p1, Packet* p2)
 
 void str_or(Packet* p1, Packet* p2)
 {
-    /* sheesh... */
+    char* s1 = PkInfo2Str(p1);
+    char* s2 = PkInfo2Str(p2);
+    int b1 = (s1 && *s1) ? 1 : 0;
+    int b2 = (s2 && *s2) ? 1 : 0;
+    if (p1->canFree & PK_CANFREE_STR)
+        free(p1->info.s);
+    p1->type = PKT_INT;
+    p1->info.i = b1 || b2;
+    p1->canFree = 0;
 }

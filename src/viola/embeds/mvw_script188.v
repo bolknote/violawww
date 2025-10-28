@@ -176,7 +176,22 @@
 			if (isBlank(title)) title = pageObj;
 
 			mvw.doc.title("show", title);
-			mvw.doc.url("show", docURL);
+			/* Show original URL when loading via Wayback Machine */
+			dispURL = docURL;
+			/* Rule: find "https://web.archive.org/web/", then drop until next '/' */
+			wbPrefix = "https://web.archive.org/web/";
+			wbAt = findPattern(dispURL, wbPrefix);
+
+			if (wbAt != -1) {
+				wbAfter = wbAt + 1;
+				wbRest = nthChar(dispURL, wbAfter, 999);
+				wbSlash = findPattern(wbRest, "/");
+
+				if (wbSlash != -1) {
+					dispURL = nthChar(wbRest, wbSlash + 1, 999);
+				}
+			}
+			mvw.doc.url("show", dispURL);
 
 			if (arg[0] == "show") {
 			  if (isBlank(title))

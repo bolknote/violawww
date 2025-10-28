@@ -194,7 +194,23 @@
 		if (isBlank(title)) title = pageObj;
 		www.doc.title.tf("show", title);
 
-		www.url.tf("show", send(pageObj, "queryAddress"));
+		/* Show original URL if viewing via Wayback Machine */
+		addr = send(pageObj, "queryAddress");
+		/* Rule: find "https://web.archive.org/web/", then drop until next '/' */
+		prefix = "https://web.archive.org/web/";
+		wbPos = findPattern(addr, prefix);
+
+		if (wbPos != -1) {
+			/* findPattern returns end index of match; move to char after prefix */
+			wbAfter = wbPos + 1;
+			wbRest = nthChar(addr, wbAfter, 999);
+			wbSlash = findPattern(wbRest, "/");
+
+			if (wbSlash != -1) {
+				addr = nthChar(wbRest, wbSlash + 1, 999);
+			}
+		}
+		www.url.tf("show", addr);
 
 		if (notYetRecordedInitDocInHistory) {
 			/* this special case for the initial document

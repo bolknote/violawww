@@ -92,7 +92,6 @@ static char octtools_copyright[] =
 #define XPA_FREE(ptr) free((char*)ptr)
 
 static XContext xpa_xcon = (XContext)0;
-static void pb_draw();
 
 /* Size of pullbox symbol - set in set_pb_sym() */
 static XFontStruct* pb_sym_font;
@@ -208,6 +207,8 @@ typedef struct xpa_context_defn {
     xpa_intern* intern;            /* Internal menu info */
     struct xpa_context_defn* next; /* Linked for disposal */
 } xpa_context;
+
+static void pb_draw(xpa_intern* intern, xpa_pb* pb);
 
 // Error handling
 
@@ -640,8 +641,7 @@ xpa_item* item;                                         /* Item to turn on      
     }
 }
 
-static void item_off(intern, off_item) xpa_intern* intern; /* Internal view of menu */
-xpa_item* off_item;                                        /* Item itself           */
+static void item_off(xpa_intern* intern, xpa_item* off_item)
 /*
  * Turns off a given item.  This includes unmapping all subpanes
  * of the item (if any), turning off the hightlighting of the
@@ -668,8 +668,7 @@ xpa_item* off_item;                                        /* Item itself       
         pb_draw(intern, off_item->pb);
 }
 
-static void item_on(intern, on_item) xpa_intern* intern; /* Internal view of menu */
-xpa_item* on_item;                                       /* Item to turn on       */
+static void item_on(xpa_intern* intern, xpa_item* on_item)
 /*
  * Turns on the specified item.  This includes setting the
  * appropriate pointer in the state field of `intern'
@@ -685,12 +684,7 @@ xpa_item* on_item;                                       /* Item to turn on     
         pb_draw(intern, on_item->pb);
 }
 
-static void pane_on(intern, pane, lev, x, y, item) xpa_intern* intern; /* Internal view of menu */
-Window pane;                                                           /* What pane             */
-int lev;                                                               /* Level in heirarchy    */
-int x;                                                                 /* Left edge of pane     */
-int y;                                                                 /* Location of `item'    */
-xpa_item* item;                                                        /* Item in pane          */
+static void pane_on(xpa_intern* intern, Window pane, int lev, int x, int y, xpa_item* item)
 /*
  * This routine posts the pane `pane'.  The left edge of the
  * pane will appear at `x' (relative to the root window).
@@ -726,8 +720,7 @@ xpa_item* item;                                                        /* Item i
     XMapWindow(intern->disp, pane);
 }
 
-static void pb_draw(intern, pb) xpa_intern* intern; /* Internal view of menu */
-xpa_pb* pb;                                         /* Item to turn on       */
+static void pb_draw(xpa_intern* intern, xpa_pb* pb)
 /*
  * Draws the specified pullbox.  A small arrow is drawn using
  * the cursor font and a special character.  Eventually
@@ -766,8 +759,7 @@ xpa_pb* pb;                                         /* Item to turn on       */
     }
 }
 
-static void title_draw(intern, title) xpa_intern* intern; /* Internal view of menu */
-xpa_title* title;                                         /* Title to draw         */
+static void title_draw(xpa_intern* intern, xpa_title* title)
 /*
  * Draws the given title.  Since the background is set to
  * the title background,  all that is required is that

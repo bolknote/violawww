@@ -40,8 +40,7 @@
 #include "selection.h"
 #include "vw.h"
 
-void showSourceCB(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void showSourceCB(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi;
     char* arg[4];
@@ -74,9 +73,7 @@ XtPointer clientData, callData;
  * arg[1] = "cloneID (cookie)
  * arg[2] = string of source data
  */
-void showSourceStringMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void showSourceStringMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* parentDocViewInfo = (DocViewInfo*)clientData;
     char* sourceData;
@@ -105,9 +102,7 @@ void* clientData;
  * arg[2] = file name
  * arg[3] = editable = "editable" or "readOnly"
  */
-void showSourceFileMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void showSourceFileMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* parentDocViewInfo = (DocViewInfo*)clientData;
     char *fileName, *sourceData;
@@ -194,9 +189,7 @@ char* readFile(char* fileName, DocViewInfo* dvi) {
 /*
  * Pops up a text editor with the given string data in it.
  */
-void showSourceEditor(parentDVI, data, editable) DocViewInfo* parentDVI;
-char* data;
-int editable;
+void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
 {
     Widget shell, titleFrame, title, helpLabel, form, frame, buttonBox, reloadB, saveB, saveAsB,
         closeB, textEditor;
@@ -379,8 +372,7 @@ int editable;
     XtPopup(shell, XtGrabNone);
 }
 
-void editorValueChangedCB(textEditor, clientData, callData) Widget textEditor;
-XtPointer clientData, callData;
+void editorValueChangedCB(Widget textEditor, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
 
@@ -389,8 +381,7 @@ XtPointer clientData, callData;
     XtVaSetValues(dvi->editorSaveButton, XmNsensitive, TRUE, NULL);
 }
 
-void closeSourceEditor(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void closeSourceEditor(Widget button, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -467,8 +458,7 @@ int writeFile(char* textData, char* fileName, DocViewInfo* dvi)
     return (success);
 }
 
-void saveSource(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void saveSource(Widget button, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -535,8 +525,7 @@ XtPointer clientData, callData;
     }
 }
 
-void saveAsSource(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void saveAsSource(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
 
@@ -549,8 +538,7 @@ XtPointer clientData, callData;
     }
 }
 
-void reloadSource(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void reloadSource(Widget button, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;

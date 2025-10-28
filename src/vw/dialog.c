@@ -37,15 +37,12 @@
 #include "dialog.h"
 #include "vw.h"
 
-void dialogOK(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void dialogOK(Widget button, XtPointer clientData, XtPointer callData)
 {
     XtDestroyWidget(XtParent((Widget)clientData));
 }
 
-void messageDialog(dvip, msg, type) DocViewInfo* dvip;
-char* msg;
-int type;
+void messageDialog(DocViewInfo* dvip, char* msg, int type)
 {
     Widget dlog, button;
     Arg args[8];
@@ -93,8 +90,7 @@ int type;
     XtManageChild(dlog);
 }
 
-void modalOK(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void modalOK(Widget button, XtPointer clientData, XtPointer callData)
 {
     int* donep = (int*)clientData;
     *donep = 1;
@@ -145,8 +141,7 @@ void modalErrorDialog(DocViewInfo* dvip, char* msg) {
     XtDestroyWidget(dlog);
 }
 
-void promptCancel(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void promptCancel(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -154,16 +149,14 @@ XtPointer clientData, callData;
     *(ps->done) = 1;
 }
 
-void promptClearText(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void promptClearText(Widget widget, XtPointer clientData, XtPointer callData)
 {
     Widget* textField = (Widget*)clientData;
 
     XmTextFieldSetString(*textField, "");
 }
 
-void promptOK(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void promptOK(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
     XmSelectionBoxCallbackStruct* sbcb = (XmSelectionBoxCallbackStruct*)callData;
@@ -247,8 +240,7 @@ char* promptDialog(DocViewInfo* dvip, char *msg, char *defaultString) {
     return (ps.result);
 }
 
-void questionYes(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void questionYes(Widget button, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -256,8 +248,7 @@ XtPointer clientData, callData;
     *(ps->done) = 1;
 }
 
-void questionNo(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void questionNo(Widget button, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -265,8 +256,7 @@ XtPointer clientData, callData;
     *(ps->done) = 1;
 }
 
-void questionCancel(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void questionCancel(Widget button, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -401,9 +391,7 @@ char* questionDialog(DocViewInfo* dvip, char *question, char *defaultChoice, cha
     return (ps.result);
 }
 
-void infoDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void infoDialogMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* dvip = (DocViewInfo*)clientData;
 
@@ -417,9 +405,7 @@ void* clientData;
     infoDialog(dvip, arg[2]);
 }
 
-void warningDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void warningDialogMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* dvip = (DocViewInfo*)clientData;
 
@@ -433,9 +419,7 @@ void* clientData;
     warningDialog(dvip, arg[2]);
 }
 
-void errorDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void errorDialogMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* dvip = (DocViewInfo*)clientData;
 
@@ -449,9 +433,7 @@ void* clientData;
     errorDialog(dvip, arg[2]);
 }
 
-void modalErrorDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void modalErrorDialogMH(char* arg[], int argc, void* clientData)
 {
     DocViewInfo* dvip = (DocViewInfo*)clientData;
 
@@ -472,9 +454,7 @@ void* clientData;
  * arg[3] = prompt message
  * arg[4] = defaultString
  */
-void promptDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void promptDialogMH(char* arg[], int argc, void* clientData)
 {
     char *result = NULL, *defaultString = NULL;
     DocViewInfo* dvip = (DocViewInfo*)clientData;
@@ -508,9 +488,7 @@ void* clientData;
  * arg[6] = noLabel
  * arg[7] = cancelLabel
  */
-void questionDialogMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void questionDialogMH(char* arg[], int argc, void* clientData)
 {
     char* result = NULL;
     char *defaultChoice = NULL, *yesLabel = NULL, *noLabel = NULL, *cancelLabel = NULL;
@@ -545,8 +523,7 @@ void* clientData;
     */
 }
 
-void printYes(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void printYes(Widget button, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -554,8 +531,7 @@ XtPointer clientData, callData;
     ps->result = "yes";
 }
 
-void printCancel(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void printCancel(Widget button, XtPointer clientData, XtPointer callData)
 {
     struct promptStruct* ps = (struct promptStruct*)clientData;
 
@@ -700,7 +676,7 @@ struct urlDlogStruct {
  * name.  file: may or may not have a machine name.
  *
  */
-void urlDlogParseURL(uds) struct urlDlogStruct* uds;
+void urlDlogParseURL(struct urlDlogStruct* uds)
 {
     char *protocol, *machine, *file;
     char* newURL = XmTextFieldGetString(uds->urlText);
@@ -741,7 +717,7 @@ void urlDlogParseURL(uds) struct urlDlogStruct* uds;
     XtFree(newURL);
 }
 
-void urlDlogConstructURL(uds) struct urlDlogStruct* uds;
+void urlDlogConstructURL(struct urlDlogStruct* uds)
 {
     size_t length;
     char *ptr, *psave, *msave, *fsave;
@@ -815,8 +791,7 @@ void urlDlogConstructURL(uds) struct urlDlogStruct* uds;
         XtFree(fsave);
 }
 
-void setURLProtocol(protocolWidget, clientData, callData) Widget protocolWidget;
-XtPointer clientData, callData;
+void setURLProtocol(Widget protocolWidget, XtPointer clientData, XtPointer callData)
 {
     struct urlDlogStruct* uds = (struct urlDlogStruct*)clientData;
     char* widgetName = XtName(protocolWidget);
@@ -841,18 +816,15 @@ XtPointer clientData, callData;
     free(protocol);
 }
 
-void setURLMachine(machineText, clientData, callData) Widget machineText;
-XtPointer clientData, callData;
+void setURLMachine(Widget machineText, XtPointer clientData, XtPointer callData)
 {
 }
 
-void setURLFile(fileText, clientData, callData) Widget fileText;
-XtPointer clientData, callData;
+void setURLFile(Widget fileText, XtPointer clientData, XtPointer callData)
 {
 }
 
-void openURL(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openURL(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct urlDlogStruct* uds = (struct urlDlogStruct*)clientData;
     char* url = XmTextFieldGetString(uds->urlText);
@@ -864,15 +836,13 @@ XtPointer clientData, callData;
     free(url);
 }
 
-void clearURL(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void clearURL(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct urlDlogStruct* uds = (struct urlDlogStruct*)clientData;
     XmTextFieldSetString(uds->urlText, "");
 }
 
-void cancelURL(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void cancelURL(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct urlDlogStruct* uds = (struct urlDlogStruct*)clientData;
     char* url = XmTextFieldGetString(uds->urlText);
@@ -882,8 +852,7 @@ XtPointer clientData, callData;
     free(url);
 }
 
-void openURLDialog(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openURLDialog(Widget widget, XtPointer clientData, XtPointer callData)
 {
     Widget dlog, frame, form, label, protocolForm, protocolLabel, menu, optionMenu, protocolText,
         machineForm, machineLabel, machineText, fileForm, fileLabel, fileText, urlForm, urlLabel,
@@ -1042,8 +1011,7 @@ XtPointer clientData, callData;
 /*
  * SIMPLE URL DIALOG
  */
-void openSimpleURLDialog(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openSimpleURLDialog(Widget widget, XtPointer clientData, XtPointer callData)
 {
     Widget dlog, frame, form, label, urlText, openButton, clearButton, cancelButton;
     Arg args[12];
@@ -1117,8 +1085,7 @@ XtPointer clientData, callData;
     XtPopup(XtParent(form), XtGrabNone);
 }
 
-void simpleOpenURLDialog(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void simpleOpenURLDialog(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -1129,8 +1096,7 @@ XtPointer clientData, callData;
         sendMessage1N1str(dvi->violaDocViewObj, "show", url);
 }
 
-void openURLInSelectionBuffer(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openURLInSelectionBuffer(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -1144,8 +1110,7 @@ typedef struct fileSelectStruct {
     DocViewInfo* dvi;
 } FileSelectStruct;
 
-void fileSelectCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void fileSelectCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     FileSelectStruct* fss = (FileSelectStruct*)clientData;
     XmFileSelectionBoxCallbackStruct* fscb = (XmFileSelectionBoxCallbackStruct*)callData;
@@ -1154,15 +1119,13 @@ XtPointer clientData, callData;
     *(fss->done) = 1;
 }
 
-void fileCancelCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void fileCancelCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     FileSelectStruct* fss = (FileSelectStruct*)clientData;
     *(fss->done) = 1;
 }
 
-void fileHelpCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void fileHelpCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
 
@@ -1227,8 +1190,7 @@ char* fileSelectionDialog(DocViewInfo* dvi, char *message, char *helpMsg) {
 
 /* Simple Line Entry
  */
-void LineEntry_okCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void LineEntry_okCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct lentryDlogStruct* lds = (struct lentryDlogStruct*)clientData;
     char* lineText = XmTextFieldGetString(lds->lineText);
@@ -1240,15 +1202,13 @@ XtPointer clientData, callData;
     free(lds);
 }
 
-void LineEntry_clearCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void LineEntry_clearCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct lentryDlogStruct* lds = (struct lentryDlogStruct*)clientData;
     XmTextFieldSetString(lds->lineText, "");
 }
 
-void LineEntry_cancelCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void LineEntry_cancelCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     struct lentryDlogStruct* lds = (struct lentryDlogStruct*)clientData;
     char* lineText = XmTextFieldGetString(lds->lineText);

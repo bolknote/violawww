@@ -145,7 +145,7 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
 void closeAppShell(DocViewInfo* docViewInfo);
 char* makeString();
 void setHelp(Widget widget, Widget helpLabel, char* helpText);
-XmString makeXMSTitle();
+XmString makeXMSTitle(char* title, char* subTitle);
 void tmpMessageMH();
 
 /* --- MACROS -------------------------------------------------------------- */

@@ -119,14 +119,15 @@ typedef struct {
 /* function declarations
  */
 
-Image* clip(); /* clip.c */
+Image* clip(Image* simage, unsigned int clipx, unsigned int clipy, unsigned int clipw, unsigned int cliph, unsigned int verbose); /* clip.c */
 
-void brighten(); /* bright.c */
+void brighten(Image* image, unsigned int percent, unsigned int verbose); /* bright.c */
+void gammacorrect(Image* image, float disp_gam, unsigned int verbose); /* bright.c */
 void equalize();
-void gray();
+void gray(Image* image, int verbose);
 Image* normalize(Image* image, unsigned int verbose);
 
-void compress(); /* compress.c */
+void compress(Image* image, unsigned int verbose); /* compress.c */
 
 Image* dither(Image* cimage, unsigned int verbose); /* dither.c */
 Image* approx(Image* cimage, unsigned int verbose); /* approximate colors (in dither.c)*/
@@ -135,7 +136,7 @@ void fill(Image* image, unsigned int fx, unsigned int fy, unsigned int fw, unsig
 
 void fold(); /* fold.c */
 
-Image* halftone(); /* halftone.c */
+Image* halftone(Image* cimage, unsigned int verbose); /* halftone.c */
 
 Image* loadImage(char* name, unsigned int verbose); /* imagetypes.c */
 void identifyImage(char* name);
@@ -159,10 +160,10 @@ void lfree(byte* area);
 
 #define depthToColors(n) DepthToColorsTable[((n) < 32 ? (n) : 32)]
 
-Image* reduce(); /* reduce.c */
+Image* reduce(Image* image, unsigned int n, unsigned int verbose); /* reduce.c */
 Image* expand();
 
-Image* rotate(); /* rotate.c */
+Image* rotate(Image* simage, int rotate, unsigned int verbose); /* rotate.c */
 
 Image* smooth(Image* image, int iterations, int verbose); /* smooth.c */
 

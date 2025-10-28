@@ -408,7 +408,7 @@ XtPointer clientData, callData;
     }
 }
 
-void editHotlistItemCB(lds) struct lentryDlogStruct* lds;
+void editHotlistItemCB(struct lentryDlogStruct* lds)
 {
     XmString itemXMS;
     HotListItem* hip;

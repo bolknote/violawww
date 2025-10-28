@@ -34,7 +34,7 @@ struct lentryDlogStruct {
     Widget lineText;
     char* data;
     DocViewInfo* dvi;
-    void (*okCB)();
+    void (*okCB)(struct lentryDlogStruct* lds);
 };
 
 #define infoDialog(dvip, msg) messageDialog(dvip, msg, INFO)

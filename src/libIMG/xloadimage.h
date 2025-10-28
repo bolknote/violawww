@@ -65,14 +65,14 @@ typedef struct {
 
 void supportedImageTypes(); /* imagetypes.c */
 
-char* tail(); /* misc.c */
+char* tail(char* path); /* misc.c */
 void memoryExhausted();
-void internalError();
+void internalError(int sig);
 void version();
-void usage();
+void usage(char* name);
 void goodImage(Image* image, char* func);
 Image* processImage(Display* disp, int scrn, Image* image, ImageOptions* options, unsigned int verbose);
-int errorHandler();
+int errorHandler(Display* disp, XErrorEvent* error);
 
 char* expandPath(); /* path.c */
 int findImage();

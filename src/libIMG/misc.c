@@ -117,7 +117,6 @@ Image* processImage(Display* disp, int scrn, Image* image, ImageOptions* options
     Image* tmpimage;
     XColor xcolor;
     unsigned int compressed = 0;
-    void gammacorrect();
 
     goodImage(image, "processImage");
 

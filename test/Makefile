@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection test-biop
 
 .PHONY: all test clean $(TESTS)
 
@@ -46,6 +46,7 @@ test:
 	-@$(MAKE) test-htcharset >$(BUILD_DIR)/test-htcharset.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-htcharset: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-htcharset: FAIL")
 	-@$(MAKE) test-wayback >$(BUILD_DIR)/test-wayback.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback: FAIL")
 	-@$(MAKE) test-wayback-detection >$(BUILD_DIR)/test-wayback-detection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback-detection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback-detection: FAIL")
+	-@$(MAKE) test-biop >$(BUILD_DIR)/test-biop.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-biop: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-biop: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -66,6 +67,13 @@ test:
 	@echo ""
 
 # Individual test targets
+test-biop: test_biop.c test_biop_support.c $(PROJECT_ROOT)/src/viola/biop.o $(PROJECT_ROOT)/src/viola/mystrings.o
+	@echo ""
+	@echo "Building biop string ops tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(PROJECT_ROOT)/src/viola -o $(BUILD_DIR)/test_biop test_biop.c test_biop_support.c \
+		$(PROJECT_ROOT)/src/viola/biop.o $(PROJECT_ROOT)/src/viola/mystrings.o
+	@./$(BUILD_DIR)/test_biop
 
 test-stg-minors: test_stg_minors.c $(LIBSTYLE_DIR)/libstg.o $(VIOLA_DIR)/mystrings.o
 	@echo ""

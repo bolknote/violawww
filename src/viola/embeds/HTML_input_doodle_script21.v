@@ -22,8 +22,8 @@
 	break;
 	case "buttonPress":
 		penDownP = 1;
-		x0 = mouseX();
-		y0 = mouseY();
+		x0 = arg[1];
+		y0 = arg[2];
 		x1 = x0;
 		y1 = y0;
 	break;

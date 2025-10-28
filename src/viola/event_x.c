@@ -853,13 +853,21 @@ long handle_ButtonPress(XButtonEvent* ep, VObj** dragObjp, int tool, int* resize
 
     switch (tool) {
     case ACTION_TOOL: { /* press */
+        Window w = GET_window(VCurrentObj);
+        int root_x, root_y;
 
         if (cmd_history) {
             sprintf(buff, "%s;mouseDown\n", GET_name(VCurrentObj));
             messageToUser(NULL, MESSAGE_HISTORY, buff);
         }
         *dragObjp = VCurrentObj;
-        sendMessage1(VCurrentObj, "buttonPress");
+        
+        if (VCurrentObj && w) {
+            GLQueryMouse(w, &root_x, &root_y, &(mouse.x), &(mouse.y));
+            sendMessageAndInts(VCurrentObj, "buttonPress", (int[]){mouse.x, mouse.y}, 2);
+        } else {
+            sendMessage1(VCurrentObj, "buttonPress");
+        }
     } break;
 
     case TARGET_TOOL: /* press */
@@ -1165,9 +1173,7 @@ long handle_MotionNotify(XEvent* ep, VObj** dragObjp, int tool, int* resize_corn
 
         if (VCurrentObj && w) {
             GLQueryMouse(w, &root_x, &root_y, &(mouse.x), &(mouse.y));
-            intBuff[0] = mouse.x;
-            intBuff[1] = mouse.y;
-            sendMessageAndInts(VCurrentObj, "mouseMove", intBuff, 2);
+            sendMessageAndInts(VCurrentObj, "mouseMove", (int[]){mouse.x, mouse.y}, 2);
         }
     } break;
 

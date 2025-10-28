@@ -250,16 +250,16 @@ int biOp(int op, Packet* p1, Packet* p2)
     return 1;
 }
 
-void convError() { fprintf(stderr, "conversion error...\n"); }
+void convError(void) { fprintf(stderr, "conversion error...\n"); }
 
-void int2float(p) Packet* p;
+void int2float(Packet* p)
 {
     p->type = PKT_FLT;
     p->info.f = (float)p->info.i;
     p->canFree = 0;
 }
 
-void int2str(p) Packet* p;
+void int2str(Packet* p)
 {
     extern char buff[];
 
@@ -269,21 +269,21 @@ void int2str(p) Packet* p;
     p->canFree = PK_CANFREE_STR;
 }
 
-void char2int(p) Packet* p;
+void char2int(Packet* p)
 {
     p->type = PKT_INT;
     p->info.i = (long)p->info.c;
     p->canFree = 0;
 }
 
-void char2float(p) Packet* p;
+void char2float(Packet* p)
 {
     p->type = PKT_FLT;
     p->info.f = (float)p->info.c;
     p->canFree = 0;
 }
 
-void char2str(p) Packet* p;
+void char2str(Packet* p)
 {
     p->type = PKT_STR;
     p->info.s = (char*)malloc(sizeof(char) * 2);
@@ -292,7 +292,7 @@ void char2str(p) Packet* p;
     p->canFree = PK_CANFREE_STR;
 }
 
-void float2str(p) Packet* p;
+void float2str(Packet* p)
 {
     p->type = PKT_STR;
     sprintf(buff, "%f", p->info.f);
@@ -300,14 +300,14 @@ void float2str(p) Packet* p;
     p->canFree = PK_CANFREE_STR;
 }
 
-void float2int(p) Packet* p;
+void float2int(Packet* p)
 {
     p->type = PKT_INT;
     p->info.i = (long)p->info.f;
     p->canFree = 0;
 }
 
-void str2int(p) Packet* p;
+void str2int(Packet* p)
 {
     if (p->canFree & PK_CANFREE_STR)
         free(p->info.s);
@@ -316,7 +316,7 @@ void str2int(p) Packet* p;
     p->canFree = 0;
 }
 
-void str2float(p) Packet* p;
+void str2float(Packet* p)
 {
     if (p->canFree & PK_CANFREE_STR)
         free(p->info.s);
@@ -325,29 +325,25 @@ void str2float(p) Packet* p;
     p->canFree = 0;
 }
 
-void int_plus(p1, p2) Packet* p1;
-Packet* p2;
+void int_plus(Packet* p1, Packet* p2)
 {
     p1->info.i += p2->info.i;
     p1->canFree = 0;
 }
 
-void char_plus(p1, p2) Packet* p1;
-Packet* p2;
+void char_plus(Packet* p1, Packet* p2)
 {
     p1->info.c += p2->info.c;
     p1->canFree = 0;
 }
 
-void float_plus(p1, p2) Packet* p1;
-Packet* p2;
+void float_plus(Packet* p1, Packet* p2)
 {
     p1->info.f += p2->info.f;
     p1->canFree = 0;
 }
 
-void str_plus(p1, p2) Packet* p1;
-Packet* p2;
+void str_plus(Packet* p1, Packet* p2)
 {
     cp1 = PkInfo2Str(p1);
     cp2 = PkInfo2Str(p2);
@@ -360,89 +356,76 @@ Packet* p2;
     p1->canFree = PK_CANFREE_STR;
 }
 
-void int_minus(p1, p2) Packet* p1;
-Packet* p2;
+void int_minus(Packet* p1, Packet* p2)
 {
     p1->info.i -= p2->info.i;
     p1->canFree = 0;
 }
 
-void char_minus(p1, p2) Packet* p1;
-Packet* p2;
+void char_minus(Packet* p1, Packet* p2)
 {
     p1->info.c -= p2->info.c;
     p1->canFree = 0;
 }
 
-void float_minus(p1, p2) Packet* p1;
-Packet* p2;
+void float_minus(Packet* p1, Packet* p2)
 {
     p1->info.f -= p2->info.f;
     p1->canFree = 0;
 }
 
-void str_minus(p1, p2) Packet* p1;
-Packet* p2;
+void str_minus(Packet* p1, Packet* p2)
 {
     /* huh? */
 }
 
-void int_mod(p1, p2) Packet* p1;
-Packet* p2;
+void int_mod(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i % p2->info.i;
     p1->canFree = 0;
 }
 
-void char_mod(p1, p2) Packet* p1;
-Packet* p2;
+void char_mod(Packet* p1, Packet* p2)
 {
     p1->info.c = p1->info.c % p2->info.c;
     p1->canFree = 0;
 }
 
-void float_mod(p1, p2) Packet* p1;
-Packet* p2;
+void float_mod(Packet* p1, Packet* p2)
 {
     p1->info.f = (long)p1->info.f % (long)p2->info.f; /*??*/
     p1->canFree = 0;
 }
 
-void str_mod(p1, p2) Packet* p1;
-Packet* p2;
+void str_mod(Packet* p1, Packet* p2)
 {
     /* hummm */
 }
 
-void int_mult(p1, p2) Packet* p1;
-Packet* p2;
+void int_mult(Packet* p1, Packet* p2)
 {
     p1->info.i *= p2->info.i;
     p1->canFree = 0;
 }
 
-void char_mult(p1, p2) Packet* p1;
-Packet* p2;
+void char_mult(Packet* p1, Packet* p2)
 {
     p1->info.c *= p2->info.c;
     p1->canFree = 0;
 }
 
-void float_mult(p1, p2) Packet* p1;
-Packet* p2;
+void float_mult(Packet* p1, Packet* p2)
 {
     p1->info.f *= p2->info.f;
     p1->canFree = 0;
 }
 
-void str_mult(p1, p2) Packet* p1;
-Packet* p2;
+void str_mult(Packet* p1, Packet* p2)
 {
     /* there is no possibility */
 }
 
-void int_div(p1, p2) Packet* p1;
-Packet* p2;
+void int_div(Packet* p1, Packet* p2)
 {
     if (p2->info.i) {
         p1->info.i /= p2->info.i;
@@ -453,8 +436,7 @@ Packet* p2;
     }
 }
 
-void char_div(p1, p2) Packet* p1;
-Packet* p2;
+void char_div(Packet* p1, Packet* p2)
 {
     if (p2->info.c) {
         p1->info.c /= p2->info.c;
@@ -465,8 +447,7 @@ Packet* p2;
     }
 }
 
-void float_div(p1, p2) Packet* p1;
-Packet* p2;
+void float_div(Packet* p1, Packet* p2)
 {
     if (p2->info.f != 0.0f) {
         p1->info.f /= p2->info.f;
@@ -477,37 +458,32 @@ Packet* p2;
     }
 }
 
-void str_div(p1, p2) Packet* p1;
-Packet* p2;
+void str_div(Packet* p1, Packet* p2)
 {
     /* get out of here! */
 }
 
-void int_eq(p1, p2) Packet* p1;
-Packet* p2;
+void int_eq(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i == p2->info.i;
     p1->canFree = 0;
 }
 
-void char_eq(p1, p2) Packet* p1;
-Packet* p2;
+void char_eq(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.c == p2->info.c;
     p1->type = PKT_INT;
     p1->canFree = 0;
 }
 
-void float_eq(p1, p2) Packet* p1;
-Packet* p2;
+void float_eq(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.f == p2->info.f;
     p1->type = PKT_INT;
     p1->canFree = 0;
 }
 
-void str_eq(p1, p2) Packet* p1;
-Packet* p2;
+void str_eq(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -528,31 +504,27 @@ Packet* p2;
     }
 }
 
-void int_ne(p1, p2) Packet* p1;
-Packet* p2;
+void int_ne(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i != p2->info.i;
     p1->canFree = 0;
 }
 
-void char_ne(p1, p2) Packet* p1;
-Packet* p2;
+void char_ne(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c != p2->info.c;
     p1->canFree = 0;
 }
 
-void float_ne(p1, p2) Packet* p1;
-Packet* p2;
+void float_ne(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.f != p2->info.f;
     p1->canFree = 0;
 }
 
-void str_ne(p1, p2) Packet* p1;
-Packet* p2;
+void str_ne(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -573,31 +545,27 @@ Packet* p2;
     }
 }
 
-void int_lt(p1, p2) Packet* p1;
-Packet* p2;
+void int_lt(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i < p2->info.i;
     p1->canFree = 0;
 }
 
-void char_lt(p1, p2) Packet* p1;
-Packet* p2;
+void char_lt(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c < p2->info.c;
     p1->canFree = 0;
 }
 
-void float_lt(p1, p2) Packet* p1;
-Packet* p2;
+void float_lt(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.f < p2->info.f;
     p1->canFree = 0;
 }
 
-void str_lt(p1, p2) Packet* p1;
-Packet* p2;
+void str_lt(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -614,31 +582,27 @@ Packet* p2;
     }
 }
 
-void int_le(p1, p2) Packet* p1;
-Packet* p2;
+void int_le(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i <= p2->info.i;
     p1->canFree = 0;
 }
 
-void char_le(p1, p2) Packet* p1;
-Packet* p2;
+void char_le(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c <= p2->info.c;
     p1->canFree = 0;
 }
 
-void float_le(p1, p2) Packet* p1;
-Packet* p2;
+void float_le(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.f <= p2->info.f;
     p1->canFree = 0;
 }
 
-void str_le(p1, p2) Packet* p1;
-Packet* p2;
+void str_le(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -655,31 +619,27 @@ Packet* p2;
     }
 }
 
-void int_gt(p1, p2) Packet* p1;
-Packet* p2;
+void int_gt(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i > p2->info.i;
     p1->canFree = 0;
 }
 
-void char_gt(p1, p2) Packet* p1;
-Packet* p2;
+void char_gt(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c > p2->info.c;
     p1->canFree = 0;
 }
 
-void float_gt(p1, p2) Packet* p1;
-Packet* p2;
+void float_gt(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.f > p2->info.f;
     p1->canFree = 0;
 }
 
-void str_gt(p1, p2) Packet* p1;
-Packet* p2;
+void str_gt(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -696,31 +656,27 @@ Packet* p2;
     }
 }
 
-void int_ge(p1, p2) Packet* p1;
-Packet* p2;
+void int_ge(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i >= p2->info.i;
     p1->canFree = 0;
 }
 
-void char_ge(p1, p2) Packet* p1;
-Packet* p2;
+void char_ge(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c >= p2->info.c;
     p1->canFree = 0;
 }
 
-void float_ge(p1, p2) Packet* p1;
-Packet* p2;
+void float_ge(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.f >= p2->info.f;
     p1->canFree = 0;
 }
 
-void str_ge(p1, p2) Packet* p1;
-Packet* p2;
+void str_ge(Packet* p1, Packet* p2)
 {
     cp = p1->info.s;
 
@@ -737,60 +693,52 @@ Packet* p2;
     }
 }
 
-void int_and(p1, p2) Packet* p1;
-Packet* p2;
+void int_and(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i && p2->info.i;
     p1->canFree = 0;
 }
 
-void char_and(p1, p2) Packet* p1;
-Packet* p2;
+void char_and(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c && p2->info.c;
     p1->canFree = 0;
 }
 
-void float_and(p1, p2) Packet* p1;
-Packet* p2;
+void float_and(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = (p1->info.f != 0.0f) && (p2->info.f != 0.0f);
     p1->canFree = 0;
 }
 
-void str_and(p1, p2) Packet* p1;
-Packet* p2;
+void str_and(Packet* p1, Packet* p2)
 {
     /* get with it. */
 }
 
-void int_or(p1, p2) Packet* p1;
-Packet* p2;
+void int_or(Packet* p1, Packet* p2)
 {
     p1->info.i = p1->info.i || p2->info.i;
     p1->canFree = 0;
 }
 
-void char_or(p1, p2) Packet* p1;
-Packet* p2;
+void char_or(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = p1->info.c || p2->info.c;
     p1->canFree = 0;
 }
 
-void float_or(p1, p2) Packet* p1;
-Packet* p2;
+void float_or(Packet* p1, Packet* p2)
 {
     p1->type = PKT_INT;
     p1->info.i = (p1->info.f != 0.0f) || (p2->info.f != 0.0f);
     p1->canFree = 0;
 }
 
-void str_or(p1, p2) Packet* p1;
-Packet* p2;
+void str_or(Packet* p1, Packet* p2)
 {
     /* sheesh... */
 }

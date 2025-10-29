@@ -234,23 +234,25 @@ int zgetc(ZFILE* zf) {
 char* zgets(byte* buf, unsigned int size, ZFILE* zf) {
     int p = 0;
 
-    while (doRead(zf, buf + p, 1) > 0) {
-        if (p >= size - 1) {
-            /* Buffer is full, null-terminate at last valid position */
-            buf[size - 1] = '\0';
-            return ((char*)buf);
-        }
-        if (*(buf + p) == '\n') {
-            *(buf + p + 1) = '\0';
+    /* Need at least 2 bytes: one for data, one for null-terminator */
+    if (size < 2)
+        return (NULL);
+
+    /* Read characters until buffer is full or newline/EOF found */
+    while (p < size - 1 && doRead(zf, buf + p, 1) > 0) {
+        if (buf[p] == '\n') {
+            buf[p + 1] = '\0';
             return ((char*)buf);
         }
         p++;
     }
+    
+    /* Reached buffer limit or EOF */
     if (p > 0) {
-        /* Null-terminate what we read */
         buf[p] = '\0';
         return ((char*)buf);
     }
+    
     return (NULL);
 }
 

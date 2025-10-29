@@ -63,8 +63,8 @@ int test_parse_simple_minor() {
     
     printf("\n=== Test 1: Parse simple minor ===\n");
     
-    lib = STG_init(test_tagNameCmp, test_tagName2ID, test_tagID2Name,
-                   test_tagNameCmp, test_tagName2ID, test_tagID2Name);
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
     if (!lib) {
         printf("FAIL: STG_init failed\n");
         return 0;
@@ -129,8 +129,8 @@ int test_match_minor() {
     
     printf("\n=== Test 2: Match minor by attribute ===\n");
     
-    lib = STG_init(test_tagNameCmp, test_tagName2ID, test_tagID2Name,
-                   test_tagNameCmp, test_tagName2ID, test_tagID2Name);
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
     group = STG_makeGroup(lib, spec);
     major = group->first;
     
@@ -179,8 +179,8 @@ int test_assert_with_minor() {
     
     printf("\n=== Test 3: Find assert with minor (inheritance) ===\n");
     
-    lib = STG_init(test_tagNameCmp, test_tagName2ID, test_tagID2Name,
-                   test_tagNameCmp, test_tagName2ID, test_tagID2Name);
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
     group = STG_makeGroup(lib, spec);
     major = group->first;
     
@@ -247,8 +247,8 @@ int test_quoted_strings() {
     
     printf("\n=== Test 4: Parse quoted strings ===\n");
     
-    lib = STG_init(test_tagNameCmp, test_tagName2ID, test_tagID2Name,
-                   test_tagNameCmp, test_tagName2ID, test_tagID2Name);
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
     group = STG_makeGroup(lib, spec);
     major = group->first;
     minor = major->firstMinorChild;

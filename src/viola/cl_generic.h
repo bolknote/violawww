@@ -7,8 +7,8 @@
 #include "cl_cosmic.h"
 
 extern ClassInfo class_generic;
-long helper_generic_get();
-long helper_generic_set();
+long helper_generic_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
+long helper_generic_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
 extern int flag_cliprompt;
 
 long meth_generic_GB_copy();

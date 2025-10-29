@@ -45,15 +45,12 @@ PUBLIC int HTSSL_init(void) {
     /* Set options for better compatibility */
     SSL_CTX_set_options(ssl_context.ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
     
-    /* Load default CA certificates */
-    /* Try common CA certificate locations */
+    /* Load default CA certificates (best-effort, non-fatal) */
     if (!SSL_CTX_set_default_verify_paths(ssl_context.ctx)) {
-        /* Non-fatal: will work without cert verification */
         fprintf(stderr, "HTSSL: Warning - could not load CA certificates\n");
     }
 
-    /* Set verification mode to none for compatibility with old/self-signed certs */
-    /* In a production browser, you'd want SSL_VERIFY_PEER */
+    /* Disable certificate verification per project policy */
     SSL_CTX_set_verify(ssl_context.ctx, SSL_VERIFY_NONE, NULL);
 
     ssl_context.initialized = 1;
@@ -147,6 +144,8 @@ PUBLIC HTSSLConnection* HTSSL_connect(int socket, const char* hostname) {
 
     conn->connected = 1;
 
+    /* Hostname verification is intentionally disabled */
+
     if (TRACE) {
         fprintf(stderr, "HTSSL: Connected to %s using %s\n",
                 hostname ? hostname : "unknown",
@@ -182,50 +181,51 @@ PUBLIC void HTSSL_close(HTSSLConnection* conn) {
 **	------------------------
 */
 PUBLIC int HTSSL_read(HTSSLConnection* conn, char* buffer, int length) {
-    int ret;
-
     if (!conn || !conn->ssl || !conn->connected) {
         return -1;
     }
 
-    ret = SSL_read(conn->ssl, buffer, length);
-    
-    if (ret < 0) {
-        int err = SSL_get_error(conn->ssl, ret);
-        if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
-            /* Would block - try again */
-            return 0;
+    for (;;) {
+        int ret = SSL_read(conn->ssl, buffer, length);
+        if (ret >= 0) {
+            return ret; /* 0 => EOF, >0 => bytes */
         }
-        fprintf(stderr, "HTSSL: Read error %d\n", err);
-        return -1;
+        {
+            int err = SSL_get_error(conn->ssl, ret);
+            if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                continue; /* retry */
+            }
+            fprintf(stderr, "HTSSL: Read error %d\n", err);
+            return -1;
+        }
     }
-
-    return ret;
 }
 
 /*	Write to SSL connection
 **	-----------------------
 */
 PUBLIC int HTSSL_write(HTSSLConnection* conn, const char* buffer, int length) {
-    int ret;
-
     if (!conn || !conn->ssl || !conn->connected) {
         return -1;
     }
 
-    ret = SSL_write(conn->ssl, buffer, length);
-    
-    if (ret < 0) {
-        int err = SSL_get_error(conn->ssl, ret);
-        if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
-            /* Would block - try again */
-            return 0;
+    int total = 0;
+    while (total < length) {
+        int ret = SSL_write(conn->ssl, buffer + total, length - total);
+        if (ret > 0) {
+            total += ret;
+            continue;
         }
-        fprintf(stderr, "HTSSL: Write error %d\n", err);
-        return -1;
+        {
+            int err = SSL_get_error(conn->ssl, ret);
+            if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                continue; /* retry */
+            }
+            fprintf(stderr, "HTSSL: Write error %d\n", err);
+            return -1;
+        }
     }
-
-    return ret;
+    return total;
 }
 
 /*	Get last SSL error

@@ -66,8 +66,8 @@ int test_context_vs_minor() {
     printf("      P with minor WARNING (FGColor=red, BDColor=orange)\n");
     printf("Query: P with styleAttr=WARNING, no parent context\n\n");
     
-    lib = STG_init(test_tagNameCmp, test_tagName2ID, test_tagID2Name,
-                   test_tagNameCmp, test_tagName2ID, test_tagID2Name);
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
     group = STG_makeGroup(lib, spec);
     
     if (!group || !group->first) {

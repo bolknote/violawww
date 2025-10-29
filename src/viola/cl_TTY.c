@@ -21,6 +21,47 @@
  * Tor Lillqvist (tml@tik.vtt.fi): HP-UX compatibility.
  */
 #include "cl_TTY.h"
+#if defined(__APPLE__)
+/*
+ * macOS: disable legacy BSD TTY implementation. Provide minimal stubs
+ * to satisfy references; TTY widget will be non-functional on this platform.
+ */
+#include "slotaccess.h"
+#include "class.h"
+#include "classlist.h"
+#include "obj.h"
+#include "packet.h"
+
+/* Provide minimal empty slot tables to satisfy ClassInfo */
+SlotInfo cl_TTY_NCSlots[] = {0};
+SlotInfo cl_TTY_NPSlots[] = {0};
+SlotInfo cl_TTY_CSlots[] = {0};
+SlotInfo cl_TTY_PSlots[] = {0};
+SlotInfo* slots_TTY[] = {(SlotInfo*)cl_TTY_NCSlots, (SlotInfo*)cl_TTY_NPSlots, (SlotInfo*)cl_TTY_CSlots, (SlotInfo*)cl_TTY_PSlots};
+
+long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 0;
+    return 0;
+}
+long helper_TTY_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
+    return 0;
+}
+long meth_TTY_get(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return 0;
+}
+long helper_TTY_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
+    return 0;
+}
+long meth_TTY_set(VObj* self, Packet* result, int argc, Packet argv[]) {
+    return 0;
+}
+
+MethodInfo meths_TTY[] = {0};
+ClassInfo class_TTY = {helper_TTY_get, helper_TTY_set, slots_TTY, meths_TTY, (long)0, &class_client};
+
+#else
 #include "class.h"
 #include "classlist.h"
 #include "error.h"
@@ -342,3 +383,4 @@ long helper_TTY_set(VObj* self, Packet* result, int argc, Packet argv[], long la
 long meth_TTY_set(VObj* self, Packet* result, int argc, Packet argv[]) {
     return helper_TTY_set(self, result, argc, argv, getIdent(PkInfo2Str(argv)));
 }
+#endif /* defined(__APPLE__) */

@@ -147,13 +147,13 @@ static attr header_attr[] = {{"ALIGN"}, {"ID"}, {"NAME"}, {0}};
 static attr hpane_attr[] = {{"CENTER"},   {"ID"},    {"LEFT"},  {"MAXWIDTH"},
                             {"MINWIDTH"}, {"RIGHT"}, {"STYLE"}, {0}};
 
-static attr img_attr[] = {{"ALT"},      {"BGAP"}, {"HREF"}, {"ISMAP"}, {"LGAP"}, {"MAXWIDTH"},
-                          {"MINWIDTH"}, {"RGAP"}, {"SRC"},  {"TGAP"},  {0}};
+static attr img_attr[HTML_IMG_ATTRIBUTES+1] = {{"ALT"},      {"BGAP"}, {"HREF"}, {"ISMAP"}, {"LGAP"}, {"MAXWIDTH"},
+                                               {"MINWIDTH"}, {"RGAP"}, {"SRC"},  {"TGAP"},  {0}};
 
-static attr input_attr[] = {{"CHARS"},  {"CHECKED"},  {"COL"},      {"COLS"},     {"DISABLED"},
-                            {"ENVVAR"}, {"MAXCHARS"}, {"MAXWIDTH"}, {"MINCHARS"}, {"MINWIDTH"},
-                            {"NAME"},   {"ROW"},      {"ROWS"},     {"SIZE"},     {"SRC"},
-                            {"TYPE"},   {"VALUE"},    {0}};
+static attr input_attr[HTML_INPUT_ATTRIBUTES+1] = {{"CHARS"},  {"CHECKED"},  {"COL"},      {"COLS"},     {"DISABLED"},
+                                                    {"ENVVAR"}, {"MAXCHARS"}, {"MAXWIDTH"}, {"MINCHARS"}, {"MINWIDTH"},
+                                                    {"NAME"},   {"ROW"},      {"ROWS"},     {"SIZE"},     {"SRC"},
+                                                    {"TYPE"},   {"VALUE"},    {0}};
 
 static attr insert_attr[] = {{"AFTER"},    {"ASIS"},     {"BORDER"}, {"HREF"},
                              {"MAXWIDTH"}, {"MINWIDTH"}, {0}};

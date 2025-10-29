@@ -286,7 +286,7 @@ Attribute numbers
 #define HTML_IMG_SRC 9
 #define HTML_IMG_TGAP 10
 #define HTML_IMG_WIDTH 11
-#define HTML_IMG_ATTRIBUTES 12
+#define HTML_IMG_ATTRIBUTES 10
 
 #define HTML_INPUT_CHARS 0
 #define HTML_INPUT_CHECKED 1

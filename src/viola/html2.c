@@ -784,7 +784,10 @@ HTTag* tagInfo;
             if (present[i]) {
                 /* Save STYLE attribute for later use in minor matching */
                 if (!strcasecmp(tagAttrNames[i], "STYLE")) {
-                    bstate->styleAttr = value[i];
+                    /* Copy the string since value[i] will be freed by SGML parser */
+                    if (bstate->styleAttr)
+                        free(bstate->styleAttr);
+                    bstate->styleAttr = saveString(value[i]);
                     /* Don't send AA for STYLE - will be sent as setStyleAttr in etag */
                 } else {
                     sendMessage1N2str(bstate->obj, "AA", tagAttrNames[i], value[i]);
@@ -1125,6 +1128,7 @@ void CB_HTML_etag(element_number) int element_number;
                 extern int WWW_TraceFlag;
                 if (WWW_TraceFlag) printf("### CB_HTML_etag: sending setStyleAttr with %s\n", bstate->styleAttr);
                 sendMessage1N1str(bstate->obj, "setStyleAttr", bstate->styleAttr);
+                free(bstate->styleAttr); /* Free the copied string */
                 bstate->styleAttr = NULL; /* Reset after use to avoid reuse */
             }
 
@@ -1363,11 +1367,13 @@ VObj* HTMLBuildObj(SGMLBuildInfoState* bstate, int parentWidth, SGMLTagMappingIn
 char* encodeURL(char* str)
 {
     char *s, *buffp = URLEncodeBuff, *encode;
+    unsigned char c;
 
-    while ((encode = URLEncodeSeq[*str++]))
+    while ((c = (unsigned char)*str++) && (encode = URLEncodeSeq[c])) {
         do {
             *buffp++ = *encode++;
         } while (*encode);
+    }
     *buffp++ = '\0';
 
     s = (char*)malloc(sizeof(char) * (buffp - URLEncodeBuff));

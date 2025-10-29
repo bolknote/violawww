@@ -17,6 +17,8 @@ src/viola/embeds/*.h
 # Test files  
 *.html
 *.stg
+*.v
+examples/
 
 # macOS
 .DS_Store

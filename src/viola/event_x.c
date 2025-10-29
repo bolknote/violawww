@@ -470,8 +470,8 @@ int eventLoop() {
                                     }
             */
             w = eventWindow(e);
-            mouse.x = mouseX(e);
-            mouse.y = mouseY(e);
+            mouse.x = mouseX(&e);
+            mouse.y = mouseY(&e);
 
             if (mouse_track) {
                 fprintf(stderr, "mouse.x=%d, mouse.y%d\n", mouse.x, mouse.y);

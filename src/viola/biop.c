@@ -239,6 +239,19 @@ int biOp(int op, Packet* p1, Packet* p2)
         p2->info = p2->info.p->info;
         p2->canFree = p2->info.p->canFree;
     }
+    /* Ensure types map into 0..3 domain (INT, CHR, FLT, STR) before table indexing */
+    if (p1->type > PKT_STR) {
+        char* s1 = PkInfo2Str(p1);
+        p1->type = PKT_STR;
+        p1->info.s = SaveString(s1);
+        p1->canFree = PK_CANFREE_STR;
+    }
+    if (p2->type > PKT_STR) {
+        char* s2 = PkInfo2Str(p2);
+        p2->type = PKT_STR;
+        p2->info.s = SaveString(s2);
+        p2->canFree = PK_CANFREE_STR;
+    }
     convPair = &((*biOpConvIdx[op].procTable)[p1->type][p2->type]);
     if ((convf = convPair->lf))
         convf(p1);

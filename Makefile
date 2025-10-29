@@ -116,6 +116,9 @@ help:
 	@echo "  vw         - Build VW browser (Motif interface)"
 	@echo "  libs       - Build all libraries"
 	@echo "  test       - Build and run all tests"
+	@echo "  asan       - Build with AddressSanitizer (ASan)"
+	@echo "  ubsan      - Build with UndefinedBehaviorSanitizer (UBSan)"
+	@echo "  san        - Build with ASan + UBSan"
 	@echo "  clean      - Remove object files"
 	@echo "  distclean  - Remove all build artifacts"
 	@echo "  check-64bit - Check for 64-bit migration issues (long->int truncation)"
@@ -339,6 +342,41 @@ distclean: clean
 	rm -f $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
 	rm -f $(VIOLA) $(VW)
 	@echo "Done"
+
+# ============================================================================
+# Sanitizer builds
+# ============================================================================
+
+.PHONY: asan
+asan:
+	@echo "=== Building with AddressSanitizer (ASan) ==="
+	@$(MAKE) clean
+	@$(MAKE) \
+		CC=clang \
+		CFLAGS='$(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address' \
+		CFLAGS_LIBS='$(CFLAGS_LIBS) -O1 -g -fno-omit-frame-pointer -fsanitize=address' \
+		LDFLAGS='$(LDFLAGS) -fsanitize=address' all
+	@echo "Tip: run with ASAN_OPTIONS=halt_on_error=1:strict_string_checks=1"
+
+.PHONY: ubsan
+ubsan:
+	@echo "=== Building with UndefinedBehaviorSanitizer (UBSan) ==="
+	@$(MAKE) clean
+	@$(MAKE) \
+		CC=clang \
+		CFLAGS='$(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=undefined' \
+		CFLAGS_LIBS='$(CFLAGS_LIBS) -O1 -g -fno-omit-frame-pointer -fsanitize=undefined' \
+		LDFLAGS='$(LDFLAGS) -fsanitize=undefined' all
+
+.PHONY: san
+san:
+	@echo "=== Building with ASan + UBSan ==="
+	@$(MAKE) clean
+	@$(MAKE) \
+		CC=clang \
+		CFLAGS='$(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined' \
+		CFLAGS_LIBS='$(CFLAGS_LIBS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined' \
+		LDFLAGS='$(LDFLAGS) -fsanitize=address,undefined' all
 
 .PHONY: install
 install: $(VW) $(VIOLA)

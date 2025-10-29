@@ -753,13 +753,19 @@ int tfed_processMouseInput(VObj* self)
             process_event(&e, ACTION_TOOL);
 
             /*tfed_searchAndHighlightStringFromPoint(tf, "viola");*/
+            /* object may have been freed during process_event */
+            if (!updateEStrUser(self))
+                return 0;
             return stat;
             break;
         case ButtonRelease:
 
             if (findWindowObject(e.xany.window))
                 process_event(&e, ACTION_TOOL);
-
+            /* object may have been freed during process_event */
+            tf = updateEStrUser(self);
+            if (!tf)
+                return 0;
             mapFromPixelToCharPosition(tf, mx, my, &cx, &cy, &px, &py);
             cy += tf->screen_row_offset;
 
@@ -814,6 +820,9 @@ int tfed_processMouseInput(VObj* self)
         default:
             if (findWindowObject(e.xany.window))
                 process_event(&e, ACTION_TOOL);
+            /* object may have been freed during process_event */
+            if (!updateEStrUser(self))
+                return 0;
             break;
         }
     }
@@ -4456,8 +4465,12 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         } else {
             TFStruct* selfTF = GET__TFStruct(self);
             if (currentUserObj) {
-                if (tf->editableP)
-                    replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
+                /* Validate that cached tf still matches the object's current TFStruct */
+                TFStruct* prevTF = GET__TFStruct(currentUserObj);
+                if (prevTF && prevTF == tf) {
+                    if (tf->editableP)
+                        replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
+                }
             }
             if (selfTF) {
                 if (selfTF->currentp) {

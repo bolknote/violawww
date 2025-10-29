@@ -214,9 +214,11 @@ char* HTParse(char* aName, char* relatedName, int wanted)
                 }
                 if (!p)
                     p = tail + strlen(tail); /* After hostname */
-                p--;                         /* End of hostname */
-                if (*p == '.')
-                    *p = (char)0; /* chop final . */
+                if (p > tail) {
+                    p--; /* End of hostname */
+                    if (*p == '.')
+                        *p = (char)0; /* chop final . */
+                }
             }
 #endif
         }
@@ -301,7 +303,7 @@ void HTSimplify(filename) char* filename;
                         ; /* prev slash */
                     if (q[0] == '/' && 0 != strncmp(q, "/../", 4) &&
                         !(q - 1 > filename && q[-1] == '/')) {
-                        strcpy(q, p + 3); /* Remove  /xxx/..	*/
+                        memmove(q, p + 3, strlen(p + 3) + 1); /* Remove  /xxx/..	*/
                         if (!*filename)
                             strcpy(filename, "/");
                         p = q - 1; /* Start again with prev slash 	*/
@@ -312,7 +314,7 @@ void HTSimplify(filename) char* filename;
 #endif
                     }
                 } else if ((p[1] == '.') && (p[2] == '/' || !p[2])) {
-                    strcpy(p, p + 2); /* Remove a slash and a dot */
+                    memmove(p, p + 2, strlen(p + 2) + 1); /* Remove a slash and a dot */
                 }
             }
         }

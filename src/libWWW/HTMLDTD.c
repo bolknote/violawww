@@ -294,7 +294,7 @@ static HTMLElement ol_ul_validSubElements[] = {
     HTML_SUB, HTML_SUP,  HTML_TT,       HTML_U,  HTML_UNDER, HTML_VAR, HTML_VINSERT,
 };
 
-#define p_validSubElementsCount 30
+#define p_validSubElementsCount 29
 static HTMLElement p_validSubElements[] = {
     HTML_A,     HTML_B,     HTML_BOLD,   HTML_CITE,     HTML_CMD,     HTML_CODE,
     HTML_DFN,   HTML_EM,    HTML_EMPH,   HTML_FOOTNOTE, HTML_I,       HTML_IMAGE,

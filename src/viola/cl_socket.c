@@ -262,21 +262,27 @@ int socket_open(char* proto, char* host, int port)
 
     if (strcmp("tcp", proto) == 0)
         stype = SOCK_STREAM;
-    else if (strcmp("udp", proto) != 0)
+    else if (strcmp("udp", proto) == 0)
         stype = SOCK_DGRAM;
     else
         return -1;
 
-    if ((addr.sin_addr.s_addr = inet_addr(host)) != -1) {
+    memset(&addr, 0, sizeof(addr));
+    if (inet_pton(AF_INET, host, &addr.sin_addr) == 1) {
         addr.sin_family = AF_INET;
     } else {
-        struct hostent* hp;
-
-        if ((hp = gethostbyname(host)) == NULL)
+        struct addrinfo hints;
+        struct addrinfo* res = NULL;
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_INET; /* IPv4 */
+        hints.ai_socktype = stype;
+        int gai_err = getaddrinfo(host, NULL, &hints, &res);
+        if (gai_err != 0 || !res)
             return -2;
-
-        bcopy(hp->h_addr, (char*)&addr.sin_addr, hp->h_length);
-        addr.sin_family = hp->h_addrtype;
+        const struct sockaddr_in* sa = (const struct sockaddr_in*)res->ai_addr;
+        addr.sin_family = AF_INET;
+        addr.sin_addr = sa->sin_addr;
+        freeaddrinfo(res);
     }
 
     if (port) {

@@ -15,11 +15,14 @@ typedef long VObj;
 
 #define eventWindow(e) ((e).xany.window)
 #define eventType(e) ((e).type)
-#define mouseX(e) (int)(((XButtonEvent*)&e)->x)
-#define mouseY(e) (int)(((XButtonEvent*)&e)->y)
-#define rootX(e) (int)(((XButtonEvent*)&e)->x_root)
-#define rootY(e) (int)(((XButtonEvent*)&e)->y_root)
-#define buttonNumber(e) (int)(((XButtonEvent*)&e)->button)
+/*
+ * Safe accessors: EXPECT a pointer to XEvent (XEvent*).
+ */
+#define mouseX(ep) ((int)((const XButtonEvent*)(ep))->x)
+#define mouseY(ep) ((int)((const XButtonEvent*)(ep))->y)
+#define rootX(ep) ((int)((const XButtonEvent*)(ep))->x_root)
+#define rootY(ep) ((int)((const XButtonEvent*)(ep))->y_root)
+#define buttonNumber(ep) ((int)((const XButtonEvent*)(ep))->button)
 #define eventRegionX(e) ((e).eventSpecific.exposure.regionX)
 #define eventExposeX(e) (int)((e).xexpose.x)
 #define eventExposeY(e) (int)((e).xexpose.y)

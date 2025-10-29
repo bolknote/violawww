@@ -210,17 +210,38 @@ PUBLIC int HTParseInet ARGS2(SockA*, sin, CONST char*, str) {
         if (TRACE)
             fprintf(stderr, "HTTCP: Calling gethostbyname(%s)\n", host);
 #endif
-        phost = gethostbyname(host); /* See netdb.h */
-#ifdef MVS
-        if (TRACE)
-            fprintf(stderr, "HTTCP: gethostbyname() returned %d\n", phost);
-#endif
-        if (!phost) {
-            if (TRACE)
-                fprintf(stderr, "HTTPAccess: Can't find internet node name `%s'.\n", host);
-            return -1; /* Fail? */
+        /* Prefer getaddrinfo to avoid alignment issues with hostent */
+        {
+            struct addrinfo hints;
+            struct addrinfo* res = NULL;
+            memset(&hints, 0, sizeof(hints));
+            hints.ai_family = AF_INET; /* IPv4 only to match SockA */
+            hints.ai_socktype = SOCK_STREAM;
+            int gai_err = getaddrinfo(host, NULL, &hints, &res);
+            if (gai_err != 0 || !res) {
+                if (TRACE)
+                    fprintf(stderr, "HTTPAccess: Can't resolve `%s': %s\n", host,
+                            gai_err ? gai_strerror(gai_err) : "no result");
+                return -1;
+            }
+            /* Copy the first IPv4 address */
+            struct addrinfo* it = res;
+            int copied = 0;
+            for (; it; it = it->ai_next) {
+                if (it->ai_family == AF_INET && it->ai_addr && it->ai_addrlen >= sizeof(struct sockaddr_in)) {
+                    const struct sockaddr_in* sa = (const struct sockaddr_in*)it->ai_addr;
+                    sin->sin_addr = sa->sin_addr;
+                    copied = 1;
+                    break;
+                }
+            }
+            freeaddrinfo(res);
+            if (!copied) {
+                if (TRACE)
+                    fprintf(stderr, "HTTPAccess: No IPv4 address for `%s'\n", host);
+                return -1;
+            }
         }
-        memcpy(&sin->sin_addr, phost->h_addr, phost->h_length);
     }
 
     if (TRACE)

@@ -621,6 +621,8 @@ long int meth_txtDisp_freeSelf(VObj* self, Packet* result, int argc, Packet argv
 
             /* purge cache. else the next tf gets toasted */
             updateEStrUser(NULL);
+            /* clear dangling pointer to prevent UAF */
+            SET__TFStruct(self, NULL);
         }
     }
     meth_txt_freeSelf(self, result, argc, argv);

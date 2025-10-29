@@ -348,9 +348,16 @@ void CB_HTML_new() {
 void CB_HTML_data(str, size) char* str;
 int size;
 {
-    SGMLBuildInfoState* bstate = &SBI.stack[SBI.stacki];
+    SGMLBuildInfoState* bstate;
     char tempbuf[8192];
     int converted_size;
+
+    /* Bounds check for stack access */
+    if (SBI.stacki < 0 || SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_data: stacki out of bounds: %d\n", SBI.stacki);
+        return;
+    }
+    bstate = &SBI.stack[SBI.stacki];
 
     /* Check for HTML comments in the data */
     if (size >= 7 && strncmp(str, "<!--", 4) == 0) {
@@ -368,15 +375,7 @@ int size;
                 inside_wayback_comment = 0;
                 return;
             }
-            
-            /* Check for other Wayback Machine comments that should be ignored */
-            if (strstr(comment_buf, "FILE ARCHIVED ON") ||
-                strstr(comment_buf, "INTERNET ARCHIVE") ||
-                strstr(comment_buf, "WAYBACK MACHINE") ||
-                strstr(comment_buf, "JAVASCRIPT APPENDED BY WAYBACK")) {
-                return;
-            }
-            
+
             /* Ignore all other comments */
             return;
         }
@@ -432,6 +431,16 @@ int dataLength;
     SGMLBuildInfoState* bstate;
     SGMLBuildInfoState* parent_bstate;
 
+    /* Ignore entities inside Wayback Toolbar comments */
+    if (inside_wayback_comment) {
+        return;
+    }
+
+    /* Bounds check for stack access */
+    if (SBI.stacki < 1 || SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_special_entity: stacki out of bounds: %d\n", SBI.stacki);
+        return;
+    }
     parent_bstate = &SBI.stack[SBI.stacki - 1];
     bstate = &SBI.stack[SBI.stacki];
     /*
@@ -439,7 +448,7 @@ int dataLength;
                     GET_name(bstate->obj), entity_number);
     */
 
-    if (bstate->obj && parent_bstate &&
+    if (bstate->obj && parent_bstate && parent_bstate->tmi &&
         (parent_bstate->tmi->flushAlwaysP || parent_bstate->tmi->flushOnSubTagP)) {
         int src_starti, src_endi, size;
         char* cp;
@@ -498,28 +507,24 @@ HTTag* tagInfo;
         inside_ignore_tag = 1;
         return;
     }
-    
-    /* Handle Wayback Toolbar comments */
-    if (element_number == HTML_COMMENT) {
-        /* Try to get comment content from value array */
-        if (value && value[0]) {
-            /* Check if this is a Wayback comment by examining the tag content */
-            char* comment_text = value[0];
-            if (strstr(comment_text, "BEGIN WAYBACK TOOLBAR INSERT")) {
-                inside_wayback_comment = 1;
-                return;
-            }
-            if (strstr(comment_text, "END WAYBACK TOOLBAR INSERT")) {
-                inside_wayback_comment = 0;
-                return;
-            }
-        }
-        
-        /* For other comments, just ignore them */
+
+    /* Ignore all tags inside Wayback Toolbar comments */
+    if (inside_wayback_comment) {
         return;
     }
 
+    /* Bounds check for stack access */
+    if (SBI.stacki < 0 || SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_stag: stacki out of bounds: %d\n", SBI.stacki);
+        return;
+    }
     parent_bstate = &SBI.stack[SBI.stacki];
+    
+    /* Check if stack overflow would occur before incrementing */
+    if (SBI.stacki >= 99) {
+        fprintf(stderr, "CB_HTML_stag: stack overflow, max nesting depth exceeded\n");
+        return;
+    }
     SBI.stacki++;
     bstate = &SBI.stack[SBI.stacki];
 
@@ -536,7 +541,8 @@ HTTag* tagInfo;
     /* make parent object its own-- the *first time* that the
      * inline object becomes a container.
      */
-    if (parent_bstate->tmi->inlineP &&
+    if (parent_bstate->tmi && bstate->tmi &&
+        parent_bstate->tmi->inlineP &&
         !bstate->tmi->inlineP && /* don't copy if sub-obj is inlined */
         parent_bstate->obj && !GET__children(parent_bstate->obj)) {
         extern int global_cloneID;
@@ -621,7 +627,12 @@ HTTag* tagInfo;
             }
             /*printf("COPY (for n-2) str={%s}\n", cp);*/
 
-            parent_parent_bstate = &SBI.stack[SBI.stacki - 2];
+            /* Bounds check before accessing stack[SBI.stacki - 2] */
+            if (SBI.stacki >= 2 && SBI.stacki < 100) {
+                parent_parent_bstate = &SBI.stack[SBI.stacki - 2];
+            } else {
+                parent_parent_bstate = NULL;
+            }
             if (parent_parent_bstate && parent_parent_bstate->obj) {
                 if (GET_label(parent_parent_bstate->obj))
                     free(GET_label(parent_parent_bstate->obj));
@@ -1016,8 +1027,14 @@ void CB_HTML_etag(element_number) int element_number;
         return;
     }
 
-    bstate = &SBI.stack[SBI.stacki--];
-    if (SBI.stacki >= 0)
+    /* Bounds check and fix stack access order */
+    if (SBI.stacki < 0 || SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_etag: stacki out of bounds: %d\n", SBI.stacki);
+        return;
+    }
+    bstate = &SBI.stack[SBI.stacki];
+    SBI.stacki--;
+    if (SBI.stacki >= 0 && SBI.stacki < 100)
         parent_bstate = &SBI.stack[SBI.stacki];
     else
         parent_bstate = NULL;
@@ -1025,6 +1042,11 @@ void CB_HTML_etag(element_number) int element_number;
     if (!bstate->obj) {
         ++SBI.stacki;
         fprintf(stderr, "!!!!!!!!!!!! internal error: bstate->obj == NULL.\n");
+        return;
+    }
+
+    /* Ignore data processing inside Wayback Toolbar comments */
+    if (inside_wayback_comment) {
         return;
     }
 
@@ -1223,10 +1245,18 @@ void CB_HTML_etag(element_number) int element_number;
 }
 
 void CB_HTML_end() {
-    SGMLBuildInfoState* bstate = &SBI.stack[SBI.stacki];
+    SGMLBuildInfoState* bstate;
     int i, elemNum = 0; /*lame*/
-    char* tag = bstate->tag;
+    char* tag;
     HTTag* htagp;
+
+    /* Bounds check for stack access */
+    if (SBI.stacki < 0 || SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_end: stacki out of bounds: %d\n", SBI.stacki);
+        return;
+    }
+    bstate = &SBI.stack[SBI.stacki];
+    tag = bstate->tag;
 
     SBI.endP = 1;
 
@@ -1573,7 +1603,12 @@ char** password;
     free(result);
 }
 
-void nullifyCallerDataBuff() { dataBuff[SBI.stack[SBI.stacki + 1].dataBuffIdx_localStart] = '\0'; }
+void nullifyCallerDataBuff() {
+    /* Bounds check for stack access */
+    if (SBI.stacki >= 0 && SBI.stacki < 99) {
+        dataBuff[SBI.stack[SBI.stacki + 1].dataBuffIdx_localStart] = '\0';
+    }
+}
 
 Bool initHotList() {
     char *url, *desc, *date, *cp;

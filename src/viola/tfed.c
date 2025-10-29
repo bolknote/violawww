@@ -25,16 +25,6 @@
 #include <strings.h>
 #include <unistd.h>
 
-extern void process_event();
-extern int countBreaks();
-extern int insertStr();
-extern int replaceNodeLine2();
-extern int rowAdjustOffset();
-extern char* decodeURL();
-extern int replaceNodeLine();
-extern int updateHilite();
-extern int mapFromPixelToCharPosition();
-extern int tfed_placeCursor();
 #include "attr.h"
 #include "cexec.h"
 #include "cl_txtDisp.h"
@@ -50,6 +40,17 @@ extern int tfed_placeCursor();
 #include "slotaccess.h"
 #include "tfed.h"
 #include "tfed_i.h"
+
+extern void process_event(VObj* self, Packet* packet);
+extern int countBreaks(TFChar* tfcp);
+extern int insertStr(TFStruct* tf, int split, TFLineNode* source);
+extern int replaceNodeLine2(TFLineNode* to, TFLineNode* from, int start, int length, int freeOldSpaceP, MemoryGroup* mg);
+extern int rowAdjustOffset(TFStruct* tf, int delta);
+extern char* decodeURL(char* url);
+extern int replaceNodeLine(TFLineNode* to, TFLineNode* from, int freeOldSpaceP, MemoryGroup* mg);
+extern int updateHilite(TFStruct* tf, int x1, int y1, int x2, int y2, int mode);
+extern int mapFromPixelToCharPosition(TFStruct* tf, int px, int py, int *cx, int *cy, int *exact_px, int *exact_py);
+extern int tfed_placeCursor(VObj* self, int mx, int my);
 
 int MSTAT_tfed = 0;
 int MSTAT_tfed_convertNodeLinesToStr = 0;
@@ -1924,9 +1925,7 @@ int tfed_set_wrap(TFStruct* tf, int wrap)
     return tf->wrap;
 }
 
-void TFCInsertChar(tfcArray, col, tfcp) TFChar tfcArray[];
-int col;
-TFChar* tfcp;
+void TFCInsertChar(TFChar tfcArray[], int col, TFChar* tfcp)
 {
     TFCShiftStr(tfcArray, col, 1);
     TFCCopy(tfcArray + col, tfcp);
@@ -2441,9 +2440,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
      * RETURN: lines moved in the signed direction.
      * span accumulates pixel span of scrolle lines
      */
-    int moveOffset(tf, dir, span) TFStruct* tf;
-    int dir;
-    int* span;
+    int moveOffset(TFStruct* tf, int dir, int* span)
     {
         int lineTraversed = 0, linesToTraverse;
 
@@ -2498,10 +2495,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
         }
     }
 
-    int jumpLine(tf, w, fontID, destLine) TFStruct* tf;
-    Window w;
-    int fontID;
-    int destLine;
+    int jumpLine(TFStruct* tf, Window w, int fontID, int destLine)
     {
         int delta = moveLine(tf, destLine - tf->current_row);
         return delta;
@@ -2510,10 +2504,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
     /*
      * copy node line
      */
-    int replaceNodeLine(to, from, freeOldSpaceP, mg) TFLineNode* to;
-    TFLineNode* from;
-    int freeOldSpaceP;
-    MemoryGroup* mg;
+    int replaceNodeLine(TFLineNode* to, TFLineNode* from, int freeOldSpaceP, MemoryGroup* mg)
     {
         if (!from) {
             /*		fprintf(stderr, "*** replaceNodeLine: FROM == NULL\n");*/
@@ -2571,11 +2562,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
     /*
      * copy node line
      */
-    int replaceNodeLine2(to, from, start, length, freeOldSpaceP, mg) TFLineNode* to;
-    TFLineNode* from;
-    int start, length;
-    int freeOldSpaceP;
-    MemoryGroup* mg;
+    int replaceNodeLine2(TFLineNode* to, TFLineNode* from, int start, int length, int freeOldSpaceP, MemoryGroup* mg)
     {
         if (!from->linep) {
             /*		fprintf(stderr, "*** replaceNodeLine2: FROM->linep == NULL\n");*/
@@ -2619,7 +2606,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
 
     /* assumes string pointed to be 'cp' is delimiter escapped-- no '(' and ')'
      */
-    char* probeTagBody(cp) char* cp;
+    char* probeTagBody(char* cp)
     {
         int paran = 0;
         /*	char lc = '\0', llc = '\0';*/
@@ -2639,7 +2626,7 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
         return 0;
     }
 
-int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
+int addCtrlChar(TFCBuildInfo* buildInfo)
 {
     char c, *s, *cp;
     int i, j, stat, done = 0;
@@ -3234,7 +3221,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      * fontID = current font id
      * retun lineCount
      */
-    int tfed_buildLines(buildInfo) TFCBuildInfo* buildInfo;
+    int tfed_buildLines(TFCBuildInfo* buildInfo)
     {
         TFChar* tfcp;
         char c, *strp;
@@ -3552,9 +3539,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
 #define VERBOSE_SPLITLINE___
     /* this function sucks
      */
-    int splitLine(buildInfo, split, tagCarriage) TFCBuildInfo* buildInfo;
-    int split;
-    int tagCarriage;
+    int splitLine(TFCBuildInfo* buildInfo, int split, int tagCarriage)
     {
         TFChar tfc, *tfcp;
         TFLineNode* newp;
@@ -3851,7 +3836,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int deleteLineNode(tf) TFStruct* tf;
+    int deleteLineNode(TFStruct* tf)
     {
         TFLineNode* lp;
         int ret = 0;
@@ -3897,9 +3882,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      * insert line above current line,
      * then set current line pointing to the new line
      */
-    TFLineNode* insertLineNode(tf, currentp, initLineP) TFStruct* tf;
-    TFLineNode* currentp;
-    int initLineP;
+    TFLineNode* insertLineNode(TFStruct* tf, TFLineNode* currentp, int initLineP)
     {
         TFLineNode* newp = (TFLineNode*)Vmalloc(tf->mg, sizeof(struct TFLineNode));
 
@@ -3944,9 +3927,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return newp;
     }
 
-    TFLineNode* insertBelowLineNode(tf, currentp, initLineP) TFStruct* tf;
-    TFLineNode* currentp;
-    int initLineP;
+    TFLineNode* insertBelowLineNode(TFStruct* tf, TFLineNode* currentp, int initLineP)
     {
         TFLineNode* newp = (TFLineNode*)Vmalloc(tf->mg, sizeof(TFLineNode));
 
@@ -3993,8 +3974,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return newp;
     }
 
-    char* convertNodeLinesToStr(self, headp) VObj* self;
-    TFLineNode* headp;
+    char* convertNodeLinesToStr(VObj* self, TFLineNode* headp)
     {
         TFLineNode* savep;
         char *newStrp, *cp, c;
@@ -4202,7 +4182,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return newStrp;
     }
 
-    void freeNodeLines(tf) TFStruct* tf;
+    void freeNodeLines(TFStruct* tf)
     {
         TFLineNode *nodep, *nextp;
 
@@ -4230,7 +4210,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         tf->offsetp = 0;
     }
 
-    void dumpNodeLines(tf) TFStruct* tf;
+    void dumpNodeLines(TFStruct* tf)
     {
         int length;
         TFLineNode* currentp;
@@ -4258,8 +4238,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         printf("-------------------------------\n");
     }
 
-    int setBreaks(tf, currentp) TFStruct* tf;
-    TFLineNode* currentp;
+    int setBreaks(TFStruct* tf, TFLineNode* currentp)
     {
         int segpx = tf->xUL;
         TFChar* tfcp = currentp->linep;
@@ -4304,7 +4283,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return currentp->breakc;
     }
 
-    int setCurrentFontID(tf) TFStruct* tf;
+    int setCurrentFontID(TFStruct* tf)
     {
         TFChar* tfcp;
 
@@ -4338,9 +4317,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return tf->currentFontID;
     }
 
-    int TimedDrawCursor(self, argv, argc) VObj* self;
-    Packet argv[]; /* dummy */
-    int argc;      /* dummy */
+    int TimedDrawCursor(VObj* self, Packet argv[], int argc)
     {
         TFStruct* tf = updateEStrUser(self);
 
@@ -4362,9 +4339,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int TimedEraseCursor(self, argv, argc) VObj* self;
-    Packet argv[]; /* dummy */
-    int argc;      /* dummy */
+    int TimedEraseCursor(VObj* self, Packet argv[], int argc)
     {
         TFStruct* tf = updateEStrUser(self);
 
@@ -4386,7 +4361,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    void invertCursor(tf) TFStruct* tf;
+    void invertCursor(TFStruct* tf)
     {
         /*printf(">>>>>>> invertCursor(): col=%d row=%d px=%d py=%d row_offset=%d...\n",
                 tf->current_col, tf->current_row,
@@ -4424,7 +4399,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         XFlush(display);
     }
 
-    void drawCursor(tf) TFStruct* tf;
+    void drawCursor(TFStruct* tf)
     {
         if (!tf)
             return;
@@ -4442,7 +4417,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         }
     }
 
-    void eraseCursor(tf) TFStruct* tf;
+    void eraseCursor(TFStruct* tf)
     {
         if (!tf)
             return;
@@ -4458,9 +4433,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         }
     }
 
-    void drawChar(tf, tfcp, px, py) TFStruct* tf;
-    TFChar* tfcp;
-    int px, py;
+    void drawChar(TFStruct* tf, TFChar* tfcp, int px, int py)
     {
         xcharitem.font = FontFont(TFCFontID(tfcp));
         xcharitem.chars[0] = TFCChar(tfcp);
@@ -4468,7 +4441,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         XFlush(display);
     }
 
-    TFStruct* updateEStrUser(self) VObj* self;
+    TFStruct* updateEStrUser(VObj* self)
     {
         static VObj* currentUserObj = 0;
         static TFStruct* tf = 0;
@@ -4499,8 +4472,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 0;
     }
 
-    int TFCShiftStr(tfcArray, starti, shift) TFChar tfcArray[];
-    int starti, shift;
+    int TFCShiftStr(TFChar tfcArray[], int starti, int shift)
     {
         int length, shifts = 0;
         int i, j = 0;
@@ -4526,10 +4498,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return shifts;
     }
 
-    void dumpTFCArray(mask, tfcbuff, tagInfo, tagInfoCount) int mask;
-    TFChar tfcbuff[];
-    TagInfo* tagInfo;
-    int tagInfoCount;
+    void dumpTFCArray(int mask, TFChar tfcbuff[], TagInfo* tagInfo, int tagInfoCount)
     {
         TFChar* tfcp;
         int j = 0, tagID;
@@ -4580,8 +4549,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         }
     }
 
-    int translateCol2Px(tfcp, col) TFChar* tfcp;
-    int col;
+    int translateCol2Px(TFChar* tfcp, int col)
     {
         int px = 0;
 
@@ -4594,8 +4562,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return px;
     }
 
-    int translatePx2Col(tfcp, px) TFChar* tfcp;
-    int px;
+    int translatePx2Col(TFChar* tfcp, int px)
     {
         int pi = 0, col = 0;
 
@@ -4608,7 +4575,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return col;
     }
 
-    void placeCursorWithinStr(tf) TFStruct* tf;
+    void placeCursorWithinStr(TFStruct* tf)
     {
         /*	printf("pcws: %d %d\n",tf->current_col,tf->screen_col_offset);*/
         /* make sure current_col is within the string range */
@@ -4624,7 +4591,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
 
     /* make use of wrap info
      */
-    int countBreaks(tfcp) TFChar* tfcp;
+    int countBreaks(TFChar* tfcp)
     {
         int n = 0;
 
@@ -4637,7 +4604,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return n;
     }
 
-    void placeCursor(tf) TFStruct* tf;
+    void placeCursor(TFStruct* tf)
     {
         TFLineNode* currentp;
         TFChar* tfcp;
@@ -4708,8 +4675,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         tf->csr_py = ypos;
     }
 
-    int moveLine(tf, dir) TFStruct* tf;
-    int dir;
+    int moveLine(TFStruct* tf, int dir)
     {
         int delta, actual_delta;
         int cursorWasWithinField = cursorWithinField(tf);
@@ -4763,8 +4729,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return delta;
     }
 
-    int rowAdjustOffset(tf, delta) TFStruct* tf;
-    int delta;
+    int rowAdjustOffset(TFStruct* tf, int delta)
     {
         int actual_offset_delta = 0;
 
@@ -4780,8 +4745,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return actual_offset_delta;
     }
 
-    int rowAdjustLine(tf, delta) TFStruct* tf;
-    int delta;
+    int rowAdjustLine(TFStruct* tf, int delta)
     {
         if (tfed_scroll_delta(tf, delta)) {
             refreshMode = 0;
@@ -4791,8 +4755,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return delta;
     }
 
-    int moveLineNode(tf, dir) TFStruct* tf;
-    int dir;
+    int moveLineNode(TFStruct* tf, int dir)
     {
         int lineTraversed = 0, linesToTraverse;
 
@@ -4853,9 +4816,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     /*
      * draws a line (string), using the text-field info
      */
-    void drawLine(tf, currentp, yoffset) TFStruct* tf;
-    TFLineNode* currentp;
-    int* yoffset;
+    void drawLine(TFStruct* tf, TFLineNode* currentp, int* yoffset)
     {
         int fontyoffset, length;
 
@@ -4885,10 +4846,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         */
     }
 
-    int drawLineSeg(tf, currentp, yoffset, fontyoffset) TFStruct* tf;
-    TFLineNode* currentp;
-    int* yoffset;
-    int* fontyoffset;
+    int drawLineSeg(TFStruct* tf, TFLineNode* currentp, int* yoffset, int* fontyoffset)
     {
         TFChar* segheadtfcp = currentp->linep;
         TFChar* tfcp = currentp->linep;
@@ -5166,8 +5124,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     }
 
     /* find out total width */
-    int lineSegWidth(tf, currentp) TFStruct* tf;
-    TFLineNode* currentp;
+    int lineSegWidth(TFStruct* tf, TFLineNode* currentp)
     {
         TFChar* segheadtfcp = currentp->linep;
         TFChar* tfcp = currentp->linep;
@@ -5272,9 +5229,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     /* draws a line(string), using the text-field info
      * line linesOffset is offset from first line on screen
      */
-    int drawLineOffset(tf, linesOffset, clearBG) TFStruct* tf;
-    int linesOffset;
-    int clearBG;
+    int drawLineOffset(TFStruct* tf, int linesOffset, int clearBG)
     {
         int i, yoffset, fontyoffset;
         TFLineNode* currentp;
@@ -5309,7 +5264,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int renderTF(tf) TFStruct* tf;
+    int renderTF(TFStruct* tf)
     {
         TFLineNode* currentp;
         TFChar *linep, *tfcp;
@@ -5472,9 +5427,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      * scroll lower half page downward,
      * push open `delta' number of lines, beginning at `offset' rows
      */
-    int scrollDownLowerPart(tf, offset, span) TFStruct* tf;
-    int offset;
-    int span;
+    int scrollDownLowerPart(TFStruct* tf, int offset, int span)
     {
         TFLineNode* currentp;
         int i, upper = 0;
@@ -5495,9 +5448,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int scrollDownLowerPartNEW(tf, offset, span) TFStruct* tf;
-    int offset;
-    int span;
+    int scrollDownLowerPartNEW(TFStruct* tf, int offset, int span)
     {
         TFLineNode* currentp;
         int i, upper = 0;
@@ -5518,9 +5469,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int scrollUpLowerPart(tf, offset, span) TFStruct* tf;
-    int offset;
-    int span;
+    int scrollUpLowerPart(TFStruct* tf, int offset, int span)
     {
         TFLineNode* currentp = tf->offsetp;
         int i, upper = 0;
@@ -5578,9 +5527,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int scrollUpLowerPartNEW(tf, offset, span) TFStruct* tf;
-    int offset;
-    int span;
+    int scrollUpLowerPartNEW(TFStruct* tf, int offset, int span)
     {
         TFLineNode* currentp = tf->offsetp;
         int i, upper = 0;
@@ -5622,11 +5569,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      * Returns: 1 if not the end-of-line.
      *          0 if end-of-line is encountered.
      */
-    int collectCharsToShift(tf, currentp, colp, pwidthp, delta) TFStruct* tf;
-    TFLineNode* currentp;
-    int* colp;
-    int* pwidthp;
-    int* delta;
+    int collectCharsToShift(TFStruct* tf, TFLineNode* currentp, int* colp, int* pwidthp, int* delta)
     {
         TFChar* tfcp = currentp->linep;
 
@@ -5659,10 +5602,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     /* travere to right-side edge of field
      * move probepx to just one char before crossing the right edge
      */
-    int traverseToRightEdge(tfcArray, pwidthlimit, pxp, colp) TFChar* tfcArray;
-    int pwidthlimit;
-    int* pxp;
-    int* colp;
+    int traverseToRightEdge(TFChar* tfcArray, int pwidthlimit, int* pxp, int* colp)
     {
         TFChar* tfcp;
         int probepx = *pxp;
@@ -5713,9 +5653,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     }
 
 #define VERBOSE_SCROLLINEFORWARD__
-    int scrollLineForward(tf, delta, col) TFStruct* tf;
-    int delta;
-    int col;
+    int scrollLineForward(TFStruct* tf, int delta, int col)
     {
         int sy;
         int pwidth = 0;
@@ -5880,8 +5818,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
 
     /*in tfed2.c: int scrollLineBackward(tf, delta, col)*/
 
-    int tfed_scroll_delta(tf, offsetdir) TFStruct* tf;
-    int offsetdir;
+    int tfed_scroll_delta(TFStruct* tf, int offsetdir)
     {
         int i, h, linesToMove, span, limit, py, probepy, fonty;
         TFLineNode* currentp;
@@ -6011,10 +5948,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         }
     }
 
-    int mapFromPixelToCharPosition(tf, px, py, cx, cy, exact_px, exact_py) TFStruct* tf;
-    int px, py;
-    int *cx, *cy;
-    int *exact_px, *exact_py;
+    int mapFromPixelToCharPosition(TFStruct* tf, int px, int py, int *cx, int *cy, int *exact_px, int *exact_py)
     {
         TFLineNode* currentp;
         TFChar* tfcp;
@@ -6094,8 +6028,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     /*
      * an unsophisticated expose handler (simple mod of renderTF())
      */
-    int tfed_expose(self, x, y, width, height) VObj* self;
-    int x, y, width, height;
+    int tfed_expose(VObj* self, int x, int y, int width, int height)
     {
         TFStruct* tf = updateEStrUser(self);
         TFLineNode* currentp;
@@ -6173,8 +6106,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int tfed_append(tf, str) TFStruct* tf;
-    char* str;
+    int tfed_append(TFStruct* tf, char* str)
     {
         /*	TFLineNode *currentp;*/
         TFLineNode* insertp = tf->currentp;
@@ -6258,10 +6190,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int LogicOrTFCFlag(tfcp, from, to, val) TFChar* tfcp;
-    int from;
-    int to;
-    int val;
+    int LogicOrTFCFlag(TFChar* tfcp, int from, int to, int val)
     {
         int i = from;
 
@@ -6275,10 +6204,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return i;
     }
 
-    int LogicAndTFCFlag(tfcp, from, to, val) TFChar* tfcp;
-    int from;
-    int to;
-    int val;
+    int LogicAndTFCFlag(TFChar* tfcp, int from, int to, int val)
     {
         int i = from;
 
@@ -6296,9 +6222,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      *       RANGEMODE_CLIP clip
      *       RANGEMODE_DELETE delete
      */
-    char* rangeOperation(tf, from_cx, from_cy, to_cx, to_cy, drawP, underlineP, mode) TFStruct* tf;
-    int from_cx, from_cy, to_cx, to_cy;
-    int drawP, underlineP, mode;
+    char* rangeOperation(TFStruct* tf, int from_cx, int from_cy, int to_cx, int to_cy, int drawP, int underlineP, int mode)
     {
         TFLineNode *currentp = tf->firstp, *lastp = NULL, *nextp;
         TFChar* tfcp;
@@ -6479,10 +6403,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         }
     }
 
-    int lineFlagSet(tf, ln, cn, mask, op) TFStruct* tf;
-    int ln, cn;
-    int mask;
-    int op;
+    int lineFlagSet(TFStruct* tf, int ln, int cn, int mask, int op)
     {
         TFLineNode* currentp = tf->firstp;
         TFChar* tfcp;
@@ -6514,7 +6435,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
      * Used to set num_of_lines without rendering
      * bug: does not take breakc into account
      */
-    int scanVerticalMetrics(tf) TFStruct* tf;
+    int scanVerticalMetrics(TFStruct* tf)
     {
         TFLineNode* currentp;
         TFChar *linep, *tfcp;
@@ -6657,8 +6578,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int tfed_setReverseMaskInButtonRange(tf, boolval) TFStruct* tf;
-    int boolval;
+    int tfed_setReverseMaskInButtonRange(TFStruct* tf, int boolval)
     {
         TFChar *tfcp, *tfcpOrig;
         int i = tf->current_col;
@@ -6717,8 +6637,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    int tfed_setReliefMaskInButtonRange(tf, boolval) TFStruct* tf;
-    int boolval;
+    int tfed_setReliefMaskInButtonRange(TFStruct* tf, int boolval)
     {
         TFChar *tfcp, *tfcpOrig;
         int i = tf->current_col;
@@ -6781,9 +6700,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 1;
     }
 
-    TFPic* tfed_addPicFromFile(pics, id, src) TFPic** pics;
-    char* id;
-    char* src;
+    TFPic* tfed_addPicFromFile(TFPic** pics, char* id, char* src)
     {
         TFPic *pic, *picp;
         int largestID = 0, len, span = 0;
@@ -6874,8 +6791,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         return 0;
     }
 
-    TFPic* tfed_addPic(pics, oldpic) TFPic** pics;
-    TFPic* oldpic;
+    TFPic* tfed_addPic(TFPic** pics, TFPic* oldpic)
     {
         TFPic *pic, *picp;
         int largestID = 0, len, span = 0;
@@ -6910,7 +6826,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
     int filesToFreeCount = 0;
     char* filesToFree[20];
 
-    void tfed_registerTmpFileToFree(f) char* f;
+    void tfed_registerTmpFileToFree(char* f)
     {
         if (filesToFreeCount >= 19) {
             /*		fprintf(stderr, "warning, garbage collection in progress.\n");
@@ -6921,7 +6837,7 @@ int addCtrlChar(buildInfo) TFCBuildInfo* buildInfo;
         filesToFree[filesToFreeCount++] = saveString(f);
     }
 
-    void tfed_FreeTmpFileToFree(freeP) int freeP;
+    void tfed_FreeTmpFileToFree(int freeP)
     {
         int i = filesToFreeCount;
 

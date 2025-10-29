@@ -243,17 +243,17 @@ int load_objects_slots(FILE* fp, long (*slotv)[100][2], int* slotc)
             } else if (c == '{') {
                 break;
             } else if (!isspace(c)) {
+                if (labeli >= SLOT_LABEL_SIZE - 1) {
+                    label[SLOT_LABEL_SIZE - 1] = '\0';
+                    fprintf(stderr, "unreasonably large slot label:\"%s\"\n", label);
+                    return 0;
+                }
                 label[labeli++] = c;
-            }
-            if (labeli > SLOT_LABEL_SIZE) {
-                label[labeli] = '\0';
-                fprintf(stderr, "unreasonably large slot label:\"%s\"\n", label);
-                return 0;
             }
             llc = lc;
             lc = c;
         }
-        label[labeli++] = '\0';
+        label[labeli] = '\0';
 
         /*		printf("..label = \"%s\"\n", label);*/
 

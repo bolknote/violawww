@@ -14,7 +14,7 @@
 #define convert_utf8_buffer(str, size) HTCharset_utf8_to_ascii_buffer(str, size)
 
 char* HTAppName = "ViolaWWW";
-char* HTAppVersion = "3.1";
+char* HTAppVersion = "4.0";
 
 #define PRINT_TAG_DELIMS
 int printTagDelims = 0;

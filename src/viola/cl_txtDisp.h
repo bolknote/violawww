@@ -11,6 +11,7 @@ extern ClassInfo class_txtDisp;
 typedef long VObj;
 #endif
 typedef struct Packet Packet;
+typedef struct TFStruct TFStruct;
 
 long int helper_txtDisp_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
 long int helper_txtDisp_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID);
@@ -66,7 +67,7 @@ long int meth_txtDisp_shownDepend();
 long int meth_txtDisp_totalLineCount();
 long int meth_txtDisp_setRevVideoFlag();
 
-long int helper_txtDisp_updateShownInfo();
+long int helper_txtDisp_updateShownInfo(TFStruct* tf);
 int help_txtDisp_shownPositionV();
 
 long meth_txtDisp_test4();

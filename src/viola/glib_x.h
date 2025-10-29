@@ -10,6 +10,9 @@
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
 
+/* Forward declarations */
+typedef long VObj;
+
 #define eventWindow(e) ((e).xany.window)
 #define eventType(e) ((e).type)
 #define mouseX(e) (int)(((XButtonEvent*)&e)->x)
@@ -286,7 +289,7 @@ char* GLGetFGColor();
 char* GLGetBDColor();
 char* GLGetCRColor();
 void GLUpdateColorReference();
-ColorInfo* GLPrepareObjColor();
+ColorInfo* GLPrepareObjColor(VObj* self);
 void GLDumpColorRef();
 
 /* GIF functions */

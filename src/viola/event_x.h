@@ -37,9 +37,9 @@ typedef struct AcceleratorInfo {
 extern int init_event();
 extern int eventLoop();
 
-extern long scheduleEvent();
+extern long scheduleEvent(int delay, long (*func)(), VObj* obj, int argc, Packet* argv);
 extern int cancelEventByObject();
-extern int cancelEvent();
+extern int cancelEvent(long timeInfoID);
 extern void dumpSchedule();
 
 void modalLoop();

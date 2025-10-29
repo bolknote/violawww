@@ -859,7 +859,7 @@ int tfed_placeCursor(VObj* self, int mx, int my)
             int cx, cy, actual_row;
 
             if (doDrawCursor)
-                TimedEraseCursor(self, NULL, NULL);
+                TimedEraseCursor(self, (Packet*)NULL, 0);
 
             if (tf->editableP)
                 replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
@@ -884,7 +884,7 @@ int tfed_placeCursor(VObj* self, int mx, int my)
             /*			if (cursorWithinField(tf)) placeCursorWithinStr(tf);*/
 
             if (doDrawCursor)
-                TimedDrawCursor(self, NULL, NULL);
+                TimedDrawCursor(self, (Packet*)NULL, 0);
             /*
                                     if (helper_txtDisp_updateShownInfo(tf)) {
                                             VObjList *objl;
@@ -917,7 +917,7 @@ int tfed_processKeyEvent(VObj* self, Window w, char c)
     updateShown = 0;
 
     if (doDrawCursor)
-        TimedEraseCursor(self, NULL, NULL);
+        TimedEraseCursor(self, (Packet*)NULL, 0);
 
     if (kbflookup[c]) {
         stat = kbflookup[c](tf);
@@ -1001,7 +1001,7 @@ int tfed_processKeyEvent(VObj* self, Window w, char c)
         }
     }
     if (doDrawCursor)
-        TimedDrawCursor(self, NULL, NULL);
+        TimedDrawCursor(self, (Packet*)NULL, 0);
     /*
     printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     dumpTFCArray(DUMP_CHAR|DUMP_FONT, theEditLN->linep, NULL,
@@ -1954,7 +1954,7 @@ int tfed_drawCursor(VObj* self)
     if (tf)
         if (tf->isRenderAble) {
             GLPrepareObjColor(self);
-            TimedDrawCursor(self, NULL, NULL);
+            TimedDrawCursor(self, (Packet*)NULL, 0);
             return 1;
         }
     return 0;
@@ -1984,7 +1984,7 @@ int tfed_eraseCursor(VObj* self)
     if (tf)
         if (tf->isRenderAble) {
             GLPrepareObjColor(self);
-            TimedEraseCursor(self, NULL, NULL);
+            TimedEraseCursor(self, (Packet*)NULL, 0);
         }
     return 1;
 }
@@ -2147,7 +2147,7 @@ int TFCstrcat(TFChar tfcArrayTo[], TFChar tfcArrayFrom[])
     return i;
 }
 
-int str2EBuff(TFStruct* tf, char* str, int fontID)
+int str2EBuff(TFStruct* tf, char* str, int* fontID)
 {
     return 0; /*XXX*/
 }
@@ -4317,7 +4317,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         return tf->currentFontID;
     }
 
-    int TimedDrawCursor(VObj* self, Packet argv[], int argc)
+    long TimedDrawCursor(VObj* self, Packet argv[], int argc)
     {
         TFStruct* tf = updateEStrUser(self);
 
@@ -4332,14 +4332,14 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         tf->cursorIsVisible = 1;
         if (GET_cursor(self) && tf->cursorBlinkDelay != -1)
             tf->cursorTimeInfo =
-                scheduleEvent(tf->cursorBlinkDelay, TimedEraseCursor, self, NULL, NULL);
+                scheduleEvent(tf->cursorBlinkDelay, TimedEraseCursor, self, 0, (Packet*)NULL);
         else
             tf->cursorTimeInfo = 0;
 
         return 1;
     }
 
-    int TimedEraseCursor(VObj* self, Packet argv[], int argc)
+    long TimedEraseCursor(VObj* self, Packet argv[], int argc)
     {
         TFStruct* tf = updateEStrUser(self);
 
@@ -4354,7 +4354,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         tf->cursorIsVisible = 0;
         if (GET_cursor(self) && tf->cursorBlinkDelay != -1)
             tf->cursorTimeInfo =
-                scheduleEvent(tf->cursorBlinkDelay, TimedDrawCursor, self, NULL, NULL);
+                scheduleEvent(tf->cursorBlinkDelay, TimedDrawCursor, self, 0, (Packet*)NULL);
         else
             tf->cursorTimeInfo = 0;
 

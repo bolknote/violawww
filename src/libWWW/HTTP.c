@@ -625,7 +625,6 @@ retry:
                         char* cl_check = find_header(start_of_data, "Content-Length");
                         if (cl_check) {
                             keep_alive = YES;
-                            fprintf(stderr, "+++ HTTP: Server %s:%d SUPPORTS keep-alive (has Content-Length)!\n", hostname, port);
                         } else {
                             keep_alive = NO;
                             fprintf(stderr, "--- HTTP: Server says Keep-Alive but NO Content-Length (HTTP/1.0 violation) - ignoring\n");

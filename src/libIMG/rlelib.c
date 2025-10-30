@@ -20,8 +20,8 @@
 #include "rle.h"
 
 /* Forward declarations */
-void make_gamma();
-void make_magic();
+void make_gamma(double gamma, int gammamap[256]);
+void make_magic(int size, int magic[16][16]);
 
 /* SUPPRESS 530y */
 /* SUPPRESS 558 */
@@ -193,8 +193,14 @@ struct sv_dispatch_tab sv_DTable[];
  * Copyright (c) 1985,1986 Spencer W. Thomas
  */
 
-void RunSetup(), RunSkipBlankLines(), RunSetColor(), RunSkipPixels(), RunNewScanLine(),
-    Runputdata(), Runputrun(), RunputEof();
+void RunSetup(struct sv_globals* globals);
+void RunSkipBlankLines(int nblank, struct sv_globals* globals);
+void RunSetColor(int c, struct sv_globals* globals);
+void RunSkipPixels(int nskip, int last, int wasrun, struct sv_globals* globals);
+void RunNewScanLine(int flag, struct sv_globals* globals);
+void Runputdata(rle_pixel* buf, int n, struct sv_globals* globals);
+void Runputrun(int color, int n, int last, struct sv_globals* globals);
+void RunputEof(struct sv_globals* globals);
 
 void DefaultBlockHook();
 void NullputEof();
@@ -741,7 +747,7 @@ struct inst {
 #define DATUM(inst) (0x00ff & inst.datum)
 
 static int debug_f; /* if non-zero, print debug info */
-static void bfill();
+static void bfill(char* s, int n, int c);
 
 /*****************************************************************
  * TAG( rle_get_setup )
@@ -1211,7 +1217,7 @@ static void bfill(char* s, int n, int c)
  * Copyright (c) 1987, University of Utah
  */
 
-void make_square();
+void make_square(double N, int divN[256], int modN[256], int magic[16][16]);
 
 /* dither globals */
 int dith_levels = 128;
@@ -1341,10 +1347,7 @@ void bwdithermap(int levels, double gamma, int bwmap[], int divN[256], int modN[
  *	modN[pixval] = pixval - (int)(N * divN[pixval]) maps pixval to
  *	its sublevel, and is used in the dithering computation.
  */
-void make_square(N, divN, modN, magic) double N;
-int divN[256];
-int modN[256];
-int magic[16][16];
+void make_square(double N, int divN[256], int modN[256], int magic[16][16])
 {
     int i, j, k, l;
     double magicfact;
@@ -1468,8 +1471,7 @@ void make_magic(int size, int magic[16][16])
  * Outputs:
  *  Changes gamma array entries.
  */
-void make_gamma(gamma, gammamap) double gamma;
-int gammamap[256];
+void make_gamma(double gamma, int gammamap[256])
 {
     int i;
 

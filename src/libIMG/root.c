@@ -19,13 +19,7 @@
 
 #define RETAIN_PROP_NAME "_XSETROOT_ID"
 
-void updateProperty(dpy, w, name, type, format, data, nelem) Display* dpy;
-Window w;
-char* name;
-Atom type;
-int format;
-int data;
-int nelem;
+void updateProperty(Display* dpy, Window w, char* name, Atom type, int format, int data, int nelem)
 {
     /* intern the property name */
     Atom atom = XInternAtom(dpy, name, 0);
@@ -40,8 +34,7 @@ int nelem;
  * an XID of the client so that the resources can later be killed.
  */
 
-static void preserveResource(dpy, w) Display* dpy;
-Window w;
+static void preserveResource(Display* dpy, Window w)
 {
     /* create dummy resource */
     Pixmap pm = XCreatePixmap(dpy, w, 1, 1, 1);
@@ -57,8 +50,7 @@ Window w;
  * if any exist.
  */
 
-static void freePrevious(dpy, w) Display* dpy;
-Window w;
+static void freePrevious(Display* dpy, Window w)
 {
     Pixmap* pm;
     Atom actual_type; /* NOTUSED */
@@ -121,11 +113,7 @@ static Window getDECRootWindow(Display* dpy, Window root) {
     return (getWmRootWindow(dpy, temporary_rootW));
 }
 
-void imageOnRoot(disp, scrn, window, image, verbose) Display* disp;
-int scrn;
-Window window;
-Image* image;
-unsigned int verbose;
+void imageOnRoot(Display* disp, int scrn, Window window, Image* image, unsigned int verbose)
 {
     Pixmap pixmap;
     XImageInfo* ximageinfo;

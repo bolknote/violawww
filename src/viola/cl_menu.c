@@ -414,11 +414,9 @@ int parse_menu_entryLine(VObj* self, char* entry, char* label, char* returnStr, 
     for (++i; entry[i] != '}'; ++i) {
         label[j++] = entry[i];
         if (entry[i] == '\0') {
-            printf("premature ending in menu entry line: \"%s\"\n", entry);
-            /*
-                                    sprintf(buff, "premature ending in menu entry line: \"%s\"\n",
-               entry); messageToUser(self, MESSAGE_ERROR, buff);
-            */
+#ifdef DEBUG
+            fprintf(stderr, "premature ending in menu entry line: \"%s\"\n", entry);
+#endif
             goto skip;
         } else if (entry[i] == '\\') {
             /* read accelerator key */

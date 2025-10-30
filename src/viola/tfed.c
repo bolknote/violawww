@@ -6525,6 +6525,8 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                                 }
                             }
                         }
+                        /* advance vertical offset when wrapping to next visual line */
+                        yoffset += maxFontHeight;
                         segpx = tf->xUL;
                     }
                     if (TFCFontID(tfcp) != lfontID || (TFCFlags(tfcp) & (MASK_PIC | MASK_OBJ))) {

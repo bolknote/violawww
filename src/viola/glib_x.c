@@ -756,7 +756,7 @@ int init_fonts() {
         fprintf(stderr, "init_fonts(): can't find fonts ID/name list.\n");
         return 0;
     }
-    /*\tdumpVarList(fontsPk.info.a);*/
+    /* dumpVarList(fontsPk.info.a);*/
 
     fattrp = fontsPk.info.a;
     for (attrp = fattrp, n = 0; attrp; attrp = attrp->next)

@@ -88,10 +88,10 @@ int toolBarHeight = TOOLBAR_HEIGHT;
 XmFontList titleFontList;
 
 /* --- Prototypes ---------------------------------------------------------- */
-Widget makeButtons();
-void checkForDebugOutput();
-DocViewInfo* makeBrowserInterface();
-DocViewInfo* makeClonePageInterface();
+Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo);
+void checkForDebugOutput(int argc, char* argv[]);
+DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[]);
+DocViewInfo* makeClonePageInterface(Widget shell, char* shellName, DocViewInfo* parentInfo);
 
 static String fallback_resources[] = {
     /*
@@ -828,7 +828,7 @@ char *makeString(char *oldstring) {
 */
 
 /*??*/
-Boolean compareDocViewName(vkey, vdata) void *vkey, *vdata;
+Boolean compareDocViewName(void* vkey, void* vdata)
 {
     char* name = (char*)vkey;
     DocViewInfo* dvData = (DocViewInfo*)vdata;
@@ -914,8 +914,7 @@ void freeBookmark(void *vbm) {
 }
 */
 
-void setHelp(widget, helpLabel, helpText) Widget widget, helpLabel;
-char* helpText;
+void setHelp(Widget widget, Widget helpLabel, char* helpText)
 {
     struct helpStruct* hdata = (struct helpStruct*)malloc(sizeof(struct helpStruct));
     hdata->helpLabel = helpLabel;
@@ -935,8 +934,7 @@ char* helpText;
  * This routine closes stdout unless the "-debug" flag is on the command
  * line.  This hides Viola's excessive diagnostic output.
  */
-void checkForDebugOutput(argc, argv) int argc;
-char* argv[];
+void checkForDebugOutput(int argc, char* argv[])
 {
     int i, fd, ofd;
     Boolean debug = TRUE;
@@ -984,9 +982,7 @@ XmString makeXMSTitle(char * title, char * subTitle)
     return (resultXMS);
 }
 
-void tmpMessageMH(arg, argc, clientData) char* arg[];
-int argc;
-void* clientData;
+void tmpMessageMH(char* arg[], int argc, void* clientData)
 {
     XmString xms;
     DocViewInfo* dvi = (DocViewInfo*)clientData;

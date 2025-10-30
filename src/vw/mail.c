@@ -48,8 +48,7 @@ typedef struct mailCBStruct {
 /*
  * Pops up a text editor with the given string data in it.
  */
-void showMailEditor(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void showMailEditor(Widget widget, XtPointer clientData, XtPointer callData)
 {
     Widget shell, titleFrame, title, helpLabel, form, frame, commandFrame, commandLabel,
         commandText, addressLabel, addressText, subjectLabel, subjectText, buttonBox, insertFileB,
@@ -248,8 +247,7 @@ XtPointer clientData, callData;
     XtPopup(shell, XtGrabNone);
 }
 
-void mailValueChangedCB(textEditor, clientData, callData) Widget textEditor;
-XtPointer clientData, callData;
+void mailValueChangedCB(Widget textEditor, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
 
@@ -257,8 +255,7 @@ XtPointer clientData, callData;
     XtRemoveCallback(textEditor, XmNvalueChangedCallback, mailValueChangedCB, clientData);
 }
 
-void closeMailEditorCB(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void closeMailEditorCB(Widget button, XtPointer clientData, XtPointer callData)
 {
     char* answer;
     MailCBStruct* ms = (MailCBStruct*)clientData;
@@ -286,8 +283,7 @@ XtPointer clientData, callData;
     freeDocViewInfo(dvi);
 }
 
-void mailSaveAsCB(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void mailSaveAsCB(Widget button, XtPointer clientData, XtPointer callData)
 {
     MailCBStruct* ms = (MailCBStruct*)clientData;
     DocViewInfo* dvi = ms->dvi;
@@ -300,8 +296,7 @@ XtPointer clientData, callData;
     }
 }
 
-void sendMailCB(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void sendMailCB(Widget button, XtPointer clientData, XtPointer callData)
 {
     int length;
     char *mailCommand, *address, *subject, *letter, *answer;
@@ -343,8 +338,7 @@ XtPointer clientData, callData;
     XtFree(letter);
 }
 
-void mailLoadFileCB(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void mailLoadFileCB(Widget button, XtPointer clientData, XtPointer callData)
 {
     char *fileName, *newText;
     MailCBStruct* ms = (MailCBStruct*)clientData;

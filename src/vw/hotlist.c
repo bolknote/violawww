@@ -302,8 +302,7 @@ Widget createHotlistDialog(DocViewInfo* dvi) {
     return (XtParent(form));
 }
 
-void hotlistSelectCB(list, clientData, callData) Widget list;
-XtPointer clientData, callData;
+void hotlistSelectCB(Widget list, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
     XmListCallbackStruct* cbs = (XmListCallbackStruct*)callData;
@@ -319,8 +318,7 @@ XtPointer clientData, callData;
     }
 }
 
-void addToHotlistCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void addToHotlistCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
     addToHotlist(dvi);
@@ -338,8 +336,7 @@ void addToHotlist(DocViewInfo* dvi) {
     }
 }
 
-void showHotlistCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void showHotlistCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -359,22 +356,19 @@ void showHotlist(DocViewInfo* dvi) {
     */
 }
 
-void hideHotlist(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void hideHotlist(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
     XtPopdown(dvi->hotlistDlog);
 }
 
-void addHotlistItem(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void addHotlistItem(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
     addToHotlist(dvi);
 }
 
-void deleteHotlistItem(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void deleteHotlistItem(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
 
@@ -392,8 +386,7 @@ XtPointer clientData, callData;
     }
 }
 
-void gotoHotlistItem(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void gotoHotlistItem(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
 
@@ -427,8 +420,7 @@ void editHotlistItemCB(struct lentryDlogStruct* lds)
     setIdleCursor_history(lds->dvi);
 }
 
-void editHotlistItem(button, clientData, callData) Widget button;
-XtPointer clientData, callData;
+void editHotlistItem(Widget button, XtPointer clientData, XtPointer callData)
 {
     DocViewInfo* dvi = (DocViewInfo*)clientData;
     char* cp;

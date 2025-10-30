@@ -449,6 +449,4 @@ PUBLIC char* HTAnchor_charset ARGS1(HTParentAnchor*, me) { return me->charset; }
 
 PUBLIC void HTAnchor_setCharset ARGS2(HTParentAnchor*, me, CONST char*, charset) {
     StrAllocCopy(me->charset, charset);
-    if (charset)
-        fprintf(stderr, "HTAnchor: set charset = %s\n", charset);
 }

@@ -880,7 +880,6 @@ PUBLIC void SGML_write ARGS3(HTStream*, context, CONST char*, str, int, l) {
 
     /* Check if we need to convert from non-UTF-8 encoding */
     charset = context->anchor ? HTAnchor_charset(context->anchor) : NULL;
-    fprintf(stderr, "SGML_write: charset=%s len=%d\n", charset ? charset : "<NULL>", l);
 
     if (charset && strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0) {
         /* Stream large buffers in manageable chunks to avoid skipping conversion */

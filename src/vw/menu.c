@@ -29,7 +29,6 @@ Widget buildPulldownMenu(Widget parent, char* menuTitle, char* menuMnemonic, Men
     Widget pullDown, cascade, widget;
     int i;
     XmString str;
-    void setHelp();
 
     pullDown = XmCreatePulldownMenu(parent, menuTitle, NULL, 0);
 

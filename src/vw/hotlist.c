@@ -155,9 +155,7 @@ void hotlistSelect(DocViewInfo* dvi, char* url) {
     */
 }
 
-void setHotlistList(dvi, newList, numItems) DocViewInfo* dvi;
-char* newList[];
-int numItems;
+void setHotlistList(DocViewInfo* dvi, char* newList[], int numItems)
 {
 #ifdef NONONO
     int i;

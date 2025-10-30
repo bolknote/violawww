@@ -23,16 +23,16 @@
 
 extern DocViewInfo* selectionOwner;
 
-void getTheSelection();
-void urlSelectionRequest();
-void urlSelectionClear();
+void getTheSelection(void);
+void urlSelectionRequest(void);
+void urlSelectionClear(void);
 
 /* Routines that use Toolkit selection mechanism: */
-Boolean urlDoSelectionRequest();
-void urlLoseSelection();
-void urlFinishSelection();
+Boolean urlDoSelectionRequest(Widget widget, Atom* selection, Atom* target, Atom* type_return, XtPointer* value_return, unsigned long* length_return, int* format_return);
+void urlLoseSelection(Widget widget, Atom* selection);
+void urlFinishSelection(Widget widget, Atom* selection, Atom* target);
 void urlToggleSelection(Widget widget, DocViewInfo* dvi);
-void urlGetSelection();
-void urlGiveUpSelection();
+void urlGetSelection(Widget widget, DocViewInfo* dvi);
+void urlGiveUpSelection(Widget widget);
 
 #endif // _SELECTION_H_

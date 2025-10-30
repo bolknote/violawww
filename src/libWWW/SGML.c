@@ -877,23 +877,38 @@ PUBLIC void SGML_write ARGS3(HTStream*, context, CONST char*, str, int, l) {
     char outbuf[65536];
     int converted_len;
     char* charset;
-    
+
     /* Check if we need to convert from non-UTF-8 encoding */
     charset = context->anchor ? HTAnchor_charset(context->anchor) : NULL;
-    
-    if (charset && strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0 && l < sizeof(outbuf) / 8) {
-        /* Convert from specified encoding to ASCII */
-        converted_len = HTCharset_convert_to_ascii(charset, str, l, outbuf, sizeof(outbuf));
-        
-        if (converted_len > 0) {
-            /* Use converted text */
-            e = outbuf + converted_len;
-            for (p = outbuf; p < e; p++)
-                SGML_character(context, *p);
-            return;
+    fprintf(stderr, "SGML_write: charset=%s len=%d\n", charset ? charset : "<NULL>", l);
+
+    if (charset && strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0) {
+        /* Stream large buffers in manageable chunks to avoid skipping conversion */
+        const char* inptr = str;
+        int remaining = l;
+        while (remaining > 0) {
+            int slice = remaining;
+            if (slice > (int)(sizeof(outbuf) / 2))
+                slice = (int)(sizeof(outbuf) / 2);
+
+            converted_len = HTCharset_convert_to_ascii(charset, inptr, slice, outbuf, sizeof(outbuf));
+            if (converted_len > 0) {
+                CONST char* ce = outbuf + converted_len;
+                for (p = outbuf; p < ce; p++)
+                    SGML_character(context, *p);
+            } else {
+                /* Fallback: pass through raw slice */
+                CONST char* pe = inptr + slice;
+                for (p = inptr; p < pe; p++)
+                    SGML_character(context, *p);
+            }
+
+            inptr += slice;
+            remaining -= slice;
         }
+        return;
     }
-    
+
     /* Use original text */
     for (p = str; p < e; p++)
         SGML_character(context, *p);

@@ -864,6 +864,55 @@ retry:
         }
     }
 
+    /* Extract Content-Type charset (if present) and set on anchor */
+    {
+        char* ct_header = find_header(start_of_data, "Content-Type");
+        if (ct_header && anAnchor) {
+            char* p = ct_header + 13; /* skip "Content-Type:" */
+            while (*p == ' ' || *p == '\t') p++;
+            char ctbuff[512];
+            char* bp = ctbuff;
+            while (*p && *p != '\r' && *p != '\n' && (bp - ctbuff) < (int)sizeof(ctbuff) - 1) {
+                *bp++ = *p++;
+            }
+            *bp = '\0';
+            /* Look for charset= parameter (case-insensitive) */
+            {
+                char* params = strchr(ctbuff, ';');
+                if (params) {
+                    char* q = params + 1;
+                    while (*q == ' ' || *q == '\t') q++;
+                    while (*q) {
+                        if (strncasecmp(q, "charset=", 8) == 0) {
+                            q += 8;
+                            if (*q == '"' || *q == '\'') q++;
+                            {
+                                char csbuf[64];
+                                char* cs = csbuf;
+                                while (*q && *q != '"' && *q != '\'' && *q != ';' && *q != ' ' && *q != '\t' && (cs - csbuf) < (int)sizeof(csbuf) - 1) {
+                                    *cs++ = *q++;
+                                }
+                                *cs = '\0';
+                                if (csbuf[0]) {
+                                    HTAnchor_setCharset(anAnchor, csbuf);
+                                    fprintf(stderr, "HTTPS: Charset from Content-Type: %s\n", csbuf);
+                                }
+                            }
+                            break;
+                        }
+                        /* move to next parameter */
+                        {
+                            char* sc = strchr(q, ';');
+                            if (!sc) break;
+                            q = sc + 1;
+                            while (*q == ' ' || *q == '\t') q++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /* Set up stream stack */
 copy:
     target = HTStreamStack(format_in, format_out, sink, anAnchor);

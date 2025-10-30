@@ -870,7 +870,7 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
     TFCFontID(tfcp) = text->fontID;
     TFCTagID(tfcp) = 0;
     TFCFlags(tfcp) = text->flags;
-    charWidth = FontWidths(text->fontID)[ch];
+    charWidth = FontWidths(text->fontID)[(unsigned char)ch];
     TFCWidth(tfcp) = charWidth;
 
     text->px += charWidth;

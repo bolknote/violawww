@@ -284,11 +284,13 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
                         if (!existing_charset) {
                             /* Only set if no charset was set by X-Archive-Guessed-Charset */
                             HTAnchor_setCharset(me->anchor, charset);
-                            fprintf(stderr, "HTMIME: Charset from Content-Type: %s\n", charset);
+                            if (TRACE)
+                                fprintf(stderr, "HTMIME: Charset from Content-Type: %s\n", charset);
                         } else {
-                            fprintf(stderr,
-                                    "HTMIME: Skipping Content-Type charset (%s) - already set by X-Archive-Guessed-Charset (%s)\n",
-                                    charset, existing_charset);
+                            if (TRACE)
+                                fprintf(stderr,
+                                        "HTMIME: Skipping Content-Type charset (%s) - already set by X-Archive-Guessed-Charset (%s)\n",
+                                        charset, existing_charset);
                         }
                     }
                     
@@ -311,7 +313,8 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
                 /* X-Archive-Guessed-Charset takes priority - always set */
                 if (me->anchor) {
                     HTAnchor_setCharset(me->anchor, me->value);
-                    fprintf(stderr, "HTMIME: Charset from X-Archive-Guessed-Charset: %s (PRIORITY)\n", me->value);
+                    if (TRACE)
+                        fprintf(stderr, "HTMIME: Charset from X-Archive-Guessed-Charset: %s (PRIORITY)\n", me->value);
                 }
                 break;
             default: /* Should never get here */

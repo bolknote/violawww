@@ -756,7 +756,7 @@ int init_fonts() {
         fprintf(stderr, "init_fonts(): can't find fonts ID/name list.\n");
         return 0;
     }
-    /*	dumpVarList(fontsPk.info.a);*/
+    /*\tdumpVarList(fontsPk.info.a);*/
 
     fattrp = fontsPk.info.a;
     for (attrp = fattrp, n = 0; attrp; attrp = attrp->next)
@@ -793,19 +793,6 @@ int init_fonts() {
                 }
 
                 FontRef(numberOfFontIDs) = fontSet;
-                if (FontFontStruct(numberOfFontIDs)) {
-                    fprintf(stderr, "init_fonts: id=%d set='%s' loaded '%s' (maxH=%d desc=%d)\n",
-                            numberOfFontIDs,
-                            fontSet,
-                            FontSpec(numberOfFontIDs) ? FontSpec(numberOfFontIDs) : "<none>",
-                            FontMaxHeight(numberOfFontIDs),
-                            FontDescent(numberOfFontIDs));
-                } else {
-                    fprintf(stderr, "init_fonts: id=%d set='%s' FAILED to load font (spec='%s')\n",
-                            numberOfFontIDs,
-                            fontSet,
-                            FontSpec(numberOfFontIDs) ? FontSpec(numberOfFontIDs) : "<none>");
-                }
 
                 if (!strcmp(fontSet, "fixed")) {
                     fontID_fixed = numberOfFontIDs;
@@ -876,20 +863,6 @@ int init_fonts() {
     if (fontID_bold_largest == -1) {
         fprintf(stderr, "warning: ``bold_largest'' font not specified.\n");
         fontID_bold_largest = fontID_bold_large;
-    }
-    /* Summary of initialized fonts */
-    fprintf(stderr, "init_fonts summary: numberOfFontIDs=%d maxNumOfFonts=%d\n",
-            numberOfFontIDs, maxNumOfFonts);
-    {
-        int ii;
-        for (ii = 0; ii < numberOfFontIDs && ii < maxNumOfFonts; ++ii) {
-            fprintf(stderr, "  font[%d]: spec='%s' struct=%s maxH=%d desc=%d\n",
-                    ii,
-                    FontSpec(ii) ? FontSpec(ii) : "<none>",
-                    FontFontStruct(ii) ? "OK" : "NULL",
-                    FontMaxHeight(ii),
-                    FontDescent(ii));
-        }
     }
     return 1;
 }

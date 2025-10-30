@@ -523,17 +523,10 @@ int glyphWidth(TFStruct* tf, TFChar* tfcp)
         FontInfo* fip_safe = NULL;
         s[0] = c;
         if (fontID_safe < 0 || fontID_safe >= maxNumOfFonts) {
-            fprintf(stderr,
-                    "glyphWidth: invalid fontID=%d for control char 0x%02X flags=0x%02X (PIC=%d OBJ=%d)\n",
-                    fontID_safe, (unsigned int)(unsigned char)c, (unsigned int)TFCFlags(tfcp),
-                    (TFCFlags(tfcp) & MASK_PIC) != 0, (TFCFlags(tfcp) & MASK_OBJ) != 0);
             return 0;
         }
         fip_safe = &fontInfo[fontID_safe];
         if (!fip_safe->fontStruct) {
-            fprintf(stderr,
-                    "glyphWidth: NULL fontStruct for fontID=%d (control char 0x%02X). Did init_fonts() load this font?\n",
-                    fontID_safe, (unsigned int)(unsigned char)c);
             return 0;
         }
         return XTextWidth(fip_safe->fontStruct, s, 1);
@@ -6489,28 +6482,6 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         tf->num_of_lines = 0;
 
         while (currentp) {
-            /* Diagnostic validation: scan TFChars for bad font usage */
-            if (currentp->linep) {
-                TFChar* diagp = currentp->linep;
-                int idx = 0;
-                for (; TFCChar(diagp); ++diagp, ++idx) {
-                    unsigned char ch = TFCChar(diagp);
-                    int fid = TFCFontID(diagp);
-                    unsigned char fl = (unsigned char)TFCFlags(diagp);
-
-                    if (!(fl & (MASK_PIC | MASK_OBJ))) {
-                        if (fid < 0 || fid >= maxNumOfFonts) {
-                            fprintf(stderr,
-                                    "scanVerticalMetrics: line tfchar[%d]: invalid fontID=%d ch=0x%02X flags=0x%02X\n",
-                                    idx, fid, (unsigned int)ch, (unsigned int)fl);
-                        } else if (!fontInfo[fid].fontStruct) {
-                            fprintf(stderr,
-                                    "scanVerticalMetrics: line tfchar[%d]: NULL fontStruct for fontID=%d ch=0x%02X\n",
-                                    idx, fid, (unsigned int)ch);
-                        }
-                    }
-                }
-            }
             linep = currentp->linep;
             if (!linep)
                 break;
@@ -6553,11 +6524,6 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                                     inViewP = 0;
                                 }
                             }
-                            yoffset += maxFontHeight;
-                            /*
-                            printf("WRAP     lineVisibleCount=%d renderedLines=%d\n",
-                            lineVisibleCount, renderedLines);
-                            */
                         }
                         segpx = tf->xUL;
                     }

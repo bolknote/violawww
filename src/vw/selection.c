@@ -40,8 +40,7 @@ void urlLoseSelection(Widget widget, Atom* selection) {
     selectionOwner = NULL;
 }
 
-void urlFinishSelection(widget, selection, target) Widget widget;
-Atom *selection, *target;
+void urlFinishSelection(Widget widget, Atom* selection, Atom* target)
 {
     /*
      * No need to do anything.
@@ -51,15 +50,7 @@ Atom *selection, *target;
      */
 }
 
-Boolean urlDoSelectionRequest(widget, selection, target, type_return, value_return, length_return,
-                              format_return)
-Widget widget;
-Atom* selection;
-Atom* target;
-Atom* type_return;
-XtPointer* value_return;
-unsigned long* length_return;
-int* format_return;
+Boolean urlDoSelectionRequest(Widget widget, Atom* selection, Atom* target, Atom* type_return, XtPointer* value_return, unsigned long* length_return, int* format_return)
 {
     extern DocViewInfo* selectionOwner;
 

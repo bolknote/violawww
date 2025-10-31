@@ -63,10 +63,10 @@ void user_prompt_username_and_password();
 
 void nullifyCallerDataBuff();
 
-Bool initHotList();
-Bool addHotListItem();
-HotListItem* getNthHotListItem();
-Bool deleteHotListItem();
-int saveHotList();
-char* dumpHotList();
-char* HotList_nextLine();
+Bool initHotList(void);
+Bool addHotListItem(char* url, char* comment, char* date);
+HotListItem* getNthHotListItem(int n);
+Bool deleteHotListItem(int n);
+int saveHotList(void);
+char* dumpHotList(int mode);
+char* HotList_nextLine(void);

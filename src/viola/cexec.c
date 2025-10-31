@@ -325,7 +325,7 @@ void freeArgList(VObj* self) {
     argPk->info.a = argListSaveStack[argListSaveStackIdx];
 }
 
-void freeVarList(varlist) Attr* varlist;
+void freeVarList(Attr* varlist)
 {
     Attr* attrlist;
     Attr *attrp2, *nextp, *nextp2;
@@ -376,7 +376,7 @@ void freeVarList(varlist) Attr* varlist;
     /*	printf("<\n");*/
 }
 
-void dumpVarList(varlist) Attr* varlist;
+void dumpVarList(Attr* varlist)
 {
     Attr* attrlist;
     Attr* attrp2;

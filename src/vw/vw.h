@@ -126,7 +126,7 @@ typedef struct ClientDataStruct {
     void* shellInfo;
 } ClientData;
 
-Boolean compareDocViewName();
+Boolean compareDocViewName(void* vkey, void* vdata);
 _Bool compareDocViewShell(void *vkey, void *vdata);
 void freeDocViewInfo(void* vdvi);
 
@@ -143,10 +143,10 @@ void freeBookmark();
 /* --- PROTOTYPES ---------------------------------------------------------- */
 DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[]);
 void closeAppShell(DocViewInfo* docViewInfo);
-char* makeString();
+char* makeString(char* s);
 void setHelp(Widget widget, Widget helpLabel, char* helpText);
 XmString makeXMSTitle(char* title, char* subTitle);
-void tmpMessageMH();
+void tmpMessageMH(char* arg[], int argc, void* clientData);
 
 /* --- MACROS -------------------------------------------------------------- */
 #define mainViewInfo() getFromBox(&docViews, (void*)&topWidget, compareDocViewShell, TRUE)

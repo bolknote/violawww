@@ -170,8 +170,7 @@ int countASTSiblings(AST* ast)
     return i;
 }
 
-void printAST(ast, tab) AST* ast;
-int tab;
+void printAST(AST* ast, int tab)
 {
     int i;
     AST* children;

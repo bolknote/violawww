@@ -14,12 +14,12 @@
 char *cp, *cp1, *cp2;
 
 typedef struct ProcPair {
-    void (*lf)();
-    void (*rf)();
+    void (*lf)(Packet*);
+    void (*rf)(Packet*);
 } ProcPair;
 
 typedef struct ConvIdx {
-    void (*(*opftTable)[4][4])();
+    void (*(*opftTable)[4][4])(Packet*, Packet*);
     ProcPair (*procTable)[4][4];
 } ConvIdx;
 
@@ -126,67 +126,67 @@ ProcPair conv2[4][4] = {/* for integer operation... mod? */
 /*
  * operation function tables
  */
-void (*opft_plus[4][4])() = {
+void (*opft_plus[4][4])(Packet*, Packet*) = {
     int_plus,   int_plus,   float_plus, str_plus, int_plus, char_plus, float_plus, str_plus,
     float_plus, float_plus, float_plus, str_plus, str_plus, str_plus,  str_plus,   str_plus,
 };
 
-void (*opft_minus[4][4])() = {
+void (*opft_minus[4][4])(Packet*, Packet*) = {
     int_minus,   int_minus,   float_minus, str_minus, int_minus, char_minus, float_minus, str_minus,
     float_minus, float_minus, float_minus, str_minus, str_minus, str_minus,  str_minus,   str_minus,
 };
 
-void (*opft_mod[4][4])() = {
+void (*opft_mod[4][4])(Packet*, Packet*) = {
     int_mod,   int_mod,   float_mod, str_mod, int_mod, char_mod, float_mod, str_mod,
     float_mod, float_mod, float_mod, str_mod, str_mod, str_mod,  str_mod,   str_mod,
 };
 
-void (*opft_mult[4][4])() = {
+void (*opft_mult[4][4])(Packet*, Packet*) = {
     int_mult,   int_mult,   float_mult, str_mult, int_mult, char_mult, float_mult, str_mult,
     float_mult, float_mult, float_mult, str_mult, str_mult, str_mult,  str_mult,   str_mult,
 };
 
-void (*opft_div[4][4])() = {
+void (*opft_div[4][4])(Packet*, Packet*) = {
     int_div,   int_div,   float_div, str_div, int_div, char_div, float_div, str_div,
     float_div, float_div, float_div, str_div, str_div, str_div,  str_div,   str_div,
 };
 
-void (*opft_eq[4][4])() = {
+void (*opft_eq[4][4])(Packet*, Packet*) = {
     int_eq,   int_eq,   float_eq, str_eq, int_eq, char_eq, float_eq, str_eq,
     float_eq, float_eq, float_eq, str_eq, str_eq, str_eq,  str_eq,   str_eq,
 };
 
-void (*opft_ne[4][4])() = {
+void (*opft_ne[4][4])(Packet*, Packet*) = {
     int_ne,   int_ne,   float_ne, str_ne, int_ne, char_ne, float_ne, str_ne,
     float_ne, float_ne, float_ne, str_ne, str_ne, str_ne,  str_ne,   str_ne,
 };
 
-void (*opft_gt[4][4])() = {
+void (*opft_gt[4][4])(Packet*, Packet*) = {
     int_gt,   int_gt,   float_gt, str_gt, int_gt, char_gt, float_gt, str_gt,
     float_gt, float_gt, float_gt, str_gt, str_gt, str_gt,  str_gt,   str_gt,
 };
 
-void (*opft_ge[4][4])() = {
+void (*opft_ge[4][4])(Packet*, Packet*) = {
     int_ge,   int_ge,   float_ge, str_ge, int_ge, char_ge, float_ge, str_ge,
     float_ge, float_ge, float_ge, str_ge, str_ge, str_ge,  str_ge,   str_ge,
 };
 
-void (*opft_lt[4][4])() = {
+void (*opft_lt[4][4])(Packet*, Packet*) = {
     int_lt,   int_lt,   float_lt, str_lt, int_lt, char_lt, float_lt, str_lt,
     float_lt, float_lt, float_lt, str_lt, str_lt, str_lt,  str_lt,   str_lt,
 };
 
-void (*opft_le[4][4])() = {
+void (*opft_le[4][4])(Packet*, Packet*) = {
     int_le,   int_le,   float_le, str_le, int_le, char_le, float_le, str_le,
     float_le, float_le, float_le, str_le, str_le, str_le,  str_le,   str_le,
 };
 
-void (*opft_and[4][4])() = {
+void (*opft_and[4][4])(Packet*, Packet*) = {
     int_and,   int_and,   float_and, str_and, int_and, char_and, float_and, str_and,
     float_and, float_and, float_and, str_and, str_and, str_and,  str_and,   str_and,
 };
 
-void (*opft_or[4][4])() = {
+void (*opft_or[4][4])(Packet*, Packet*) = {
     int_or,   int_or,   float_or, str_or, int_or, char_or, float_or, str_or,
     float_or, float_or, float_or, str_or, str_or, str_or,  str_or,   str_or,
 };
@@ -211,7 +211,8 @@ ConvIdx biOpConvIdx[] = {{&opft_plus, &conv1},
 
 int biOp(int op, Packet* p1, Packet* p2)
 {
-    void (*biOpFunc)(), (*convf)();
+    void (*biOpFunc)(Packet*, Packet*);
+    void (*convf)(Packet*);
     ProcPair* convPair;
 
     if (p1->type == PKT_OBJ) {

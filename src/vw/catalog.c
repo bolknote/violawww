@@ -248,16 +248,13 @@ void catalogSelectMultipleItems(Widget widget, XtPointer clientData, XEvent* eve
 {
 }
 
-void catalogFindOpenLocation(folder, x, y, w, h) Folder* folder;
-int *x, *y;
-int w, h;
+void catalogFindOpenLocation(Folder* folder, int* x, int* y, int w, int h)
 {
     *x = 50;
     *y = 50;
 }
 
-void createFolder(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void createFolder(Widget widget, XtPointer clientData, XtPointer callData)
 {
     Catalog* catalog = (Catalog*)clientData;
     Folder* newfolder;
@@ -298,8 +295,7 @@ XtPointer clientData, callData;
         drawFolder(catalog->canvas, newfolder);
 }
 
-void deleteItemCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void deleteItemCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     /* Look for all selected items and attempt to delete them. */
 }
@@ -375,14 +371,12 @@ void deleteFolder(Folder* folder, Catalog* catalog) {
 
 void modifyFolder() {}
 
-void openItemSameWindowCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openItemSameWindowCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     /* Look for all selected items and attempt to open them. */
 }
 
-void openItemNewWindowCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void openItemNewWindowCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     /* Look for all selected items and attempt to open them. */
 }
@@ -401,13 +395,11 @@ void openFolder(Folder* folder, Catalog* catalog) {
 void openLink(Link* link, Catalog* catalog) {
 }
 
-void createLink(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void createLink(Widget widget, XtPointer clientData, XtPointer callData)
 {
 }
 
-void modifyLink(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void modifyLink(Widget widget, XtPointer clientData, XtPointer callData)
 {
     /*
      * Popup dialog for editing link parameters and fields.
@@ -532,8 +524,7 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
     XtPopup(shell, XtGrabNone);
 }
 
-void showCatalogCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void showCatalogCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
@@ -543,8 +534,7 @@ XtPointer clientData, callData;
     showCatalog(DEFAULT_CATALOG_FILE, dvi);
 }
 
-void closeCatalogCB(widget, clientData, callData) Widget widget;
-XtPointer clientData, callData;
+void closeCatalogCB(Widget widget, XtPointer clientData, XtPointer callData)
 {
     ClientData* cd = (ClientData*)clientData;
     Catalog* catalog = (Catalog*)cd->shellInfo;

@@ -602,7 +602,7 @@ retry:
             eol = strchr(text_buffer + length, 10);
             if (eol) {
                 *eol = 0;
-                if (eol[-1] == CR)
+                if (eol > text_buffer && eol[-1] == CR)
                     eol[-1] = 0;
             }
 

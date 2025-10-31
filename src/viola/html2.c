@@ -74,7 +74,7 @@ extern Packet scrapPk;
 extern SGMLDocMappingInfo SGMLForms[];
 
 /* Explicit prototype to fix 64-bit pointer truncation issue */
-extern long findMeth(VObj* self, int funcid);
+extern long findMeth(VObj* self, long funcid);
 
 VObj* mesgObj = NULL;
 
@@ -591,13 +591,19 @@ HTTag* tagInfo;
                 /* unexpected error*/
             }
         }
-        argv[0].info.s = "copyObj";
-        argv[0].type = PKT_STR;
-        argv[0].canFree = 0;
-        argv[1].info.o = parent_bstate->obj;
-        argv[1].type = PKT_OBJ;
-        argv[1].canFree = 0;
-        sendMessagePackets(scrapPk.info.o, argv, 2);
+        /* Send copyObj only if the cloned object actually implements it */
+        {
+            long copyId = getIdent("copyObj");
+            if (findMeth(scrapPk.info.o, copyId)) {
+                argv[0].info.s = "copyObj";
+                argv[0].type = PKT_STR;
+                argv[0].canFree = 0;
+                argv[1].info.o = parent_bstate->obj;
+                argv[1].type = PKT_OBJ;
+                argv[1].canFree = 0;
+                sendMessagePackets(scrapPk.info.o, argv, 2);
+            }
+        }
         parent_bstate->obj = scrapPk.info.o;
 
         /* because the n-1 level object has been turned into a

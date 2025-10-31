@@ -16,7 +16,7 @@
 #include "utils.h"
 #include "vlist.h"
 
-Attr* makeAttr(long id, long val)
+Attr* _makeAttr(long id, long val)
 {
     Attr* attr = (Attr*)malloc(sizeof(struct Attr));
     if (attr) {

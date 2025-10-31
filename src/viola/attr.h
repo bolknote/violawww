@@ -12,7 +12,8 @@ typedef struct Attr {
 } Attr;
 #endif
 
-Attr* makeAttr(long id, long val);
+Attr* _makeAttr(long id, long val);
+#define makeAttr(id, v) _makeAttr((id), (long)(v))
 
 /*
  * scans and return the attribute node identified by ``id''.

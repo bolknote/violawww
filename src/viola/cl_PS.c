@@ -28,7 +28,6 @@
 #include "scanutils.h"
 #include "slotaccess.h"
 #include "utils.h"
-#include <X11/Xmu/Atoms.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -143,7 +142,7 @@ long helper_PS_set(VObj* self, Packet* result, int argc, Packet argv[], long lab
                 size_t len = strlen(buff);
                 /* Safe: buff is BUFF_SIZE (64000) which is << INT_MAX */
                 XChangeProperty(display, GET_window(self),
-                                XmuInternAtom(display, XmuMakeAtom("GHOSTVIEW")), XA_STRING, 8,
+                                XInternAtom(display, "GHOSTVIEW", False), XA_STRING, 8,
                                 PropModeReplace, (unsigned char*)buff, (int)len);
             }
             printf("buff=>%s<\n", buff);

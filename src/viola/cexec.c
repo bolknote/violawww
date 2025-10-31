@@ -884,7 +884,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -906,7 +906,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -927,7 +927,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -948,7 +948,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -969,7 +969,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -990,7 +990,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 }
                 if (!attrp) {
                     /* make the new list node */
-                    attrp = makeAttr(i, (long)makePacket());
+                    attrp = makeAttr(i, (intptr_t)makePacket());
                     prependAttr(&(packetp->info.a), attrp);
                 }
                 packetp = (Packet*)attrp->val;
@@ -1103,7 +1103,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                     } else {
                         packetp = makePacket();
                         nullPacket(packetp);
-                        attrp = makeAttr(varID, (long)packetp);
+                        attrp = makeAttr(varID, (intptr_t)packetp);
                         prependAttr(&varlist, attrp);
                         SET__varList(self, varlist);
                     }
@@ -3063,7 +3063,7 @@ Attr* setVariable_STR(Attr* varlist, char* name, char* valp, int canFree) {
         pk->info.s = valp;
         pk->type = PKT_STR;
         pk->canFree = (char)canFree;
-        prependAttr(&head, makeAttr(varid, (long)pk));
+        prependAttr(&head, makeAttr(varid, (intptr_t)pk));
     }
     return head;
 }
@@ -3086,7 +3086,7 @@ Attr* setVariable_id_STR(Attr* attrp, int varid, char* valp, int canFree) {
     pk->type = PKT_STR;
     pk->canFree = (char)canFree;
 
-    attrp = makeAttr(varid, (long)pk);
+    attrp = makeAttr(varid, (intptr_t)pk);
     if (head)
         attrp->next = head;
     return attrp;
@@ -3115,7 +3115,7 @@ Attr *setVariable(varlistp, name, resultp)
                         }
                 pk = makePacket();
                 *resultp = pk;
-                prependAttr(&varlist, makeAttr(varid, (long)pk));
+                prependAttr(&varlist, makeAttr(varid, (intptr_t)pk));
                 return 1;
         }
         return NULL;

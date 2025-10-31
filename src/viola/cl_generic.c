@@ -1183,12 +1183,12 @@ lameLoopEsc:
     packet4->info.s = (anchor ? saveString(anchor) : saveString(""));
 
     result->type = PKT_ATR;
-    result->info.a = attrp = makeAttr(0, packet0);
+    result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
     result->canFree = 0;
-    attrp->next = makeAttr(1, packet1);
-    attrp->next->next = makeAttr(2, packet2);
-    attrp->next->next->next = makeAttr(3, packet3);
-    attrp->next->next->next->next = makeAttr(4, packet4);
+    attrp->next = makeAttr(1, (intptr_t)packet1);
+    attrp->next->next = makeAttr(2, (intptr_t)packet2);
+    attrp->next->next->next = makeAttr(3, (intptr_t)packet3);
+    attrp->next->next->next->next = makeAttr(4, (intptr_t)packet4);
 
     return 1;
 }
@@ -1902,7 +1902,7 @@ long meth_generic_append(VObj* self, Packet* result, int argc, Packet argv[]) {
     }
     if (!attrp) {
         /* make the new list node */
-        attrp = makeAttr(i, (long)makePacket());
+        attrp = makeAttr(i, (intptr_t)makePacket());
         prependAttr(&(packetp->info.a), attrp);
     }
     packetp = (Packet*)attrp->val;
@@ -4003,7 +4003,7 @@ long meth_generic_selectionInfo(VObj* self, Packet* result, int argc, Packet arg
     Packet* packet0 = makePacket();
     Attr* attrp;
     result->type = PKT_ATR;
-    result->info.a = attrp = makeAttr(0, packet0);
+    result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
     result->canFree = PK_CANFREE_STR;
 
     if (xselectionObj) {

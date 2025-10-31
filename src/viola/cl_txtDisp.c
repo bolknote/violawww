@@ -887,7 +887,7 @@ long int meth_txtDisp_selectionInfo(VObj* self, Packet* result, int argc, Packet
 
     result->type = PKT_ATR;
     result->canFree = PK_CANFREE_STR;
-    result->info.a = attrp = makeAttr(0, packet0);
+    result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
 
     if (tf) {
         Packet* packet1 = makePacket();
@@ -912,11 +912,11 @@ long int meth_txtDisp_selectionInfo(VObj* self, Packet* result, int argc, Packet
         packet5->type = PKT_INT;
         packet5->canFree = 0;
 
-        attrp->next = makeAttr(0, packet1);
-        attrp->next->next = makeAttr(1, packet2);
-        attrp->next->next->next = makeAttr(2, packet3);
-        attrp->next->next->next->next = makeAttr(3, packet4);
-        attrp->next->next->next->next->next = makeAttr(4, packet5);
+        attrp->next = makeAttr(0, (intptr_t)packet1);
+        attrp->next->next = makeAttr(1, (intptr_t)packet2);
+        attrp->next->next->next = makeAttr(2, (intptr_t)packet3);
+        attrp->next->next->next->next = makeAttr(3, (intptr_t)packet4);
+        attrp->next->next->next->next->next = makeAttr(4, (intptr_t)packet5);
         return 1;
     } else {
         packet0->info.o = NULL;

@@ -2,18 +2,18 @@
  * attr.h
  */
 #pragma once
+#include <stdint.h>
 
 #ifndef ATTR_DEFINED
 #define ATTR_DEFINED
 typedef struct Attr {
     struct Attr* next; /* must be the first item  (see vlist.h) */
     long id;           /* must be the second item (see vlist.h) */
-    long val;
+    intptr_t val;
 } Attr;
 #endif
 
-Attr* _makeAttr(long id, long val);
-#define makeAttr(id, v) _makeAttr((id), (long)(v))
+Attr* makeAttr(long id, intptr_t val);
 
 /*
  * scans and return the attribute node identified by ``id''.

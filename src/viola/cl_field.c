@@ -1411,9 +1411,9 @@ long meth_field_mouse(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     result->type = PKT_ATR;
     result->canFree = 0;
-    result->info.a = attrp = makeAttr(0, packet0);
+    result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
 
-    attrp->next = makeAttr(1, packet1);
+    attrp->next = makeAttr(1, (intptr_t)packet1);
     return 1;
 }
 
@@ -1433,10 +1433,10 @@ long meth_field_mouseLocal(VObj* self, Packet* result, int argc, Packet argv[]) 
     packet1->canFree = 0;
 
     result->type = PKT_ATR;
-    result->info.a = attrp = makeAttr(0, packet0);
+    result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
     result->canFree = 0;
 
-    attrp->next = makeAttr(1, packet1);
+    attrp->next = makeAttr(1, (intptr_t)packet1);
     return 1;
 }
 
@@ -2204,8 +2204,8 @@ long meth_field_windowPosition(VObj* self, Packet* result, int argc, Packet argv
         packet1->type = PKT_INT;
 
         result->type = PKT_ATR;
-        result->info.a = attrp = makeAttr(0, packet0);
-        attrp->next = makeAttr(1, packet1);
+        result->info.a = attrp = makeAttr(0, (intptr_t)packet0);
+        attrp->next = makeAttr(1, (intptr_t)packet1);
         return 1;
     }
     result->canFree = 0;

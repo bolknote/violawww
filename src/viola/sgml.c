@@ -1701,10 +1701,10 @@ int getSGMLStyle(char* dtd, char* tagName, char* attrName, Packet* result)
             packet2->info.i = tmi->left;
             packet3->info.i = tmi->right;
 
-            tmi->returnCache = attrp = makeAttr(0, packet0);
-            attrp->next = makeAttr(1, packet1);
-            attrp->next->next = makeAttr(2, packet2);
-            attrp->next->next->next = makeAttr(3, packet3);
+            tmi->returnCache = attrp = makeAttr(0, (intptr_t)packet0);
+            attrp->next = makeAttr(1, (intptr_t)packet1);
+            attrp->next->next = makeAttr(2, (intptr_t)packet2);
+            attrp->next->next->next = makeAttr(3, (intptr_t)packet3);
         }
         result->info.a = tmi->returnCache;
         result->type = PKT_ATR;

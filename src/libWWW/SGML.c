@@ -764,7 +764,7 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
                     fprintf(stderr, "Unknown end tag </%s>\n", string->data);
             } else {
                 if (context->current_tag) {
-                    char *prevTag, *closeTag;
+                    char *closeTag;
                     int implyETagP = 1;
                     char* oldTagName;
                     HTElement* upper;  /* bottom-1 item on stack */
@@ -773,8 +773,6 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
                     int* subep;
 
                     closeTag = t->name;
-
-                    prevTag = context->current_tag->name;
 #ifdef IMPLY_VERBOSE
                     if (context->element_stack && context->element_stack->tag) {
                         fprintf(stderr, "Etag implications: Oldtag=%s, Endtag=%s\n",

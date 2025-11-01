@@ -11,7 +11,7 @@
 #include <sys/types.h>
 
 int currentTool = ACTION_TOOL;
-char* toolID2Str[] = {"action", "target", "move", "resize", "reparent", {0}};
+char* toolID2Str[] = {"action", "target", "move", "resize", "reparent", 0};
 
 /*
 void processPeekKeys()

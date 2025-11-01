@@ -40,7 +40,7 @@ bytes in the wrong order 07/03/90   2 nazgul	Added recovery for premature EOF
 
 /* Forward declarations */
 extern int g3_rawgetbit();
-extern int g3_bitson();
+extern int g3_bitson(bit* b, int c, int n);
 
 /* SUPPRESS 530 */
 /* SUPPRESS 558 */

@@ -243,7 +243,8 @@ void showPath() {
 char* expandPath(char* p)
 {
     char buf1[BUFSIZ], buf2[BUFSIZ];
-    int b1, b2, var;
+    size_t b1, b2;
+    int var;
     char* ptr;
 
     char* getenv();

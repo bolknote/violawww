@@ -16,7 +16,7 @@ long meth_field_clone();
 long meth_field_clone2();
 long meth_field_config();
 long meth_field_copyArea();
-long meth_field_cycleColors();
+long meth_field_cycleColors(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_deepObjectListSend();
 long meth_field_drawFillOval();
 long meth_field_drawFillRect();

@@ -384,16 +384,17 @@ int SearchChar(char* str, char sc)
 int CutTailSpace(char* str)
 {
     if (str) {
-        int l, i = 0;
+        size_t l;
+        int i = 0;
 
         l = strlen(str);
         if (l <= 0)
             return 0;
 
-        for (i = l - 1; (i >= 0) && (str[i] == ' '); i--)
+        for (i = (int)(l - 1); (i >= 0) && (str[i] == ' '); i--)
             str[i] = '\0';
 
-        return l - i - 1;
+        return (int)(l - i - 1);
     }
     return 0;
 }
@@ -403,7 +404,7 @@ int CutTailSpace(char* str)
  */
 char* trimEdgeSpaces(char* str)
 {
-    int i;
+    ptrdiff_t i;
     char c, *cp, *cp2;
 
     /* Safety check: ensure str is not NULL */
@@ -485,7 +486,7 @@ int strToVal(char* str)
         return 0;
 
     len = strlen(str);
-    for (i = len - 1; i >= 0; i--) {
+    for (i = (long)(len - 1); i >= 0; i--) {
         /* fprintf(stderr, "%d %d %d %d\n",(*(str+i)-'0'), val,*(str+i),j);*/
         if (*(str + i) == '-')
             negate *= -1;

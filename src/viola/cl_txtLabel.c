@@ -99,10 +99,10 @@ SlotInfo cl_txtLabel_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtLabel"},
 		}\n\
 	",
                                  },
-                                 {{0}}};
+                                 {0}};
 SlotInfo cl_txtLabel_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txtLabel},
                                  {STR_paneConfig, PTRS | SLOT_RW, (long)"center"},
-                                 {{0}}};
+                                 {0}};
 
 SlotInfo* slots_txtLabel[] = {(SlotInfo*)cl_txtLabel_NCSlots, (SlotInfo*)cl_txtLabel_NPSlots,
                               (SlotInfo*)cl_txtLabel_CSlots, (SlotInfo*)cl_txtLabel_PSlots};
@@ -115,7 +115,7 @@ MethodInfo meths_txtLabel[] = {
     },
     {STR_initialize, meth_txtLabel_initialize},
     {STR_render, meth_txtLabel_render},
-    {{0}}};
+    {0}};
 
 ClassInfo class_txtLabel = {
     helper_txt_get, helper_txt_set, slots_txtLabel, /* class slot information	*/

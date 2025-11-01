@@ -30,7 +30,7 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_txtEditLine_NCSlots[] = {{{0}}};
+SlotInfo cl_txtEditLine_NCSlots[] = {{0}};
 SlotInfo cl_txtEditLine_NPSlots[] = {{0}};
 SlotInfo cl_txtEditLine_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtEditLine"},
                                     {
@@ -134,10 +134,10 @@ SlotInfo cl_txtEditLine_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtEditLi
 		}\n\
 	",
                                     },
-                                    {{0}}};
+                                    {0}};
 SlotInfo cl_txtEditLine_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txtEditLine},
                                     {STR_border, LONG | SLOT_RW, BORDER_SINK},
-                                    {{0}}};
+                                    {0}};
 
 SlotInfo* slots_txtEditLine[] = {
     (SlotInfo*)cl_txtEditLine_NCSlots, (SlotInfo*)cl_txtEditLine_NPSlots,
@@ -151,7 +151,7 @@ MethodInfo meths_txtEditLine[] = {
         meth_txtEditLine_expose,
     },
     {STR_render, meth_txtEditLine_render},
-    {{0}}};
+    {0}};
 
 ClassInfo class_txtEditLine = {
     helper_txtDisp_get, helper_txtDisp_set, slots_txtEditLine, /* class slot information	*/

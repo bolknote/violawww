@@ -322,7 +322,7 @@ VObj* getObject(char* objName)
         return obj;
     } else {
         char *fname, *objname;
-        int length;
+        size_t length;
         HashEntry* entry;
 
         length = sizeof(char) * (strlen(objName) + 3);

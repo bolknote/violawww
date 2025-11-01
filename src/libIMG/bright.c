@@ -181,12 +181,9 @@ Image* normalize(Image* image, unsigned int verbose) {
         for (y = 0; y < image->height; y++)
             for (x = 0; x < image->width; x++) {
                 pixval = memToVal(srcptr, image->pixlen);
-                *destptr = array[image->rgb.red[pixval] >> 8];
-                *destptr++;
-                *destptr = array[image->rgb.green[pixval] >> 8];
-                *destptr++;
-                *destptr = array[image->rgb.blue[pixval] >> 8];
-                *destptr++;
+                *(destptr++) = array[image->rgb.red[pixval] >> 8];
+                *(destptr++) = array[image->rgb.green[pixval] >> 8];
+                *(destptr++) = array[image->rgb.blue[pixval] >> 8];
                 srcptr += image->pixlen;
             }
         break;

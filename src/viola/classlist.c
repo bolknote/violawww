@@ -60,4 +60,4 @@ ClassInfo* classList[] = {&class_cosmic,      /* (internal) root of class hierar
                           /* experimental classes.. replace once dynamic classing is available */
                           &class_AC_SGML_txt,
                           /*	&class_AC_SGML_header_big,*/
-                          {0}};
+                          0};

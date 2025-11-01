@@ -79,13 +79,13 @@ SlotInfo cl_vpane_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"vpane"},
 		}\n\
 	",
                               },
-                              {{0}}};
+                              {0}};
 SlotInfo cl_vpane_PSlots[] = {{STR__classInfo, CLSI, (long)&class_vpane},
                               {STR_paneConfig, PTRS, (long)"northToSouth"},
                               {
                                   STR__paneConfig, LONG, PANE_CONFIG_N2S /* default with N2S */
                               },
-                              {{0}}};
+                              {0}};
 
 SlotInfo* slots_vpane[] = {(SlotInfo*)cl_vpane_NCSlots, (SlotInfo*)cl_vpane_NPSlots,
                            (SlotInfo*)cl_vpane_CSlots, (SlotInfo*)cl_vpane_PSlots};

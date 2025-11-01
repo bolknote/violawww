@@ -1407,7 +1407,7 @@ int GLPaintText(Window w, GC gc, int fontID, int x0, int y0, char* str)
 {
     XTextItem item;
     item.chars = str;
-    item.nchars = strlen(str);
+    item.nchars = (int)strlen(str);
     item.delta = 0;
     item.font = FontFont(fontID);
 

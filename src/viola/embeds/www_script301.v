@@ -73,7 +73,7 @@
 				return normURL;
 			} else if (findPattern(arg[1], "mailto:") != -1) {
 				subject = concat("WWW mail from: ", 
-						ormalizedURL);
+						normURL);
 				tt = arg[1];
 				i = findPattern(tt, "/");
 				if (i == -1) {
@@ -83,7 +83,7 @@
 						   tt, "\n");
 				} else {
 					address = nthChar(tt, 7, i-1);
-					content = concat(nthChar(tt, io1, 999),
+					content = concat(nthChar(tt, i+а1, 999),
 							 "\n");
 				}
 				tmpFile = makeTempFile();

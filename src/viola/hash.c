@@ -388,9 +388,11 @@ int removeHashEntry(HashTable* ht, long label)
                     free(entry);
                 } else {
                     if (entry->next) {
+                        HashEntry* to_free = entry->next;
                         entry->label = entry->next->label;
                         entry->val = entry->next->val;
                         entry->next = entry->next->next;
+                        free(to_free);
                     } else {
                         entry->label = 0;
                         entry->val = 0;
@@ -424,9 +426,11 @@ int removeHashEntry_int(HashTable* ht, long label)
                 free(entry);
             } else {
                 if (entry->next) {
+                    HashEntry* to_free = entry->next;
                     entry->label = entry->next->label;
                     entry->val = entry->next->val;
                     entry->next = entry->next->next;
+                    free(to_free);
                 } else {
                     entry->label = 0;
                     entry->val = 0;
@@ -464,9 +468,11 @@ int removeHashEntry_str(HashTable* ht, char* label)
                         free(entry);
                     } else {
                         if (entry->next) {
+                            HashEntry* to_free = entry->next;
                             entry->label = entry->next->label;
                             entry->val = entry->next->val;
                             entry->next = entry->next->next;
+                            free(to_free);
                         } else {
                             entry->label = 0;
                             entry->val = 0;

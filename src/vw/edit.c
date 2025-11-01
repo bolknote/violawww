@@ -21,6 +21,8 @@
 #include <Xm/PushB.h>
 #include <Xm/Text.h>
 #include <Xm/Xm.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +41,9 @@
 #include "fileIO.h"
 #include "selection.h"
 #include "vw.h"
+
+static void setupWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData);
+void sourceEditorDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont);
 
 void showSourceCB(Widget button, XtPointer clientData, XtPointer callData)
 {
@@ -369,6 +374,18 @@ void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
     ViolaRegisterMessageHandler("busyCursor", busyCursorMH, (void*)localDocViewInfo);
     ViolaRegisterMessageHandler("idleCursor", idleCursorMH, (void*)localDocViewInfo);
 
+    /* Set up WM_DELETE_WINDOW protocol handler so clicking the X button
+     * calls closeSourceEditor instead of closing the entire browser */
+    XtVaSetValues(shell, XmNdeleteResponse, XmDO_NOTHING, NULL);
+    
+    /* Register event handler for WM_DELETE_WINDOW protocol.
+     * ClientMessage events need to be handled specially - use 0 mask to catch all events
+     * and check event type inside the handler */
+    XtAddEventHandler(shell, 0L, TRUE, sourceEditorDeleteWindowEH, (XtPointer)cd);
+    
+    /* Set WM_PROTOCOLS property after window is realized */
+    XtAddCallback(shell, XmNrealizeCallback, setupWMProtocolsCB, NULL);
+
     XtPopup(shell, XtGrabNone);
 }
 
@@ -379,6 +396,39 @@ void editorValueChangedCB(Widget textEditor, XtPointer clientData, XtPointer cal
     dvi->editorDataChanged = 1;
     XtRemoveCallback(textEditor, XmNvalueChangedCallback, editorValueChangedCB, (XtPointer)dvi);
     XtVaSetValues(dvi->editorSaveButton, XmNsensitive, TRUE, NULL);
+}
+
+/*
+ * Callback to set up WM_PROTOCOLS after window is realized.
+ */
+static void setupWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData)
+{
+    Atom wm_protocols = XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False);
+    Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
+    if (wm_protocols != None && wm_delete_window != None && XtWindow(w) != None) {
+        XSetWMProtocols(XtDisplay(w), XtWindow(w), &wm_delete_window, 1);
+    }
+}
+
+/*
+ * Event handler for WM_DELETE_WINDOW protocol message.
+ * Called when user clicks the window close button (X).
+ */
+void sourceEditorDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont)
+{
+    if (event->type == ClientMessage) {
+        XClientMessageEvent* cm = (XClientMessageEvent*)event;
+        Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
+        
+        if (cm->message_type == XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False) &&
+            (Atom)cm->data.l[0] == wm_delete_window) {
+            /* User clicked the window close button */
+            ClientData* cd = (ClientData*)clientData;
+            /* Call closeSourceEditor with NULL button and callData */
+            closeSourceEditor((Widget)NULL, clientData, (XtPointer)NULL);
+            *cont = False; /* Don't continue processing */
+        }
+    }
 }
 
 void closeSourceEditor(Widget button, XtPointer clientData, XtPointer callData)

@@ -11,8 +11,6 @@
   - Page titles must be correctly encoded/decoded (no mojibake; proper charset handling).
 - [ ] Stop launching external viewer for direct image links
   - Direct links to images should render inline; must not attempt to start `xv` or any external program.
-- [ ] Fix close button in source code window
-  - The close button in the source code window closes the entire browser instead of just the source code window.
 - [ ] Fix STYLE/SCRIPT skipping
   - Skipping STYLE/SCRIPT elements doesn't seem to work everywhere; needs investigation and fixes.
 - [ ] Implement file opening sandbox

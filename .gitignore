@@ -19,6 +19,10 @@ src/viola/embeds/*.h
 *.stg
 examples/
 
+# Exclude test resources from ignore rules
+!test/res/
+!test/res/**
+
 # macOS
 .DS_Store
 *.log

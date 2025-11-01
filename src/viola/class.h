@@ -11,6 +11,9 @@
 typedef long VObj;
 #endif
 
+/* Forward declaration */
+typedef struct Packet Packet;
+
 /*****************************************************************************
  * slot info
  */
@@ -63,8 +66,8 @@ typedef struct MethodInfo {
 #ifndef CLASSINFO_DEFINED
 #define CLASSINFO_DEFINED
 typedef struct ClassInfo {
-    long (*slotGetMeth)();
-    long (*slotSetMeth)();
+    long (*slotGetMeth)(VObj*, Packet*, int, Packet*, long);
+    long (*slotSetMeth)(VObj*, Packet*, int, Packet*, long);
 
     SlotInfo** slots;
     MethodInfo* methods;

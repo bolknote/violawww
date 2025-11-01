@@ -7,7 +7,7 @@ typedef union PCode {
     float f;
     char* s;
     char c;
-};
+} PCode;
 
 enum PCodeTypes {
     CODE_PLUS,

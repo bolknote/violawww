@@ -16,10 +16,10 @@ typedef struct HashTable {
     long (*func_cmp)();
     long (*func_freeLabel)();
     long (*func_freeVal)();
-    HashEntry* (*get)();
+    HashEntry* (*get)(struct HashTable*, long);
     HashEntry* (*put)();
     HashEntry* (*put_replace)();
-    long (*remove)();
+    long (*remove)(struct HashTable*, long);
 } HashTable;
 
 int hash_int();

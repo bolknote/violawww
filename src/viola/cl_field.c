@@ -956,7 +956,7 @@ long meth_field_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
             */
 
             SET_window(self, 0); /*insurance*/
-            window2Obj->remove(window2Obj, GET_window(self));
+            window2Obj->remove(window2Obj, (long)GET_window(self));
         }
     }
     meth_generic_freeSelf(self, result, argc, argv);

@@ -2725,8 +2725,8 @@ long meth_generic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) 
 
     if (!exitingViola) {
         objID2Obj->remove(objID2Obj, getIdent(GET_name(self)));
-        symStr2ID->remove(symStr2ID, GET_name(self));
-        objObj2ExistP->remove(objObj2ExistP, self);
+        symStr2ID->remove(symStr2ID, (long)GET_name(self));
+        objObj2ExistP->remove(objObj2ExistP, (long)self);
         /*
                 if (entry = symStr2ID->get(symStr2ID, GET_name(self))) {
                         print("FREESELF: in symStr2ID >>>%s<<\n", entry->label);
@@ -2734,7 +2734,7 @@ long meth_generic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) 
                 if (entry = objID2Obj->get(objID2Obj, getIdent(GET_name(self)))) {
                         print("FREESELF: in objID2Obj >>>%s<<\n", entry->label);
                 }
-                if (entry = objObj2ExistP->get(objObj2ExistP, self)) {
+                if (entry = objObj2ExistP->get(objObj2ExistP, (long)self)) {
                         print("FREESELF: in objObj2ExistP val=%d\n", entry->val);
                 }
         */

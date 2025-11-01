@@ -7474,4 +7474,4 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                "wwwURL.v",
                                objDesc_wwwURL,
                                (char*)0,
-                               (char**)0};
+                               (SlotStruct*)0};

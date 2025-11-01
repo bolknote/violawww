@@ -102,7 +102,7 @@ extern Packet* clearPacket(Packet* packet);
         }\
 }
 */
-extern void freePossibleDangler();
+extern void freePossibleDangler(Packet* packet);
 
 #define copyPacket(to, from)                                                                       \
     if (to != from)                                                                                \

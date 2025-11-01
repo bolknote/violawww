@@ -176,7 +176,7 @@ void nullPacket(Packet * packet)
 }
 */
 
-void freePossibleDangler(packet) Packet* packet;
+void freePossibleDangler(Packet* packet)
 {
     if ((packet)->canFree & PK_CANFREE_STR) {
         free((packet)->info.s);

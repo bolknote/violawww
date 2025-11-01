@@ -902,7 +902,7 @@ void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* co
     if (event->type == ConfigureNotify) {
         XConfigureEvent* xcep = (XConfigureEvent*)event;
 
-        XResizeWindow(XtDisplay(widget), (Window)clientData, xcep->width, xcep->height);
+        XResizeWindow(XtDisplay(widget), (Window)clientData, (unsigned int)xcep->width, (unsigned int)xcep->height);
     }
 }
 

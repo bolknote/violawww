@@ -123,8 +123,8 @@ void drawLink(Widget canvas, Link* link) {
     if (!link)
         return;
 
-    XCopyArea(XtDisplay(canvas), link->icon, XtWindow(canvas), link->gc, 0, 0, link->w, link->h,
-              link->x, link->y);
+    XCopyArea(XtDisplay(canvas), link->icon, XtWindow(canvas), link->gc, 0, 0, (unsigned int)link->w, (unsigned int)link->h,
+              (unsigned int)link->x, (unsigned int)link->y);
     XmStringDraw(XtDisplay(canvas), XtWindow(canvas), bogusFontList, link->nameXMS, link->gc,
                  link->nx, link->ny, 1000, XmALIGNMENT_BEGINNING, XmSTRING_DIRECTION_L_TO_R,
                  (XRectangle*)NULL);
@@ -136,8 +136,8 @@ void drawFolder(Widget canvas, Folder* folder) {
     if (!folder)
         return;
 
-    XCopyArea(XtDisplay(canvas), folder->icon, XtWindow(canvas), folder->gc, 0, 0, folder->w,
-              folder->h, folder->x, folder->y);
+    XCopyArea(XtDisplay(canvas), folder->icon, XtWindow(canvas), folder->gc, 0, 0, (unsigned int)folder->w,
+              (unsigned int)folder->h, (unsigned int)folder->x, (unsigned int)folder->y);
     XmStringDraw(XtDisplay(canvas), XtWindow(canvas), bogusFontList, folder->nameXMS, folder->gc,
                  folder->nx, folder->ny, 1000, XmALIGNMENT_BEGINNING, XmSTRING_DIRECTION_L_TO_R,
                  (XRectangle*)NULL);
@@ -271,8 +271,13 @@ void createFolder(Widget widget, XtPointer clientData, XtPointer callData)
     newfolder->iconFile = NULL;
     newfolder->w = defaultFolderWidth;
     newfolder->h = defaultFolderHeight;
-    catalogFindOpenLocation(catalog->currentFolder, &newfolder->x, &newfolder->y, newfolder->w,
-                            newfolder->h);
+    {
+        int x, y;
+        catalogFindOpenLocation(catalog->currentFolder, &x, &y, (int)newfolder->w,
+                                (int)newfolder->h);
+        newfolder->x = (short)x;
+        newfolder->y = (short)y;
+    }
     newfolder->items = (Item**)calloc(ITEM_ALLOC_CHUNK, sizeof(CatalogItem*));
     newfolder->nItems = 0;
     newfolder->allocedItems = ITEM_ALLOC_CHUNK;

@@ -550,16 +550,16 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 continue;
 
             case CODE_GET2 << 16: {
-                long (*func)() = GET__classInfo(self)->slotGetMeth;
+                long (*func)(VObj*, Packet*, int, Packet*, long) = GET__classInfo(self)->slotGetMeth;
                 if (func) {
                     clearPacket(&reg1);
-                    ((long (*)())(func))(self, &reg1, 0, NULL, data);
+                    func(self, &reg1, 0, NULL, data);
                 }
             }
                 continue;
 
             case CODE_PUSH_SET2 << 16: {
-                long (*func)() = GET__classInfo(self)->slotSetMeth;
+                long (*func)(VObj*, Packet*, int, Packet*, long) = GET__classInfo(self)->slotSetMeth;
 
                 if (stackExecIdx > execStackSizeCheck) {
                     if (!incrementExecStack())
@@ -578,7 +578,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                     /* note that argv[0] is not used and undefined!
                      * helper_*_set() should not read argv[0]
                      */
-                    ((long (*)())(func))(self, &reg1, 2, &execStack[stackExecIdx - 2 + 1], data);
+                    func(self, &reg1, 2, &execStack[stackExecIdx - 2 + 1], data);
 
                     /* don't clear execStack[save_stackExecIdx]
                      * because it's the equivalent of arg[0],

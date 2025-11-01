@@ -124,7 +124,7 @@ void drawLink(Widget canvas, Link* link) {
         return;
 
     XCopyArea(XtDisplay(canvas), link->icon, XtWindow(canvas), link->gc, 0, 0, (unsigned int)link->w, (unsigned int)link->h,
-              (unsigned int)link->x, (unsigned int)link->y);
+              (int)link->x, (int)link->y);
     XmStringDraw(XtDisplay(canvas), XtWindow(canvas), bogusFontList, link->nameXMS, link->gc,
                  link->nx, link->ny, 1000, XmALIGNMENT_BEGINNING, XmSTRING_DIRECTION_L_TO_R,
                  (XRectangle*)NULL);
@@ -137,7 +137,7 @@ void drawFolder(Widget canvas, Folder* folder) {
         return;
 
     XCopyArea(XtDisplay(canvas), folder->icon, XtWindow(canvas), folder->gc, 0, 0, (unsigned int)folder->w,
-              (unsigned int)folder->h, (unsigned int)folder->x, (unsigned int)folder->y);
+              (unsigned int)folder->h, (int)folder->x, (int)folder->y);
     XmStringDraw(XtDisplay(canvas), XtWindow(canvas), bogusFontList, folder->nameXMS, folder->gc,
                  folder->nx, folder->ny, 1000, XmALIGNMENT_BEGINNING, XmSTRING_DIRECTION_L_TO_R,
                  (XRectangle*)NULL);

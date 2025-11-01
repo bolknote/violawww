@@ -146,23 +146,21 @@ void drawFolder(Widget canvas, Folder* folder) {
                  (XRectangle*)NULL);
 }
 
-#define drawItem(canvas, item)                                                                     \
-    switch ((item)->type) {                                                                        \
-    case FOLDER:                                                                                   \
-        drawFolder((canvas), (Folder*)(item));                                                     \
-        break;                                                                                     \
-    case LINK:                                                                                     \
-        drawLink((canvas), (Link*)(item));                                                         \
-        break;                                                                                     \
+static inline void drawItem(Widget canvas, Item* item) {
+    switch (item->type) {
+    case FOLDER:
+        drawFolder(canvas, (Folder*)item);
+        break;
+    case LINK:
+        drawLink(canvas, (Link*)item);
+        break;
     }
+}
 
 void drawCatalog(Catalog* catalog) {
-    int i;
-    int nItems = catalog->currentFolder->nItems;
-    Display* theDisplay = XtDisplay(catalog->canvas);
-    Window theWindow = XtWindow(catalog->canvas);
+    int nItems = (int)catalog->currentFolder->nItems;
 
-    for (i = 0; i < nItems; i++)
+    for (int i = 0; i < nItems; i++)
         drawItem(catalog->canvas, catalog->currentFolder->items[i]);
 }
 
@@ -217,14 +215,13 @@ void catalogButtonMotionEH(Widget widget, XtPointer clientData, XEvent* event, B
 
 void catalogExposureEH(Widget widget, XtPointer clientData, XEvent* event, Boolean* cont)
 {
-    int i, nitems;
     Catalog* catalog = (Catalog*)clientData;
 
     if (!catalog->currentFolder)
         return;
 
-    nitems = catalog->currentFolder->nItems;
-    for (i = 0; i < nitems; i++)
+    int nitems = (int)catalog->currentFolder->nItems;
+    for (int i = 0; i < nitems; i++)
         drawItem(catalog->canvas, catalog->currentFolder->items[i]);
 }
 
@@ -305,15 +302,17 @@ void deleteItemCB(Widget widget, XtPointer clientData, XtPointer callData)
     /* Look for all selected items and attempt to delete them. */
 }
 
-#define forceDeleteItem(item, catalog)                                                             \
-    {                                                                                              \
-        if (item) {                                                                                \
-            if ((item)->type == LINK)                                                              \
-                forceDeleteLink((item), (catalog));                                                \
-            else                                                                                   \
-                forceDeleteFolder((item), (catalog));                                              \
-        }                                                                                          \
+void forceDeleteLink(Link* link, Catalog* catalog);
+void forceDeleteFolder(Folder* folder, Catalog* catalog);
+
+static inline void forceDeleteItem(Item* item, Catalog* catalog) {
+    if (item) {
+        if (item->type == LINK)
+            forceDeleteLink((Link*)item, catalog);
+        else
+            forceDeleteFolder((Folder*)item, catalog);
     }
+}
 
 void forceDeleteLink(Link* link, Catalog* catalog) {
     if (!link)

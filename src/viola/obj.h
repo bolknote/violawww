@@ -42,7 +42,7 @@ extern long securityMode;
 #define appendVObjListNode(olist, obj) appendObjToList(olist, obj)
 
 /*int validObjectP();*/
-#define validObjectP(self) objObj2ExistP->get(objObj2ExistP, self)
+#define validObjectP(self) objObj2ExistP->get(objObj2ExistP, (long)(self))
 
 VObj* findObject(long objNameStrID);
 VObjList* appendObjToList();

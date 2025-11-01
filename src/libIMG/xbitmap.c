@@ -25,7 +25,7 @@
 #include <string.h>
 #define rindex strrchr
 #else
-char* rindex();
+char* rindex(const char *s, int c);
 #endif
 
 #define MAX_SIZE 255
@@ -128,7 +128,7 @@ static int nextInt(ZFILE* zf) {
     }
 }
 
-static void badFile(name) char* name;
+static void badFile(char* name)
 {
     printf("%s: bad X bitmap file\n", name);
     exit(1);

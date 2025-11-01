@@ -1,0 +1,22 @@
+<html>
+<head><title>XPM Security Test</title></head>
+<body>
+<h1>XPM Security Tests</h1>
+
+<p>This page tests XPM security fixes for integer overflow, excessive resource allocation, and invalid dimensions.</p>
+
+<h2>Valid XPM (should display):</h2>
+<img src="test_xpm_valid.xpm">
+
+<h2>Integer Overflow (65536x65536 - should FAIL):</h2>
+<img src="test_xpm_overflow.xpm">
+
+<h2>Excessive Colors (50000 - should FAIL):</h2>
+<img src="test_xpm_excessive_colors.xpm">
+
+<h2>Zero Dimensions (should FAIL):</h2>
+<img src="test_xpm_zero_dimensions.xpm">
+
+</body>
+</html>
+

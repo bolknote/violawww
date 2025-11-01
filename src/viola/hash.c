@@ -57,31 +57,27 @@ int hash_str(HashTable * ht, char * str)
         return key;
 }
 */
-HashTable* initHashTable(size, func_hash, func_cmp, func_freeLabel, func_freeVal, func_get,
-                         func_put, func_put_replace, func_remove)
-long size;
-long (*func_hash)();
-long (*func_cmp)();
-long (*func_freeLabel)();
-long (*func_freeVal)();
-HashEntry* (*func_get)();
-HashEntry* (*func_put)();
-HashEntry* (*func_put_replace)();
-long (*func_remove)();
+HashTable* initHashTable(long size, long (*func_hash)(), long (*func_cmp)(), 
+                         long (*func_freeLabel)(), long (*func_freeVal)(),
+                         HashEntry* (*func_get)(), HashEntry* (*func_put)(), 
+                         HashEntry* (*func_put_replace)(), long (*func_remove)())
 {
     struct HashTable* ht = (HashTable*)malloc(sizeof(struct HashTable));
     
     if (ht) {
         ht->entries = (HashEntry*)malloc(sizeof(struct HashEntry) * size);
-        ht->size = size;
-        ht->func_hash = func_hash;
-        ht->func_cmp = func_cmp;
-        ht->func_freeLabel = func_freeLabel;
-        ht->func_freeVal = func_freeVal;
-        ht->get = func_get;
-        ht->put = func_put;
-        ht->put_replace = func_put_replace;
-        ht->remove = func_remove;
+        *ht = (HashTable){
+            .entries = ht->entries,
+            .size = size,
+            .func_hash = func_hash,
+            .func_cmp = func_cmp,
+            .func_freeLabel = func_freeLabel,
+            .func_freeVal = func_freeVal,
+            .get = func_get,
+            .put = func_put,
+            .put_replace = func_put_replace,
+            .remove = func_remove
+        };
 
         HashEntry* entryp = ht->entries;
         for (int i = size - 1; i >= 0; i--) {

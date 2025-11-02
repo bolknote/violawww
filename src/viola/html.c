@@ -193,7 +193,7 @@ PRIVATE char* logfile_name = 0; /* Root of log file name */
 
 /* Misc Externs */
 /* ================================ */
-extern char* saveString(); /* in mystrings.c */
+extern char* saveString(const char*); /* in mystrings.c */
 
 /* Forward Declaration of Functions */
 /* ================================ */
@@ -608,7 +608,7 @@ void split_line ARGS2(HText*, text, int, split) {
 
         /* skip extraneous spaces */
         for (i = text->tbuffi - split; i > 0; i--) {
-            if (!ISSPACE(TFCChar(tfcp)) || TFCFlags(tfcp))
+            if (!isspace((unsigned char)TFCChar(tfcp)) || TFCFlags(tfcp))
                 break;
             tfcp++;
             skip++;

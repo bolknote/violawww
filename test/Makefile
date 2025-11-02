@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection test-biop test-hash-memory
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection test-biop test-hash-memory test-mystrings
 
 .PHONY: all test clean $(TESTS)
 
@@ -48,6 +48,7 @@ test:
 	-@$(MAKE) test-wayback-detection >$(BUILD_DIR)/test-wayback-detection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback-detection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback-detection: FAIL")
 	-@$(MAKE) test-biop >$(BUILD_DIR)/test-biop.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-biop: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-biop: FAIL")
 	-@$(MAKE) test-hash-memory >$(BUILD_DIR)/test-hash-memory.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-hash-memory: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-hash-memory: FAIL")
+	-@$(MAKE) test-mystrings >$(BUILD_DIR)/test-mystrings.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-mystrings: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-mystrings: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -145,10 +146,24 @@ test-hash-memory: test_hash_memory.c $(PROJECT_ROOT)/src/viola/hash.o $(PROJECT_
 		$(PROJECT_ROOT)/src/viola/hash.o $(PROJECT_ROOT)/src/viola/mystrings.o
 	@./$(BUILD_DIR)/test_hash_memory
 
+test-mystrings: test_mystrings.c $(PROJECT_ROOT)/src/viola/hash.o $(PROJECT_ROOT)/src/viola/mystrings.o
+	@echo ""
+	@echo "Building string functions tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(PROJECT_ROOT)/src/viola -o $(BUILD_DIR)/test_mystrings test_mystrings.c \
+		$(PROJECT_ROOT)/src/viola/hash.o $(PROJECT_ROOT)/src/viola/mystrings.o
+	@./$(BUILD_DIR)/test_mystrings
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
-	@rm -rf $(BUILD_DIR)
+	@if [ -d "$(BUILD_DIR)" ]; then \
+		chmod -R u+w $(BUILD_DIR) 2>/dev/null || true; \
+		rm -rf $(BUILD_DIR); \
+		echo "All test artifacts removed"; \
+	else \
+		echo "Build directory does not exist"; \
+	fi
 
 # Help
 help:
@@ -167,4 +182,5 @@ help:
 	@echo "  test-wayback         - Wayback machine URL tests"
 	@echo "  test-wayback-detection - Web Archive URL detection tests"
 	@echo "  test-hash-memory     - Hash table memory leak tests"
+	@echo "  test-mystrings       - String functions tests"
 

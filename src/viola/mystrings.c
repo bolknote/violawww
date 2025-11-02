@@ -17,8 +17,10 @@
 #include "utils.h"
 #include "memory_debug.h"
 #include <ctype.h>
-#include <stdlib.h> /* для правильного объявления malloc */
+#include <stdio.h>  /* for snprintf */
+#include <stdlib.h>
 #include <string.h>
+#include <strings.h> /* for strcasecmp */
 
 #define CTRL_d 4
 /*extern char *malloc();*/
@@ -32,62 +34,30 @@ int GBuffIdx[NUM_OF_GBUFFS];
 int GBuffSize[NUM_OF_GBUFFS];
 
 /* Char strBuff[MAX_LINE_LENGTH]; */
-char spaces[80] = {
-    "                                                                              "};
 
 long itemValArray[40];
 long itemValArray2[40];
 
-/* later, make into flags so no function call is necessary
- */
-int cmp_str(char* s1, char* s2)
-{
-    if (s1[0] == s2[0])
-        if (!strcmp(s1, s2))
-            return 1;
-    return 0;
-}
 
 int cmp_int(int n1, int n2)
 {
     return n1 == n2;
 }
 
-void SkipBlanks(linep, i) char* linep;
-int* i;
+long cmp_str(long a, long b)
+{
+    return (long)strcmp((char*)a, (char*)b);
+}
+
+void SkipBlanks(char* linep, int* i)
 {
     while (linep[*i]) {
-        if (!ISSPACE(linep[*i]))
+        if (!isspace((unsigned char)linep[*i]))
             return;
         ++(*i);
     }
 }
 
-int noCaseCharCmp(char c1, char c2)
-{
-    if (c1 > 'Z')
-        c1 -= 32; /* convert to lower case */
-    if (c2 > 'Z')
-        c2 -= 32;
-    if (c1 == c2)
-        return 1;
-    else
-        return 0;
-}
-
-/*
- * case insensitive strcmp
- */
-int noCaseStrCmp(char * s1, char * s2)
-{
-    while (*s1 && *s2) {
-        if (!noCaseCharCmp(*s1++, *s2++))
-            return 0;
-    }
-    if (*s1 == '\0' && *s2 == '\0')
-        return 1;
-    return 0;
-}
 
 /*
  ** Stores the next word in linep in *wordp. Current postion in line is
@@ -97,38 +67,35 @@ int noCaseStrCmp(char * s1, char * s2)
  * PreCondition: i <= strlen(linep);
  * PostCondition: *wordp contains an argument string from *linep, truncated if necessary.
  */
-int NextWord(char* linep, int i, char* wordp, int maxlen)
+int NextWord(const char* linep, int i, char* wordp, int maxlen)
 {
-    int j = 0;
-
+    if (!linep || i < 0)
+        return i;
+    
     if (maxlen <= 0) {
         if (maxlen == 0 && wordp)
             wordp[0] = '\0';
         return i;
     }
 
-    for (;;) {
-        if (!linep[i]) {
-            wordp[j] = '\0';
-            return i;
+    /* Skip leading whitespace */
+    i += (int)strspn(linep + i, " \t\r\n\f\v");
+    
+    /* Find word length */
+    size_t word_len = strcspn(linep + i, " \t\r\n\f\v");
+    
+    /* Copy word with truncation */
+    if (wordp) {
+        size_t copy_len = word_len < (size_t)(maxlen - 1) ? word_len : (size_t)(maxlen - 1);
+        if (copy_len > 0) {
+            memcpy(wordp, linep + i, copy_len);
+            wordp[copy_len] = '\0';
+        } else {
+            wordp[0] = '\0';
         }
-        if (!ISSPACE(linep[i]))
-            break;
-        ++i;
     }
 
-    for (;;) {
-        if (!linep[i])
-            break;
-        if (ISSPACE(linep[i]))
-            break;
-        if (j < maxlen - 1)
-            wordp[j++] = linep[i];
-        ++i;
-    }
-    wordp[j] = '\0';
-
-    return i;
+    return i + (int)word_len;
 }
 
 /*
@@ -140,22 +107,17 @@ int NextWord(char* linep, int i, char* wordp, int maxlen)
  *               *wordp must be large enough to hold any argument in *linep.
  * PostCondition: *wordp contains an argument string from *linep.
  */
-int SkipNextWord(char* linep, int i)
+int SkipNextWord(const char* linep, int i)
 {
-    for (;;) {
-        if (linep[i] == NULL)
-            return i;
-        if (!ISSPACE(linep[i]))
-            break;
-        ++i;
-    }
-    for (;;) {
-        if (linep[i] == NULL)
-            break;
-        if (ISSPACE(linep[i]))
-            break;
-        ++i;
-    }
+    if (!linep || i < 0)
+        return i;
+    
+    /* Skip leading whitespace */
+    i += (int)strspn(linep + i, " \t\r\n\f\v");
+    
+    /* Skip word */
+    i += (int)strcspn(linep + i, " \t\r\n\f\v");
+    
     return i;
 }
 
@@ -340,17 +302,11 @@ char* GetLine(char* commandline)
  *
  * PreCondition: str must end with a zero.
  */
-int AllBlank(char* str)
+int AllBlank(const char* str)
 {
-    if (str) {
-        char c;
-
-        while ((c = *(str++))) {
-            if (!ISSPACE(c))
-                return 0;
-        }
-    }
-    return 1;
+    if (!str)
+        return 1;
+    return str[strspn(str, " \t\r\n\f\v")] == '\0';
 }
 
 /*
@@ -360,17 +316,10 @@ int AllBlank(char* str)
  *         -1 if search character is not in the string.
  * PRECONDITION: str must end with null.
  */
-int SearchChar(char* str, char sc)
+int SearchChar(const char* str, char sc)
 {
-    char c;
-    int i = 0;
-
-    while ((c = str[i])) {
-        if (c == sc)
-            return i;
-        i++;
-    }
-    return -1;
+    const char* pos = strchr(str, sc);
+    return pos ? (int)(pos - str) : -1;
 }
 
 /*
@@ -383,20 +332,16 @@ int SearchChar(char* str, char sc)
  */
 int CutTailSpace(char* str)
 {
-    if (str) {
-        size_t l;
-        int i = 0;
-
-        l = strlen(str);
-        if (l <= 0)
-            return 0;
-
-        for (i = (int)(l - 1); (i >= 0) && (str[i] == ' '); i--)
-            str[i] = '\0';
-
-        return (int)(l - i - 1);
-    }
-    return 0;
+    if (!str)
+        return 0;
+    
+    size_t len = strlen(str);
+    size_t orig_len = len;
+    
+    while (len > 0 && isspace((unsigned char)str[len - 1]))
+        str[--len] = '\0';
+    
+    return (int)(orig_len - len);
 }
 
 /*
@@ -404,39 +349,10 @@ int CutTailSpace(char* str)
  */
 char* trimEdgeSpaces(char* str)
 {
-    ptrdiff_t i;
-    char c, *cp, *cp2;
-
-    /* Safety check: ensure str is not NULL */
     if (!str)
         return str;
-    if (!str[0])
-        return str;
-
-    for (cp = str; (c = *cp); cp++) {
-        if (!ISSPACE(c)) {
-            cp2 = str;
-            if (cp > str) {
-                /* shift string toward left to write over leading spaces */
-                i = cp - str;
-                while (*cp)
-                    *(cp2++) = *(cp++);
-                *cp2 = '\0';
-            } else {
-                while (*(++cp2))
-                    ; /* travel to end of string */
-            }
-            /* go backward and replace blanks with 0 */
-            for (--cp2; cp2 >= str; cp2--) {
-                c = *cp2;
-                if (!ISSPACE(c)) {
-                    *(cp2 + 1) = '\0';
-                    return str;
-                }
-            }
-            return str;
-        }
-    }
+    trimFrontSpaces(str);
+    CutTailSpace(str);
     return str;
 }
 
@@ -446,24 +362,14 @@ char* trimEdgeSpaces(char* str)
  */
 char* trimFrontSpaces(char* str)
 {
-    int i = 0, j = 0;
-
-    /* Safety check: ensure str is not NULL */
     if (!str)
         return str;
-
-    do {
-        if (!ISSPACE(str[i])) {
-            if (i > 0) {
-                /* shift string toward left to write over leading spaces */
-                while (str[i])
-                    str[j++] = str[i++];
-                str[j] = '\0';
-            }
-            return str;
-        }
-    } while (str[i++]);
-
+    
+    size_t lead = strspn(str, " \t\r\n\f\v");
+    if (lead > 0 && str[lead] != '\0') {
+        size_t len = strlen(str + lead) + 1; /* +1 for null terminator */
+        memmove(str, str + lead, len);
+    }
     return str;
 }
 
@@ -508,42 +414,17 @@ int strToVal(char* str)
  ** puts the signed int val in str form
  *
  * PRECONDITION: val must be integer.
+ * NOTE: str must be large enough to hold the number (at least 32 bytes recommended)
+ * NOTE: Values are clamped to MAX_LONG to ensure they fit in minimum buffer size (16 bytes)
  */
 char* valToStr(long val, char* str)
 {
-    long i, j = 0, digit;
-
     if (val > MAX_LONG)
         val = MAX_LONG;
+    if (val < -MAX_LONG)
+        val = -MAX_LONG;
 
-    if (val == 0) {
-        str[0] = '0';
-        str[1] = '\0';
-        return str;
-    }
-
-    if (val < 0) { /* if value if negative */
-        val *= -1;
-        *(str + j++) = '-';
-    }
-
-    /* skip all non-zero digit*/
-    for (i = MAX_LONG; i > 0 && (val / i) == 0; i /= 10)
-        ;
-
-    for (; i > 0; i /= 10) {
-        digit = val / i;
-        *(str + j) = digit + '0';
-        val -= digit * i;
-        j++;
-        /*
-          fprintf(stderr, "%ld %ld %ld %ld %ld %ld\n",
-          (long)digit, (long)(*(str+j)-'0'), (long)val,
-          (long)*(str + j), (long)j,(long)i);
-        */
-    }
-    str[j++] = 0;
-
+    snprintf(str, 32, "%ld", val);
     return str;
 }
 
@@ -551,14 +432,18 @@ char* valToStr(long val, char* str)
  * find where the common character is
  * RETURN: -1 if none.
  */
-int commonCharAt(char * str, char * set)
+int commonCharAt(const char* str, const char* set)
 {
+    const char* pos = strpbrk(str, set);
+    if (!pos)
+        return -1;
+    
     int i = 0;
-
     while (*set) {
-        if (charIsInStr(*set++, str))
+        if (*set == *pos)
             return i;
-        ++i;
+        set++;
+        i++;
     }
     return -1;
 }
@@ -566,37 +451,29 @@ int commonCharAt(char * str, char * set)
 /*
  * see if str contains any characters in set.
  */
-int anyCommonChar(char * str, char * set)
+int anyCommonChar(const char* str, const char* set)
 {
-    while (*str)
-        if (charIsInStr(*str++, set))
-            return 1;
-    return 0;
+    return strpbrk(str, set) != NULL;
 }
 
 /*
  * see if character ch is in string str
  */
-int charIsInStr(char ch, char * str)
+int charIsInStr(char ch, const char* str)
 {
-    while (*str) {
-        if (*str++ == ch)
-            return 1; /* change 1 to I will make if-then not work...*/
-    }
-    return 0;
+    return strchr(str, ch) != NULL;
 }
 
 int numOfChar(char str[], char sc)
 {
-    char c;
-    int i = 0, j = 0;
-
-    while ((c = str[i])) {
-        if (c == sc)
-            j++;
-        i++;
+    int count = 0;
+    
+    while (*str) {
+        if (*str == sc)
+            count++;
+        str++;
     }
-    return j;
+    return count;
 }
 
 /*
@@ -624,115 +501,131 @@ char* trimQuote(char* str)
 }
 
 /* allocates bigger space, and append to it.. the original string is freed*/
-char* append(char * orig, char * append)
+char* append(char* orig, const char* append_str)
 {
-    char* sp;
-
-    /* Safety check: ensure pointers are not NULL */
-    if (!orig || !append)
+    if (!orig || !append_str)
         return orig;
 
-    if ((sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 1)))) {
-        strcpy(sp, orig);
-        strcat(sp, append);
-        if (orig)
-            free(orig);
+    size_t orig_len = strlen(orig);
+    size_t append_len = strlen(append_str);
+    char* sp = (char*)malloc(sizeof(char) * (orig_len + append_len + 1));
+    
+    if (sp) {
+        memcpy(sp, orig, orig_len);
+        memcpy(sp + orig_len, append_str, append_len);
+        sp[orig_len + append_len] = '\0';
+        free(orig);
         return sp;
-    } else {
-        fprintf(stderr, "malloc failed.");
-        return NULL;
     }
+    
+    fprintf(stderr, "malloc failed.");
+    return NULL;
 }
 
 /* same as append, with a carriage appended at the end */
-char* appendLine(char * orig, char * append)
+char* appendLine(char* orig, const char* append_str)
 {
-    char* sp;
-
-    /* Safety check: ensure pointers are not NULL */
-    if (!orig || !append)
+    if (!orig || !append_str)
         return orig;
 
-    if ((sp = (char*)malloc(sizeof(char) * (strlen(orig) + strlen(append) + 2)))) {
-        strcpy(sp, orig);
-        strcat(sp, append);
-        strcat(sp, "\n");
-        if (orig)
-            free(orig);
+    size_t orig_len = strlen(orig);
+    size_t append_len = strlen(append_str);
+    char* sp = (char*)malloc(sizeof(char) * (orig_len + append_len + 2));
+    
+    if (sp) {
+        memcpy(sp, orig, orig_len);
+        memcpy(sp + orig_len, append_str, append_len);
+        sp[orig_len + append_len] = '\n';
+        sp[orig_len + append_len + 1] = '\0';
+        free(orig);
         return sp;
-    } else {
-        fprintf(stderr, "malloc failed.");
-        return NULL;
     }
+    
+    fprintf(stderr, "malloc failed.");
+    return NULL;
 }
 
-char* saveString(char* str) {
-    char* sp;
-
+char* saveString(const char* str) {
     if (!str)
-        return NULL; /*bad*/
+        return NULL;
 
     /* Проверка что указатель валидный (не слишком маленький адрес) */
     /* Check for invalid pointers: NULL, low addresses, truncated 32-bit pointers */
-    if (!str || (unsigned long)str < 0x1000 ||
+    if ((unsigned long)str < 0x1000 ||
         ((unsigned long)str & 0xFFFFFFFF00000000UL) == 0 || /* Truncated 32-bit */
         ((unsigned long)str & 0xFFFFFFFF00000000UL) == 0xFFFFFFFF00000000UL) { /* Sign-extended */
         fprintf(stderr, "saveString: invalid pointer %p, returning empty string\n", str);
         /* Allocate empty string to avoid recursion */
-        sp = (char*)malloc(1);
+        char* sp = (char*)malloc(1);
         if (sp)
             sp[0] = '\0';
         return sp;
     }
 
-    sp = (char*)MALLOC(sizeof(char) * (strlen(str) + 1));
+    size_t len = strlen(str);
+    char* sp = (char*)MALLOC(sizeof(char) * (len + 1));
     if (sp) {
-        strcpy(sp, str);
+        memcpy(sp, str, len + 1);
         return sp;
     }
     fprintf(stderr, "malloc failed.");
     return NULL;
 }
 
-char* saveStringN(char* str, int size) {
-    char* sp = (char*)MALLOC(sizeof(char) * size);
-
-    if (sp) {
-        strncpy(sp, str, size);
-        return sp;
-    }
-    fprintf(stderr, "malloc failed.");
-    return NULL;
-}
-
-char* VsaveString(group, str) void* group; /* Actually MemoryGroup*, but avoid header dependency */
-char* str;
-{
-    char* sp;
-
-    if (!str)
+char* saveStringN(const char* str, int size) {
+    if (size <= 0)
         return NULL;
-
-    if ((sp = (char*)Vmalloc(group, sizeof(char) * (strlen(str) + 1)))) {
-        strcpy(sp, str);
-        return sp;
-    } else {
+    
+    char* sp = (char*)MALLOC(sizeof(char) * (size_t)size);
+    if (!sp) {
         fprintf(stderr, "malloc failed.");
         return NULL;
     }
+    
+    if (str) {
+        size_t max_copy = (size_t)(size - 1);
+        size_t copy_len = 0;
+        while (copy_len < max_copy && str[copy_len] != '\0')
+            copy_len++;
+        memcpy(sp, str, copy_len);
+        sp[copy_len] = '\0';
+    } else {
+        sp[0] = '\0';
+    }
+    
+    return sp;
 }
 
-int eqStr(char* cmpStr, char* fixedStr) {
-    char* sp = (char*)malloc(sizeof(char) * (strlen(cmpStr) + 1));
+char* VsaveString(void* group, const char* str) /* Actually MemoryGroup*, but avoid header dependency */
+{
+    if (!str)
+        return NULL;
 
-    strcpy(sp, cmpStr);
-    trimEdgeSpaces(sp);
-    if (!strcmp(sp, fixedStr)) {
-        free(sp);
-        return 1;
+    size_t len = strlen(str);
+    char* sp = (char*)Vmalloc(group, sizeof(char) * (len + 1));
+    if (sp) {
+        memcpy(sp, str, len + 1);
+        return sp;
     }
+    
+    fprintf(stderr, "malloc failed.");
+    return NULL;
+}
+
+int eqStr(const char* cmpStr, const char* fixedStr) {
+    if (!cmpStr || !fixedStr)
+        return 0;
+    
+    size_t len = strlen(cmpStr);
+    char* sp = (char*)malloc(sizeof(char) * (len + 1));
+    if (!sp)
+        return 0;
+
+    memcpy(sp, cmpStr, len + 1);
+    trimEdgeSpaces(sp);
+    int result = strcmp(sp, fixedStr) == 0 ? 1 : 0;
     free(sp);
-    return 0;
+    return result;
 }
 
 char* listSum2Str(int list1[], int list2[], int listLength, char* str) {
@@ -749,33 +642,19 @@ char* listSum2Str(int list1[], int list2[], int listLength, char* str) {
 }
 
 void insertChar(char* eStr, int col, char c) {
-    shiftStr(eStr, col, 1);
-    eStr[col] = c;
-}
-
-int shiftStr(char* strp, int starti, int shift) {
-    int length, shifts = 0;
-    int i, j = 0;
-
-    length = strlen(strp);
-    if (shift > 0) {
-        strp[length + shift] = '\0';
-        for (i = length - starti; i > 0; i--) {
-            j++;
-            strp[length + shift - j] = strp[length - j];
-            ++shifts;
-        }
-    } else {
-        i = length - starti;
-        strp[length - shift + j] = '\0';
-        while (i >= 0) {
-            strp[starti + j] = strp[starti - shift + j];
-            --shifts;
-            j++;
-            i--;
-        }
-    }
-    return shifts;
+    if (!eStr || col < 0)
+        return;
+    
+    size_t len = strlen(eStr);
+    size_t pos = (size_t)col;
+    
+    /* Ensure position is within or at end of string */
+    if (pos > len)
+        pos = len;
+    
+    /* Shift characters to the right, including null terminator */
+    memmove(eStr + pos + 1, eStr + pos, len - pos + 1);
+    eStr[pos] = c;
 }
 
 /*

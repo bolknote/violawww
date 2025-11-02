@@ -83,7 +83,7 @@ VObjList* strOListToOList(char* str)
     VObjList* objl = NULL;
 
     for (;;) {
-        while (ISSPACE(str[i]))
+        while (isspace((unsigned char)str[i]))
             i++;
         i = NextWord(str, i, name, sizeof(name));
         if (AllBlank(name))

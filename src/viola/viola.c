@@ -371,63 +371,63 @@ char** scriptSnipet;
         while (argv[++i]) {
             /*fprintf(stderr, "arg[%d]=%s\n", i, argv[i]);*/
 
-            if (noCaseStrCmp(argv[i], "-ar")) {
+            if (!strcasecmp(argv[i], "-ar")) {
 
                 passthru_argument = argv[++i];
 
-            } else if (noCaseStrCmp(argv[i], "-cli") || noCaseStrCmp(argv[i], "-c")) {
+            } else if (!strcasecmp(argv[i], "-cli") || !strcasecmp(argv[i], "-c")) {
 
                 if (!runInSubWindow)
                     *startWithCommandLineInterpreter = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-cmd_history")) {
+            } else if (!strcasecmp(argv[i], "-cmd_history")) {
 
                 cmd_history = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-mono")) {
+            } else if (!strcasecmp(argv[i], "-mono")) {
                 extern int noShading;
                 noShading = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-geometry") || noCaseStrCmp(argv[i], "=")) {
+            } else if (!strcasecmp(argv[i], "-geometry") || !strcasecmp(argv[i], "=")) {
 
                 /* Scott */
                 if (!runInSubWindow)
                     XParseGeometry(argv[++i], &startUpGeom_x, &startUpGeom_y, &startUpGeom_width,
                                    &startUpGeom_height);
 
-            } else if (noCaseStrCmp(argv[i], "-display")) {
+            } else if (!strcasecmp(argv[i], "-display")) {
 
                 startUpDisplay = argv[++i];
 
-            } else if (noCaseStrCmp(argv[i], "-nocliprompt")) {
+            } else if (!strcasecmp(argv[i], "-nocliprompt")) {
                 extern int flag_cliprompt;
 
                 if (!runInSubWindow) /* Scott */
                     flag_cliprompt = 0;
 
-            } else if (noCaseStrCmp(argv[i], "-obj") || noCaseStrCmp(argv[i], "-o")) {
+            } else if (!strcasecmp(argv[i], "-obj") || !strcasecmp(argv[i], "-o")) {
 
                 startObj[*startObjCount] = argv[++i];
                 *startObjCount += 1;
 
-            } else if (noCaseStrCmp(argv[i], "-pa")) {
+            } else if (!strcasecmp(argv[i], "-pa")) {
 
                 flag_printAST = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-pc")) {
+            } else if (!strcasecmp(argv[i], "-pc")) {
 
                 flag_printPCode = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-pe")) {
+            } else if (!strcasecmp(argv[i], "-pe")) {
 
                 flag_printExec = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-z") || noCaseStrCmp(argv[i], "-xsync")) {
+            } else if (!strcasecmp(argv[i], "-z") || !strcasecmp(argv[i], "-xsync")) {
 
                 sync_event = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-LAF") || noCaseStrCmp(argv[i], "-laf") ||
-                       noCaseStrCmp(argv[i], "-l")) {
+            } else if (!strcasecmp(argv[i], "-LAF") || !strcasecmp(argv[i], "-laf") ||
+                       !strcasecmp(argv[i], "-l")) {
 
                 if (!argv[++i]) {
                     /* assume simple mode (1) */
@@ -436,37 +436,37 @@ char** scriptSnipet;
                     lookAndFeel = atoi(argv[i]);
                 }
 
-            } else if (noCaseStrCmp(argv[i], "-noarg")) {
+            } else if (!strcasecmp(argv[i], "-noarg")) {
 
-            } else if (noCaseStrCmp(argv[i], "-path") || noCaseStrCmp(argv[i], "-p")) {
+            } else if (!strcasecmp(argv[i], "-path") || !strcasecmp(argv[i], "-p")) {
 
                 /* Scott */
                 *violaPath = argv[++i];
 
-            } else if (noCaseStrCmp(argv[i], "-release") || noCaseStrCmp(argv[i], "-r")) {
+            } else if (!strcasecmp(argv[i], "-release") || !strcasecmp(argv[i], "-r")) {
 
                 fprintf(stderr, "%s\n", viola_version);
 
-            } else if (noCaseStrCmp(argv[i], "-snipet") || noCaseStrCmp(argv[i], "-s")) {
+            } else if (!strcasecmp(argv[i], "-snipet") || !strcasecmp(argv[i], "-s")) {
 
                 /* Scott */
                 *scriptSnipet = argv[++i];
 
-            } else if (noCaseStrCmp(argv[i], "-verbose") || noCaseStrCmp(argv[i], "-v")) {
+            } else if (!strcasecmp(argv[i], "-verbose") || !strcasecmp(argv[i], "-v")) {
 
                 verbose = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-tagd")) {
+            } else if (!strcasecmp(argv[i], "-tagd")) {
 
                 extern int printTagDelims;
 
                 printTagDelims = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-wt")) {
+            } else if (!strcasecmp(argv[i], "-wt")) {
 
                 flag_window_tracking = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-at")) {
+            } else if (!strcasecmp(argv[i], "-at")) {
 
                 if (argv[i + 1][0] != '-') {
                     user_action_tracking = fopen(argv[++i], "w");
@@ -481,11 +481,11 @@ char** scriptSnipet;
                     user_action_tracking = stderr;
                 }
 
-            } else if (noCaseStrCmp(argv[i], "-lcs")) {
+            } else if (!strcasecmp(argv[i], "-lcs")) {
 
                 loadClassScriptsP = 1;
 
-            } else if (noCaseStrCmp(argv[i], "-debug")) {
+            } else if (!strcasecmp(argv[i], "-debug")) {
 
                 /* Flag allows spider to print out diagnostic stuff. */;
 

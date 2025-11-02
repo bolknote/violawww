@@ -283,13 +283,12 @@ HashEntry* getHashEntry(HashTable* ht, long label)
 
     base_entry = &(ht->entries[key]);
 
-    if (ht->func_cmp == cmp_str) {
+    if (ht->func_hash == hash_str) {
+        /* Use strcmp: returns 0 for equality, so we check for !result */
         for (entry = base_entry; entry; entry = entry->next) {
             if (entry->label) {
-                if (((char*)entry->label)[0] == ((char*)label)[0]) {
-                    if (!strcmp((char*)entry->label, (char*)label))
-                        return entry;
-                }
+                if (strcmp((char*)entry->label, (char*)label) == 0)
+                    return entry;
             }
         }
     } else if (ht->func_cmp == cmp_int) {

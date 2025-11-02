@@ -37,13 +37,8 @@ extern int GBuffSize[];
 
 #define PUTSTR(str) fputc(str, stdout)
 
-#define ISSPACE(c) (c == ' ' || c == '\t' || c == '\n' || c == '\r')
-
-#define trimBackSpaces(str, strLength)                                                             \
-    for (buffi = strLength; buffi >= 0 && ISSPACE(str[buffi]); str[buffi--] = '\0')
-
-int cmp_str(char* s1, char* s2);
 int cmp_int(int n1, int n2);
+long cmp_str(long a, long b); /* Wrapper for strcmp used in hash tables */
 
 char* trimFrontSpaces(char* str);
 
@@ -54,11 +49,6 @@ char* trimEdgeSpaces(char* str);
 
 void SkipBlanks(char* linep, int* i);
 
-/*
- * case insensitive strcmp
- */
-int noCaseCharCmp(char c1, char c2);
-int noCaseStrCmp(char *s1, char *s2);
 
 /*
  ** Stores the next word in linep in *wordp. Current postion in line is
@@ -68,7 +58,7 @@ int noCaseStrCmp(char *s1, char *s2);
  * PreCondition: i <= strlen(linep);
  * PostCondition: *wordp contains an argument string from *linep, truncated if necessary.
  */
-int NextWord(char* linep, int i, char* wordp, int maxlen);
+int NextWord(const char* linep, int i, char* wordp, int maxlen);
 
 /*
  ** Skips the next word linep in *wordp. Current postion in line is
@@ -79,7 +69,7 @@ int NextWord(char* linep, int i, char* wordp, int maxlen);
  *               *wordp must be large enough to hold any argument in *linep.
  * PostCondition: *wordp contains an argument string from *linep.
  */
-int SkipNextWord(char* linep, int i);
+int SkipNextWord(const char* linep, int i);
 
 /*
  * copys the next phrase, before cutOffWord, onto destStr.
@@ -104,7 +94,7 @@ char* GetLine(char* commandline);
  *
  * PreCondition: inline must end with a zero.
  */
-int AllBlank(char* str);
+int AllBlank(const char* str);
 
 /*
  ** Searches a char is within a string.
@@ -113,7 +103,7 @@ int AllBlank(char* str);
  *         -1 if search character is not in the string.
  * PRECONDITION: str must end with null.
  */
-int SearchChar(char* str, char sc);
+int SearchChar(const char* str, char sc);
 
 /*
  ** Cut the trailing spaces.  ie. move the '\0' toward the front,
@@ -133,13 +123,13 @@ char* valToStr(long val, char* str);
 /*
  * see if str contains any characters in set.
  */
-int anyCommonChar(char* str, char* set);
+int anyCommonChar(const char* str, const char* set);
 
 /*
  * see if character ch is in string str
  * returns the index of ch in str
  */
-int charIsInStr(char ch, char* str);
+int charIsInStr(char ch, const char* str);
 
 int numOfChar(char* str, char ch);
 
@@ -149,22 +139,21 @@ int numOfChar(char* str, char ch);
 char* trimQuote(char* str);
 
 /* allocates bigger space, and append to it.. the original string is freed*/
-char* append(char* orig, char* append);
+char* append(char* orig, const char* append);
 
 /* same as append, with a carriage appended at the end */
-char* appendLine(char* orig, char* append);
+char* appendLine(char* orig, const char* append);
 
-char* saveString(char* str);
-char* saveStringN(char* str, int n);
+char* saveString(const char* str);
+char* saveStringN(const char* str, int n);
 /* MemoryGroup is defined elsewhere, use void* for now */
-char* VsaveString(void* group, char* str);
+char* VsaveString(void* group, const char* str);
 
-int eqStr(char* s1, char* s2);
+int eqStr(const char* s1, const char* s2);
 
 char* listSum2Str(int list1[], int list2[], int listLength, char* str);
 
 void insertChar(char* str, int i, char ch);
-int shiftStr(char* strp, int starti, int shift);
 
 char* getLines(long low, long high, char* text, long* size);
 char* enQuote(char* str);

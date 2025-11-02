@@ -2159,9 +2159,9 @@ long meth_generic_compressSpaces(VObj* self, Packet* result, int argc, Packet ar
         if (*p1 == '\0') {
             goto done;
 
-        } else if (ISSPACE(*p1)) {
+        } else if (isspace((unsigned char)*p1)) {
             p2 = p1;
-            while (c = *p2, ISSPACE(c) && (c != '\0'))
+            while (c = *p2, isspace((unsigned char)c) && (c != '\0'))
                 p2++;
             if (*p2 == '\0')
                 goto done;
@@ -2169,8 +2169,8 @@ long meth_generic_compressSpaces(VObj* self, Packet* result, int argc, Packet ar
             for (p3 = p2;; p3++) {
                 if (*p3 == '\0')
                     break;
-                if (c = *p3, ISSPACE(c)) {
-                    if (ISSPACE(*(p3 + 1)) && *(p3 + 1) != '\0') {
+                if (c = *p3, isspace((unsigned char)c)) {
+                    if (isspace((unsigned char)*(p3 + 1)) && *(p3 + 1) != '\0') {
                         p3 = p3 + 1;
                         break;
                     }
@@ -2185,11 +2185,11 @@ long meth_generic_compressSpaces(VObj* self, Packet* result, int argc, Packet ar
         } else {
             for (;;) {
                 if (e == p1) {
-                    while (c = *p1, !ISSPACE(c) && (c != '\0'))
+                    while (c = *p1, !isspace((unsigned char)c) && (c != '\0'))
                         ++p1;
                     e = p1;
                 } else {
-                    while (c = *p1, !ISSPACE(c) && (*p1 != '\0'))
+                    while (c = *p1, !isspace((unsigned char)c) && (*p1 != '\0'))
                         *e++ = *p1++;
                 }
                 if (*p1 == '\0')
@@ -2197,7 +2197,7 @@ long meth_generic_compressSpaces(VObj* self, Packet* result, int argc, Packet ar
                 if (*(p1 + 1) == '\0')
                     goto done;
                 *e++ = *p1++;
-                if (ISSPACE(*p1))
+                if (isspace((unsigned char)*p1))
                     break;
             }
         }

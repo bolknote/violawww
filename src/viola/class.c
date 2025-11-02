@@ -38,7 +38,7 @@ int intArrayBuff[INTARRAYBUFF_SIZE];
 int loadClassScriptsP = 0;
 
 /* Explicit forward declarations to avoid 32-bit truncation */
-extern char* saveString(char*);
+extern char* saveString(const char*);
 extern long storeIdent(char*);
 
 long initSlot();

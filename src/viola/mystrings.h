@@ -21,13 +21,11 @@ typedef struct strNIntPair {
 #define BUFF_SIZE 64000
 
 extern char buff[];
-extern int buffi;
 
 #define NUM_OF_GBUFFS 64
 extern int numOfGBuffs;
 extern char* GBuff[];
 extern int GBuffIdx[];
-extern int GBuffSize[];
 
 #define MALLOCSIZE(str) (char*)malloc(sizeof(char) * strlen(str))
 #define MAX_LINE_LENGTH 1000

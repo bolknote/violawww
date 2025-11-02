@@ -7,8 +7,6 @@
 #include "../src/viola/mystrings.h"
 #include "../src/viola/hash.h"
 
-/* Access to itemValArray for testing getItemVals */
-extern long itemValArray[40];
 
 static int tests_run = 0;
 static int tests_passed = 0;
@@ -871,6 +869,7 @@ static int test_getItemVals() {
     printf("\n--- Test: getItemVals function ---\n");
     
     int count;
+    long itemValArray[40];
     
     /* Clear itemValArray before test */
     for (int i = 0; i < 40; i++) {
@@ -878,7 +877,7 @@ static int test_getItemVals() {
     }
     
     /* Extract values from simple list */
-    count = getItemVals(1, 3, "10,20,30");
+    count = getItemVals(1, 3, "10,20,30", itemValArray);
     ASSERT(count > 0, "getItemVals returns count > 0");
     ASSERT(itemValArray[1] == 10, "First value is 10");
     ASSERT(itemValArray[2] == 20, "Second value is 20");
@@ -890,7 +889,7 @@ static int test_getItemVals() {
     }
     
     /* Extract single value */
-    count = getItemVals(1, 1, "42");
+    count = getItemVals(1, 1, "42", itemValArray);
     ASSERT(count > 0, "getItemVals returns count > 0");
     ASSERT(itemValArray[1] == 42, "Single value extracted correctly");
     
@@ -900,7 +899,7 @@ static int test_getItemVals() {
     }
     
     /* Extract range of values */
-    count = getItemVals(2, 3, "10,20,30,40");
+    count = getItemVals(2, 3, "10,20,30,40", itemValArray);
     ASSERT(count > 0, "getItemVals returns count > 0");
     ASSERT(itemValArray[1] == 20, "Second item is 20");
     ASSERT(itemValArray[2] == 30, "Third item is 30");
@@ -911,14 +910,18 @@ static int test_getItemVals() {
     }
     
     /* Extract values with brackets */
-    count = getItemVals(1, 2, "{10},{20}");
+    count = getItemVals(1, 2, "{10},{20}", itemValArray);
     ASSERT(count > 0, "getItemVals handles brackets");
     ASSERT(itemValArray[1] == 10, "First value with brackets is 10");
     ASSERT(itemValArray[2] == 20, "Second value with brackets is 20");
     
     /* NULL input */
-    count = getItemVals(1, 1, NULL);
+    count = getItemVals(1, 1, NULL, itemValArray);
     ASSERT(count == 0, "getItemVals returns 0 for NULL input");
+    
+    /* NULL array */
+    count = getItemVals(1, 1, "42", NULL);
+    ASSERT(count == 0, "getItemVals returns 0 for NULL array");
     
     return 1;
 }

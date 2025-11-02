@@ -501,7 +501,6 @@ HTTag* tagInfo;
     }
 #endif
 
-
     /* Ignore SCRIPT and STYLE opening tags - they are handled by SGML parser */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
         inside_ignore_tag = 1;
@@ -535,6 +534,7 @@ HTTag* tagInfo;
 
     if (!bstate->tmi) {
         fprintf(stderr, "CB_HTML_stag: no tmi struct found for tag=%s\n", tag);
+        SBI.stacki--;  /* Restore stack since we're returning early */
         return;
     }
 

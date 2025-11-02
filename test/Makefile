@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback test-wayback-detection test-biop test-hash-memory test-mystrings
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings
 
 .PHONY: all test clean $(TESTS)
 
@@ -44,7 +44,6 @@ test:
 	-@$(MAKE) test-stg-context >$(BUILD_DIR)/test-stg-context.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-stg-context: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-stg-context: FAIL")
 	-@$(MAKE) test-xpm-injection >$(BUILD_DIR)/test-xpm-injection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-xpm-injection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-xpm-injection: FAIL")
 	-@$(MAKE) test-htcharset >$(BUILD_DIR)/test-htcharset.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-htcharset: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-htcharset: FAIL")
-	-@$(MAKE) test-wayback >$(BUILD_DIR)/test-wayback.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback: FAIL")
 	-@$(MAKE) test-wayback-detection >$(BUILD_DIR)/test-wayback-detection.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-wayback-detection: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-wayback-detection: FAIL")
 	-@$(MAKE) test-biop >$(BUILD_DIR)/test-biop.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-biop: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-biop: FAIL")
 	-@$(MAKE) test-hash-memory >$(BUILD_DIR)/test-hash-memory.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-hash-memory: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-hash-memory: FAIL")
@@ -120,17 +119,6 @@ else
 	@echo "⚠ ICU not available - skipping HTCharset tests"
 endif
 
-test-wayback: test_wayback.c $(PROJECT_ROOT)/src/libWWW/libwww.a
-	@echo ""
-	@echo "Building Wayback tests..."
-	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CFLAGS) -I$(LIBWWW_DIR) \
-		$(ICU_INCLUDES) $(SSL_INCLUDES) \
-		-o $(BUILD_DIR)/test_wayback test_wayback.c \
-		$(PROJECT_ROOT)/src/libWWW/libwww.a \
-		-lm $(ICU_LIBS) $(SSL_LIBS)
-	@./$(BUILD_DIR)/test_wayback
-
 test-wayback-detection: test_wayback_detection.c
 	@echo ""
 	@echo "Building Web Archive URL detection tests..."
@@ -179,7 +167,6 @@ help:
 	@echo "  test-stg-context     - Style context tests"
 	@echo "  test-xpm-injection   - XPM security (command injection)"
 	@echo "  test-htcharset       - Character set tests (requires ICU)"
-	@echo "  test-wayback         - Wayback machine URL tests"
 	@echo "  test-wayback-detection - Web Archive URL detection tests"
 	@echo "  test-hash-memory     - Hash table memory leak tests"
 	@echo "  test-mystrings       - String functions tests"

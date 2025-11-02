@@ -8,7 +8,6 @@
 #define ASCII_v 118
 #define ASCII_z 122
 #define TAB 9
-
 #define RETURN 13
 #define BACK_SPACE 8
 #define DELETE 127

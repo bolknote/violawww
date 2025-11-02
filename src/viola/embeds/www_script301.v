@@ -83,7 +83,7 @@
 						   tt, "\n");
 				} else {
 					address = nthChar(tt, 7, i-1);
-					content = concat(nthChar(tt, i+а1, 999),
+					content = concat(nthChar(tt, i+1, 999),
 							 "\n");
 				}
 				tmpFile = makeTempFile();

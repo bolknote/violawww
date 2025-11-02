@@ -1757,7 +1757,7 @@ long meth_generic_STG_attrEx(VObj* self, Packet* result, int argc, Packet argv[]
 }
 
 long meth_generic_STG_clean(VObj* self, Packet* result, int argc, Packet argv[]) {
-    return getSTGInfo_clean(PkInfo2Int(&argv[0]));
+    return getSTGInfo_clean((STGMajor*)PkInfo2Int(&argv[0]));
 }
 
 /* NOT FULLY IMPLEMENTED

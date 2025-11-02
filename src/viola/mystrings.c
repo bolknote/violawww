@@ -23,20 +23,13 @@
 #include <strings.h> /* for strcasecmp */
 
 #define CTRL_d 4
-/*extern char *malloc();*/
 
 char buff[BUFF_SIZE];
-int buffi;
 
 int numOfGBuffs = 0;
 char* GBuff[NUM_OF_GBUFFS];
 int GBuffIdx[NUM_OF_GBUFFS];
-int GBuffSize[NUM_OF_GBUFFS];
 
-/* Char strBuff[MAX_LINE_LENGTH]; */
-
-long itemValArray[40];
-long itemValArray2[40];
 
 
 int cmp_int(int n1, int n2)
@@ -805,12 +798,12 @@ char* listItem(char* list, int li, int hi) {
 /*
  * individual items must be less than 32 characters long.
  */
-int getItemVals(int li, int hi, char* itemStr) {
+int getItemVals(int li, int hi, char* itemStr, long* itemValArray) {
     int itemNum = 1;
     int bi = 0, i, flag = 0, ai = 1;
     char c, str[32]; /* dangerous... */
 
-    if (itemStr == NULL) {
+    if (itemStr == NULL || itemValArray == NULL) {
         return 0;
     }
     for (i = 0; (c = *(itemStr + i)) != '\0'; i++) {

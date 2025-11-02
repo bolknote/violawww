@@ -16,21 +16,18 @@
 #include "sys.h"
 #include "utils.h"
 #include "memory_debug.h"
+#include "ascii.h"  /* for CTRL_d - ASCII code 4 (Ctrl+D, EOF) */
 #include <ctype.h>
 #include <stdio.h>  /* for snprintf */
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h> /* for strcasecmp */
 
-#define CTRL_d 4
-
 char buff[BUFF_SIZE];
 
 int numOfGBuffs = 0;
 char* GBuff[NUM_OF_GBUFFS];
 int GBuffIdx[NUM_OF_GBUFFS];
-
-
 
 int cmp_int(int n1, int n2)
 {
@@ -267,20 +264,20 @@ char* SkipNextLines(char** textpp, int * lines, int * size)
 }
 
 /*
- ** Gets a line of strings.
- *
- * PreCondition:  commandline must have atleat MAX_LINE_LENGTH characters.
- * PostCondition: commandline contains a line of strings ended with '\0'.
- *                terminate line with <return>.
- * Return: address of the string
- */
+** Gets a line of strings.
+*
+* PreCondition:  commandline must have atleat MAX_LINE_LENGTH characters.
+* PostCondition: commandline contains a line of strings ended with '\0'.
+*                terminate line with <return> or Ctrl+D (EOF).
+* Return: address of the string
+*/
 char* GetLine(char* commandline)
 {
     char c;
     int i = 0;
 
     while (((c = getchar()) != '\n') && (i < (MAX_LINE_LENGTH - 1))) {
-        if (c == CTRL_d)
+        if (c == CTRL_d)  /* Ctrl+D (ASCII 4) - EOF signal */
             break;
         commandline[i++] = c;
     }

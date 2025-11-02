@@ -16,7 +16,7 @@
 #define CTRL_a 1
 #define CTRL_b 2
 #define CTRL_c 3
-#define CTRL_d 4
+#define CTRL_d 4  /* Ctrl+D - ASCII code 4 (EOF signal in terminal) */
 #define CTRL_e 5
 #define CTRL_f 6
 #define CTRL_g 7

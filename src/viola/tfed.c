@@ -70,7 +70,7 @@ long (*kbflookup[128])();
 char sbuff[1024];  /* Increased from 128 to handle long URLs (e.g., Web Archive URLs) */
 int buffi;
 
-/* 
+/*
  * VT100 sequence for reversing and unreverse video
  */
 char enterReverse_vt100[] = {0};

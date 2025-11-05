@@ -39,6 +39,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <limits.h>
+#include <sys/param.h>
 
 #include "../libXPM/xpm.h"
 #include "../viola/ast.h"
@@ -92,6 +95,7 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo);
 void checkForDebugOutput(int argc, char* argv[]);
 DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[]);
 DocViewInfo* makeClonePageInterface(Widget shell, char* shellName, DocViewInfo* parentInfo);
+char* makeAbsolutePath(const char* path);
 
 static String fallback_resources[] = {
     /*
@@ -288,7 +292,11 @@ int main(int argc, char* argv[])
 
     for (i = 1; i < argc; i++) {
         if (argv[i][0] != '-') {
-            sendMessage1N1str(dvip->violaDocViewObj, "show", argv[i]);
+            char* absolutePath = makeAbsolutePath(argv[i]);
+            sendMessage1N1str(dvip->violaDocViewObj, "show", absolutePath);
+            if (absolutePath != argv[i]) {
+                free(absolutePath);
+            }
             loadCmdLineDoc = 1;
             break;
         }
@@ -934,6 +942,64 @@ void setHelp(Widget widget, Widget helpLabel, char* helpText)
  * This routine closes stdout unless the "-debug" flag is on the command
  * line.  This hides Viola's excessive diagnostic output.
  */
+/*
+ * Convert a relative path to an absolute path.
+ * If the path is already absolute or is a URL (contains ':'),
+ * return it unchanged (or a copy if needed).
+ * Otherwise, make it relative to the current working directory.
+ */
+char* makeAbsolutePath(const char* path) {
+    char* result;
+    char* real_path;
+    char cwd[MAXPATHLEN];
+    
+    if (!path) {
+        return NULL;
+    }
+    
+    /* If path starts with '/', it's already absolute */
+    if (path[0] == '/') {
+        return (char*)path;
+    }
+    
+    /* If path contains ':', it's likely a URL (http://, https://, file://, etc.) */
+    if (strchr(path, ':')) {
+        return (char*)path;
+    }
+    
+    /* Try to use realpath first, which resolves symlinks and normalizes */
+    real_path = realpath(path, NULL);
+    if (real_path) {
+        result = (char*)malloc(strlen(real_path) + 1);
+        if (result) {
+            strcpy(result, real_path);
+            free(real_path);
+            return result;
+        }
+        free(real_path);
+    }
+    
+    /* Fallback: combine with current working directory */
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        size_t cwd_len = strlen(cwd);
+        size_t path_len = strlen(path);
+        size_t total_len = cwd_len + 1 + path_len + 1;
+        
+        result = (char*)malloc(total_len);
+        if (result) {
+            strcpy(result, cwd);
+            if (cwd[cwd_len - 1] != '/') {
+                strcat(result, "/");
+            }
+            strcat(result, path);
+            return result;
+        }
+    }
+    
+    /* If all else fails, return the original path */
+    return (char*)path;
+}
+
 void checkForDebugOutput(int argc, char* argv[])
 {
     int i, fd, ofd;

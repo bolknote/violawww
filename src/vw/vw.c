@@ -38,6 +38,7 @@
 #include <Xm/Xm.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
@@ -1002,24 +1003,24 @@ char* makeAbsolutePath(const char* path) {
 
 void checkForDebugOutput(int argc, char* argv[])
 {
-    int i, fd, ofd;
-    Boolean debug = TRUE;
-    FILE* output;
+    bool debug = true;
 
-    for (i = 1; i < argc; i++)
-        if (!strcmp("-silent", argv[i]))
-            debug = FALSE;
+    for (int i = 1; i < argc; i++)
+        if (!strcmp("-silent", argv[i])) {
+            debug = false;
+            break;
+        }
 
     if (!debug) {
-        output = fopen("/dev/null", "w");
-        if (output) {
-            ofd = fileno(output);
-            fd = fileno(stdout);
-            dup2(ofd, fd);
-            fd = fileno(stderr);
-            dup2(ofd, fd);
-        } else {
-            fprintf(stderr, "Couldn't open /dev/null.\n");
+        /* Flush streams before redirecting to avoid interleaving */
+        fflush(stdout);
+        fflush(stderr);
+
+        if (freopen("/dev/null", "w", stdout) == NULL) {
+            perror("freopen /dev/null for stdout");
+        }
+        if (freopen("/dev/null", "w", stderr) == NULL) {
+            perror("freopen /dev/null for stderr");
         }
     }
 }

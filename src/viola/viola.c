@@ -60,28 +60,42 @@ char* viola_version = "Viola=4.0 Beta";
 /*= <geom>		.\n\n\*/
 char* viola_usage = {"Usage:\n\
 -geometry <geom>	geometry\n\
+= <geom>		.\n\
 -display <display>	display\n\n\
 -cli			command line interface.\n\
 -c			.\n\n\
--laf <mode>		(unsup	ported) look and feel mode (0 for expensive drawing).\n\n\
+-laf <mode>		(unsup	ported) look and feel mode (0 for expensive drawing).\n\
+-LAF <mode>		.\n\
+-l <mode>		.\n\n\
 -obj <object name>	startup object (send \"render\" to it).\n\
 -o <object name>	.\n\
 -path <file path>	object file lookup path.\n\
 -p <file path>		.\n\n\
 -release		print release info.\n\
--r			.\n\n\
--snipet	<statement>	script snipet to interpret.\n\
+-r			.\n\
+-V			.\n\n\
+-snipet <statement>	script snipet to interpret.\n\
 -s <statement>		.\n\n\
 -verbose		verbose mode.\n\
 -v			.\n\n\
--V			version.\n\n\
+-help			print this help message.\n\
+-h			.\n\
+--help			.\n\n\
+-ar <path>		pass argument (path or URL).\n\n\
+-mono			monochrome mode (no shading).\n\n\
+-cmd_history		enable command history.\n\n\
+-nocliprompt		disable CLI prompt.\n\n\
 (for debugging)\n\
 -pa			print AST.\n\
 -pc			print PCode.\n\
 -pe			print PCode execution trace.\n\
 -wt			window tracking.\n\
--at			user action tracking.\n\
+-at [<file>]		user action tracking (to file or stderr).\n\
+-tagd			print tag delimiters.\n\
+-lcs			load class scripts.\n\
+-debug			debug flag.\n\
 -z			sync events.\n\
+-xsync			.\n\
 \n\
 "};
 
@@ -452,7 +466,17 @@ char** scriptSnipet;
                 /* Scott */
                 *violaPath = argv[++i];
 
+            } else if (!strcasecmp(argv[i], "-help") || !strcasecmp(argv[i], "-h") ||
+                       !strcasecmp(argv[i], "--help")) {
+
+                fputs(viola_usage, stderr);
+                exit(0);
+
             } else if (!strcasecmp(argv[i], "-release") || !strcasecmp(argv[i], "-r")) {
+
+                fprintf(stderr, "%s\n", viola_version);
+
+            } else if (!strcmp(argv[i], "-V")) {
 
                 fprintf(stderr, "%s\n", viola_version);
 
@@ -498,6 +522,10 @@ char** scriptSnipet;
 
                 /* Flag allows spider to print out diagnostic stuff. */;
 
+            } else if (argv[i][0] == '-') {
+                /* Unknown option starting with '-' */
+                fputs(viola_usage, stderr);
+                exit(0);
             } else {
                 /* Convert relative paths to absolute paths */
                 char* absolutePath = makeAbsolutePath(argv[i]);
@@ -510,18 +538,6 @@ char** scriptSnipet;
                     passthru_argument = argv[i];
                 }
             }
-            /*
-             * Scott
-             *
-             * When viola sees arguments that are for Spider, it barfs.  Until Spider
-             * removes it's arguments, we'll just comment out this code that complains
-             * about unknown flags.
-             *
-                            else {
-                                    fputs(viola_usage, stderr);
-                                    exit(0);
-                            }
-             */
             if (i >= argc)
                 break;
         }

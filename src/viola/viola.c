@@ -373,7 +373,16 @@ char** scriptSnipet;
 
             if (!strcasecmp(argv[i], "-ar")) {
 
-                passthru_argument = argv[++i];
+                /* Convert relative paths to absolute paths */
+                char* absolutePath = makeAbsolutePath(argv[++i]);
+                if (absolutePath != argv[i]) {
+                    /* Path was converted, save it */
+                    passthru_argument = saveString(absolutePath);
+                    free(absolutePath);
+                } else {
+                    /* Path was not converted (absolute or URL), use original */
+                    passthru_argument = argv[i];
+                }
 
             } else if (!strcasecmp(argv[i], "-cli") || !strcasecmp(argv[i], "-c")) {
 
@@ -490,7 +499,16 @@ char** scriptSnipet;
                 /* Flag allows spider to print out diagnostic stuff. */;
 
             } else {
-                passthru_argument = argv[i];
+                /* Convert relative paths to absolute paths */
+                char* absolutePath = makeAbsolutePath(argv[i]);
+                if (absolutePath != argv[i]) {
+                    /* Path was converted, save it */
+                    passthru_argument = saveString(absolutePath);
+                    free(absolutePath);
+                } else {
+                    /* Path was not converted (absolute or URL), use original */
+                    passthru_argument = argv[i];
+                }
             }
             /*
              * Scott

@@ -372,14 +372,9 @@ void freeViolaResources() {
 
 /* Scott: moved this code from the former main.c into this file
  */
-void parseCommandLine(argc, argv, startObj, startObjCount, violaPath,
-                      startWithCommandLineInterpreter, scriptSnipet) int argc;
-char* argv[];
-char* startObj[];
-int* startObjCount;
-char** violaPath;
-int* startWithCommandLineInterpreter;
-char** scriptSnipet;
+void parseCommandLine(int argc, char* argv[], char* startObj[],
+                      int* startObjCount, char** violaPath,
+                      int* startWithCommandLineInterpreter, char** scriptSnipet)
 {
     int i = 0;
 

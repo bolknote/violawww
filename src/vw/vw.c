@@ -940,10 +940,6 @@ void setHelp(Widget widget, Widget helpLabel, char* helpText)
 }
 
 /*
- * This routine closes stdout unless the "-debug" flag is on the command
- * line.  This hides Viola's excessive diagnostic output.
- */
-/*
  * Convert a relative path to an absolute path.
  * If the path is already absolute or is a URL (contains ':'),
  * return it unchanged (or a copy if needed).
@@ -1001,6 +997,10 @@ char* makeAbsolutePath(const char* path) {
     return (char*)path;
 }
 
+/*
+ * This routine closes stdout unless the "-debug" flag is on the command
+ * line.  This hides Viola's excessive diagnostic output.
+ */
 void checkForDebugOutput(int argc, char* argv[])
 {
     bool debug = true;

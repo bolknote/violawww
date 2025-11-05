@@ -58,10 +58,12 @@ extern void XtToolkitInitialize();
 
 char* viola_version = "Viola=4.0 Beta";
 /*= <geom>		.\n\n\*/
-char* viola_usage = {"Usage:\n\
+char* viola_usage = {"Usage:\n\n\
+Standard X11 options:\n\n\
 -geometry <geom>	geometry\n\
 = <geom>		.\n\
 -display <display>	display\n\n\
+Viola-specific options:\n\n\
 -cli			command line interface.\n\
 -c			.\n\n\
 -laf <mode>		(unsup	ported) look and feel mode (0 for expensive drawing).\n\
@@ -85,7 +87,7 @@ char* viola_usage = {"Usage:\n\
 -mono			monochrome mode (no shading).\n\n\
 -cmd_history		enable command history.\n\n\
 -nocliprompt		disable CLI prompt.\n\n\
-(for debugging)\n\
+For debugging:\n\n\
 -pa			print AST.\n\
 -pc			print PCode.\n\
 -pe			print PCode execution trace.\n\

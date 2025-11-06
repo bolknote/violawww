@@ -43,6 +43,7 @@
 #include "glib.h"
 #include "slotaccess.h"
 
+#include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 /*#include <X11/Shell.h>*/
 #include <X11/extensions/shape.h>
@@ -70,7 +71,6 @@ extern int resolveFontSet();
 extern long sendMessage1();
 extern long callMeth();
 extern long meth_generic_HTTPGet();
-extern int XmuReadBitmapDataFromFile();
 #endif
 #ifdef USE_XGIF_PACKAGE
 #include "../libGIF/xgif.h"
@@ -418,6 +418,22 @@ int GLInit(Display* dpy, Screen* scrn)
     }
     if (sync_event)
         XSynchronize(display, 1);
+
+    /* Initialize X Toolkit for this display to ensure Xmu per-display
+     * information is available. This is needed by Motif which depends on Xmu. */
+    {
+        static XtAppContext app_context = NULL;
+        static int dummy_argc = 0;
+        static char* dummy_argv[] = { NULL };
+        if (!app_context) {
+            XtToolkitInitialize();
+            app_context = XtCreateApplicationContext();
+        }
+        if (!runInSubWindow || !dpy) {
+            /* Only call XtDisplayInitialize for displays we opened */
+            XtDisplayInitialize(app_context, display, "viola", "Viola", NULL, 0, &dummy_argc, dummy_argv);
+        }
+    }
 
     if (runInSubWindow && scrn) {
         screen = scrn;
@@ -1434,46 +1450,10 @@ int GLPaintTextLength(Window w, GC gc, int fontID, int x0, int y0, char* str, in
 Pixmap GLMakeXBMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsigned int* height,
                           int* hotx, int* hoty) {
     Pixmap bitmap;
-    char* data;
-    FILE bitmapfd;
     static char* tmpfile = NULL;
 
-/***XXX ?????? */
-#ifdef hpux
-#define USETEMPFILE
-#endif
-#ifdef i386
-#define USETEMPFILE
-#endif
-#ifdef __DARWIN__
-#define USETEMPFILE
-#endif
-
-#ifndef USETEMPFILE
-#ifdef SYSV
-    bitmapfd._cnt = strlen(bitmapStr);
-    bitmapfd._base = bitmapfd._ptr = bitmapStr;
-    bitmapfd._flag = stdin->_flag;
-    bitmapfd._file = _NFILE;
-    _bufend(&bitmapfd) = bitmapStr + bitmapfd._cnt;
-#else
-    bitmapfd._cnt = bitmapfd._bufsiz = strlen(bitmapStr);
-    bitmapfd._base = bitmapStr;
-    bitmapfd._ptr = bitmapStr;
-    bitmapfd._flag = stdin->_flag;
-    bitmapfd._file = _IOREAD | _IOSTRG;
-#endif
-#endif // USETEMPFILE
-
-#ifndef USETEMPFILE
-    if (XmuReadBitmapData(&bitmapfd, width, height, &data, hotx, hoty) == BitmapSuccess) {
-        bitmap =
-            XCreateBitmapFromData(display, w, data, (unsigned int)*width, (unsigned int)*height);
-        free(data);
-        return bitmap;
-    }
-#else
-    /* peter@hpkslx.mayfield.HP.COM */
+    /* Use file-based approach on all platforms to avoid XmuReadBitmapData issues
+     * peter@hpkslx.mayfield.HP.COM */
     if (!tmpfile) {
         tmpfile = saveString("/tmp/violaXXXXXX");
         mktemp(tmpfile);
@@ -1487,7 +1467,6 @@ Pixmap GLMakeXBMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
         return bitmap;
     }
     unlink(tmpfile);
-#endif // USETEMPFILE
     return 0;
 }
 
@@ -1652,15 +1631,15 @@ XImage* GLReadBitmapImage(Window w, XImage* image, char* filename)
 {
     unsigned int width, height;
     int x_hot, y_hot;
-    char* data;
+    int status;
+    Pixmap pixmap;
 
-    if (XmuReadBitmapDataFromFile(filename, &width, &height, &data, &x_hot, &y_hot)) {
-        sprintf(buff, "XmuReadBitmapDataFromFile(\"%s\",...) failed.\n", filename);
+    status = XReadBitmapFile(display, w, filename, &width, &height, &pixmap, &x_hot, &y_hot);
+    if (status != BitmapSuccess) {
+        sprintf(buff, "XReadBitmapFile(\"%s\",...) failed with status %d.\n", filename, status);
         messageToUser(NULL, MESSAGE_ERROR, buff);
         return 0;
     }
-    pixmap =
-        XCreateBitmapFromData(display, w, (char*)data, (unsigned int)width, (unsigned int)height);
     image->format = XYBitmap;
     image->width = width;
     image->height = height;

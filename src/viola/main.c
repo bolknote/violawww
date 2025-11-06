@@ -2,9 +2,6 @@
  * This is main for the binary program "viola".
  */
 #include "cexec.h"
-#include "hash.h"
-#include "ident.h"
-#include "mystrings.h"
 #include "obj.h"
 #include "scanutils.h"
 #include "viola.h"

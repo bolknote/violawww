@@ -7,8 +7,6 @@
  * Authors: Nicola Pellow, Tim Berners-Lee, Pei-Yuan Wei.
  *
  */
-#include "utils.h"
-#include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -19,40 +17,25 @@
 #include "../libWWW/HTAnchor.h"
 #include "../libWWW/HTFormat.h"
 #include "../libWWW/HTHistory.h"
-#include "../libWWW/HTML.h"
 #include "../libWWW/HTParse.h"
-#include "../libWWW/HTString.h"
 #include "../libWWW/HTTCP.h"
 #include "../libWWW/HText.h"
 
 #undef HTWRITE_H
 #include "../libWWW/HTFWriter.h"
 #include "../libWWW/HTFile.h"
-#include "../libWWW/HTWriter.h"
 
-#include "attr.h"
-#include "cexec.h"
 #include "class.h"
-#include "classlist.h"
 #include "glib.h"
-#include "hash.h"
-#include "ident.h"
-#include "membership.h"
-#include "method.h"
 #include "misc.h"
 #include "mystrings.h"
 #include "obj.h"
-#include "packet.h"
-#include "sgml.h"
-#include "slib.h"
 #include "slotaccess.h"
 #include "sys.h"
 #include "tfed.h"
-#include "vlist.h"
 
 extern void freeNodeLines();
 extern void renderTF();
-#include "DefaultStyles.h"
 #include "html.h"
 #include "html2.h"
 

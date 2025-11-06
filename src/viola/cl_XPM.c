@@ -13,22 +13,21 @@
  * superClass	: field
  */
 #include "cl_XPM.h"
+#include <stdlib.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
+#include "cl_field.h"
 #include "class.h"
 #include "classlist.h"
-#include "error.h"
-#include "event.h"
-#include "glib.h"
-#include "hash.h"
+#include "glib_x.h"
 #include "ident.h"
-#include "membership.h"
 #include "misc.h"
 #include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
 #include "scanutils.h"
 #include "slotaccess.h"
-#include "utils.h"
-#include <ctype.h>
 
 SlotInfo cl_XPM_NCSlots[] = {0};
 SlotInfo cl_XPM_NPSlots[] = {0};

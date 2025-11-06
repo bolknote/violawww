@@ -94,6 +94,8 @@ int callObjStackIdx = 0;
 
 long incrementExecStack(); /* forward declaration */
 
+typedef long (*MethodFunc)(VObj*, Packet*, long, Packet*);
+
 long init_cexec() {
     nullPacket(&reg1);
     nullPacket(&reg2);
@@ -649,7 +651,7 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                                     (*(pcode - 2)).x & 0xf000ffff | (CODE_CALL2_C << 16);
                                 (*(pcode - 1)).i = (long)(entry->val);
 
-                                ((long (*)())(entry->val))(self, &reg1, argc,
+                                ((MethodFunc)(entry->val))(self, &reg1, argc,
                                                            &execStack[stackExecIdx - argc + 1]);
 
                                 goto doneCall;
@@ -740,10 +742,11 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
 
             case CODE_CALL2_C << 16: {
                 long save_stackExecIdx;
-                long (*func)(), argc;
+                MethodFunc func;
+                long argc;
                 CallObjStack* cs;
 
-                func = (long (*)())(*pcode++).i;
+                func = (MethodFunc)(*pcode++).i;
                 argc = data;
 
                 stackBaseIdx = stackExecIdx;

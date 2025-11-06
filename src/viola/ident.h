@@ -621,4 +621,4 @@ enum {
 extern HashTable *symStr2ID, *symID2Str;
 
 extern int init_ident();
-extern long storeIdent();
+extern long storeIdent(char* identStr);

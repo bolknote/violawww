@@ -1,29 +1,27 @@
 /*
  * loader.c
  */
-#include "utils.h"
+#include <ctype.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifndef SEEK_SET
 #define SEEK_SET 0
 #endif
+#include <unistd.h> /*for R_OK*/
+
 #include "cexec.h"
 #include "class.h"
-#include "classlist.h"
 #include "file.h"
 #include "hash.h"
 #include "ident.h"
 #include "loader.h"
-#include "membership.h"
 #include "misc.h"
 #include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
 #include "slotaccess.h"
-#include "sys.h"
-#include <sys/file.h>
-#include <unistd.h> /*for R_OK*/
 
 #include "objs.h" /*XXXX for hard-coded ViolaWWW objects */
 int loadFromBuiltInCache();

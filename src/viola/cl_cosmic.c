@@ -13,43 +13,31 @@
  * superClass	: NULL
  */
 #include "cl_cosmic.h"
-#include "../libWWW/HTParse.h"
-#include "attr.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "cexec.h"
 #include "class.h"
 #include "classlist.h"
-#include "error.h"
+#include "event_x.h"
+#include "glib_x.h"
 #include "hash.h"
 #include "ident.h"
-#include "membership.h"
 #include "misc.h"
 #include "mystrings.h"
 #include "obj.h"
 #include "packet.h"
-#include "scanutils.h"
 #include "slotaccess.h"
-#include "sys.h"
-#include "utils.h"
-#include "vlist.h"
-#include <sys/file.h>
-
-/* for test1() */
-#include "event.h"
-#include "glib.h"
-#include "misc.h"
-#include "slib.h"
-#include "tfed.h"
 
 /* test4, for math */
 #include "htmath.h"
 
-#include "ast.h"
 #include "cgen.h"
 #include "html2.h"
 #include "loader.h"
 #include "method.h"
 #include "viola.h"
-#include <string.h>
 
 int notSecure(VObj* self)
 {

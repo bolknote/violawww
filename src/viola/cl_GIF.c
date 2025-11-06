@@ -13,14 +13,15 @@
  * superClass	: field
  */
 #include "cl_GIF.h"
+#include <stdlib.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
+#include "cl_field.h"
 #include "class.h"
 #include "classlist.h"
-#include "error.h"
-#include "event.h"
-#include "glib.h"
-#include "hash.h"
+#include "glib_x.h"
 #include "ident.h"
-#include "membership.h"
 #include "method.h"
 #include "misc.h"
 #include "mystrings.h"
@@ -28,7 +29,6 @@
 #include "packet.h"
 #include "scanutils.h"
 #include "slotaccess.h"
-#include "utils.h"
 
 SlotInfo cl_GIF_NCSlots[] = {0};
 SlotInfo cl_GIF_NPSlots[] = {{STR__baseImage, PTRV, 0},

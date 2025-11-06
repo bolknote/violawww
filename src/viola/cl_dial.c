@@ -13,22 +13,15 @@
  * superClass	: field
  */
 #include "cl_dial.h"
+#include <X11/X.h>
+
+#include "cl_field.h"
 #include "class.h"
 #include "classlist.h"
-#include "error.h"
-#include "event.h"
-#include "glib.h"
-#include "hash.h"
+#include "glib_x.h"
 #include "ident.h"
-#include "membership.h"
-#include "misc.h"
-#include "mystrings.h"
-#include "obj.h"
 #include "packet.h"
-#include "scanutils.h"
 #include "slotaccess.h"
-#include "utils.h"
-#include <ctype.h>
 
 SlotInfo cl_dial_NCSlots[] = {0};
 SlotInfo cl_dial_NPSlots[] = {0};

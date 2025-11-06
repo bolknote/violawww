@@ -122,6 +122,7 @@ help:
 	@echo "  clean      - Remove object files"
 	@echo "  distclean  - Remove all build artifacts"
 	@echo "  check-64bit - Check for 64-bit migration issues (long->int truncation)"
+	@echo "  check-help - Show code analysis tools (includes, libs, unused code)"
 	@echo "  help       - Show this help message"
 
 # ============================================================================
@@ -444,4 +445,131 @@ test:
 .PHONY: clean-test
 clean-test:
 	@$(MAKE) -C test clean
+
+# ============================================================================
+# Include and Library Analysis
+# ============================================================================
+
+# Check for unused includes using include-what-you-use
+.PHONY: check-includes
+check-includes:
+	@echo "=== Checking for unused includes with include-what-you-use ==="
+	@if ! command -v include-what-you-use >/dev/null 2>&1; then \
+		echo "ERROR: include-what-you-use not found."; \
+		echo "Install with: brew install include-what-you-use"; \
+		echo ""; \
+		echo "Alternative: use 'make check-includes-manual' for manual analysis"; \
+		exit 1; \
+	fi
+	@echo "Analyzing glib_x.c..."
+	@include-what-you-use -Xiwyu --no_fwd_decls -Xiwyu --max_line_length=120 \
+		$(CFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) \
+		$(VIOLA_DIR)/glib_x.c 2>&1 | tee iwyu-glib_x.log
+	@echo ""
+	@echo "Results saved to: iwyu-glib_x.log"
+
+# Check includes for all Viola sources
+.PHONY: check-includes-all
+check-includes-all:
+	@echo "=== Checking all Viola sources for unused includes ==="
+	@if ! command -v include-what-you-use >/dev/null 2>&1; then \
+		echo "ERROR: include-what-you-use not found."; \
+		echo "Install with: brew install include-what-you-use"; \
+		exit 1; \
+	fi
+	@for src in $(VIOLA_SRCS); do \
+		echo "Analyzing $$src..."; \
+		include-what-you-use -Xiwyu --no_fwd_decls \
+			$(CFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) \
+			$$src 2>&1 | grep -A 20 "should remove these lines" || true; \
+	done | tee iwyu-all.log
+	@echo "Results saved to: iwyu-all.log"
+
+# Manual check: show which headers are actually included
+.PHONY: check-includes-manual
+check-includes-manual:
+	@echo "=== Manual include analysis for glib_x.c ==="
+	@echo "This will show all included headers in order:"
+	@echo ""
+	@$(CC) -H $(CFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) \
+		-c $(VIOLA_DIR)/glib_x.c -o /dev/null 2>&1 | head -100
+	@echo ""
+	@echo "Headers with multiple dots (.) are nested includes."
+	@echo "To see full analysis, run without 'head -100'"
+
+# Analyze preprocessor output to see what's actually used
+.PHONY: check-preprocessor
+check-preprocessor:
+	@echo "=== Generating preprocessed output for glib_x.c ==="
+	@$(CC) -E -dD $(CFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) \
+		$(VIOLA_DIR)/glib_x.c > glib_x.preprocessed.c
+	@echo "Preprocessed output saved to: glib_x.preprocessed.c"
+	@echo "File size: $$(wc -l < glib_x.preprocessed.c) lines"
+
+# Check which libraries are actually used in the final binary
+.PHONY: check-libs
+check-libs:
+	@echo "=== Checking linked libraries ==="
+	@if [ ! -f $(VIOLA) ]; then \
+		echo "ERROR: Viola binary not found. Build it first with 'make viola'"; \
+		exit 1; \
+	fi
+	@echo ""
+	@echo "Libraries linked to Viola:"
+	@otool -L $(VIOLA)
+	@echo ""
+	@echo "=== Checking for unused library dependencies ==="
+	@echo "Libraries from Makefile LIBS: $(LIBS)"
+	@echo ""
+	@echo "Note: On macOS, unused libraries may still be linked."
+	@echo "Consider using 'make check-symbols' to see actual symbol usage."
+
+# Check which symbols are actually used from libraries
+.PHONY: check-symbols
+check-symbols:
+	@echo "=== Analyzing symbol usage in Viola binary ==="
+	@if [ ! -f $(VIOLA) ]; then \
+		echo "ERROR: Viola binary not found. Build it first with 'make viola'"; \
+		exit 1; \
+	fi
+	@echo ""
+	@echo "Undefined symbols (from external libraries):"
+	@nm -u $(VIOLA) | head -50
+	@echo ""
+	@echo "Total undefined symbols: $$(nm -u $(VIOLA) | wc -l)"
+	@echo ""
+	@echo "For full list, run: nm -u $(VIOLA_DIR)/viola"
+
+# Build with verbose warnings about unused code
+.PHONY: check-unused
+check-unused:
+	@echo "=== Building with unused code warnings ==="
+	@$(MAKE) clean
+	@$(MAKE) \
+		CC=clang \
+		CFLAGS='$(CFLAGS) -Wunused -Wunused-parameter -Wunused-variable -Wunused-function -Wunused-macros' \
+		CFLAGS_LIBS='$(CFLAGS_LIBS) -Wunused -Wunused-parameter -Wunused-variable -Wunused-function' \
+		all 2>&1 | tee unused-warnings.log
+	@echo ""
+	@echo "Warnings saved to: unused-warnings.log"
+
+# Summary of all analysis tools
+.PHONY: check-help
+check-help:
+	@echo "Include and Library Analysis Tools"
+	@echo "===================================="
+	@echo ""
+	@echo "Available targets:"
+	@echo "  check-includes        - Use include-what-you-use on glib_x.c (requires IWYU)"
+	@echo "  check-includes-all    - Check all Viola source files (requires IWYU)"
+	@echo "  check-includes-manual - Show include hierarchy using compiler -H flag"
+	@echo "  check-preprocessor    - Generate preprocessed output to analyze macros"
+	@echo "  check-libs            - Show linked libraries in final binary"
+	@echo "  check-symbols         - Show symbols used from external libraries"
+	@echo "  check-unused          - Build with warnings for unused code"
+	@echo ""
+	@echo "Quick start:"
+	@echo "  1. make check-includes-manual  (no extra tools needed)"
+	@echo "  2. make check-unused           (checks for unused variables/functions)"
+	@echo "  3. brew install include-what-you-use && make check-includes"
 

@@ -466,6 +466,26 @@ make clean
 make NO_SSL=1
 ```
 
+### Code Analysis Tools
+
+New Makefile targets for analyzing unused includes and libraries:
+
+```bash
+# Show all analysis commands
+make check-help
+
+# Quick analysis (no extra tools needed)
+make check-includes-manual   # Show include hierarchy
+make check-libs              # Show linked libraries
+make check-symbols           # Show used symbols from libraries
+make check-unused            # Build with unused code warnings
+
+# Advanced analysis (requires include-what-you-use)
+brew install include-what-you-use
+make check-includes          # Analyze glib_x.c
+make check-includes-all      # Analyze all sources
+```
+
 ### Code Style
 
 The codebase maintains the original ViolaWWW style:

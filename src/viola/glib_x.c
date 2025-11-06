@@ -26,12 +26,8 @@
 #include "sys.h"
 #include "utils.h"
 #include "vlist.h"
-#include <ctype.h>
 #include <math.h>
-#include <pwd.h>
-#include <signal.h>
 #include <stdint.h>
-#include <sys/param.h>
 #include <sys/types.h>
 #include <unistd.h>
 

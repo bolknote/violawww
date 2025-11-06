@@ -842,6 +842,22 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
             /* Can split here */
             text->permissible_split = text->size;
 
+            {
+                int spacePixels = target - here - spaceWidth;
+                int slotsNeeded = 0;
+                if (spacePixels > 0 && spaceWidth > 0) {
+                    slotsNeeded = (spacePixels + spaceWidth - 1) / spaceWidth;
+                }
+                if (slotsNeeded > 0) {
+                    int availableSlots = TBUFFSIZE - 1 - text->tbuffi;
+                    if (availableSlots <= 0 || slotsNeeded > availableSlots) {
+                        new_line(text);
+                        HText_appendCharacter(text, ch);
+                        return;
+                    }
+                }
+            }
+
             tfcp = text->tbuff + text->tbuffi;
 
             for (i = target - here - spaceWidth; i > 0; i -= spaceWidth) {
@@ -853,8 +869,8 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
             text->px += spaceWidth * count;
             text->size += count;
             text->tbuffi += count;
-            if (text->tbuffi > TBUFFSIZE) {
-                /* badnedd... */
+            if (text->tbuffi >= TBUFFSIZE) {
+                new_line(text);
             }
             return;
         }
@@ -862,6 +878,10 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
 
     if (ch == ' ') {
         text->permissible_split = text->size; /* Can split here */
+    }
+
+    if (text->tbuffi >= TBUFFSIZE - 1) {
+        new_line(text);
     }
 
     tfcp = text->tbuff + text->tbuffi;
@@ -876,8 +896,8 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
     text->px += charWidth;
     text->size++;
 
-    if (++(text->tbuffi) > TBUFFSIZE) {
-        /* error. lossing info... */
+    if (++(text->tbuffi) >= TBUFFSIZE) {
+        new_line(text);
         return;
     }
     TFCFlags(tfcp + 1) = text->flags;

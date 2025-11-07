@@ -3,8 +3,8 @@
 ### Bugs
 - [ ] Fix history behavior
   - Ensure navigation history (back/forward) works consistently across pages and embedded views.
-- [ ] Fix Clone functionality
-  - Cloning should produce an identical, independent copy without side effects or shared state.
+- [ ] Fix scrollbar thumb size in cloned windows
+  - The scrollbar thumb size is incorrect when the page fits entirely in the parent window but not in the cloned window. Scrolling works correctly, only the visual indicator is wrong.
 - [ ] Enable `mailto:` links
   - Clicking `mailto:` should open the default mail client with the correct address and subject/body.
 - [ ] Re-encode page `TITLE`

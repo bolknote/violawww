@@ -55,7 +55,6 @@
 extern Widget mainHelpWidget;
 extern int activeHelpLock;
 
-static void setupClonePageWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData);
 void clonePageDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont);
 
 static MenuItem clonePageMenuItems[] = {
@@ -244,10 +243,15 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
                                         XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM,
                                         XmNmaximum, SBAR_MAGNITUDE, NULL);
 
+    /* Get the parent canvas size to match it in the cloned window,
+     * so heightRatio is calculated correctly */
+    Dimension parentWidth, parentHeight;
+    XtVaGetValues(parentDocViewInfo->canvas, XmNwidth, &parentWidth, XmNheight, &parentHeight, NULL);
+
     violaCanvas = XtVaCreateManagedWidget(
         "violaCanvas", xmPrimitiveWidgetClass, frame, XmNtopAttachment, XmATTACH_FORM,
         XmNbottomAttachment, XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment,
-        XmATTACH_WIDGET, XmNrightWidget, scrollBar, XmNwidth, 550, XmNheight, 500, /*650*/
+        XmATTACH_WIDGET, XmNrightWidget, scrollBar, XmNwidth, parentWidth, XmNheight, parentHeight,
         NULL);
     setHelp(violaCanvas, helpLabel,
             "Clicking on links in this document will cause the main window to display the result "
@@ -285,8 +289,13 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
      * and check event type inside the handler */
     XtAddEventHandler(shell, 0L, TRUE, clonePageDeleteWindowEH, (XtPointer)localDocViewInfo);
     
-    /* Set WM_PROTOCOLS property after window is realized */
-    XtAddCallback(shell, XmNrealizeCallback, setupClonePageWMProtocolsCB, NULL);
+    /* Realize the shell and set WM_PROTOCOLS */
+    XtRealizeWidget(shell);
+    Atom wm_protocols = XInternAtom(XtDisplay(shell), "WM_PROTOCOLS", False);
+    Atom wm_delete_window = XInternAtom(XtDisplay(shell), "WM_DELETE_WINDOW", False);
+    if (wm_protocols != None && wm_delete_window != None) {
+        XSetWMProtocols(XtDisplay(shell), XtWindow(shell), &wm_delete_window, 1);
+    }
 
     XtPopup(shell, XtGrabNone);
 }
@@ -362,11 +371,16 @@ void showPageClone(char* arg[], int argc, void* clientData) {
     }
     dvi->violaDocViewObj = obj;
 
+    /* Get canvas size first */
+    XtVaGetValues(dvi->canvas, XmNwidth, &width, XmNheight, &height, NULL);
+    
+    /* Configure the Viola object with correct size BEFORE rendering */
+    sendMessage1N4int(dvi->violaDocViewObj, "config", -1, -1, width, height);
+    
     sendMessage1N1int(dvi->violaDocViewObj, "visible", 1);
     sendMessage1(dvi->violaDocViewObj, "render");
     dvi->violaDocViewWindow = GET_window(obj);
     XReparentWindow(XtDisplay(dvi->canvas), dvi->violaDocViewWindow, XtWindow(dvi->canvas), 0, 0);
-    XtVaGetValues(dvi->canvas, XmNwidth, &width, XmNheight, &height, NULL);
     XResizeWindow(XtDisplay(dvi->canvas), (Window)dvi->violaDocViewWindow, width, height);
     ViolaDeleteMessageHandler("showPageClone", showPageClone, (void*)dvi);
 
@@ -453,11 +467,16 @@ void showAppClone(char* arg[], int argc, void* clientData) {
     }
     dvi->violaDocViewObj = obj;
 
+    /* Get canvas size first */
+    XtVaGetValues(dvi->canvas, XmNwidth, &width, XmNheight, &height, NULL);
+    
+    /* Configure the Viola object with correct size BEFORE rendering */
+    sendMessage1N4int(dvi->violaDocViewObj, "config", -1, -1, width, height);
+    
     sendMessage1N1int(dvi->violaDocViewObj, "visible", 1);
     sendMessage1(dvi->violaDocViewObj, "render");
     dvi->violaDocViewWindow = GET_window(obj);
     XReparentWindow(XtDisplay(dvi->canvas), dvi->violaDocViewWindow, XtWindow(dvi->canvas), 0, 0);
-    XtVaGetValues(dvi->canvas, XmNwidth, &width, XmNheight, &height, NULL);
     XResizeWindow(XtDisplay(dvi->canvas), (Window)dvi->violaDocViewWindow, width, height);
     ViolaDeleteMessageHandler("showPageClone", showPageClone, (void*)dvi);
 
@@ -519,18 +538,6 @@ void closePageShell(DocViewInfo* dvi) {
 
 void closePageCB(Widget button, XtPointer clientData, XtPointer callData) {
     closePageShell((DocViewInfo*)((ClientData*)clientData)->shellInfo);
-}
-
-/*
- * Callback to set up WM_PROTOCOLS after clone page window is realized.
- */
-static void setupClonePageWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData)
-{
-    Atom wm_protocols = XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False);
-    Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
-    if (wm_protocols != None && wm_delete_window != None && XtWindow(w) != None) {
-        XSetWMProtocols(XtDisplay(w), XtWindow(w), &wm_delete_window, 1);
-    }
 }
 
 /*

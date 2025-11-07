@@ -30,6 +30,8 @@
 #include <Xm/ScrollBar.h>
 #include <Xm/TextF.h>
 #include <Xm/Xm.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #include "../viola/ast.h"
 #include "../viola/attr.h"
@@ -52,6 +54,9 @@
 
 extern Widget mainHelpWidget;
 extern int activeHelpLock;
+
+static void setupClonePageWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData);
+void clonePageDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont);
 
 static MenuItem clonePageMenuItems[] = {
     {"Close", &xmPushButtonWidgetClass, 'C', "Ctrl<Key>C", "Ctrl-C", closePageCB, NULL,
@@ -270,6 +275,18 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     cd->data = (void*)parentDocViewInfo->violaDocViewObj;
     cd->shellInfo = (void*)localDocViewInfo;
     XtAddEventHandler(violaCanvas, StructureNotifyMask, FALSE, pageCloneMapped, (XtPointer)cd);
+
+    /* Set up WM_DELETE_WINDOW protocol handler so clicking the X button
+     * calls closePageShell instead of closing the entire browser */
+    XtVaSetValues(shell, XmNdeleteResponse, XmDO_NOTHING, NULL);
+    
+    /* Register event handler for WM_DELETE_WINDOW protocol.
+     * ClientMessage events need to be handled specially - use 0 mask to catch all events
+     * and check event type inside the handler */
+    XtAddEventHandler(shell, 0L, TRUE, clonePageDeleteWindowEH, (XtPointer)localDocViewInfo);
+    
+    /* Set WM_PROTOCOLS property after window is realized */
+    XtAddCallback(shell, XmNrealizeCallback, setupClonePageWMProtocolsCB, NULL);
 
     XtPopup(shell, XtGrabNone);
 }
@@ -502,6 +519,38 @@ void closePageShell(DocViewInfo* dvi) {
 
 void closePageCB(Widget button, XtPointer clientData, XtPointer callData) {
     closePageShell((DocViewInfo*)((ClientData*)clientData)->shellInfo);
+}
+
+/*
+ * Callback to set up WM_PROTOCOLS after clone page window is realized.
+ */
+static void setupClonePageWMProtocolsCB(Widget w, XtPointer clientData, XtPointer callData)
+{
+    Atom wm_protocols = XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False);
+    Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
+    if (wm_protocols != None && wm_delete_window != None && XtWindow(w) != None) {
+        XSetWMProtocols(XtDisplay(w), XtWindow(w), &wm_delete_window, 1);
+    }
+}
+
+/*
+ * Event handler for WM_DELETE_WINDOW protocol message on clone page window.
+ * Called when user clicks the window close button (X).
+ */
+void clonePageDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont)
+{
+    if (event->type == ClientMessage) {
+        XClientMessageEvent* cm = (XClientMessageEvent*)event;
+        Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
+        
+        if (cm->message_type == XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False) &&
+            (Atom)cm->data.l[0] == wm_delete_window) {
+            /* User clicked the window close button */
+            DocViewInfo* dvi = (DocViewInfo*)clientData;
+            closePageShell(dvi);
+            *cont = False; /* Don't continue processing */
+        }
+    }
 }
 
 void cloneApp(Widget button, XtPointer clientData, XtPointer callData) {

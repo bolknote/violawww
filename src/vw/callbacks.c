@@ -286,7 +286,8 @@ void pageCloneMapped(Widget canvas, XtPointer clientData, XEvent* event, Boolean
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
 
-    char* parentObjName = (char*)cd->data;
+    VObj* parentObj = (VObj*)cd->data;
+    char cloneIDStr[32];
 
     XtRemoveEventHandler(dvi->canvas, StructureNotifyMask, FALSE, pageCloneMapped, clientData);
     free(cd);
@@ -296,7 +297,8 @@ void pageCloneMapped(Widget canvas, XtPointer clientData, XEvent* event, Boolean
      * wait for a return message with the name of the cloned page object.
      */
     ViolaRegisterMessageHandler("showPageClone", showPageClone, (void*)dvi);
-    sendMessage1N1int(parentObjName, "clonePage", (int)dvi->cloneID);
+    sprintf(cloneIDStr, "%ld", (long)dvi->cloneID);
+    sendMessage1N1str(parentObj, "clonePage", cloneIDStr);
 }
 
 /*
@@ -320,7 +322,8 @@ void showPageClone(char* arg[], int argc, void* clientData) {
     if (argc < 3)
         return;
 
-    if (dvi->cloneID != atol(arg[1]))
+    long receivedCloneID = atol(arg[1]);
+    if (dvi->cloneID != receivedCloneID)
         return;
 
     obj = findObject(getIdent(arg[2]));
@@ -342,6 +345,7 @@ void showPageClone(char* arg[], int argc, void* clientData) {
     }
     dvi->violaDocViewObj = obj;
 
+    sendMessage1N1int(dvi->violaDocViewObj, "visible", 1);
     sendMessage1(dvi->violaDocViewObj, "render");
     dvi->violaDocViewWindow = GET_window(obj);
     XReparentWindow(XtDisplay(dvi->canvas), dvi->violaDocViewWindow, XtWindow(dvi->canvas), 0, 0);
@@ -374,6 +378,7 @@ void appCloneMapped(Widget canvas, XtPointer clientData, XEvent* event, Boolean*
     ClientData* cd = (ClientData*)clientData;
     DocViewInfo* dvi = (DocViewInfo*)cd->shellInfo;
     char* parentObjName = (char*)cd->data;
+    char cloneIDStr[32];
 
     XtRemoveEventHandler(dvi->canvas, StructureNotifyMask, FALSE, appCloneMapped,
                          (XtPointer)clientData);
@@ -384,7 +389,8 @@ void appCloneMapped(Widget canvas, XtPointer clientData, XEvent* event, Boolean*
      * wait for a return message with the name of the cloned page object.
      */
     ViolaRegisterMessageHandler("showAppClone", showAppClone, (void*)dvi);
-    sendMessage1N1int(parentObjName, "cloneApp", (int)dvi->cloneID);
+    sprintf(cloneIDStr, "%ld", (long)dvi->cloneID);
+    sendMessage1N1strByName(parentObjName, "cloneApp", cloneIDStr);
 }
 
 /*
@@ -408,7 +414,8 @@ void showAppClone(char* arg[], int argc, void* clientData) {
     if (argc < 3)
         return;
 
-    if (dvi->cloneID != atol(arg[1]))
+    long receivedCloneID = atol(arg[1]);
+    if (dvi->cloneID != receivedCloneID)
         return;
 
     obj = findObject(getIdent(arg[2]));
@@ -429,6 +436,7 @@ void showAppClone(char* arg[], int argc, void* clientData) {
     }
     dvi->violaDocViewObj = obj;
 
+    sendMessage1N1int(dvi->violaDocViewObj, "visible", 1);
     sendMessage1(dvi->violaDocViewObj, "render");
     dvi->violaDocViewWindow = GET_window(obj);
     XReparentWindow(XtDisplay(dvi->canvas), dvi->violaDocViewWindow, XtWindow(dvi->canvas), 0, 0);

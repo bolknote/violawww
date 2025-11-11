@@ -274,6 +274,7 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     localDocViewInfo->violaDocToolsName = NULL;
     localDocViewInfo->violaDocViewWindow = (Window)0;
     localDocViewInfo->violaDocToolsWindow = (Window)0;
+    localDocViewInfo->parentDocView = parentDocViewInfo;
 
     cd = (ClientData*)malloc(sizeof(ClientData));
     cd->data = (void*)parentDocViewInfo->violaDocViewObj;
@@ -382,6 +383,24 @@ void showPageClone(char* arg[], int argc, void* clientData) {
     dvi->violaDocViewWindow = GET_window(obj);
     XReparentWindow(XtDisplay(dvi->canvas), dvi->violaDocViewWindow, XtWindow(dvi->canvas), 0, 0);
     XResizeWindow(XtDisplay(dvi->canvas), (Window)dvi->violaDocViewWindow, width, height);
+    
+    /* Copy scrollbar settings from parent window if available */
+    if (dvi->parentDocView && dvi->parentDocView->scrollBar && dvi->scrollBar) {
+        int parentSliderSize, parentValue, parentMaximum;
+        XtVaGetValues(dvi->parentDocView->scrollBar,
+                      XmNsliderSize, &parentSliderSize,
+                      XmNvalue, &parentValue,
+                      XmNmaximum, &parentMaximum,
+                      NULL);
+        
+        /* Apply the same slider settings to the cloned window */
+        XtVaSetValues(dvi->scrollBar,
+                      XmNsliderSize, parentSliderSize,
+                      XmNpageIncrement, parentSliderSize,
+                      XmNvalue, parentValue,
+                      NULL);
+    }
+    
     ViolaDeleteMessageHandler("showPageClone", showPageClone, (void*)dvi);
 
     /*

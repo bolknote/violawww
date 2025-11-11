@@ -113,6 +113,8 @@ typedef struct DocViewInfoStruct {
     int hotlistSize;
     int currentHotlistItem;
 
+    struct DocViewInfoStruct* parentDocView; /* For cloned windows, pointer to parent */
+
 } DocViewInfo;
 #endif
 extern Box* docViews;

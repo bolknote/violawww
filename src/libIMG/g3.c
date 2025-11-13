@@ -153,6 +153,10 @@ int g3_getfaxrow(ZFILE* fd, byte* bitrow) {
                 return 0;
             if (g3_rawzeros >= 11) {
                 nextbit = g3_rawgetbit(fd);
+                if (nextbit < 0) {
+                    ++g3_error;
+                    return (-1);
+                }
                 if (nextbit) {
                     if (col == 0)
                         /* 6 consecutive EOLs mean end of document */
@@ -164,6 +168,10 @@ int g3_getfaxrow(ZFILE* fd, byte* bitrow) {
                 }
             } else
                 nextbit = g3_rawgetbit(fd);
+            if (nextbit < 0) {
+                ++g3_error;
+                return (-1);
+            }
 
             curcode = (curcode << 1) + nextbit;
             curlen++;
@@ -239,10 +247,23 @@ int g3_getfaxrow(ZFILE* fd, byte* bitrow) {
 }
 
 int g3_skiptoeol(ZFILE* fd) {
-    while (g3_rawzeros < 11 && !g3_eof)
-        (void)g3_rawgetbit(fd);
-    while (!g3_rawgetbit(fd) && !g3_eof)
-        ;
+    int bit;
+    while (g3_rawzeros < 11 && !g3_eof) {
+        bit = g3_rawgetbit(fd);
+        if (bit < 0) {
+            ++g3_error;
+            return (-1);
+        }
+    }
+    while (!g3_eof) {
+        bit = g3_rawgetbit(fd);
+        if (bit < 0) {
+            ++g3_error;
+            return (-1);
+        }
+        if (bit)
+            break;
+    }
     return (0);
 }
 
@@ -261,6 +282,7 @@ int g3_rawgetbit(ZFILE* fd) {
             ++g3_error;
             return 0;
 #else
+            g3_eof = 1;
             return (-1);
 #endif
         }
@@ -332,8 +354,16 @@ tryagain:
     g3_eof = g3_eols = rows = cols = 0;
 
     /* If we have the zeros we're off to a good start, otherwise, skip some lines */
-    for (g3_rawzeros = 0; !g3_rawgetbit(fd) && !g3_eof;)
-        ;
+    for (g3_rawzeros = 0;;) {
+        int bit = g3_rawgetbit(fd);
+        if (bit < 0 || g3_eof) {
+            if (bit < 0)
+                ++g3_error;
+            break;
+        }
+        if (bit)
+            break;
+    }
     if (g3_Xrawzeros >= 11 && g3_Xrawzeros <= 15) {
         fd->dataptr = fd->data;
         fd->bufptr = 0;

@@ -581,7 +581,6 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
 
     if (tag_name && strcasecmp(tag_name, "META") == 0) {
         handle_meta_charset(me, present, value);
-        return;
     }
 #ifdef VIOLA
     majorBuff[majorBuffi] = '\0';
@@ -767,9 +766,6 @@ fprintf(stderr, "### HTML\t(%s\n",
 */
 PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
 #ifdef VIOLA
-    if (element_number == HTML_META) {
-        return;
-    }
     majorBuff[majorBuffi] = '\0';
 
     /*	fprintf(stderr, "### DATA(%d) -%s\n", majorBuffi, majorBuff);*/

@@ -590,10 +590,6 @@ PRIVATE void handle_meta_charset ARGS4(HTStructured*, me, CONST BOOL*, present, 
             char* existing_charset = HTAnchor_charset(me->node_anchor);
             if (!existing_charset) {
                 HTAnchor_setCharset(me->node_anchor, charset);
-                fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
-            } else {
-                fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
-                        charset, existing_charset);
             }
             free(charset);  /* Free allocated memory */
         } else if (charset) {
@@ -621,7 +617,6 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
     if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
         HTML_dtd.tags[element_number].name &&
         strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
-        fprintf(stderr, "HTML_VIOLA: TITLE start tag\n");
     }
     
     majorBuff[majorBuffi] = '\0';
@@ -668,7 +663,6 @@ fprintf(stderr, "### HTML\t(%s\n",
 
     case HTML_TITLE:
         HTChunkClear(&me->title);
-        fprintf(stderr, "HTML_TITLE start: clearing title chunk\n");
         break;
 
     case HTML_NEXTID:
@@ -825,7 +819,6 @@ PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
     if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
         HTML_dtd.tags[element_number].name &&
         strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
-        fprintf(stderr, "HTML_VIOLA: TITLE end tag, flushed %d bytes before etag\n", majorBuffi);
     }
 /*
 fprintf(stderr, "### HTML\t)%s\n",
@@ -859,13 +852,7 @@ fprintf(stderr, "### HTML\t)%s\n",
         char* charset;
         HTChunkTerminate(&me->title);
         charset = me->node_anchor ? HTAnchor_charset(me->node_anchor) : NULL;
-        fprintf(stderr, "HTML_TITLE end: size=%d, charset=%s, title='%.*s'\n",
-                me->title.size, charset ? charset : "(null)", 
-                me->title.size > 100 ? 100 : me->title.size,
-                me->title.data ? me->title.data : "(null)");
         HTAnchor_setTitle(me->node_anchor, me->title.data);
-        fprintf(stderr, "HTML_TITLE: after setTitle, anchor title='%s'\n",
-                HTAnchor_title(me->node_anchor) ? HTAnchor_title(me->node_anchor) : "(null)");
         break;
     }
 

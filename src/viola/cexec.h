@@ -47,6 +47,7 @@ extern long sendMessage1N1str(VObj* self, char* messg, char* s1);
 extern long sendMessage1N1str_result(VObj* self, char* messg, char* s1, Packet* result);
 extern long sendMessage1N2str(VObj* self, char* messg, char* s1, char* s2);
 extern long sendMessage1N2str_result(VObj* self, char* messg, char* s1, char* s2, Packet* result);
+extern long sendMessage1N1strByName(char* objName, char* messg, char* s1);
 extern long sendMessage1N1int(VObj* self, char* messg, int i1);
 extern long sendMessage1N1int_result(VObj* self, char* messg, int i1, Packet* result);
 extern long sendMessage1N2int(VObj* self, char* messg, int i1, int i2);

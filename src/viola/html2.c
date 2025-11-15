@@ -88,6 +88,25 @@ static char* current_document_charset = NULL;
 /* Global converted title - set from TITLE tag, applied when anchor becomes available */
 static char* pending_title = NULL;
 
+static void html2_reset_stack_state(const char* context) {
+    static int stack_underflow_warn = 5;
+    int reset_idx = 0;
+
+    if (stack_underflow_warn > 0) {
+        fprintf(stderr, "CB_HTML_%s: stack underflow detected (stacki=%d)\n",
+                context ? context : "?", SBI.stacki);
+        stack_underflow_warn--;
+    }
+
+    SBI.stacki = 0;
+    dataBuffIdxStackIdx = 0;
+
+    if (SBI.stack[0].dataBuffIdx_localStart >= 0)
+        reset_idx = SBI.stack[0].dataBuffIdx_localStart;
+    dataBuffIdxStack[0] = reset_idx;
+    dataBuffIdx = reset_idx;
+}
+
 /* Function to set document charset (called from HTML.c handle_meta_charset) */
 void html2_set_document_charset(const char* charset) {
     if (current_document_charset) {
@@ -375,6 +394,8 @@ void CB_HTML_new() {
         pending_title = NULL;
     }
 
+    fallback_block_tmi = NULL;
+
     if (!strcmp(dtd, "HTML")) {
         /*		sgmldtd = HTML_dtd;*/
     } else {
@@ -485,12 +506,7 @@ int size;
 
     /* Bounds check for stack access */
     if (SBI.stacki < 0) {
-        static int stack_underflow_warn = 5;
-        if (stack_underflow_warn > 0) {
-            fprintf(stderr, "CB_HTML_data: stacki out of bounds: %d\n", SBI.stacki);
-            stack_underflow_warn--;
-        }
-        SBI.stacki = 0;
+        html2_reset_stack_state("data");
     }
     if (SBI.stacki >= 100) {
         fprintf(stderr, "CB_HTML_data: stack overflow: %d\n", SBI.stacki);
@@ -685,6 +701,7 @@ HTTag* tagInfo;
         if (tagInfo && tagInfo->contents == SGML_EMPTY) {
             bstate->tmi = NULL;
             bstate->obj = NULL;
+            SBI.stacki--;
             return;
         }
 
@@ -704,6 +721,7 @@ HTTag* tagInfo;
     }
     if (is_meta_tag) {
         bstate->obj = NULL;
+        SBI.stacki--;
         return;
     }
 

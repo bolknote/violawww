@@ -25,4 +25,5 @@ examples/
 
 # macOS
 .DS_Store
+**/.DS_Store
 *.log

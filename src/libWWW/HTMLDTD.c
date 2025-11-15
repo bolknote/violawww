@@ -170,6 +170,8 @@ static attr listing_attr[] = {{"BORDER"}, {"FOLD"}, {"HREF"}, {0}};
 
 static attr menu_attr[] = {{"COMPACT"}, {"FOLD"}, {"LABEL"}, {"MAXWIDTH"}, {"MINWIDTH"}, {0}};
 
+static attr meta_attr[] = {{"CONTENT"}, {"HTTP-EQUIV"}, {0}};
+
 static attr mh_attr[] = {{"HIDDEN"}, {0}};
 
 static attr nextid_attr[] = {
@@ -428,6 +430,7 @@ static HTTag tags[] = {
     {"LIT", no_attr, 0, SGML_LITTERAL, 0, 0},
     {"MATH", no_attr, 0, SGML_MIXED, 0, 0},
     {"MENU", menu_attr, HTML_MENU_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"META", meta_attr, HTML_META_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"MH", mh_attr, HTML_MH_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"NEXTID", nextid_attr, 1, SGML_EMPTY, 0, 0},
     {"OL", ol_attr, HTML_OL_ATTRIBUTES, SGML_MIXED, ol_ul_validSubElements,
@@ -489,7 +492,7 @@ static HTTag tags[] = {
     {"VVIEW", no_attr, 0, SGML_LITTERAL, 0, 0},
     {"XMP", xmp_attr, HTML_XMP_ATTRIBUTES, SGML_LITTERAL, 0, 0},
     {0}};
-#define HTML_TAGS 128
+#define HTML_TAGS 129
 
 PUBLIC CONST SGML_dtd HTML_dtd = {tags, HTML_ELEMENTS, entities, sizeof(entities) / sizeof(char**)};
 

@@ -81,6 +81,7 @@ HEAD		HTML_head 		0 0 0 0 0		0 0 0 0\n\
 BODY		HTML_body 		0 0 0 1 0		0 10 1 1\n\
 HTML 		HTML_fld 		0 0 0 1 0		0 10 0 1\n\
 MENU		HTML_menu 		0 0 0 1 0		3 7 0 2\n\
+META		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 NEXTID		HTML_nextID 		0 0 0 0 0		0 0 0 2\n\
 PRE		HTML_pre 		0 0 0 1 0		3 7 0 2\n\
 EXAMPLE		HTML_example 		0 0 0 1 0		3 7 0 2\n\

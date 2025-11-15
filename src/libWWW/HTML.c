@@ -23,7 +23,9 @@ extern void http_progress_notify();
 
 #include <ctype.h>
 #include <stdio.h>
+#include <strings.h>
 
+#include "HTAnchor.h"
 #include "HTAtom.h"
 #include "HTChunk.h"
 #include "HTStyle.h"
@@ -31,11 +33,19 @@ extern void http_progress_notify();
 
 #include "HTAlert.h"
 #include "HTMLGen.h"
+#include "HTMIME.h"
 #include "HTParse.h"
 
 #define VIOLA 1 /*PYW*/
 
 #ifdef VIOLA
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void html2_set_document_charset(const char* charset);
+#ifdef __cplusplus
+}
+#endif
 #define MAJORBUFF 20000    /*PYW*/
 char majorBuff[MAJORBUFF]; /*PYW*/
 int majorBuffi;            /*PYW*/
@@ -480,12 +490,99 @@ PRIVATE void HTML_write ARGS3(HTStructured*, me, CONST char*, s, int, l) {
         HTML_put_character(me, *p);
 }
 
+PRIVATE char* extract_charset_from_content ARGS1(CONST char*, content) {
+    CONST char* scan;
+    CONST char* start;
+    char quote = 0;
+    size_t len;
+    char* charset;
+
+    if (!content)
+        return NULL;
+
+    for (scan = content; *scan; scan++) {
+        if (strncasecmp(scan, "charset", 7) == 0) {
+            CONST char* cursor = scan + 7;
+            while (*cursor && WHITE(*cursor))
+                cursor++;
+            if (*cursor != '=')
+                continue;
+            cursor++;
+            while (*cursor && WHITE(*cursor))
+                cursor++;
+            if (!*cursor)
+                return NULL;
+            if (*cursor == '"' || *cursor == '\'')
+                quote = *cursor++;
+            start = cursor;
+            while (*cursor) {
+                if (quote) {
+                    if (*cursor == quote)
+                        break;
+                } else if (WHITE(*cursor) || *cursor == ';' || *cursor == '"' || *cursor == '\'') {
+                    break;
+                }
+                cursor++;
+            }
+            len = cursor - start;
+            if (!len)
+                return NULL;
+            charset = (char*)malloc(len + 1);
+            if (!charset)
+                return NULL;
+            memcpy(charset, start, len);
+            charset[len] = '\0';
+            return charset;
+        }
+    }
+    return NULL;
+}
+
+PRIVATE void handle_meta_charset ARGS3(HTStructured*, me, CONST BOOL*, present, CONST char**, value) {
+    char* charset;
+    char* existing;
+
+    if (!present || !value)
+        return;
+
+    if (!present[HTML_META_HTTP_EQUIV] || !value[HTML_META_HTTP_EQUIV] ||
+        !present[HTML_META_CONTENT] || !value[HTML_META_CONTENT])
+        return;
+
+    if (strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") != 0)
+        return;
+
+    charset = extract_charset_from_content(value[HTML_META_CONTENT]);
+    if (!charset)
+        return;
+    if (me->node_anchor) {
+        existing = HTAnchor_charset(me->node_anchor);
+        if (!existing || !*existing) {
+            HTAnchor_setCharset(me->node_anchor, charset);
+        }
+    }
+#ifdef VIOLA
+    html2_set_document_charset(charset);
+#endif
+    free(charset);
+}
+
 /*	Start Element
 **	-------------
 */
 PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CONST BOOL*, present,
                                       CONST char**, value, HTTag*, tagInfo) /* PYW */
 {
+    const char* tag_name = NULL;
+    if (tagInfo && tagInfo->name)
+        tag_name = tagInfo->name;
+    else if (element_number >= 0 && element_number < HTML_dtd.number_of_tags)
+        tag_name = HTML_dtd.tags[element_number].name;
+
+    if (tag_name && strcasecmp(tag_name, "META") == 0) {
+        handle_meta_charset(me, present, value);
+        return;
+    }
 #ifdef VIOLA
     majorBuff[majorBuffi] = '\0';
     /*
@@ -670,6 +767,9 @@ fprintf(stderr, "### HTML\t(%s\n",
 */
 PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
 #ifdef VIOLA
+    if (element_number == HTML_META) {
+        return;
+    }
     majorBuff[majorBuffi] = '\0';
 
     /*	fprintf(stderr, "### DATA(%d) -%s\n", majorBuffi, majorBuff);*/

@@ -4469,17 +4469,31 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
             tf = 0;
             return 0;
         }
+        /* Check if self is still valid before accessing it */
+        if (!validObjectP(self)) {
+            /* Object was freed, clear cache if it was the current user object */
+            if (self == currentUserObj) {
+                currentUserObj = 0;
+                tf = 0;
+            }
+            return 0;
+        }
         if (self == currentUserObj) {
+            /* Both are the same pointer, and self is validated, so safe to access */
             return GET__TFStruct(self);
         } else {
             TFStruct* selfTF = GET__TFStruct(self);
-            if (currentUserObj) {
+            if (currentUserObj && validObjectP(currentUserObj)) {
                 /* Validate that cached tf still matches the object's current TFStruct */
                 TFStruct* prevTF = GET__TFStruct(currentUserObj);
                 if (prevTF && prevTF == tf) {
                     if (tf->editableP)
                         replaceNodeLine(tf->currentp, theEditLN, 1, tf->mg);
                 }
+            } else {
+                /* currentUserObj was freed, clear it */
+                currentUserObj = 0;
+                tf = 0;
             }
             if (selfTF) {
                 if (selfTF->currentp) {

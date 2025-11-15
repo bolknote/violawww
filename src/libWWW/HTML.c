@@ -369,6 +369,10 @@ PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 
     case HTML_TITLE:
         HTChunkPutc(&me->title, c);
+        if (TRACE && me->title.size < 100) {
+            fprintf(stderr, "HTML_TITLE: adding char '%c' (0x%02x), title size=%d\n", 
+                    (c >= 32 && c < 127) ? c : '?', (unsigned char)c, me->title.size);
+        }
         break;
 
     case HTML_LISTING: /* Litteral text */
@@ -574,17 +578,22 @@ PRIVATE void handle_meta_charset ARGS4(HTStructured*, me, CONST BOOL*, present, 
         strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") == 0) {
         
         charset = extract_charset_from_content(value[HTML_META_CONTENT]);
+#ifdef VIOLA
+        /* In VIOLA path, save charset globally for title conversion */
+        if (charset) {
+            extern void html2_set_document_charset(const char*);
+            html2_set_document_charset(charset);
+        }
+#endif
         if (charset && me->node_anchor) {
             /* Only set if charset not already set from HTTP headers */
             char* existing_charset = HTAnchor_charset(me->node_anchor);
             if (!existing_charset) {
                 HTAnchor_setCharset(me->node_anchor, charset);
-                if (TRACE)
-                    fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
+                fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
             } else {
-                if (TRACE)
-                    fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
-                            charset, existing_charset);
+                fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
+                        charset, existing_charset);
             }
             free(charset);  /* Free allocated memory */
         } else if (charset) {
@@ -607,6 +616,12 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
         HTML_dtd.tags[element_number].name && 
         strcmp(HTML_dtd.tags[element_number].name, "META") == 0) {
         return;
+    }
+    
+    if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
+        HTML_dtd.tags[element_number].name &&
+        strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
+        fprintf(stderr, "HTML_VIOLA: TITLE start tag\n");
     }
     
     majorBuff[majorBuffi] = '\0';
@@ -653,6 +668,7 @@ fprintf(stderr, "### HTML\t(%s\n",
 
     case HTML_TITLE:
         HTChunkClear(&me->title);
+        fprintf(stderr, "HTML_TITLE start: clearing title chunk\n");
         break;
 
     case HTML_NEXTID:
@@ -805,6 +821,12 @@ PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
         CB_HTML_data(majorBuff, majorBuffi);
         majorBuffi = 0;
     }
+    
+    if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
+        HTML_dtd.tags[element_number].name &&
+        strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
+        fprintf(stderr, "HTML_VIOLA: TITLE end tag, flushed %d bytes before etag\n", majorBuffi);
+    }
 /*
 fprintf(stderr, "### HTML\t)%s\n",
  HTML_dtd.tags[element_number].name);
@@ -833,10 +855,19 @@ fprintf(stderr, "### HTML\t)%s\n",
         HText_endAnchor(me->text);
         break;
 
-    case HTML_TITLE:
+    case HTML_TITLE: {
+        char* charset;
         HTChunkTerminate(&me->title);
+        charset = me->node_anchor ? HTAnchor_charset(me->node_anchor) : NULL;
+        fprintf(stderr, "HTML_TITLE end: size=%d, charset=%s, title='%.*s'\n",
+                me->title.size, charset ? charset : "(null)", 
+                me->title.size > 100 ? 100 : me->title.size,
+                me->title.data ? me->title.data : "(null)");
         HTAnchor_setTitle(me->node_anchor, me->title.data);
+        fprintf(stderr, "HTML_TITLE: after setTitle, anchor title='%s'\n",
+                HTAnchor_title(me->node_anchor) ? HTAnchor_title(me->node_anchor) : "(null)");
         break;
+    }
 
     case HTML_LISTING: /* Litteral text */
     case HTML_XMP:

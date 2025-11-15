@@ -198,13 +198,9 @@ long helper_HTML_get(VObj* self, Packet* result, int argc, Packet argv[], long l
         return 1;
     }
     case STR_HTMLTitle: {
-        char* title = GET_HTMLTitle(self);
-        fprintf(stderr, "cl_HTML.c: GET_HTMLTitle returning='%s' (len=%zu)\n",
-                title ? title : "(null)",
-                title ? strlen(title) : 0);
         result->type = PKT_STR;
         result->canFree = PK_CANFREE_STR;
-        result->info.s = SaveString(title);
+        result->info.s = SaveString(GET_HTMLTitle(self));
         return 1;
     }
     }

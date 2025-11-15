@@ -94,7 +94,6 @@ void html2_set_document_charset(const char* charset) {
     }
     if (charset) {
         current_document_charset = saveString(charset);
-        fprintf(stderr, "html2_set_document_charset: set to '%s'\n", current_document_charset);
     }
 }
 
@@ -102,15 +101,8 @@ void html2_set_document_charset(const char* charset) {
 void html2_apply_pending_title(HTParentAnchor* anchor) {
     if (pending_title && anchor) {
         HTAnchor_setTitle(anchor, pending_title);
-        fprintf(stderr, "html2_apply_pending_title: applied title='%s' to anchor=%p\n",
-                pending_title, (void*)anchor);
-        fprintf(stderr, "html2_apply_pending_title: anchor title after set='%s'\n",
-                HTAnchor_title(anchor) ? HTAnchor_title(anchor) : "(null)");
         free(pending_title);
         pending_title = NULL;
-    } else {
-        fprintf(stderr, "html2_apply_pending_title: pending_title=%p, anchor=%p\n",
-                (void*)pending_title, (void*)anchor);
     }
 }
 
@@ -1136,30 +1128,19 @@ void CB_HTML_etag(element_number) int element_number;
         /* Try to get anchor from HTMainText or HTMainAnchor */
         if (HTMainText) {
             anchor = HText_nodeAnchor(HTMainText);
-            fprintf(stderr, "CB_HTML_etag TITLE: HTMainText=%p, node_anchor=%p\n",
-                    (void*)HTMainText, (void*)anchor);
         }
         if (!anchor && HTMainAnchor) {
             anchor = HTMainAnchor;
-            fprintf(stderr, "CB_HTML_etag TITLE: using HTMainAnchor=%p\n", (void*)anchor);
-        }
-        if (!anchor) {
-            fprintf(stderr, "CB_HTML_etag TITLE: HTMainText=%p, HTMainAnchor=%p (both NULL or no anchor)\n",
-                    (void*)HTMainText, (void*)HTMainAnchor);
         }
         
         /* Try to get charset from anchor first, then from global variable */
         if (anchor) {
             charset = HTAnchor_charset(anchor);
-            fprintf(stderr, "CB_HTML_etag TITLE: anchor charset=%s\n", 
-                    charset ? charset : "(null)");
         }
         
         /* Fallback to global charset if anchor charset not available */
         if (!charset || strlen(charset) == 0) {
             charset = current_document_charset;
-            fprintf(stderr, "CB_HTML_etag TITLE: using global charset=%s\n", 
-                    charset ? charset : "(null)");
         }
         
         /* Extract title from dataBuff */
@@ -1168,44 +1149,24 @@ void CB_HTML_etag(element_number) int element_number;
             src_endi = dataBuffIdx;
             size = src_endi - src_starti;
             
-            fprintf(stderr, "CB_HTML_etag TITLE: dataBuff range [%d:%d], size=%d\n", 
-                    src_starti, src_endi, size);
-            
             if (size > 0 && size < sizeof(tempbuf)) {
                 memcpy(tempbuf, &dataBuff[src_starti], size);
                 tempbuf[size] = '\0';
-                fprintf(stderr, "CB_HTML_etag TITLE: raw title (hex): ");
-                for (int i = 0; i < size && i < 50; i++) {
-                    fprintf(stderr, "%02x ", (unsigned char)tempbuf[i]);
-                }
-                fprintf(stderr, "\n");
-                fprintf(stderr, "CB_HTML_etag TITLE: raw title='%.*s'\n", 
-                        size > 100 ? 100 : size, tempbuf);
                 
                 /* Convert title from document charset to ASCII if needed */
                 if (charset && strlen(charset) > 0 && 
                     strcasecmp(charset, "UTF-8") != 0 && strcasecmp(charset, "utf8") != 0) {
-                    fprintf(stderr, "CB_HTML_etag TITLE: converting from charset '%s'\n", charset);
                     /* Convert from document charset to ASCII */
                     converted_len = HTCharset_convert_to_ascii(charset, tempbuf, size, 
                                                                outbuf, sizeof(outbuf));
-                    fprintf(stderr, "CB_HTML_etag TITLE: conversion result len=%d\n", converted_len);
                     if (converted_len > 0) {
                         title_text = (char*)malloc(converted_len + 1);
                         if (title_text) {
                             memcpy(title_text, outbuf, converted_len);
                             title_text[converted_len] = '\0';
-                            fprintf(stderr, "CB_HTML_etag TITLE: converted from %s, result='%s'\n",
-                                    charset, title_text);
-                        } else {
-                            fprintf(stderr, "CB_HTML_etag TITLE: malloc failed!\n");
                         }
-                    } else {
-                        fprintf(stderr, "CB_HTML_etag TITLE: conversion failed, using original\n");
                     }
                 } else {
-                    fprintf(stderr, "CB_HTML_etag TITLE: treating as UTF-8 (charset=%s)\n",
-                            charset ? charset : "(null)");
                     /* Already UTF-8, convert to ASCII in-place */
                     converted_len = HTCharset_utf8_to_ascii_buffer(tempbuf, size);
                     if (converted_len > 0 && converted_len < (int)sizeof(tempbuf)) {
@@ -1213,8 +1174,6 @@ void CB_HTML_etag(element_number) int element_number;
                         if (title_text) {
                             memcpy(title_text, tempbuf, converted_len);
                             title_text[converted_len] = '\0';
-                            fprintf(stderr, "CB_HTML_etag TITLE: converted from UTF-8, result='%s'\n",
-                                    title_text);
                         }
                     }
                 }
@@ -1222,8 +1181,6 @@ void CB_HTML_etag(element_number) int element_number;
                 /* Set title on anchor if available, otherwise save for later */
                 if (anchor) {
                     HTAnchor_setTitle(anchor, title_text ? title_text : tempbuf);
-                    fprintf(stderr, "CB_HTML_etag TITLE: set title on anchor, result='%s'\n",
-                            HTAnchor_title(anchor) ? HTAnchor_title(anchor) : "(null)");
                     /* Clear pending title if we set it directly */
                     if (pending_title) {
                         free(pending_title);
@@ -1235,21 +1192,13 @@ void CB_HTML_etag(element_number) int element_number;
                         free(pending_title);
                     }
                     pending_title = title_text ? saveString(title_text) : saveString(tempbuf);
-                    fprintf(stderr, "CB_HTML_etag TITLE: saved pending title='%s' (anchor not available yet)\n",
-                            pending_title);
                     /* Don't free title_text here - it's saved in pending_title */
                     title_text = NULL; /* Prevent double free */
                 }
                 
                 if (title_text)
                     free(title_text);
-            } else {
-                fprintf(stderr, "CB_HTML_etag TITLE: invalid size=%d (max=%zu)\n", 
-                        size, sizeof(tempbuf));
             }
-        } else {
-            fprintf(stderr, "CB_HTML_etag TITLE: dataBuffIdxStackIdx=%d (invalid)\n", 
-                    dataBuffIdxStackIdx);
         }
         
         /* Replace dataBuff content with converted title for normal label processing */
@@ -1266,7 +1215,6 @@ void CB_HTML_etag(element_number) int element_number;
                 /* Copy converted title */
                 memcpy(&dataBuff[src_starti], pending_title, pending_len);
                 dataBuffIdx = src_starti + pending_len;
-                fprintf(stderr, "CB_HTML_etag TITLE: replaced dataBuff with converted title='%s'\n", pending_title);
             }
         } else if (anchor && HTAnchor_title(anchor)) {
             /* Replace with title from anchor */
@@ -1282,7 +1230,6 @@ void CB_HTML_etag(element_number) int element_number;
                 /* Copy anchor title */
                 memcpy(&dataBuff[src_starti], anchor_title, anchor_title_len);
                 dataBuffIdx = src_starti + anchor_title_len;
-                fprintf(stderr, "CB_HTML_etag TITLE: replaced dataBuff with anchor title='%s'\n", anchor_title);
             }
         }
         /* Continue with normal processing - it will use converted title from dataBuff */

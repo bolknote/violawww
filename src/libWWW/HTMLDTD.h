@@ -96,7 +96,6 @@ typedef enum _HTMLElement {
     HTML_LIT,
     HTML_MATH,
     HTML_MENU,
-    HTML_META,
     HTML_MH,
     HTML_NEXTID,
     HTML_OL,
@@ -149,11 +148,10 @@ typedef enum _HTMLElement {
     HTML_VR,
     HTML_VSCRIPT,
     HTML_VVIEW,
-    HTML_XMP,
-    HTML_ELEMENTS_COUNT  /* Automatically counts the number of elements */
+    HTML_XMP
 } HTMLElement;
 
-#define HTML_ELEMENTS HTML_ELEMENTS_COUNT
+#define HTML_ELEMENTS 127
 
 /*
 Attribute numbers
@@ -351,10 +349,6 @@ Attribute numbers
 #define HTML_MENU_MAXWIDTH 3
 #define HTML_MENU_MINWIDTH 4
 #define HTML_MENU_ATTRIBUTES 5
-
-#define HTML_META_CONTENT 0
-#define HTML_META_HTTP_EQUIV 1
-#define HTML_META_ATTRIBUTES 2
 
 #define HTML_MH_HIDDEN 0
 #define HTML_MH_ATTRIBUTES 1

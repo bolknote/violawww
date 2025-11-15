@@ -23,8 +23,6 @@ extern void http_progress_notify();
 
 #include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "HTAtom.h"
 #include "HTChunk.h"
@@ -34,8 +32,6 @@ extern void http_progress_notify();
 #include "HTAlert.h"
 #include "HTMLGen.h"
 #include "HTParse.h"
-#include "HTAnchor.h"
-#include "HTMIME.h"
 
 #define VIOLA 1 /*PYW*/
 
@@ -369,10 +365,6 @@ PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 
     case HTML_TITLE:
         HTChunkPutc(&me->title, c);
-        if (TRACE && me->title.size < 100) {
-            fprintf(stderr, "HTML_TITLE: adding char '%c' (0x%02x), title size=%d\n", 
-                    (c >= 32 && c < 127) ? c : '?', (unsigned char)c, me->title.size);
-        }
         break;
 
     case HTML_LISTING: /* Litteral text */
@@ -488,116 +480,6 @@ PRIVATE void HTML_write ARGS3(HTStructured*, me, CONST char*, s, int, l) {
         HTML_put_character(me, *p);
 }
 
-/*	Extract charset from meta content attribute
-**	-------------------------------------------
-**
-**	Looks for "charset=value" in the content string
-**	Returns pointer to allocated charset value or NULL if not found
-**	Caller is responsible for freeing the returned string
-*/
-PRIVATE char* extract_charset_from_content ARGS1(CONST char*, content) {
-    const char* charset_param;
-    const char* start;
-    char* result;
-    char quote_char = 0;
-    size_t len;
-    
-    if (!content)
-        return NULL;
-    
-    /* Case-insensitive search for "charset=" */
-    charset_param = content;
-    while (*charset_param) {
-        if (strncasecmp(charset_param, "charset=", 8) == 0) {
-            charset_param += 8;
-            
-            /* Skip whitespace */
-            while (*charset_param && WHITE(*charset_param))
-                charset_param++;
-            
-            if (!*charset_param)
-                return NULL;
-            
-            /* Check for quotes */
-            if (*charset_param == '"' || *charset_param == '\'') {
-                quote_char = *charset_param++;
-            }
-            
-            /* Find end of charset value */
-            start = charset_param;
-            if (quote_char) {
-                /* Find closing quote */
-                while (*charset_param && *charset_param != quote_char)
-                    charset_param++;
-            } else {
-                /* Find end (whitespace, semicolon, or end of string) */
-                while (*charset_param && !WHITE(*charset_param) && 
-                       *charset_param != ';')
-                    charset_param++;
-            }
-            
-            len = charset_param - start;
-            if (len == 0)
-                return NULL;
-            
-            /* Allocate and copy charset value */
-            result = (char*)malloc(len + 1);
-            if (!result)
-                return NULL;
-            
-            memcpy(result, start, len);
-            result[len] = '\0';
-            
-            return result;
-        }
-        charset_param++;
-    }
-    
-    return NULL;
-}
-
-/*	Handle META tag charset extraction
-**	----------------------------------
-**
-**	Extracts charset from META tag if http-equiv="Content-Type"
-**	and sets it on the anchor if not already set
-*/
-PRIVATE void handle_meta_charset ARGS4(HTStructured*, me, CONST BOOL*, present, CONST char**, value, int, element_number) {
-    char* charset;
-    
-    /* Check if this is a META tag */
-    if (element_number < 0 || element_number >= HTML_dtd.number_of_tags ||
-        !HTML_dtd.tags[element_number].name ||
-        strcmp(HTML_dtd.tags[element_number].name, "META") != 0) {
-        return;
-    }
-    
-    /* Extract charset from meta tag if http-equiv="Content-Type" */
-    if (present[HTML_META_HTTP_EQUIV] && value[HTML_META_HTTP_EQUIV] &&
-        present[HTML_META_CONTENT] && value[HTML_META_CONTENT] &&
-        strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") == 0) {
-        
-        charset = extract_charset_from_content(value[HTML_META_CONTENT]);
-#ifdef VIOLA
-        /* In VIOLA path, save charset globally for title conversion */
-        if (charset) {
-            extern void html2_set_document_charset(const char*);
-            html2_set_document_charset(charset);
-        }
-#endif
-        if (charset && me->node_anchor) {
-            /* Only set if charset not already set from HTTP headers */
-            char* existing_charset = HTAnchor_charset(me->node_anchor);
-            if (!existing_charset) {
-                HTAnchor_setCharset(me->node_anchor, charset);
-            }
-            free(charset);  /* Free allocated memory */
-        } else if (charset) {
-            free(charset);  /* Free even if not used */
-        }
-    }
-}
-
 /*	Start Element
 **	-------------
 */
@@ -605,20 +487,6 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
                                       CONST char**, value, HTTag*, tagInfo) /* PYW */
 {
 #ifdef VIOLA
-    /* Handle META tag for charset extraction before passing to VIOLA */
-    handle_meta_charset(me, present, value, element_number);
-    /* META tag is not in stylesheet, so skip further processing if it's a META tag */
-    if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
-        HTML_dtd.tags[element_number].name && 
-        strcmp(HTML_dtd.tags[element_number].name, "META") == 0) {
-        return;
-    }
-    
-    if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
-        HTML_dtd.tags[element_number].name &&
-        strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
-    }
-    
     majorBuff[majorBuffi] = '\0';
     /*
             fprintf(stderr, "### DATA(%d) -%s\n", majorBuffi, majorBuff);
@@ -672,11 +540,6 @@ fprintf(stderr, "### HTML\t(%s\n",
 
     case HTML_ISINDEX:
         HTAnchor_setIndex(me->node_anchor);
-        break;
-
-    case HTML_META:
-        /* Extract charset from meta tag if http-equiv="Content-Type" */
-        handle_meta_charset(me, present, value, element_number);
         break;
 
     case HTML_BR:
@@ -815,11 +678,6 @@ PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
         CB_HTML_data(majorBuff, majorBuffi);
         majorBuffi = 0;
     }
-    
-    if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
-        HTML_dtd.tags[element_number].name &&
-        strcmp(HTML_dtd.tags[element_number].name, "TITLE") == 0) {
-    }
 /*
 fprintf(stderr, "### HTML\t)%s\n",
  HTML_dtd.tags[element_number].name);
@@ -848,13 +706,10 @@ fprintf(stderr, "### HTML\t)%s\n",
         HText_endAnchor(me->text);
         break;
 
-    case HTML_TITLE: {
-        char* charset;
+    case HTML_TITLE:
         HTChunkTerminate(&me->title);
-        charset = me->node_anchor ? HTAnchor_charset(me->node_anchor) : NULL;
         HTAnchor_setTitle(me->node_anchor, me->title.data);
         break;
-    }
 
     case HTML_LISTING: /* Litteral text */
     case HTML_XMP:

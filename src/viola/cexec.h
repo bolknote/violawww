@@ -53,6 +53,7 @@ extern long sendMessage1N2int(VObj* self, char* messg, int i1, int i2);
 extern long sendMessage1N4int(VObj* self, char* messg, int i1, int i2, int i3, int i4);
 extern long sendMessage1chr(VObj* self, char ch);
 extern long sendMessage1chr_result(VObj* self, char ch, Packet* result);
+extern long sendMessage1N1strByName(char* objName, char* messg, char* s1);
 extern long sendTokenMessageAndInts(VObj* self, int tok, long* intArray, int intCount);
 extern long sendTokenMessage_result(VObj* self, int tok, Packet* result);
 extern long sendTokenMessage(VObj* self, int tok);

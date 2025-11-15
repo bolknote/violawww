@@ -530,7 +530,22 @@ HTTag* tagInfo;
     /*	fprintf(stderr, "@@@@ stacki=%d\n", SBI.stacki);*/
 
     /* map HTML parser's tag ID (element_number) to stylesheet element */
-    bstate->tmi = (SBI.dmi ? &SBI.dmi->tagMap[SBI.dmi->tag2StyleIndexMap[element_number]] : NULL);
+    if (!SBI.dmi || element_number < 0 || element_number >= HTML_dtd.number_of_tags) {
+        fprintf(stderr, "CB_HTML_stag: invalid element_number=%d for tag=%s\n", element_number, tag);
+        SBI.stacki--;  /* Restore stack since we're returning early */
+        return;
+    }
+    
+    int styleIndex = SBI.dmi->tag2StyleIndexMap[element_number];
+    if (styleIndex < 0) {
+        /* Tag not defined in stylesheet - skip it (e.g., META) */
+        if (sgml_verbose)
+            fprintf(stderr, "CB_HTML_stag: tag %s (element_number=%d) not in stylesheet, skipping\n", tag, element_number);
+        SBI.stacki--;  /* Restore stack since we're returning early */
+        return;
+    }
+    
+    bstate->tmi = &SBI.dmi->tagMap[styleIndex];
 
     if (!bstate->tmi) {
         fprintf(stderr, "CB_HTML_stag: no tmi struct found for tag=%s\n", tag);

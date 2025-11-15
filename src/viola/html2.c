@@ -6,6 +6,7 @@
 #include "utils.h"
 #include <ctype.h>
 #include <string.h>
+#include <strings.h>
 
 #include "HTFont.h"
 #include "../libWWW/HTCharset.h"
@@ -79,6 +80,7 @@ extern long findMeth(VObj* self, long funcid);
 VObj* mesgObj = NULL;
 
 SGMLBuildInfo SBI;
+static SGMLTagMappingInfo* fallback_block_tmi = NULL;
 
 /* Global charset for title conversion - set from META tag */
 static char* current_document_charset = NULL;
@@ -109,6 +111,91 @@ void html2_apply_pending_title(HTParentAnchor* anchor) {
 /* Function to get pending title (returns NULL if none) */
 char* html2_get_pending_title(void) {
     return pending_title;
+}
+
+static char* html2_extract_charset_from_content(const char* content) {
+    const char* scan;
+    const char* start;
+    char quote = 0;
+    size_t len;
+    char* charset;
+
+    if (!content)
+        return NULL;
+
+    for (scan = content; *scan; scan++) {
+        if (strncasecmp(scan, "charset", 7) == 0) {
+            const char* cursor = scan + 7;
+            while (*cursor && isspace((unsigned char)*cursor))
+                cursor++;
+            if (*cursor != '=')
+                continue;
+            cursor++;
+            while (*cursor && isspace((unsigned char)*cursor))
+                cursor++;
+            if (!*cursor)
+                return NULL;
+            if (*cursor == '"' || *cursor == '\'')
+                quote = *cursor++;
+            start = cursor;
+            while (*cursor) {
+                if (quote) {
+                    if (*cursor == quote)
+                        break;
+                } else if (isspace((unsigned char)*cursor) || *cursor == ';' || *cursor == '"' ||
+                           *cursor == '\'') {
+                    break;
+                }
+                cursor++;
+            }
+            len = cursor - start;
+            if (!len)
+                return NULL;
+            charset = (char*)malloc(len + 1);
+            if (!charset)
+                return NULL;
+            memcpy(charset, start, len);
+            charset[len] = '\0';
+            return charset;
+        }
+    }
+    return NULL;
+}
+
+static void html2_handle_meta_charset(BOOL* present, char** value) {
+    char* charset;
+    HTParentAnchor* anchor = NULL;
+    extern HTParentAnchor* HTMainAnchor;
+    extern HText* HTMainText;
+
+    if (!present || !value)
+        return;
+
+    if (!present[HTML_META_HTTP_EQUIV] || !value[HTML_META_HTTP_EQUIV] ||
+        !present[HTML_META_CONTENT] || !value[HTML_META_CONTENT])
+        return;
+
+    if (strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") != 0)
+        return;
+
+    charset = html2_extract_charset_from_content(value[HTML_META_CONTENT]);
+    if (!charset)
+        return;
+
+    html2_set_document_charset(charset);
+
+    if (HTMainText)
+        anchor = HText_nodeAnchor(HTMainText);
+    if (!anchor && HTMainAnchor)
+        anchor = HTMainAnchor;
+    if (anchor) {
+        char* existing = HTAnchor_charset(anchor);
+        if (!existing || !*existing) {
+            HTAnchor_setCharset(anchor, charset);
+        }
+    }
+
+    free(charset);
 }
 
 enum sgmlsAttributeTypes {
@@ -350,6 +437,7 @@ void CB_HTML_new() {
         }
     }
     tagMappingInfo = dmi->tagMap;
+
     /*
             for (i = 0; tagMappingInfo[i].tag; i++) {
                     fprintf(stdout,
@@ -396,8 +484,16 @@ int size;
     int converted_size;
 
     /* Bounds check for stack access */
-    if (SBI.stacki < 0 || SBI.stacki >= 100) {
-        fprintf(stderr, "CB_HTML_data: stacki out of bounds: %d\n", SBI.stacki);
+    if (SBI.stacki < 0) {
+        static int stack_underflow_warn = 5;
+        if (stack_underflow_warn > 0) {
+            fprintf(stderr, "CB_HTML_data: stacki out of bounds: %d\n", SBI.stacki);
+            stack_underflow_warn--;
+        }
+        SBI.stacki = 0;
+    }
+    if (SBI.stacki >= 100) {
+        fprintf(stderr, "CB_HTML_data: stack overflow: %d\n", SBI.stacki);
         return;
     }
     bstate = &SBI.stack[SBI.stacki];
@@ -555,9 +651,15 @@ HTTag* tagInfo;
         return;
     }
 
+    int is_meta_tag = (element_number == HTML_META);
+    if (is_meta_tag) {
+        html2_handle_meta_charset(present, value);
+    }
+
     /* Bounds check for stack access */
     if (SBI.stacki < 0 || SBI.stacki >= 100) {
-        fprintf(stderr, "CB_HTML_stag: stacki out of bounds: %d\n", SBI.stacki);
+        fprintf(stderr, "CB_HTML_stag[%s]: stacki out of bounds: %d\n",
+                tag ? tag : "?", SBI.stacki);
         return;
     }
     parent_bstate = &SBI.stack[SBI.stacki];
@@ -573,11 +675,35 @@ HTTag* tagInfo;
     /*	fprintf(stderr, "@@@@ stacki=%d\n", SBI.stacki);*/
 
     /* map HTML parser's tag ID (element_number) to stylesheet element */
-    bstate->tmi = (SBI.dmi ? &SBI.dmi->tagMap[SBI.dmi->tag2StyleIndexMap[element_number]] : NULL);
+    if (!SBI.dmi || element_number < 0 || element_number >= HTML_dtd.number_of_tags) {
+        SBI.stacki--;
+        return;
+    }
 
-    if (!bstate->tmi) {
-        fprintf(stderr, "CB_HTML_stag: no tmi struct found for tag=%s\n", tag);
-        SBI.stacki--;  /* Restore stack since we're returning early */
+    int styleIndex = SBI.dmi->tag2StyleIndexMap[element_number];
+    if (styleIndex < 0) {
+        if (tagInfo && tagInfo->contents == SGML_EMPTY) {
+            bstate->tmi = NULL;
+            bstate->obj = NULL;
+            return;
+        }
+
+        if (!fallback_block_tmi && SBI.dmi) {
+            int fallbackIndex = (HTML_P < HTML_dtd.number_of_tags)
+                               ? SBI.dmi->tag2StyleIndexMap[HTML_P]
+                               : -1;
+            if (fallbackIndex >= 0)
+                fallback_block_tmi = &SBI.dmi->tagMap[fallbackIndex];
+            else
+                fallback_block_tmi = &SBI.dmi->tagMap[0];
+        }
+
+        bstate->tmi = fallback_block_tmi;
+    } else {
+        bstate->tmi = &SBI.dmi->tagMap[styleIndex];
+    }
+    if (is_meta_tag) {
+        bstate->obj = NULL;
         return;
     }
 
@@ -1076,23 +1202,32 @@ void CB_HTML_etag(element_number) int element_number;
         return;
     }
 
+    /* Ignore tags entirely while inside Wayback Toolbar comments */
+    if (inside_wayback_comment) {
+        return;
+    }
+
     /* Bounds check and fix stack access order */
     if (SBI.stacki < 0 || SBI.stacki >= 100) {
-        fprintf(stderr, "CB_HTML_etag: stacki out of bounds: %d\n", SBI.stacki);
+        const char* name = (element_number >= 0 && element_number < HTML_dtd.number_of_tags)
+                               ? HTML_dtd.tags[element_number].name
+                               : "?";
+        fprintf(stderr, "CB_HTML_etag[%s]: stacki out of bounds: %d\n",
+                name, SBI.stacki);
         return;
     }
     bstate = &SBI.stack[SBI.stacki];
+
+    if (!bstate->obj) {
+        SBI.stacki--;
+        return;
+    }
+
     SBI.stacki--;
     if (SBI.stacki >= 0 && SBI.stacki < 100)
         parent_bstate = &SBI.stack[SBI.stacki];
     else
         parent_bstate = NULL;
-
-    if (!bstate->obj) {
-        ++SBI.stacki;
-        fprintf(stderr, "!!!!!!!!!!!! internal error: bstate->obj == NULL.\n");
-        return;
-    }
 
     /* Ignore data processing inside Wayback Toolbar comments */
     if (inside_wayback_comment) {

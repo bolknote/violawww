@@ -834,19 +834,18 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
                     char* comment_str = string->data;
                     const int max_comment_size = 8192 - 2; /* 8192 - 1 for '<' - 1 for '\0' */
                     char full_comment[max_comment_size + 2];
-                    int i, pos = 0;
                     int comment_size = MIN(string->size, max_comment_size);
                     
                     /* Build full comment: <!--comment_content--> */
-                    full_comment[pos++] = '<';
-                    for (i = 0; i < comment_size; i++) {
-                        full_comment[pos++] = comment_str[i];
+                    full_comment[0] = '<';
+                    if (comment_size > 0) {
+                        memcpy(full_comment + 1, comment_str, comment_size);
                     }
-                    full_comment[pos] = '\0';
+                    full_comment[1 + comment_size] = '\0';
                     
                     /* Call CB_HTML_data directly with the full comment */
                     extern void CB_HTML_data(char* str, int size);
-                    CB_HTML_data(full_comment, pos);
+                    CB_HTML_data(full_comment, 1 + comment_size);
                 }
                 
                 context->state = S_text;

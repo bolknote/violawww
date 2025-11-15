@@ -270,7 +270,6 @@ retry:
         s = pooled_conn->socket;
         connection_from_pool = YES;
         
-        fprintf(stderr, "*** HTTP: REUSING keep-alive connection to %s:%d (saved TCP handshake!)\n", hostname, port);
         gettimeofday(&connect_time, NULL);
         connect_ms = 0; /* No connection time for reused connections */
     } else {
@@ -994,15 +993,11 @@ clean_up:
         if (connection_from_pool && pooled_conn) {
             /* Reuse the same pooled_conn object - just update timestamp and stats */
             time_t now = time(NULL);
-            long reuse_delay = now - pooled_conn->last_used;
             pooled_conn->last_used = now;
             pooled_conn->total_requests++;
             pooled_conn->total_bytes += bytes_received;
             
             HTKeepAlive_returnConnection(pooled_conn);
-            
-            fprintf(stderr, "<<< Keep-Alive: Returned REUSED connection to pool (was idle %ld sec)\n", reuse_delay);
-            fprintf(stderr, "    This request: %d bytes in %ld ms\n", bytes_received, total_ms);
         } else {
             /* Create a new pool entry for a new connection */
             HTConnection* conn_entry = (HTConnection*)malloc(sizeof(HTConnection));

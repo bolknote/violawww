@@ -74,7 +74,7 @@ char* sgmlPath = NULL;
 
 char* sgmlAttrTypesStr[] = {"IMPLIED", "CDATA", "TOKEN", "ID", "IDREF", "ENTITY", "NOTATION"};
 
-SGMLDocMappingInfo* loadStyleSheet();
+SGMLDocMappingInfo* loadStyleSheet(char*);
 
 /* XXX arbitrary limit (+1 for end-marker) */
 #define MAX_SGML_FORMS 20
@@ -107,15 +107,15 @@ int attrsStackIdx = 0;
 
 char lbuff[512];
 
-VObj* SGMLBuild();
-VObj* SGMLBuild_B();
+VObj* SGMLBuild(SGMLDocMappingInfo*, SGMLTagMappingInfo*, char*, int*, VObj*, int, int, int*, int);
+VObj* SGMLBuild_B(SGMLDocMappingInfo*, SGMLTagMappingInfo*, int, int*, VObj*, int, int, int*, int);
 
 VObj* insert_obj = NULL;
 int insert_width = -1;
 
 Packet scrapPk;
 
-int SGMLInit() {
+int SGMLInit(void) {
     int i;
 
     for (i = MAX_SGML_FORMS - 1; i; i--) {
@@ -1414,7 +1414,7 @@ VObj* SGMLBuild_B(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, i
                         printf("sgml.c: DESTROYING obj=%s data={%s}\n", GET_name(obj),
                                GET_label(obj));
                         if (parent) {
-                            SET__children(parent, removeVObjListNode(GET__children(parent), obj));
+                            SET__children(parent, removeVObjListNode(GET__children(parent), (long)obj));
                         }
                         obj = NULL;
 

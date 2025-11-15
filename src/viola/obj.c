@@ -34,13 +34,13 @@ long securityMode = 0;
 int exitingViola = 0;
 
 int init_obj() {
-    objID2Obj = initHashTable(1023, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
-                              putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
+    objID2Obj = initHashTable(1023, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_int,
+                              (HashEntry* (*)(HashTable*, long, long))putHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
     if (!objID2Obj)
         return 0;
 
-    objObj2ExistP = initHashTable(1023, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
-                                  putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
+    objObj2ExistP = initHashTable(1023, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_int,
+                                  (HashEntry* (*)(HashTable*, long, long))putHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
     if (!objObj2ExistP)
         return 0;
 

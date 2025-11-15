@@ -58,15 +58,15 @@
 /*#include "../libIMG/image.h"*/
 
 /*#include <signal.h>*/
-extern int initImgLib();
-extern int loadImg();
-extern int approximateColor();
-extern void FatalError();
-extern int getVariable();
-extern int resolveFontSet();
-extern long sendMessage1();
-extern long callMeth();
-extern long meth_generic_HTTPGet();
+extern int initImgLib(void);
+extern int loadImg(char*, void**, int*, int*);
+extern int approximateColor(int, unsigned, unsigned);
+extern void FatalError(char*);
+extern int getVariable(Attr*, char*, Packet*);
+extern int resolveFontSet(Attr*, char*);
+extern long sendMessage1(VObj*, char*);
+extern long callMeth(VObj*, Packet*, int, Packet*, long);
+extern long meth_generic_HTTPGet(VObj*, Packet*, int, Packet*);
 #endif
 #ifdef USE_XGIF_PACKAGE
 #include "../libGIF/xgif.h"
@@ -475,8 +475,8 @@ int GLInit(Display* dpy, Screen* scrn)
     /* RESOURCE_MANAGER not set - this is normal on XQuartz/macOS */
 
     colorNameShareDB =
-        initHashTable(300, hash_str, cmp_str, NULL, NULL, getHashEntry_str, putHashEntry_str,
-                      putHashEntry_replace_str, removeHashEntry_str);
+        initHashTable(300, (int (*)(HashTable*, long))hash_str, (long (*)(long, long))cmp_str, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_str, (HashEntry* (*)(HashTable*, long, long))putHashEntry_str,
+                      (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_str, (int (*)(HashTable*, long))removeHashEntry_str);
 
     colormap = XDefaultColormapOfScreen(screen);
     numOfDisplayColors = pow(2.0, ((double)screenDepth));
@@ -2382,7 +2382,7 @@ void GLDumpColorRef() {
  * keep count of color
  * if the object's current color is no longer needed
  */
-void GLUpdateColorReference(oldColorIndex, newColorIndex) long oldColorIndex, newColorIndex;
+void GLUpdateColorReference(long oldColorIndex, unsigned long newColorIndex)
 {
     if (oldColorIndex != -1)
         --colorReferenceTable[oldColorIndex];
@@ -2732,7 +2732,7 @@ ColorStruct* addColorStructByString(char* str)
     HashEntry* entry;
     ColorStruct* cs;
 
-    entry = colorNameShareDB->put(colorNameShareDB, (long)str);
+    entry = colorNameShareDB->put(colorNameShareDB, (long)str, 0);
     if (!entry)
         return NULL;
     cs = (ColorStruct*)malloc(sizeof(struct ColorStruct));
@@ -2749,7 +2749,7 @@ ColorStruct* addColorName(char* str)
 
     entry = colorNameShareDB->get(colorNameShareDB, (long)str);
     if (!entry) {
-        entry = colorNameShareDB->put(colorNameShareDB, (long)str);
+        entry = colorNameShareDB->put(colorNameShareDB, (long)str, 0);
         if (!entry)
             return NULL;
         cs = (ColorStruct*)entry->val;

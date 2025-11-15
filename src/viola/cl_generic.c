@@ -65,9 +65,9 @@
 
 #include "HTML_share.h"
 
-extern int notSecure();
+extern int notSecure(VObj*);
 
-extern double cos(), sin();
+extern double cos(double), sin(double);
 int flag_cliprompt = 1;
 
 #define RADIAN_TO_DEGREE_RATIO 0.017453293f
@@ -1520,7 +1520,7 @@ long meth_generic_SGMLBuildDoc(VObj* self, Packet* result, int argc, Packet argv
                           PkInfo2Obj(&argv[2]),  /* parent */
                           PkInfo2Str(&argv[3]),  /* name */
                           PkInfo2Int(&argv[4]),  /* width */
-                          PkInfo2Int(&argv[5])); /* anchor */
+                          PkInfo2Str(&argv[5])); /* anchor */
     result->info.o = newObj;
     result->type = PKT_OBJ;
     result->canFree = 0;
@@ -1549,7 +1549,7 @@ long meth_generic_SGMLBuildDocB(VObj* self, Packet* result, int argc, Packet arg
                             PkInfo2Obj(&argv[2]),  /* parent */
                             PkInfo2Str(&argv[3]),  /* name */
                             PkInfo2Int(&argv[4]),  /* width */
-                            PkInfo2Int(&argv[5])); /* anchor */
+                            PkInfo2Str(&argv[5])); /* anchor */
     result->info.o = newObj;
     result->type = PKT_OBJ;
     result->canFree = 0;
@@ -1682,7 +1682,7 @@ long meth_generic_SGMLReBuildDoc(VObj* self, Packet* result, int argc, Packet ar
                                     PkInfo2Obj(&argv[2]),  /* parent */
                                     PkInfo2Str(&argv[3]),  /* name */
                                     PkInfo2Int(&argv[4]),  /* width */
-                                    PkInfo2Int(&argv[5])); /* anchor */
+                                    PkInfo2Str(&argv[5])); /* anchor */
     result->type = PKT_OBJ;
     result->canFree = 0;
     return 1;
@@ -3127,7 +3127,7 @@ long meth_generic_objectListDelete(VObj* self, Packet* result, int argc, Packet 
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__children(self);
         if (olist && obj) {
-            olist = removeVObjListNode(&olist, obj);
+            olist = removeVObjListNode(olist, (long)obj);
             SET__children(self, olist);
             return 1;
         }
@@ -3149,7 +3149,7 @@ long meth_generic_objectListDelete_children(VObj* self, Packet* result, int argc
 
     clearPacket(result);
     if (olist && obj) {
-        olist = removeVObjListNode(&olist, obj);
+        olist = removeVObjListNode(olist, (long)obj);
         SET__children(self, olist);
         return 1;
     }

@@ -6,4 +6,5 @@ typedef struct VList {
 } VList;
 
 VList* prependVListNode(VList** head_list, VList* list);
-VList* removeVListNode();
+VList* scanVListNode(VList**, long, long (*)(long, long));
+VList* removeVListNode(VList**, long, long (*)(long, long));

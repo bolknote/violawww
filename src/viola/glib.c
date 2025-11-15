@@ -23,8 +23,8 @@ int init_glib(Display* dpy, Screen* scrn)
     if (!GLInit(dpy, scrn))
         return 0;
 
-    window2Obj = initHashTable(2047, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
-                               putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
+    window2Obj = initHashTable(2047, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_int,
+                               (HashEntry* (*)(HashTable*, long, long))putHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
     if (!window2Obj)
         return 0;
     return 1;

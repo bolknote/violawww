@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include <stdio.h>
 #include "hash.h"
 #include "membership.h"
 
@@ -57,7 +58,7 @@ typedef struct SlotInfo {
  */
 typedef struct MethodInfo {
     int id;
-    long (*method)();
+    long (*method)(VObj *, Packet *, int, Packet *);
 } MethodInfo;
 
 /*****************************************************************************
@@ -90,13 +91,13 @@ typedef struct ClassInfo {
 } ClassInfo;
 #endif
 
-extern int init_class();
-extern ClassInfo* getClassInfoByID();
-extern ClassInfo* getClassInfoByName();
-extern VObj* buildObjWithLoadedSlots();
-extern VObj* instantiateObj();
-extern long* searchSlot();
-extern int saveSelfAndChildren();
-extern int dumpObj();
-extern VObj* clone();
+extern int init_class(void);
+extern ClassInfo* getClassInfoByID(int);
+extern ClassInfo* getClassInfoByName(char*);
+extern VObj* buildObjWithLoadedSlots(ClassInfo*, long [100][2], int);
+extern VObj* instantiateObj(long (*)[100][2], int*);
+extern long* searchSlot(long (*)[100][2], int, int);
+extern int saveSelfAndChildren(VObj*, FILE*);
+extern int dumpObj(VObj*, long (*)(), FILE*, int, int);
+extern VObj* clone(VObj*);
 extern int loadClassScriptsP;

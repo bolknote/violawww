@@ -47,12 +47,12 @@ char* tagID2Name(int id)
 }
 
 int stgcall_init() {
-    HT_str2token = initHashTable(100, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
-                                 putHashEntry_str, putHashEntry_replace_str, removeHashEntry_str);
+    HT_str2token = initHashTable(100, (int (*)(HashTable*, long))hash_str, (long (*)(long, long))cmp_str, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_str,
+                                 (HashEntry* (*)(HashTable*, long, long))putHashEntry_str, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_str, (int (*)(HashTable*, long))removeHashEntry_str);
     if (!HT_str2token)
         return 0;
-    HT_token2str = initHashTable(100, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
-                                 putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
+    HT_token2str = initHashTable(100, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_int,
+                                 (HashEntry* (*)(HashTable*, long, long))putHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
     if (!HT_token2str)
         return 0;
 

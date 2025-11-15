@@ -1226,11 +1226,11 @@ int init_ident() {
     int i;
     strNIntPair* symp;
 
-    symStr2ID = initHashTable(300, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
-                              putHashEntry_str, putHashEntry_replace_str, removeHashEntry_str);
+    symStr2ID = initHashTable(300, (int (*)(HashTable*, long))hash_str, (long (*)(long, long))cmp_str, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_str,
+                              (HashEntry* (*)(HashTable*, long, long))putHashEntry_str, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_str, (int (*)(HashTable*, long))removeHashEntry_str);
 
-    symID2Str = initHashTable(300, hash_int, cmp_int, NULL, free, getHashEntry_int,
-                              putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
+    symID2Str = initHashTable(300, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, (void (*)(long))free, (HashEntry* (*)(HashTable*, long))getHashEntry_int,
+                              (HashEntry* (*)(HashTable*, long, long))putHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
 
     for (symp = symList; symp->s; symp++) {
         if (!symStr2ID->get(symStr2ID, (long)symp->s)) {

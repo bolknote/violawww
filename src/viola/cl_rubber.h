@@ -5,11 +5,11 @@
 #include "cl_field.h"
 
 extern ClassInfo class_rubber;
-long int helper_rubber_get();
-long int helper_rubber_set();
+long int helper_rubber_get(VObj*, Packet*, int, Packet*, long);
+long int helper_rubber_set(VObj*, Packet*, int, Packet*, long);
 
-long meth_rubber_config();
-long meth_rubber_get();
-long meth_rubber_initialize();
-long meth_rubber_render();
-long meth_rubber_set();
+long meth_rubber_config(VObj *, Packet *, int, Packet *);
+long meth_rubber_get(VObj *, Packet *, int, Packet *);
+long meth_rubber_initialize(VObj *, Packet *, int, Packet *);
+long meth_rubber_render(VObj *, Packet *, int, Packet *);
+long meth_rubber_set(VObj *, Packet *, int, Packet *);

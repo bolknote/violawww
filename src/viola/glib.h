@@ -110,7 +110,7 @@ extern int lookAndFeel;
 
 /****************************************************************************
  */
-int init_glib();
-Window bossWindow();
-void unMapObject();
-VObj* findWindowObject();
+int init_glib(Display*, Screen*);
+Window bossWindow(VObj*);
+void unMapObject(VObj*);
+VObj* findWindowObject(Window);

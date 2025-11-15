@@ -7,6 +7,6 @@ typedef struct ImgNode {
     struct ImgNode* next;
 } ImgNode;
 
-void purgeImg();
-int imgNodeRefDec();
-ImgNode* imgNodeRefInc();
+void purgeImg(void);
+int imgNodeRefDec(char*);
+ImgNode* imgNodeRefInc(char*, char*);

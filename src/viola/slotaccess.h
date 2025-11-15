@@ -179,11 +179,11 @@
 #define GET__expImage(o) ((XImage*)((o)[52]))
 #define SET__expImage(o, v) ((XImage*)((o)[52] = (long)(v)))
 
-#define GET_baseImageWidth(o) ((XImage*)((o)[53]))
-#define SET_baseImageWidth(o, v) ((XImage*)((o)[53] = (long)(v)))
+#define GET_baseImageWidth(o) ((long)((o)[53]))
+#define SET_baseImageWidth(o, v) ((long)((o)[53] = (long)(v)))
 
-#define GET_baseImageHeight(o) ((XImage*)((o)[54]))
-#define SET_baseImageHeight(o, v) ((XImage*)((o)[54] = (long)(v)))
+#define GET_baseImageHeight(o) ((long)((o)[54]))
+#define SET_baseImageHeight(o, v) ((long)((o)[54] = (long)(v)))
 
 /*******************
  * class generic

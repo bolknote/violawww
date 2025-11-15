@@ -594,7 +594,7 @@ int tool;
 
         /*if (verbose) printf("MapNotify! w = 0x%x\n", (XMapEvent*)eep->window);*/
 
-        obj = findWindowObject((XMapEvent*)eep->window);
+        obj = findWindowObject(eep->window);
 
         if (obj) {
             /*
@@ -671,7 +671,7 @@ int tool;
 
     case UnmapNotify: {
         XUnmapEvent* eep = (XUnmapEvent*)ep;
-        VObj* obj = findWindowObject((XUnmapEvent*)eep->window);
+        VObj* obj = findWindowObject(((XUnmapEvent*)eep)->window);
 
         /*if (verbose) fprintf(stderr, "unmapNotify! w=ox%x obj=%s\n",
                          eep->window, GET_name(obj));
@@ -684,7 +684,7 @@ int tool;
     }
     case DestroyNotify: {
         XDestroyWindowEvent* eep = ep;
-        VObj* obj = findWindowObject((XDestroyWindowEvent*)eep->window);
+        VObj* obj = findWindowObject(((XDestroyWindowEvent*)eep)->window);
 
         /*
         if (verbose) fprintf(stderr, "destroyNotify! w=ox%x obj=%s\n",

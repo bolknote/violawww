@@ -137,7 +137,7 @@ int perishableActiveHelp = 0;
 Window topWindow;       /* Sub-Window that Viola is supposed to run in. */
 int runInSubWindow = 0; /* Set to 1 when Viola is run in library mode. */
 
-void parseCommandLine();
+void parseCommandLine(int, char*[], char*[], int*, char**, int*, char**);
 
 /* Scott */
 /*
@@ -165,7 +165,7 @@ char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen
     int startObjCount = 0;
     char topVObjName[256];
     VObj* obj;
-    void scanTopObjName();
+    void scanTopObjName(char*, char*);
     extern char* sgmlPath;
 
     /* Scott */

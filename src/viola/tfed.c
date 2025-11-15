@@ -56,17 +56,17 @@ int MSTAT_tfed = 0;
 int MSTAT_tfed_convertNodeLinesToStr = 0;
 
 MethodInfo defaultKeyBinding[] = {
-    CARRIAGE, kbf_newline, CTRL_QUESTION, kbf_dump, CTRL_a, kbf_beginning_of_line, CTRL_b,
-    kbf_backward_char, CTRL_d, kbf_delete_char, CTRL_e, kbf_end_of_line, CTRL_f, kbf_forward_char,
-    CTRL_h, kbf_delete_backward_char, CTRL_t, kbf_join_line, CTRL_k, kbf_kill_line, CTRL_l,
-    kbf_refresh, CTRL_n, kbf_next_line, CTRL_o, kbf_open_line, CTRL_p, kbf_previous_line, CTRL_q,
-    kbf_scroll_up_line, CTRL_u, kbf_delete_line, CTRL_v, kbf_scroll_up, CTRL_w, kbf_scroll_down,
-    CTRL_x, kbf_scroll_up, CTRL_y, kbf_insert_yank, CTRL_z, kbf_scroll_down_line, DELETE,
-    kbf_delete_backward_char,
+    CARRIAGE, (long (*)(VObj*, Packet*, int, Packet*))kbf_newline, CTRL_QUESTION, (long (*)(VObj*, Packet*, int, Packet*))kbf_dump, CTRL_a, (long (*)(VObj*, Packet*, int, Packet*))kbf_beginning_of_line, CTRL_b,
+    (long (*)(VObj*, Packet*, int, Packet*))kbf_backward_char, CTRL_d, (long (*)(VObj*, Packet*, int, Packet*))kbf_delete_char, CTRL_e, (long (*)(VObj*, Packet*, int, Packet*))kbf_end_of_line, CTRL_f, (long (*)(VObj*, Packet*, int, Packet*))kbf_forward_char,
+    CTRL_h, (long (*)(VObj*, Packet*, int, Packet*))kbf_delete_backward_char, CTRL_t, (long (*)(VObj*, Packet*, int, Packet*))kbf_join_line, CTRL_k, (long (*)(VObj*, Packet*, int, Packet*))kbf_kill_line, CTRL_l,
+    (long (*)(VObj*, Packet*, int, Packet*))kbf_refresh, CTRL_n, (long (*)(VObj*, Packet*, int, Packet*))kbf_next_line, CTRL_o, (long (*)(VObj*, Packet*, int, Packet*))kbf_open_line, CTRL_p, (long (*)(VObj*, Packet*, int, Packet*))kbf_previous_line, CTRL_q,
+    (long (*)(VObj*, Packet*, int, Packet*))kbf_scroll_up_line, CTRL_u, (long (*)(VObj*, Packet*, int, Packet*))kbf_delete_line, CTRL_v, (long (*)(VObj*, Packet*, int, Packet*))kbf_scroll_up, CTRL_w, (long (*)(VObj*, Packet*, int, Packet*))kbf_scroll_down,
+    CTRL_x, (long (*)(VObj*, Packet*, int, Packet*))kbf_scroll_up, CTRL_y, (long (*)(VObj*, Packet*, int, Packet*))kbf_insert_yank, CTRL_z, (long (*)(VObj*, Packet*, int, Packet*))kbf_scroll_down_line, DELETE,
+    (long (*)(VObj*, Packet*, int, Packet*))kbf_delete_backward_char,
     /*	ESC,		kbf_esc_prefix,*/
-    RETURN, kbf_newline, TAB, kbf_ident, 0, NULL};
+    RETURN, (long (*)(VObj*, Packet*, int, Packet*))kbf_newline, TAB, (long (*)(VObj*, Packet*, int, Packet*))kbf_ident, 0, NULL};
 
-long (*kbflookup[128])();
+long (*kbflookup[128])(TFStruct*);
 char sbuff[1024];  /* Increased from 128 to handle long URLs (e.g., Web Archive URLs) */
 int buffi;
 
@@ -122,7 +122,7 @@ int init_tfed() {
     for (i = 0; i < 128; i++)
         kbflookup[i] = 0;
     for (i = 0; defaultKeyBinding[i].id; i++)
-        kbflookup[defaultKeyBinding[i].id] = defaultKeyBinding[i].method;
+        kbflookup[defaultKeyBinding[i].id] = (long (*)(TFStruct*))defaultKeyBinding[i].method;
 
     /*
      * used by drawChar()
@@ -5078,7 +5078,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
 
                         if (pic->type == TFPic_XBML) {
                             GLDisplayXBM(w, segpx + 2, localYOffset + 1, pic->width, pic->height,
-                                         pic->data);
+                                         (Pixmap)pic->data);
 
                         } else if (pic->type == TFPic_GIF || pic->type == TFPic_XBM) {
                             GLGIFDraw(w, pic->data, segpx + 2, localYOffset + 1, pic->width,

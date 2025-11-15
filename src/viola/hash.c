@@ -57,10 +57,10 @@ int hash_str(HashTable * ht, char * str)
         return key;
 }
 */
-HashTable* initHashTable(long size, long (*func_hash)(), long (*func_cmp)(), 
-                         long (*func_freeLabel)(), long (*func_freeVal)(),
-                         HashEntry* (*func_get)(), HashEntry* (*func_put)(), 
-                         HashEntry* (*func_put_replace)(), long (*func_remove)())
+HashTable* initHashTable(long size, int (*func_hash)(HashTable*, long), long (*func_cmp)(long, long), 
+                         void (*func_freeLabel)(long), void (*func_freeVal)(long),
+                         HashEntry* (*func_get)(HashTable*, long), HashEntry* (*func_put)(HashTable*, long, long), 
+                         HashEntry* (*func_put_replace)(HashTable*, long, long), int (*func_remove)(HashTable*, long))
 {
     struct HashTable* ht = (HashTable*)malloc(sizeof(struct HashTable));
     

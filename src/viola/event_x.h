@@ -34,12 +34,12 @@ typedef struct AcceleratorInfo {
 #define MODIFIER_CONTROL 2
 #define MODIFIER_META 3
 
-extern int init_event();
-extern int eventLoop();
+extern int init_event(void);
+extern int eventLoop(void);
 
-extern long scheduleEvent(int delay, long (*func)(), VObj* obj, int argc, Packet* argv);
-extern int cancelEventByObject();
+extern long scheduleEvent(int delay, long (*func)(VObj*, Packet*, int), VObj* obj, int argc, Packet* argv);
+extern int cancelEventByObject(VObj*);
 extern int cancelEvent(long timeInfoID);
-extern void dumpSchedule();
+extern void dumpSchedule(void);
 
-void modalLoop();
+void modalLoop(void);

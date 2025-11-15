@@ -234,8 +234,8 @@ int init_class() {
         cip->mhp.refc = 0;
 
         cip->mht = methHashTable =
-            initHashTable(127, hash_int, cmp_int, NULL, NULL, getHashEntry_int, putHashEntry_int,
-                          putHashEntry_replace_int, removeHashEntry_int);
+            initHashTable(127, (int (*)(HashTable*, long))hash_int, (long (*)(long, long))cmp_int, NULL, NULL, (HashEntry* (*)(HashTable*, long))getHashEntry_int, (HashEntry* (*)(HashTable*, long, long))putHashEntry_int,
+                          (HashEntry* (*)(HashTable*, long, long))putHashEntry_replace_int, (int (*)(HashTable*, long))removeHashEntry_int);
 
         for (mip = cip->methods; (id = mip->id); mip++) {
             setMember(&(cip->mhp), id);
@@ -600,7 +600,7 @@ int saveSelfAndChildren(VObj* obj, FILE* fp)
 
     fprintf(fp, "\\class {%s}\n", GET_class(obj));
 
-    dumpObj(obj, fprintf, fp, SLOT_W, 1);
+    dumpObj(obj, (long (*)())fprintf, fp, SLOT_W, 1);
     for (olist = GET__children(obj); olist; olist = olist->next)
         saveSelfAndChildren(olist->o, fp);
 

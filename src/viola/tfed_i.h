@@ -6,8 +6,8 @@
 extern int MSTAT_tfed;
 extern int MSTAT_tfed_convertNodeLinesToStr;
 
-void tfed_registerTmpFileToFree();
-void tfed_FreeTmpFileToFree();
+void tfed_registerTmpFileToFree(char*);
+void tfed_FreeTmpFileToFree(int);
 
 /*MemoryGroup *tfed_mg;*/
 
@@ -16,7 +16,7 @@ void tfed_FreeTmpFileToFree();
 
 extern MethodInfo defaultKeyBinding[];
 
-extern long (*kbflookup[])();
+extern long (*kbflookup[128])(TFStruct*);
 extern char sbuff[];
 extern int buffi;
 
@@ -127,17 +127,17 @@ int TFCstrcat(TFChar tfcArrayTo[], TFChar tfcArrayFrom[]);
 int str2EBuff(TFStruct* tf, char* str, int* fontID);
 int TFC2StrStrcpy(char* strTo, TFChar* tfcArrayFrom);
 ptrdiff_t TFCstrcpy(TFChar* tfcArrayTo, TFChar* tfcArrayFrom);
-ptrdiff_t TFCstrncpy();
+ptrdiff_t TFCstrncpy(TFChar*, TFChar*, int);
 
-int translateCol2Px();
-int translatePx2Col();
+int translateCol2Px(TFChar*, int);
+int translatePx2Col(TFChar*, int);
 
 void placeCursorWithinStr(TFStruct* tf);
 void placeCursor(TFStruct* tf);
 int joinLine(TFStruct* tf);
-int TFCInsertStr();
+int TFCInsertStr(void);
 int moveOffset(TFStruct* tf, int dir, int* span);
-int jumpLine();
+int jumpLine(TFStruct*, unsigned long, int, int);
 int tfed_scroll_delta(TFStruct* tf, int offsetdir);
 int moveLine(TFStruct* tf, int dir);
 int moveLineNode(TFStruct* tf, int dir);
@@ -146,32 +146,32 @@ int splitLine(TFCBuildInfo* buildInfo, int split, int tagCarriage);
 int deleteLineNode(TFStruct* tf);
 TFLineNode* insertLineNode(TFStruct* tf, TFLineNode* currentp, int initLineP);
 TFLineNode* insertBelowLineNode(TFStruct* tf, TFLineNode* currentp, int initLineP);
-char* convertNodeLineToStr();
+char* convertNodeLineToStr(void);
 void freeNodeLines(TFStruct* tf);
 void dumpNodeLines(TFStruct* tf);
 int renderTF(TFStruct* tf);
 long TimedDrawCursor(VObj* self, Packet argv[], int argc);
 long TimedEraseCursor(VObj* self, Packet argv[], int argc);
-void invertCursor();
+void invertCursor(TFStruct*);
 void drawCursor(TFStruct* tf);
 void eraseCursor(TFStruct* tf);
-void drawChar();
-int traverseToRightEdge();
+void drawChar(TFStruct*, TFChar*, int, int);
+int traverseToRightEdge(TFChar*, int, int*, int*);
 int scrollLineForward(TFStruct* tf, int delta, int col);
 int scrollLineBackward(TFStruct* tf, int delta, int col);
-int scrollDownLowerPart();
+int scrollDownLowerPart(TFStruct*, int, int);
 int scrollDownLowerPartNEW(TFStruct* tf, int offset, int span);
 int scrollUpLowerPart(TFStruct* tf, int offset, int span);
-int scrollUpLowerPartNEW();
+int scrollUpLowerPartNEW(TFStruct*, int, int);
 int lineSegWidth(TFStruct* tf, TFLineNode* currentp);
-void drawLine();
+void drawLine(TFStruct*, TFLineNode*, int*);
 int drawLineOffset(TFStruct* tf, int linesOffset, int clearBG);
-int drawTextFieldCursor();
-TFStruct* updateEStrUser();
+int drawTextFieldCursor(void);
+TFStruct* updateEStrUser(VObj*);
 int TFCShiftStr(TFChar tfcArray[], int starti, int shift);
-void TFCInsertChar();
+void TFCInsertChar(TFChar*, int, TFChar*);
 int setBreaks(TFStruct* tf, TFLineNode* currentp);
 int setCurrentFontID(TFStruct* tf);
-int LogicOrTFCFlag();
-int LogicAndTFCFlag();
+int LogicOrTFCFlag(TFChar*, int, int, int);
+int LogicAndTFCFlag(TFChar*, int, int, int);
 char* rangeOperation(TFStruct* tf, int from_cx, int from_cy, int to_cx, int to_cy, int drawP, int underlineP, int mode);

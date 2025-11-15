@@ -50,12 +50,12 @@ char* current_addr = 0;    /* most recent doc addr. Bogus Alert... */
 
 /* Forward decls
  */
-TFStruct* html_updateTFtruct();
-int html_convertStrToNodeLines();
-int moveToSelectedAnchor();
-HText* html_findHTextByAddress();
-HText* html_updateHTextTFStruct();
-HText* html_loadDocument();
+TFStruct* html_updateTFtruct(void);
+int html_convertStrToNodeLines(void);
+int moveToSelectedAnchor(HText*, char*);
+HText* html_findHTextByAddress(VObj*, char*);
+HText* html_updateHTextTFStruct(TFStruct*, TFStruct*);
+HText* html_loadDocument(VObj*, char*, char**, char**, char**);
 
 /* Used to by HText_new() to get Viola information
  */
@@ -191,8 +191,8 @@ char hbuff[HBUFFSIZE];
 int hbuffi;
 int inHiddenState = 0;
 
-int init_html() {
-    extern char* getcwd();
+int init_html(void) {
+    extern char* getcwd(char*, size_t);
     char wd[MAXPATHLEN];
     char* result;
 

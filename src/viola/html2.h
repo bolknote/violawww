@@ -1,9 +1,12 @@
 #include "hotlist.h"
 #include "sgml.h"
+#include "../libWWW/HTUtils.h"
 
 /* Forward declaration */
 struct _HTParentAnchor;
 typedef struct _HTParentAnchor HTParentAnchor;
+struct _tag;
+typedef struct _tag HTTag;
 
 extern int printTagDelims;
 
@@ -34,25 +37,25 @@ typedef struct SGMLBuildInfo {
     VObj* caller;
 } SGMLBuildInfo;
 
-SGMLTagMappingInfo* findTMI();
+SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo*, char*);
 
-int init_html2();
+int init_html2(void);
 
-VObj* HTMLBuildObj();
+VObj* HTMLBuildObj(SGMLBuildInfoState*, int, SGMLTagMappingInfo*);
 
-VObj* html2_parseHTMLDocument();
-void CB_HTML_new();
-void CB_HTML_data();
-void CB_HTML_stag();
-void CB_HTML_etag();
-void CB_HTML_end();
+VObj* html2_parseHTMLDocument(VObj*, char*, char**, char**, int, int, char*);
+void CB_HTML_new(void);
+void CB_HTML_data(char*, int);
+void CB_HTML_stag(int, BOOL*, char**, HTTag*);
+void CB_HTML_etag(int);
+void CB_HTML_end(void);
 
 void html2_set_document_charset(const char* charset);
 void html2_apply_pending_title(HTParentAnchor* anchor);
 char* html2_get_pending_title(void);
 
-char* encodeURL();
-char* decodeURL();
+char* encodeURL(char*);
+char* decodeURL(char*);
 
 /* for libwww to call */
 
@@ -61,15 +64,15 @@ int http_progress_expected_total_bytes;
 int http_progress_total_bytes;
 int http_progress_subtotal_bytes;
 
-int http_progress_notify();
-void user_alert();
-void user_message();
-int user_message_confirm();
-char* user_prompt_default();
-char* user_prompt_password();
-void user_prompt_username_and_password();
+int http_progress_notify(int);
+void user_alert(char*);
+void user_message(char*);
+int user_message_confirm(char*);
+char* user_prompt_default(char*, char*);
+char* user_prompt_password(char*);
+void user_prompt_username_and_password(char*, char**, char**);
 
-void nullifyCallerDataBuff();
+void nullifyCallerDataBuff(void);
 
 Bool initHotList(void);
 Bool addHotListItem(char* url, char* comment, char* date);

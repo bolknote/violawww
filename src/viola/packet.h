@@ -67,9 +67,9 @@ typedef struct StrInfo {
     int refc;
 } StrInfo;
 
-extern int init_packet();
-extern Packet* makePacket();
-extern Packet* borrowPacket();
+extern int init_packet(void);
+extern Packet* makePacket(void);
+extern Packet* borrowPacket(void);
 extern Packet* clearPacket(Packet* packet);
 
 /*extern void nullPacket();*/
@@ -109,6 +109,6 @@ extern void freePossibleDangler(Packet* packet);
     _copyPacket(to, from)
 extern void _copyPacket(Packet* to, Packet* from);
 
-extern void returnPacket();
-extern void returnPackets();
+extern void returnPacket(void);
+extern void returnPackets(int);
 extern void dumpPacket(Packet* packet);

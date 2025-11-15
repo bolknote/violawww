@@ -5,15 +5,15 @@
 #include "cl_field.h"
 
 extern ClassInfo class_client;
-long helper_client_get();
-long helper_client_set();
+long helper_client_get(VObj*, Packet*, int, Packet*, long);
+long helper_client_set(VObj*, Packet*, int, Packet*, long);
 
-long meth_client_endClient();
-long meth_client_freeSelf();
-long meth_client_get();
-long meth_client_initialize();
-long meth_client_input();
-long meth_client_inputn();
-long meth_client_output();
-long meth_client_set();
-long meth_client_startClient();
+long meth_client_endClient(VObj *, Packet *, int, Packet *);
+long meth_client_freeSelf(VObj *, Packet *, int, Packet *);
+long meth_client_get(VObj *, Packet *, int, Packet *);
+long meth_client_initialize(VObj *, Packet *, int, Packet *);
+long meth_client_input(VObj *, Packet *, int, Packet *);
+long meth_client_inputn(VObj *, Packet *, int, Packet *);
+long meth_client_output(VObj *, Packet *, int, Packet *);
+long meth_client_set(VObj *, Packet *, int, Packet *);
+long meth_client_startClient(VObj *, Packet *, int, Packet *);

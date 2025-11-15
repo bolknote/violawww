@@ -9,7 +9,7 @@
  * scans and return the listi node identified by ``id'',
  * using cmpf as the comparison function.
  */
-VList* scanVListNode(VList** head_list, long id, long (*cmpf)())
+VList* scanVListNode(VList** head_list, long id, long (*cmpf)(long, long))
 {
     if (*head_list) {
         VList* list;
@@ -24,7 +24,7 @@ VList* scanVListNode(VList** head_list, long id, long (*cmpf)())
  * remove and return the list node identified by ``id'',
  * using cmpf as the comparison function.
  */
-VList* removeVListNode(VList** head_list, long id, long (*cmpf)())
+VList* removeVListNode(VList** head_list, long id, long (*cmpf)(long, long))
 {
     if (*head_list) {
 

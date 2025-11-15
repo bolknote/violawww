@@ -40,10 +40,6 @@ void ViolaDeleteMessageHandler(char *msgName, VMsgHandler msgHandler, void *clie
  * Looks up and invokes all message handlers registered to the message
  * named by msgName.
  */
-void ViolaInvokeMessageHandler(/*
-			       char *arg[],
-			       int argc,
-			       long handlerID
-			       */);
+void ViolaInvokeMessageHandler(char**, int);
 
 #endif /* _MSGHANDLER_H_ */

@@ -23,6 +23,8 @@ extern void http_progress_notify();
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "HTAtom.h"
 #include "HTChunk.h"
@@ -486,39 +488,109 @@ PRIVATE void HTML_write ARGS3(HTStructured*, me, CONST char*, s, int, l) {
 **	-------------------------------------------
 **
 **	Looks for "charset=value" in the content string
-**	Returns pointer to charset value or NULL if not found
+**	Returns pointer to allocated charset value or NULL if not found
+**	Caller is responsible for freeing the returned string
 */
 PRIVATE char* extract_charset_from_content ARGS1(CONST char*, content) {
-    char* charset_param;
-    char* end;
-    static char charset_buf[64];
+    const char* charset_param;
+    const char* start;
+    char* result;
+    char quote_char = 0;
+    size_t len;
     
     if (!content)
         return NULL;
     
     /* Case-insensitive search for "charset=" */
-    charset_param = (char*)content;
+    charset_param = content;
     while (*charset_param) {
         if (strncasecmp(charset_param, "charset=", 8) == 0) {
             charset_param += 8;
-            /* Skip quotes if present */
-            if (*charset_param == '"' || *charset_param == '\'')
+            
+            /* Skip whitespace */
+            while (*charset_param && WHITE(*charset_param))
                 charset_param++;
             
-            /* Copy charset value */
-            end = charset_buf;
-            while (*charset_param && !WHITE(*charset_param) && 
-                   *charset_param != ';' && *charset_param != '"' && *charset_param != '\'' &&
-                   (end - charset_buf) < sizeof(charset_buf) - 1) {
-                *end++ = *charset_param++;
+            if (!*charset_param)
+                return NULL;
+            
+            /* Check for quotes */
+            if (*charset_param == '"' || *charset_param == '\'') {
+                quote_char = *charset_param++;
             }
-            *end = '\0';
-            return charset_buf[0] ? charset_buf : NULL;
+            
+            /* Find end of charset value */
+            start = charset_param;
+            if (quote_char) {
+                /* Find closing quote */
+                while (*charset_param && *charset_param != quote_char)
+                    charset_param++;
+            } else {
+                /* Find end (whitespace, semicolon, or end of string) */
+                while (*charset_param && !WHITE(*charset_param) && 
+                       *charset_param != ';')
+                    charset_param++;
+            }
+            
+            len = charset_param - start;
+            if (len == 0)
+                return NULL;
+            
+            /* Allocate and copy charset value */
+            result = (char*)malloc(len + 1);
+            if (!result)
+                return NULL;
+            
+            memcpy(result, start, len);
+            result[len] = '\0';
+            
+            return result;
         }
         charset_param++;
     }
     
     return NULL;
+}
+
+/*	Handle META tag charset extraction
+**	----------------------------------
+**
+**	Extracts charset from META tag if http-equiv="Content-Type"
+**	and sets it on the anchor if not already set
+*/
+PRIVATE void handle_meta_charset ARGS4(HTStructured*, me, CONST BOOL*, present, CONST char**, value, int, element_number) {
+    char* charset;
+    
+    /* Check if this is a META tag */
+    if (element_number < 0 || element_number >= HTML_dtd.number_of_tags ||
+        !HTML_dtd.tags[element_number].name ||
+        strcmp(HTML_dtd.tags[element_number].name, "META") != 0) {
+        return;
+    }
+    
+    /* Extract charset from meta tag if http-equiv="Content-Type" */
+    if (present[HTML_META_HTTP_EQUIV] && value[HTML_META_HTTP_EQUIV] &&
+        present[HTML_META_CONTENT] && value[HTML_META_CONTENT] &&
+        strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") == 0) {
+        
+        charset = extract_charset_from_content(value[HTML_META_CONTENT]);
+        if (charset && me->node_anchor) {
+            /* Only set if charset not already set from HTTP headers */
+            char* existing_charset = HTAnchor_charset(me->node_anchor);
+            if (!existing_charset) {
+                HTAnchor_setCharset(me->node_anchor, charset);
+                if (TRACE)
+                    fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
+            } else {
+                if (TRACE)
+                    fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
+                            charset, existing_charset);
+            }
+            free(charset);  /* Free allocated memory */
+        } else if (charset) {
+            free(charset);  /* Free even if not used */
+        }
+    }
 }
 
 /*	Start Element
@@ -529,30 +601,11 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
 {
 #ifdef VIOLA
     /* Handle META tag for charset extraction before passing to VIOLA */
-    /* element_number is index in tags array, not enum value */
+    handle_meta_charset(me, present, value, element_number);
+    /* META tag is not in stylesheet, so skip further processing if it's a META tag */
     if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
         HTML_dtd.tags[element_number].name && 
         strcmp(HTML_dtd.tags[element_number].name, "META") == 0) {
-        /* Extract charset from meta tag if http-equiv="Content-Type" */
-        if (present[HTML_META_HTTP_EQUIV] && value[HTML_META_HTTP_EQUIV] &&
-            present[HTML_META_CONTENT] && value[HTML_META_CONTENT] &&
-            strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") == 0) {
-            char* charset = extract_charset_from_content(value[HTML_META_CONTENT]);
-            if (charset && me->node_anchor) {
-                /* Only set if charset not already set from HTTP headers */
-                char* existing_charset = HTAnchor_charset(me->node_anchor);
-                if (!existing_charset) {
-                    HTAnchor_setCharset(me->node_anchor, charset);
-                    if (TRACE)
-                        fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
-                } else {
-                    if (TRACE)
-                        fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
-                                charset, existing_charset);
-                }
-            }
-        }
-        /* META tag is not in stylesheet, so skip further processing */
         return;
     }
     
@@ -611,32 +664,9 @@ fprintf(stderr, "### HTML\t(%s\n",
         HTAnchor_setIndex(me->node_anchor);
         break;
 
-    case HTML_META: {
+    case HTML_META:
         /* Extract charset from meta tag if http-equiv="Content-Type" */
-        /* Note: element_number is index in tags array, HTML_META is enum value */
-        /* We check by tag name to be safe */
-        if (element_number >= 0 && element_number < HTML_dtd.number_of_tags &&
-            HTML_dtd.tags[element_number].name && 
-            strcmp(HTML_dtd.tags[element_number].name, "META") == 0 &&
-            present[HTML_META_HTTP_EQUIV] && value[HTML_META_HTTP_EQUIV] &&
-            present[HTML_META_CONTENT] && value[HTML_META_CONTENT] &&
-            strcasecmp(value[HTML_META_HTTP_EQUIV], "Content-Type") == 0) {
-            char* charset = extract_charset_from_content(value[HTML_META_CONTENT]);
-            if (charset && me->node_anchor) {
-                /* Only set if charset not already set from HTTP headers */
-                char* existing_charset = HTAnchor_charset(me->node_anchor);
-                if (!existing_charset) {
-                    HTAnchor_setCharset(me->node_anchor, charset);
-                    if (TRACE)
-                        fprintf(stderr, "HTML: Charset from META tag: %s\n", charset);
-                } else {
-                    if (TRACE)
-                        fprintf(stderr, "HTML: Skipping META charset (%s) - already set (%s)\n",
-                                charset, existing_charset);
-                }
-            }
-        }
-        }
+        handle_meta_charset(me, present, value, element_number);
         break;
 
     case HTML_BR:

@@ -24,8 +24,8 @@
 #include "slotaccess.h"
 
 #include "objs.h" /*XXXX for hard-coded ViolaWWW objects */
-int loadFromBuiltInCache();
-int load_objects_slots_fromBuiltInCache();
+int loadFromBuiltInCache(char*);
+int load_objects_slots_fromBuiltInCache(SlotStruct*, int*, long (*)[100][2], int*);
 
 /* this puts a limit on the number of objects in one file */
 #define NEWOBJ_SIZE 1000

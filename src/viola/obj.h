@@ -32,7 +32,7 @@ extern long securityMode;
  * remove and return the VObjList node identified by obj
  */
 #define removeVObjListNode(head_olist, obj)                                                        \
-    (VObjList*)removeVListNode((VList*)head_olist, obj, cmp_int)
+    (VObjList*)removeVListNode((VList*)head_olist, obj, (long (*)(long, long))cmp_int)
 
 /*
  * prepend and return the VObjList node
@@ -45,7 +45,7 @@ extern long securityMode;
 #define validObjectP(self) objObj2ExistP->get(objObj2ExistP, (long)(self))
 
 VObj* findObject(long objNameStrID);
-VObjList* appendObjToList();
-void freeAllObjects();
+VObjList* appendObjToList(VObjList*, VObj*);
+void freeAllObjects(void);
 
 int exitingViola;

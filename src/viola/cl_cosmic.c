@@ -151,11 +151,11 @@ void sendInitToChildren(VObj* self) {
     returnPacket();
 }
 
-long helper_cosmic_get(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_cosmic_get(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     return 0;
 }
 
-long helper_cosmic_set(VObj* self, Packet* result, int argc, Packet argv[], int labelID) {
+long helper_cosmic_set(VObj* self, Packet* result, int argc, Packet argv[], long labelID) {
     return 0;
 }
 
@@ -216,7 +216,7 @@ long meth_cosmic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(cloneObj))), (long)cloneObj);
 
-    objObj2ExistP->put_replace(objObj2ExistP, cloneObj, (int)1);
+    objObj2ExistP->put_replace(objObj2ExistP, (long)cloneObj, (int)1);
 
     result->type = PKT_OBJ;
     result->info.o = cloneObj;
@@ -268,7 +268,7 @@ long meth_cosmic_create(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     if ((obj = instantiateObj(slotv, &slotc))) {
         objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(obj))), (long)obj);
-        objObj2ExistP->put_replace(objObj2ExistP, obj, 1);
+        objObj2ExistP->put_replace(objObj2ExistP, (long)obj, 1);
         /*		SET__memoryGroup(obj, newMemoryGroup(1024));
          */
         sendMessage1(obj, "init");
@@ -444,7 +444,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     clearPacket(result);
     if (argc == 0) {
-        return dumpObj(self, fprintf, stdout, 0, 0);
+        return dumpObj(self, (long (*)())fprintf, stdout, 0, 0);
     }
     cp = PkInfo2Str(&argv[0]);
     if (!strcmp(cp, "listMethods")) {
@@ -521,11 +521,11 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         result->canFree = PK_CANFREE_STR;
 
     } else if (!strcmp(cp, "listSlotsRW")) {
-        return dumpObj(self, fprintf, stdout, SLOT_RW, 0);
+        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_RW, 0);
     } else if (!strcmp(cp, "listSlotsR")) {
-        return dumpObj(self, fprintf, stdout, SLOT_R, 0);
+        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_R, 0);
     } else if (!strcmp(cp, "listSlotsW")) {
-        return dumpObj(self, fprintf, stdout, SLOT_W, 0);
+        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_W, 0);
     } else if (!strcmp(cp, "listAllObjects")) {
 
     } else if (!strcmp(cp, "listAllMethods")) {

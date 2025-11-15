@@ -5,8 +5,8 @@
 #include "cl_field.h"
 
 extern ClassInfo class_pane;
-long helper_pane_get();
-long helper_pane_set();
+long helper_pane_get(VObj*, Packet*, int, Packet*, long);
+long helper_pane_set(VObj*, Packet*, int, Packet*, long);
 
 enum PaneConfigTypes {
     PANE_CONFIG_FREE,
@@ -22,11 +22,11 @@ enum PaneConfigTypes {
 };
 extern char* paneConfigStr[];
 
-long meth_pane_config();
-long meth_pane_clone();
-long meth_pane_clone2();
-long meth_pane_expose();
-long meth_pane_get();
-long meth_pane_initialize();
-long meth_pane_render();
-long meth_pane_set();
+long meth_pane_config(VObj *, Packet *, int, Packet *);
+long meth_pane_clone(VObj *, Packet *, int, Packet *);
+long meth_pane_clone2(VObj *, Packet *, int, Packet *);
+long meth_pane_expose(VObj *, Packet *, int, Packet *);
+long meth_pane_get(VObj *, Packet *, int, Packet *);
+long meth_pane_initialize(VObj *, Packet *, int, Packet *);
+long meth_pane_render(VObj *, Packet *, int, Packet *);
+long meth_pane_set(VObj *, Packet *, int, Packet *);

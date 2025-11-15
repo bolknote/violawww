@@ -1365,7 +1365,7 @@ long meth_field_lower(VObj* self, Packet* result, int argc, Packet argv[]) {
         VObjList* olist = GET__children(parent);
         if (olist) {
             /*XXXX
-                                    olist = removeVObjListNode(olist, self);
+                                    olist = removeVObjListNode(olist, (long)self);
                                     olist = prependVObjListNode(&olist, self);
             */
             SET__children(parent, olist);
@@ -1567,7 +1567,7 @@ long meth_field_objectListDelete(VObj* self, Packet* result, int argc, Packet ar
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownDepend(self);
         if (olist && obj) {
-            olist = removeVObjListNode(olist, obj);
+            olist = removeVObjListNode(olist, (long)obj);
             SET__shownDepend(self, olist);
             return 1;
         }
@@ -1575,7 +1575,7 @@ long meth_field_objectListDelete(VObj* self, Packet* result, int argc, Packet ar
         VObj* obj = PkInfo2Obj(&argv[1]);
         olist = GET__shownNotify(self);
         if (olist && obj) {
-            olist = removeVObjListNode(olist, obj);
+            olist = removeVObjListNode(olist, (long)obj);
             SET__shownNotify(self, olist);
             return 1;
         }
@@ -1665,7 +1665,7 @@ long meth_field_raise(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (parent) {
         VObjList* olist = GET__children(parent);
         if (olist) {
-            olist = removeVObjListNode(olist, self);
+            olist = removeVObjListNode(olist, (long)self);
             olist = appendVObjListNode(olist, self);
             SET__children(parent, olist);
             if (GET_window(self)) {

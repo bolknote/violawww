@@ -133,15 +133,15 @@ ClassInfo class_menu = {
 #define HORIZONTAL_DIR(dirc) (dirc == 'l' || dirc == 'r')
 #define THUMB_IN_RANGE(s) (s >= 0 && s <= 100)
 
-int parse_menu_entryScan();
-int parse_menu_entryLine();
-xpa_entry* parse_menu_allocateEntryTree();
-xpa_entrys parse_menu_configuration();
-static unsigned long res_color();
-int funny_evt();
-xpa_menu make_menu();
-char* get_menu_message();
-int set_menuConfig();
+int parse_menu_entryScan(char*, int*);
+int parse_menu_entryLine(VObj*, char*, char*, char*, int*, int*, char*, char*);
+xpa_entry* parse_menu_allocateEntryTree(VObj*, char*, int*);
+xpa_entrys parse_menu_configuration(VObj*, char*);
+static unsigned long res_color(VObj*, Display*, char*, XColor*);
+int funny_evt(XEvent*);
+xpa_menu make_menu(char*, xpa_entrys*, VObj*);
+char* get_menu_message(xpa_entrys entrys, long* result, int resultn);
+int set_menuConfig(VObj*);
 
 long meth_menu_config(VObj* self, Packet* result, int argc, Packet argv[]) {
     return meth_txt_config(self, result, argc, argv);
@@ -189,7 +189,7 @@ long meth_menu_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_menu_processMouseInput(VObj* self, Packet* result, int argc, Packet argv[]) {
-    int *menu_result, menu_resultn;
+    long *menu_result, menu_resultn;
     int root_x, root_y;
     char* data;
     xpa_menu menup = (xpa_menu)GET__menu(self);
@@ -714,7 +714,7 @@ xpa_menu make_menu(char* menuSpec, xpa_entrys* ret_menu_entries, VObj* self) {
     return menu;
 }
 
-char* get_menu_message(xpa_entrys entrys, int* result, int resultn) {
+char* get_menu_message(xpa_entrys entrys, long* result, int resultn) {
     char* message = NULL;
     int i;
 

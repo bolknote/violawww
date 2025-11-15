@@ -43,11 +43,11 @@ extern int verbose;
 
 char scanComment();
 
-int refresh_buf();
+int refresh_buf(void);
 int grabop(char c);
 int grabint(char c);
 int grabtag(char c);
-int iskeyword();
+int iskeyword(char*);
 
 #define strdup saveString
 #define io_getc() (*getc_ptr++)

@@ -283,7 +283,22 @@ int html_search(VObj* self, char* keyword)
         htext = HTMainText;
         newAddress = HTAnchor_address((HTAnchor*)HTMainAnchor);
         htext->simpleAddress = newAddress;
-        htext->title = saveString(HTAnchor_title(htext->node_anchor));
+        
+        fprintf(stderr, "html.c: HTSearch path - checking pending title\n");
+        /* Get pending title before applying (apply will free it) */
+        char* pending = html2_get_pending_title();
+        fprintf(stderr, "html.c: HTSearch path - pending=%p\n", (void*)pending);
+        if (pending) {
+            /* Apply pending title to anchor */
+            html2_apply_pending_title(htext->node_anchor);
+            /* Use the pending title we got before it was freed */
+            htext->title = saveString(pending);
+            fprintf(stderr, "html.c: using pending title='%s'\n", htext->title);
+        } else {
+            htext->title = saveString(HTAnchor_title(htext->node_anchor));
+            fprintf(stderr, "html.c: using anchor title='%s'\n", 
+                    htext->title ? htext->title : "(null)");
+        }
         htext->expandedAddress = saveString(htext->node_anchor->address);
 
         htext->htmlSrc = saveString(srcBuff);
@@ -322,6 +337,9 @@ int html_search(VObj* self, char* keyword)
     SET_HTMLAddress(self, newAddress ? newAddress : "?");
     SET_HTMLAnchor(self, "");
     SET_HTMLIsIndex(self, htext->isIndex);
+    fprintf(stderr, "html.c: SET_HTMLTitle with title='%s' (len=%zu)\n",
+            htext->title ? htext->title : "(null)",
+            htext->title ? strlen(htext->title) : 0);
     SET_HTMLTitle(self, htext->title ? htext->title : "");
     SET_HTMLSource(self, htext->htmlSrc);
 
@@ -399,6 +417,20 @@ PUBLIC HText* HText_new ARGS1(HTParentAnchor*, anchor) {
 
     HTMainText = htObj;
     HTMainAnchor = anchor;
+    
+    /* Check if there's a pending title and apply it now that anchor is available */
+    fprintf(stderr, "html.c: HText_new - anchor created, checking pending title\n");
+    char* pending = html2_get_pending_title();
+    if (pending) {
+        fprintf(stderr, "html.c: HText_new - applying pending title='%s' to anchor=%p\n",
+                pending, (void*)anchor);
+        html2_apply_pending_title(anchor);
+        fprintf(stderr, "html.c: HText_new - anchor title after apply='%s'\n",
+                HTAnchor_title(anchor) ? HTAnchor_title(anchor) : "(null)");
+    } else {
+        fprintf(stderr, "html.c: HText_new - no pending title, anchor title='%s'\n",
+                HTAnchor_title(anchor) ? HTAnchor_title(anchor) : "(null)");
+    }
 
     return htObj;
 }
@@ -1278,6 +1310,9 @@ TFStruct* html_updateTFStruct(VObj* self, char* address)
         }
         SET_HTMLAnchor(self, (anchorSearch ? anchorSearch : ""));
         /*		SET_HTMLTitle(self, (title ? title : ""));*/
+        fprintf(stderr, "html.c: SET_HTMLTitle (second place) with title='%s' (len=%zu)\n",
+                htext->title ? htext->title : "(null)",
+                htext->title ? strlen(htext->title) : 0);
         SET_HTMLTitle(self, htext->title);
         SET_HTMLIsIndex(self, htext->isIndex);
         SET_HTMLSource(self, htext->htmlSrc);
@@ -1336,6 +1371,21 @@ HText* html_loadDocument(VObj* self, char* address, char** title, char** simpleA
     if ((htext = html_findHTextByAddress(self, *simpleAddress))) {
         tf = htext->tfstruct;
         status = 1;
+        fprintf(stderr, "html.c: html_loadDocument - found existing htext, checking pending title\n");
+        /* Get pending title before applying (apply will free it) */
+        char* pending = html2_get_pending_title();
+        fprintf(stderr, "html.c: html_loadDocument - existing htext, pending=%p\n", (void*)pending);
+        if (pending) {
+            /* Apply pending title to anchor */
+            html2_apply_pending_title(htext->node_anchor);
+            /* Use the pending title we got before it was freed */
+            if (htext->title) free(htext->title);
+            htext->title = saveString(pending);
+            fprintf(stderr, "html.c: html_loadDocument - updated existing htext title='%s'\n", htext->title);
+        } else {
+            fprintf(stderr, "html.c: html_loadDocument - existing htext, title='%s'\n", 
+                    htext->title ? htext->title : "(null)");
+        }
 
         /* New data is going to be written on the existing
          * htext struct, so free the data in the current struct
@@ -1427,7 +1477,21 @@ HText* html_loadDocument(VObj* self, char* address, char** title, char** simpleA
                 return NULL;
             }
 
-            htext->title = saveString(HTAnchor_title(htext->node_anchor));
+            fprintf(stderr, "html.c: html_loadDocument path - checking pending title\n");
+            /* Get pending title before applying (apply will free it) */
+            char* pending = html2_get_pending_title();
+            fprintf(stderr, "html.c: html_loadDocument path - pending=%p\n", (void*)pending);
+            if (pending) {
+                /* Apply pending title to anchor */
+                html2_apply_pending_title(htext->node_anchor);
+                /* Use the pending title we got before it was freed */
+                htext->title = saveString(pending);
+                fprintf(stderr, "html.c: using pending title='%s'\n", htext->title);
+            } else {
+                htext->title = saveString(HTAnchor_title(htext->node_anchor));
+                fprintf(stderr, "html.c: using anchor title='%s'\n", 
+                        htext->title ? htext->title : "(null)");
+            }
 
             htext->expandedAddress = saveString(htext->node_anchor->address);
             htext->simpleAddress = *simpleAddress;
@@ -1457,6 +1521,8 @@ HText* html_loadDocument(VObj* self, char* address, char** title, char** simpleA
         }
         htext->tfstruct = tf;
         *title = htext->title;
+        fprintf(stderr, "html.c: html_loadDocument - setting *title='%s'\n", 
+                *title ? *title : "(null)");
     } else {
         *title = NULL;
     }

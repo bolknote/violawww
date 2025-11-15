@@ -1,6 +1,10 @@
 #include "hotlist.h"
 #include "sgml.h"
 
+/* Forward declaration */
+struct _HTParentAnchor;
+typedef struct _HTParentAnchor HTParentAnchor;
+
 extern int printTagDelims;
 
 typedef struct SGMLBuildInfoState {
@@ -42,6 +46,10 @@ void CB_HTML_data();
 void CB_HTML_stag();
 void CB_HTML_etag();
 void CB_HTML_end();
+
+void html2_set_document_charset(const char* charset);
+void html2_apply_pending_title(HTParentAnchor* anchor);
+char* html2_get_pending_title(void);
 
 char* encodeURL();
 char* decodeURL();

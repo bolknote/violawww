@@ -832,12 +832,14 @@ PUBLIC void SGML_character ARGS2(HTStream*, context, char, c)
                 /* Format: <!--comment_content--> */
                 {
                     char* comment_str = string->data;
-                    char full_comment[8192];
+                    const int max_comment_size = 8192 - 2; /* 8192 - 1 for '<' - 1 for '\0' */
+                    char full_comment[max_comment_size + 2];
                     int i, pos = 0;
+                    int comment_size = MIN(string->size, max_comment_size);
                     
                     /* Build full comment: <!--comment_content--> */
                     full_comment[pos++] = '<';
-                    for (i = 0; i < string->size; i++) {
+                    for (i = 0; i < comment_size; i++) {
                         full_comment[pos++] = comment_str[i];
                     }
                     full_comment[pos] = '\0';

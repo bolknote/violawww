@@ -107,6 +107,18 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `HTCharset.h`, `HTCharset.c`, `HTAnchor.h`, `HTAnchor.c`, `HTMIME.c`, `SGML.c`
 - **Test**: `test/test_htcharset.c` (German, Polish, Russian, Windows-1251, KOI8-R)
 
+#### Mathematical Expression Rendering
+- Native rendering of mathematical HTML entities and expressions
+- Supported entities: `&pi;` (π), `&sigma;` (Σ), `&infin;` (∞), `&integral;` (∫)
+- Subscripts and superscripts with proper scaling and positioning
+- Fraction rendering with horizontal division lines
+- Parentheses and brackets that scale to content height
+- Complex nested expressions with proper layout and alignment
+- Vector graphics rendering for integral symbol using X11 drawing primitives
+- Automatic scaling of symbols in superscript/subscript contexts
+- **Files**: `htmath.h`, `htmath.c`, `embeds/HTML_math_script.v`
+- **HTML Tag**: `<MATH>` element support
+
 #### Infrastructure Improvements
 - 64-bit architecture support (from 32-bit original)
 - Socket timeouts (30s for HTTP/HTTPS, 5s for Wayback API)

@@ -4694,7 +4694,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
 
                     /* eliminate leading space */
                     for (s = text; *s; s++)
-                        if (isprint(*s))
+                        if (!isspace((unsigned char)*s))
                             break;
 
                     SET_content(self, s);
@@ -4876,7 +4876,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
             if (!inPreP) {
                 /* eliminate leading space */
                 for (; *text; text++)
-                    if (isprint(*text))
+                    if (!isspace((unsigned char)*text))
                         break;
             }
             arg2->canFree = 0;
@@ -4887,7 +4887,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
             if (!inPreP) {
                 /* eliminate leading space */
                 for (; *s; s++)
-                    if (isprint(*s))
+                    if (!isspace((unsigned char)*s))
                         break;
             }
             text = saveString(s);

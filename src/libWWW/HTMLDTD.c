@@ -96,7 +96,7 @@ static CONST char* entities[] = {
     "yuml",     /* small y, dieresis or umlaut mark */
 };
 
-#define HTML_ENTITIES 76
+#define HTML_ENTITIES (sizeof(entities) / sizeof(entities[0]))
 
 /*		Attribute Lists
 **		---------------
@@ -495,7 +495,7 @@ static HTTag tags[] = {
     {0}};
 #define HTML_TAGS 129
 
-PUBLIC CONST SGML_dtd HTML_dtd = {tags, HTML_ELEMENTS, entities, sizeof(entities) / sizeof(char**)};
+PUBLIC CONST SGML_dtd HTML_dtd = {tags, HTML_ELEMENTS, entities, sizeof(entities) / sizeof(entities[0])};
 
 /*	Utility Routine: useful for people building HTML objects */
 

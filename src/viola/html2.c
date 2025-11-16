@@ -547,9 +547,6 @@ int size;
     }
 
     if (bstate->obj) {
-        /*		fprintf(stderr, "@@@@ DATA(%d) -%s\n", size, str);
-         */
-        
         /* Convert UTF-8 to Latin1 */
         if (size < sizeof(tempbuf)) {
             memcpy(tempbuf, str, size);

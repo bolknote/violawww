@@ -586,9 +586,6 @@ PRIVATE void HTML_start_element ARGS5(HTStructured*, me, int, element_number, CO
     }
 #ifdef VIOLA
     majorBuff[majorBuffi] = '\0';
-    /*
-            fprintf(stderr, "### DATA(%d) -%s\n", majorBuffi, majorBuff);
-    */
     if (majorBuffi > 0) {
         CB_HTML_data(majorBuff, majorBuffi);
         majorBuffi = 0;
@@ -769,9 +766,6 @@ fprintf(stderr, "### HTML\t(%s\n",
 PRIVATE void HTML_end_element ARGS2(HTStructured*, me, int, element_number) {
 #ifdef VIOLA
     majorBuff[majorBuffi] = '\0';
-
-    /*	fprintf(stderr, "### DATA(%d) -%s\n", majorBuffi, majorBuff);*/
-
     if (majorBuffi > 0) {
         CB_HTML_data(majorBuff, majorBuffi);
         majorBuffi = 0;

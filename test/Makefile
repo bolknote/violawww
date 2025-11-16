@@ -7,8 +7,8 @@ BUILD_DIR := build
 
 # Compiler settings from main project
 CC := cc
-CFLAGS := -Os -arch arm64 -std=gnu17 -Wno-everything
-CFLAGS_LIBS := $(CFLAGS) -D__DARWIN__ -DUSE_ICU -DUSE_SSL
+CFLAGS := -Os -arch arm64 -std=gnu17 -Wno-everything -funsigned-char
+CFLAGS_LIBS := $(CFLAGS) -D__DARWIN__ -DUSE_ICU -DUSE_SSL -funsigned-char
 
 # Include paths
 ICU_INCLUDES := -I/opt/homebrew/opt/icu4c@77/include

@@ -1,7 +1,15 @@
 
 	switch (arg[0]) {
 	case "entity":
-		/* Handle math entities inside sup */
+		/* Add any pending label text first */
+		if (isBlank(get("label")) == 0) {
+			tok[tokCount] = 2;
+			data[tokCount] = get("label");
+			tokCount++;
+			set("label", "");
+		}
+		
+		/* Then handle math entities inside sup */
 		entity_number = arg[1];
 		if (entity_number == 51) {/*infin*/
 			tok[tokCount] = 21; /*MINFO_INFIN*/

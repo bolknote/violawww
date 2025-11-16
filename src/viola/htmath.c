@@ -580,6 +580,18 @@ void doOver(self) MAST* self;
     */
 }
 
+/* Check if symbol is inside superscript or subscript */
+int isInSupOrSub(MAST* mast) {
+    MAST* parent = mast->parent;
+    while (parent) {
+        if (parent->type == MINFO_S_SUP || parent->type == MINFO_S_SUB) {
+            return 1;
+        }
+        parent = parent->parent;
+    }
+    return 0;
+}
+
 void tile(self, level) MAST* self;
 int level;
 {
@@ -634,22 +646,20 @@ int level;
         break;
     case MINFO_S_SUB:
     case MINFO_S_SUP:
-        vspan = 0;
-        maxWidth = 0;
+        /* Layout children horizontally (HBOX-style) instead of vertically */
+        hspan = 0;
+        maxHeight = 0;
         if (mast->children) {
             for (cmast = mast->children; cmast; cmast = cmast->next) {
-                cmast->y = vspan;
-                vspan += cmast->height;
-                if (maxWidth < cmast->width)
-                    maxWidth = cmast->width;
+                cmast->x = hspan;
+                tile(cmast, level + 1);
+                hspan += cmast->width;
+                if (maxHeight < cmast->height)
+                    maxHeight = cmast->height;
             }
         }
-        mast->width = maxWidth;
-
-        if (mast->parent->type == MINFO_INTEGRAL)
-            mast->height = vspan;
-        else
-            mast->height = (float)vspan * 1.7;
+        mast->width = hspan;
+        mast->height = (float)maxHeight * 1.7;
         break;
     case MINFO_LPAREN:
     case MINFO_LBRACK:
@@ -716,13 +726,12 @@ int level;
     case MINFO_INFIN:
         /* Width and height for infinity symbol */
         mast->width = INFIN_WIDTH;
-        /* Set height to match typical text height for math symbols */
-        mast->height = 18; /* Default height for infinity symbol (matches font ascent+descent) */
+        mast->height = 18;
         break;
     case MINFO_PI:
         /* Width and height for pi symbol */
-        mast->width = 12; /* Narrower than infinity */
-        mast->height = 18; /* Same height as other math symbols */
+        mast->width = 12;
+        mast->height = 18;
         break;
     case MINFO_BEGIN:
         tile(mast->next, level);
@@ -822,49 +831,85 @@ void expandables(self) MAST* self;
         case MINFO_LBRACK:
         case MINFO_S_BOX:
         case MINFO_VBOX:
-        case MINFO_HBOX:
+            expandables(mast->children);
+            break;
         case MINFO_S_SUB:
         case MINFO_S_SUP:
+            /* Expand children first */
             expandables(mast->children);
+            /* Recalculate width as sum (HBOX-style) after children might have been scaled */
+            if (mast->children) {
+                int hspan = 0;
+                for (cmast = mast->children; cmast; cmast = cmast->next) {
+                    cmast->x = hspan;
+                    hspan += cmast->width;
+                }
+                mast->width = hspan;
+            }
+            break;
+        case MINFO_HBOX:
+            /* Expand children first */
+            expandables(mast->children);
+            /* Recalculate width after children might have been scaled */
+            if (mast->children) {
+                int hspan = 0;
+                for (cmast = mast->children; cmast; cmast = cmast->next) {
+                    cmast->x = hspan;
+                    hspan += cmast->width;
+                }
+                mast->width = hspan;
+            }
             break;
         case MINFO_HDIV:
             mast->width = mast->parent->width - 2;
             break;
         case MINFO_INTEGRAL:
             mast->height = mast->parent->height;
-            cmast = mast->children;
-            if (cmast && cmast->type == MINFO_S_SUP) {
-                cmast->x = INTEGRAL_WIDTH;
-                cmast->y = 0;
-                expandables(cmast);
-                cmast = cmast->next;
-            }
-            if (cmast && cmast->type == MINFO_S_SUB) {
-                cmast->x = INTEGRAL_WIDTH;
-                cmast->y = mast->height - cmast->height;
-                expandables(cmast);
+            /* Find and position SUP and SUB children regardless of order */
+            for (cmast = mast->children; cmast; cmast = cmast->next) {
+                if (cmast->type == MINFO_S_SUP) {
+                    cmast->x = INTEGRAL_WIDTH;
+                    cmast->y = 0;
+                    expandables(cmast);
+                } else if (cmast->type == MINFO_S_SUB) {
+                    cmast->x = INTEGRAL_WIDTH;
+                    cmast->y = mast->height - cmast->height;
+                    expandables(cmast);
+                }
             }
             break;
         case MINFO_SUM:
             mast->height = mast->parent->height;
-            cmast = mast->children;
-            if (cmast && cmast->type == MINFO_S_SUP) {
-                cmast->x = SUM_WIDTH;
-                cmast->y = 0;
-                expandables(cmast);
-                cmast = cmast->next;
-            }
-            if (cmast && cmast->type == MINFO_S_SUB) {
-                cmast->x = SUM_WIDTH;
-                cmast->y = mast->height - cmast->height;
-                expandables(cmast);
+            /* Find and position SUP and SUB children regardless of order */
+            for (cmast = mast->children; cmast; cmast = cmast->next) {
+                if (cmast->type == MINFO_S_SUP) {
+                    cmast->x = SUM_WIDTH;
+                    cmast->y = 0;
+                    expandables(cmast);
+                } else if (cmast->type == MINFO_S_SUB) {
+                    cmast->x = SUM_WIDTH;
+                    cmast->y = mast->height - cmast->height;
+                    expandables(cmast);
+                }
             }
             break;
         case MINFO_INFIN:
-            mast->height = mast->parent->height;
+            /* Scale down FIRST if inside sup/sub, before inheriting parent height */
+            if (isInSupOrSub(mast)) {
+                mast->width = (int)(INFIN_WIDTH * 0.7);
+                mast->height = (int)(18 * 0.7);
+            } else {
+                mast->height = mast->parent->height;
+            }
             break;
         case MINFO_PI:
-            mast->height = mast->parent->height;
+            /* Scale down FIRST if inside sup/sub, before inheriting parent height */
+            if (isInSupOrSub(mast)) {
+                mast->width = (int)(12 * 0.7);
+                mast->height = (int)(18 * 0.7);
+            } else {
+                mast->height = mast->parent->height;
+            }
             break;
         case MINFO_ENTITY:
         case MINFO_DATA:

@@ -1176,10 +1176,12 @@ Window w;
         if (!mast->type)
             return;
 
+#ifdef VERBOSE
         for (i = 0; i < level; i++)
             printf("  ");
         printf("XX [%14s]\t%9s\t%3d(%d) %3d(%d) %3d %3d\n", mast->s, MInfoStr[mast->type], mast->x,
                mast->rx, mast->y, mast->ry, mast->width, mast->height);
+#endif
 
         switch (mast->type) {
         case MINFO_S_BOX:

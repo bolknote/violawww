@@ -169,9 +169,9 @@ int txtDisp_HTML_header_D(VObj* self, Packet* result, Packet* argv)
         if (GET_content(self))
             Vfree(GET__memoryGroup(self), GET_content(self));
 
-        /* eliminate leading space */
+        /* eliminate leading whitespace only; keep non-ASCII printable bytes */
         for (s = text; *s; s++)
-            if (isprint(*s))
+            if (!isspace((unsigned char)*s))
                 break;
 
         SET_content(self, s);

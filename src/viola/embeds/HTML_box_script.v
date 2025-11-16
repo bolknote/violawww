@@ -74,6 +74,18 @@ break;
 		tokCount++;
 		return;
 	break;
+	case "flush":
+		/* First, transfer any pending data from global buffer to label */
+		SGMLBuildDoc_setBuff(-1);
+		/* Then flush label to tok buffer before sub/sup processing */
+		if (isBlank(get("label")) == 0) {
+			tok[tokCount] = 2; /* MINFO_DATA */
+			data[tokCount] = get("label");
+			tokCount++;
+			set("label", "");
+		}
+		return;
+	break;
 	case "F":
 		if (isBlank(get("label"))) return -1;
 		tok[tokCount] = 2;

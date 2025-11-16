@@ -15,7 +15,6 @@ src/viola/embeds/*.h
 .idea/
 
 # Test files
-*.png
 *.html
 *.stg
 examples/

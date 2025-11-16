@@ -136,6 +136,8 @@ GROUP		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 SECURITY	HTML_security		1 0 0 0 0		0 0 0 0\n\
 MATH		HTML_math		0 0 0 1 0		0 10 0 0\n\
 OVER		HTML_over		0 0 0 1 0		0 0 0 0\n\
+PAREN		HTML_paren		0 0 0 1 0		0 0 0 0\n\
+BRACKET		HTML_bracket		0 0 0 1 0		0 0 0 0\n\
 SUB		HTML_sub		1 0 0 0 0		0 0 0 0\n\
 SUP		HTML_sup		1 0 0 0 0		0 0 0 0\n\
 BOX		HTML_box		0 0 0 1 0		0 0 0 0\n\

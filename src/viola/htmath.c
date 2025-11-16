@@ -829,6 +829,22 @@ void expandables(self) MAST* self;
         switch (mast->type) {
         case MINFO_LPAREN:
         case MINFO_LBRACK:
+            /* Expand children first */
+            expandables(mast->children);
+            /* Recalculate height and width based on expanded children */
+            if (mast->children) {
+                int hspan = PAREN_WIDTH;
+                int maxHeight = 0;
+                for (cmast = mast->children; cmast; cmast = cmast->next) {
+                    cmast->x = hspan;
+                    hspan += cmast->width;
+                    if (maxHeight < cmast->height)
+                        maxHeight = cmast->height;
+                }
+                mast->width = hspan + PAREN_WIDTH;
+                mast->height = maxHeight + 2;
+            }
+            break;
         case MINFO_S_BOX:
         case MINFO_VBOX:
             expandables(mast->children);

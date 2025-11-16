@@ -80,9 +80,89 @@ Creates vertical fractions with a horizontal division line.
 
 ---
 
+### 5. `<paren>...</paren>` - Extensible Parentheses
+Creates parentheses that automatically stretch to match the height of their content.
+
+```html
+<math><paren>x</paren></math>
+```
+
+**Examples:**
+```html
+<!-- Simple parentheses -->
+<math><paren>x + y</paren></math>
+
+<!-- Parentheses automatically stretch for fractions -->
+<math><paren><box>a<over>b</box></paren></math>
+
+<!-- Nested fractions with large outer parentheses -->
+<math><paren><box>d1 + d2<over>x1 + <paren><box>a1 + a2<over>b1 + b2</box></paren></box></paren></math>
+
+<!-- Multiple fractions -->
+<math>v = <paren><box>x + y<over>z</box></paren> + e</math>
+```
+
+**Features:**
+- Parentheses are drawn using vector graphics (not font characters)
+- Height automatically adjusts to content (tallest child + 2 pixels)
+- Width: PAREN_WIDTH (5px) on each side
+- Can contain any mathematical elements (fractions, symbols, text)
+- Supports nesting: `<paren>a + <paren>b</paren></paren>`
+
+**Technical Details:**
+- Uses `MINFO_LPAREN` (15) and `MINFO_RPAREN` (16) tokens internally
+- Left parenthesis drawn with curved lines (5 segments)
+- Right parenthesis drawn symmetrically
+- Both parentheses share the same height as the parent LPAREN node
+
+---
+
+### 6. `<bracket>...</bracket>` - Extensible Square Brackets
+Creates square brackets that automatically stretch to match the height of their content.
+
+```html
+<math><bracket>x + y</bracket></math>
+```
+
+**Examples:**
+```html
+<!-- Simple brackets -->
+<math><bracket>x</bracket></math>
+
+<!-- Brackets with fractions -->
+<math><bracket><box>a<over>b</box></bracket></math>
+
+<!-- Integral with brackets -->
+<math><bracket>&integral;<sup>1</sup><sub>0</sub> f(x)</bracket></math>
+
+<!-- Nested structures -->
+<math><bracket>x + <paren>y + z</paren></bracket></math>
+```
+
+**Features:**
+- Square brackets drawn using vector graphics
+- Height automatically adjusts to content (tallest child + 2 pixels)
+- Width: BRACK_WIDTH (5px) on each side
+- Can contain any mathematical elements
+- Commonly used to denote intervals or evaluation bounds
+
+**Technical Details:**
+- Uses `MINFO_LBRACK` (17) and `MINFO_RBRACK` (18) tokens internally
+- Left bracket: vertical line with top and bottom horizontal strokes
+- Right bracket: mirror of left bracket
+- Both brackets share the same height as the parent LBRACK node
+
+**Difference from text `()` and `[]`:**
+- Text parentheses/brackets: Fixed size from font
+- `<paren>`/`<bracket>` tags: Dynamically stretch to content height
+- Example: `(<box>a<over>b</box>)` shows small parens with large fraction
+- Better: `<paren><box>a<over>b</box></paren>` shows properly sized parens
+
+---
+
 ## Mathematical Entities (Symbols)
 
-### 5. `&integral;` - Integral Symbol (∫)
+### 7. `&integral;` - Integral Symbol (∫)
 The integral symbol, typically used with limits.
 
 ```html
@@ -102,7 +182,7 @@ The integral symbol, typically used with limits.
 
 ---
 
-### 6. `&sigma;` - Sigma Symbol (Σ) / Summation
+### 8. `&sigma;` - Sigma Symbol (Σ) / Summation
 The summation symbol.
 
 ```html
@@ -117,7 +197,7 @@ The summation symbol.
 
 ---
 
-### 7. `&infin;` - Infinity Symbol (∞)
+### 9. `&infin;` - Infinity Symbol (∞)
 The infinity symbol.
 
 ```html
@@ -132,7 +212,7 @@ The infinity symbol.
 
 ---
 
-### 8. `&pi;` - Pi Symbol (π)
+### 10. `&pi;` - Pi Symbol (π)
 The mathematical constant pi.
 
 ```html
@@ -191,6 +271,22 @@ The mathematical constant pi.
 <math>lim<sub>n &infin;</sub> (1 + <box>1<over>n</box>)<sup>n</sup> = e</math>
 ```
 
+### Extensible Parentheses with Nested Fractions
+```html
+<!-- The original author's vision (from htmath.c sample code) -->
+<math>v = <paren><box>d1 + d2<over>x1 + <paren><box>a1 + a2<over>b1 + b2</box></paren></box></paren> e</math>
+```
+
+### Integral with Brackets
+```html
+<math><bracket>&integral;<sup>b</sup><sub>a</sub> f(x) + g(x)</bracket> dx</math>
+```
+
+### Summation with Parentheses
+```html
+<math>&sigma;<sup>n</sup><sub>i=1</sub> <paren>a<sub>i</sub> + b<sub>i</sub></paren></math>
+```
+
 ---
 
 ## Implementation Notes
@@ -224,9 +320,10 @@ The math engine uses these internal tokens (not directly accessible in HTML):
 ### Limitations
 
 1. **No Nested Superscripts**: `<sup><sup>...</sup></sup>` is not supported due to recursion protection
-2. **No Direct Parentheses**: `()` and `[]` in HTML are rendered as text, not as extensible mathematical brackets
+2. **Text Parentheses Don't Stretch**: Plain `()` and `[]` in HTML are rendered as fixed-size text characters; use `<paren>` and `<bracket>` tags for extensible brackets
 3. **No Square Roots**: No `<sqrt>` or similar tag implemented
 4. **Limited Symbols**: Only `&integral;`, `&sigma;`, `&infin;`, `&pi;` are supported as special math symbols
+5. **No Other Brackets**: Braces `{}` and angle brackets `<>` are not supported
 
 ### Rendering Details
 
@@ -247,6 +344,8 @@ The math engine uses these internal tokens (not directly accessible in HTML):
   - `src/viola/embeds/HTML_over_script.v`
   - `src/viola/embeds/HTML_sup_script.v`
   - `src/viola/embeds/HTML_sub_script.v`
+  - `src/viola/embeds/HTML_paren_script.v`
+  - `src/viola/embeds/HTML_bracket_script.v`
 - **Entity Definitions**: `src/libWWW/HTMLDTD.c`, `src/libWWW/HTML.c`
 
 ---
@@ -257,6 +356,8 @@ The math engine uses these internal tokens (not directly accessible in HTML):
 - `examples/testBox.html` - Fraction examples
 - `examples/testMathComplex.html` - Complex mathematical formulas
 - `examples/testMathE.html` - Specific tests for text ordering
+- `examples/testParen.html` - Extensible parentheses and brackets examples
+- `examples/testEntities2.html` - Entity symbols display test
 
 ---
 

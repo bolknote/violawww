@@ -6176,6 +6176,34 @@ static SlotStruct objDesc_HTML_over[] = {
     {(char*)0, (char*)0},
 };
 
+static char _slotValue_HTML_paren0[] = "field";
+static char _slotValue_HTML_paren1[] = "HTML_paren";
+static char _slotValue_HTML_paren2[] = {
+#include "embeds/HTML_paren_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_paren[] = {
+    {"class", _slotValue_HTML_paren0},
+    {"name", _slotValue_HTML_paren1},
+    {"script", _slotValue_HTML_paren2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_bracket0[] = "field";
+static char _slotValue_HTML_bracket1[] = "HTML_bracket";
+static char _slotValue_HTML_bracket2[] = {
+#include "embeds/HTML_bracket_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_bracket[] = {
+    {"class", _slotValue_HTML_bracket0},
+    {"name", _slotValue_HTML_bracket1},
+    {"script", _slotValue_HTML_bracket2},
+    {(char*)0, (char*)0},
+};
+
 static char _slotValue_HTML_plain0[] = "txtDisp";
 static char _slotValue_HTML_plain1[] = "HTML_plain";
 static char _slotValue_HTML_plain2[] = {
@@ -7303,6 +7331,10 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_option,
                                "HTML_over.v",
                                objDesc_HTML_over,
+                               "HTML_paren.v",
+                               objDesc_HTML_paren,
+                               "HTML_bracket.v",
+                               objDesc_HTML_bracket,
                                "HTML_plain.v",
                                objDesc_HTML_plain,
                                "HTML_plaintext.v",

@@ -87,11 +87,8 @@ break;
 		return;
 	break;
 	case "F":
-		if (isBlank(get("label"))) return -1;
-		tok[tokCount] = 2;
-		data[tokCount] = get("label");
-		tokCount++;
-		set("label", ""); /* Clear label after adding to tokens */
+		/* Just transfer data from buffer to label, don't add to tokens yet */
+		SGMLBuildDoc_setBuff(-1);
 		return -1;
 	break;
 	case "D":

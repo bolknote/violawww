@@ -87,15 +87,8 @@
 		return;
 	break;
 	case "F":
+		/* Just transfer data from buffer to label, don't add to tokens yet */
 		SGMLBuildDoc_setBuff(-1);
-		if (isBlank(get("label"))) return -1;
-/*print("F MATH label>>>>>", get("label"), "<<<\n");
-*/
-		tok[tokCount] = 2;
-		data[tokCount] = get("label");
-		tokCount++;
-		set("label", ""); /* Clear label after adding to tokens */
-
 		return -1;
 	break;
 	case "D":

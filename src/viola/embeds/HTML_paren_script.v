@@ -1,5 +1,37 @@
 
 	switch (arg[0]) {
+	case "entity":
+		/* Add any pending label text first */
+		if (isBlank(get("label")) == 0) {
+			tok[tokCount] = 2;
+			data[tokCount] = get("label");
+			tokCount++;
+		}
+
+		/* Then add the entity token */
+		entity_number = arg[1];
+		if (entity_number == 51) {/*infin*/
+			tok[tokCount] = 21; /*MINFO_INFIN*/
+			data[tokCount] = "";
+			tokCount++;
+		} else if (entity_number == 52) { /*integral*/
+			tok[tokCount] = 19; /*MINFO_INTEGRAL*/
+			data[tokCount] = "";
+			tokCount++;
+		} else if (entity_number == 53) { /*sum*/
+			tok[tokCount] = 20; /*MINFO_SUM*/
+			data[tokCount] = "";
+			tokCount++;
+		} else if (entity_number == 54) { /*pi*/
+			tok[tokCount] = 22; /*MINFO_PI*/
+			data[tokCount] = "";
+			tokCount++;
+		}
+
+		/* Clear the label after processing */
+		set("label", "");
+		return;
+	break;
 	case "tok&data":
 		/* Receive tokens from children */
 		tok[tokCount] = arg[1];

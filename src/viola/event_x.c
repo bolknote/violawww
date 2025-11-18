@@ -69,7 +69,7 @@ static int signal_nonfatal[] = {SIGHUP, SIGINT, SIGPIPE, SIGQUIT, SIGTERM, SIGUS
 typedef struct TimeInfo {
     struct timeval time;
     struct TimeInfo* next;
-    long (*func)();
+    long (*func)(VObj*, Packet*, int);
     VObj* obj;
     int argc;
     Packet* argv;

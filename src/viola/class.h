@@ -98,6 +98,6 @@ extern VObj* buildObjWithLoadedSlots(ClassInfo*, long [100][2], int);
 extern VObj* instantiateObj(long (*)[100][2], int*);
 extern long* searchSlot(long (*)[100][2], int, int);
 extern int saveSelfAndChildren(VObj*, FILE*);
-extern int dumpObj(VObj*, long (*)(), FILE*, int, int);
+extern int dumpObj(VObj*, long (*)(FILE*, const char*, ...), FILE*, int, int);
 extern VObj* clone(VObj*);
 extern int loadClassScriptsP;

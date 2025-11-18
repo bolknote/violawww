@@ -444,7 +444,7 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     clearPacket(result);
     if (argc == 0) {
-        return dumpObj(self, (long (*)())fprintf, stdout, 0, 0);
+        return dumpObj(self, (long (*)(FILE*, const char*, ...))fprintf, stdout, 0, 0);
     }
     cp = PkInfo2Str(&argv[0]);
     if (!strcmp(cp, "listMethods")) {
@@ -521,11 +521,11 @@ long meth_cosmic_info(VObj* self, Packet* result, int argc, Packet argv[]) {
         result->canFree = PK_CANFREE_STR;
 
     } else if (!strcmp(cp, "listSlotsRW")) {
-        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_RW, 0);
+        return dumpObj(self, (long (*)(FILE*, const char*, ...))fprintf, stdout, SLOT_RW, 0);
     } else if (!strcmp(cp, "listSlotsR")) {
-        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_R, 0);
+        return dumpObj(self, (long (*)(FILE*, const char*, ...))fprintf, stdout, SLOT_R, 0);
     } else if (!strcmp(cp, "listSlotsW")) {
-        return dumpObj(self, (long (*)())fprintf, stdout, SLOT_W, 0);
+        return dumpObj(self, (long (*)(FILE*, const char*, ...))fprintf, stdout, SLOT_W, 0);
     } else if (!strcmp(cp, "listAllObjects")) {
 
     } else if (!strcmp(cp, "listAllMethods")) {

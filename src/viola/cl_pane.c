@@ -442,7 +442,7 @@ long meth_pane_initialize(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     func = GET__classInfo(self)->slotSetMeth;
     if (func)
-        ((long (*)())(func))(self, result, 2, pks, STR_paneConfig);
+        ((long (*)(VObj*, Packet*, int, Packet*, long))(func))(self, result, 2, pks, STR_paneConfig);
 
     /*	clearPacket(&pks[0]);*/
     clearPacket(&pks[1]);

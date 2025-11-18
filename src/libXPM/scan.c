@@ -49,7 +49,7 @@ LFUNC(GetImagePixels8, int,
 
 LFUNC(GetImagePixels1, int,
       (XImage * image, unsigned int width, unsigned int height, PixelsMap* pmap,
-       int (*storeFunc)()));
+       int (*storeFunc)(Pixel, PixelsMap*, unsigned int*)));
 
 /*
  * This function stores the given pixel in the given arrays which are grown

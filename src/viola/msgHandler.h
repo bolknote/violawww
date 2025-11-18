@@ -11,11 +11,7 @@
 #ifndef _MSGHANDLER_H_
 #define _MSGHANDLER_H_
 
-typedef void (*VMsgHandler)(/*
-			    char *arg[],
-			    int argc,
-			    void *clientData,
-			    */);
+typedef void (*VMsgHandler)(char *arg[], int argc, void *clientData);
 
 typedef struct VMsgHandlerStruct {
     char* msgName;

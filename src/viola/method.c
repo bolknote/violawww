@@ -43,7 +43,7 @@ long callMeth(VObj* self, Packet* result, int argc, Packet argv[], long funcid)
                     free(result->info.s); /*XXX*/
                     result->canFree = 0;
                 }
-                ((long (*)())(entry->val))(self, result, argc, argv);
+                ((long (*)(VObj*, Packet*, int, Packet*))(entry->val))(self, result, argc, argv);
                 return 1;
             }
         }

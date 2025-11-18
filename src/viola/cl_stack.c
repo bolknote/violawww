@@ -408,7 +408,7 @@ long meth_stack_setCurrentCard(VObj* self, Packet* result, int argc, Packet argv
         pks[1].info.i = 0;
         func = GET__classInfo(obj)->slotSetMeth;
         if (func) {
-            ((long (*)())(func))(obj, result, 2, pks, STR_visible);
+            ((long (*)(VObj*, Packet*, int, Packet*, long))(func))(obj, result, 2, pks, STR_visible);
         }
     }
     /* lights on
@@ -419,7 +419,7 @@ long meth_stack_setCurrentCard(VObj* self, Packet* result, int argc, Packet argv
         SET__parent(obj, self);
         func = GET__classInfo(obj)->slotSetMeth;
         if (func) {
-            ((long (*)())(func))(obj, result, 2, pks, STR_visible);
+            ((long (*)(VObj*, Packet*, int, Packet*, long))(func))(obj, result, 2, pks, STR_visible);
         }
         result->type = PKT_OBJ;
         result->info.o = SET__currentCard(self, obj);

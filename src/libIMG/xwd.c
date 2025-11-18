@@ -154,7 +154,7 @@ static Image* loadXYBitmap(char* fullname, ZFILE* zf, XWDHeader header)
     int x, y;                  /* horizontal and vertical counters */
     byte* line;                /* input scan line */
     byte *dptr, *iptr;         /* image data pointers */
-    unsigned long (*loader)(); /* unit loading function */
+    unsigned long (*loader)(byte*, unsigned int); /* unit loading function */
 
     image = newBitImage(header.pixmap_width, header.pixmap_height);
     ilinelen = (header.pixmap_width / 8) + (header.pixmap_width % 8 ? 1 : 0);
@@ -227,7 +227,7 @@ static Image* loadXYPixmap(char* fullname, ZFILE* zf, XWDHeader header)
     byte *dptr, *iptr;     /* image data pointers */
     unsigned long pixvals; /* bits for pixels in this unit */
     unsigned long mask;
-    unsigned long (*loader)(); /* unit loading function */
+    unsigned long (*loader)(byte*, unsigned int); /* unit loading function */
 
     image = newRGBImage(header.pixmap_width, header.pixmap_height, header.pixmap_depth);
     ilinelen = image->width * image->pixlen;
@@ -308,7 +308,7 @@ static Image* loadZPixmap(char* fullname, ZFILE* zf, XWDHeader header)
     byte *dptr, *iptr;         /* image data pointers */
     unsigned long pixmask;     /* bit mask within pixel */
     unsigned long pixel;       /* pixel we're working on */
-    unsigned long (*loader)(); /* unit loading function */
+    unsigned long (*loader)(byte*, unsigned int); /* unit loading function */
 
     image = newRGBImage(header.pixmap_width, header.pixmap_height, header.pixmap_depth);
 

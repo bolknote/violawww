@@ -203,7 +203,7 @@ typedef struct xpa_intern_defn {
 
 typedef struct xpa_context_defn {
     xpa_data* data;                /* Call specific data     */
-    int (*callback)();             /* Callback function      */
+    int (*callback)(XEvent*, xpa_intern*, xpa_data*);             /* Callback function      */
     xpa_intern* intern;            /* Internal menu info */
     struct xpa_context_defn* next; /* Linked for disposal */
 } xpa_context;
@@ -248,7 +248,7 @@ static void def_err_func(int code)
     abort();
 }
 
-static void (*err_func)() = def_err_func;
+static void (*err_func)(int) = def_err_func;
 
 static void xpa_raise(int code)
 {
@@ -1486,7 +1486,7 @@ int x, y;         /* Screen coordinates */
 int depth;        /* Depth of spec      */
 int* vals;        /* Starting spot      */
 int opt;          /* XPA_PRESS or none  */
-int (*handler)(); /* Event handler      */
+int (*handler)(XEvent*); /* Event handler      */
 int** result;     /* Returned result    */
 /*
  * Posts a moded menu.  This is basically a wrapper around

@@ -1584,7 +1584,7 @@ long meth_generic_SGMLBuildDoc_setColors(VObj* self, Packet* result, int argc, P
     static char* BG_DOC;
     static char* FG_DOC;
     static int init = 0;
-    long (*setFunc)() = GET__classInfo(self)->slotSetMeth;
+    long (*setFunc)(VObj*, Packet*, int, Packet*, long) = GET__classInfo(self)->slotSetMeth;
 
     if (!init) {
         BG_DOC = GLGetResource("Viola.background_doc");

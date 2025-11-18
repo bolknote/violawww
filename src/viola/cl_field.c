@@ -1989,7 +1989,7 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], long 
             olist = GET__children(self);
             for (; olist; olist = olist->next)
                 if (olist->o && validObjectP(olist->o)) {
-                    long (*func)() = GET__classInfo(olist->o)->slotSetMeth;
+                    long (*func)(VObj*, Packet*, int, Packet*, long) = GET__classInfo(olist->o)->slotSetMeth;
                     if (func) {
                         func(olist->o, result, 2, argv, STR_visible);
                     }
@@ -2000,7 +2000,7 @@ long helper_field_set(VObj* self, Packet* result, int argc, Packet argv[], long 
             olist = GET__children(self);
             for (; olist; olist = olist->next)
                 if (olist->o && validObjectP(olist->o)) {
-                    long (*func)() = GET__classInfo(olist->o)->slotSetMeth;
+                    long (*func)(VObj*, Packet*, int, Packet*, long) = GET__classInfo(olist->o)->slotSetMeth;
                     if (func) {
                         func(olist->o, result, 2, argv, STR_visible);
                     }

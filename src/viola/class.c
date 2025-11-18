@@ -350,10 +350,10 @@ long initSlot(VObj* self, long* slotp, SlotInfo* sip, long val)
         return *slotp = (long)saveString((char*)val);
 
     case FUNC:
-        return *slotp = ((long (*)())val)();
+        return *slotp = ((long (*)(void))val)();
 
     case PROC:
-        return ((long (*)())val)(self, slotp);
+        return ((long (*)(VObj*, long*))val)(self, slotp);
 
     default:
         fprintf(stderr, "initSlot(): unknown slot type = %d. Setting to NULL.\n",
@@ -600,7 +600,7 @@ int saveSelfAndChildren(VObj* obj, FILE* fp)
 
     fprintf(fp, "\\class {%s}\n", GET_class(obj));
 
-    dumpObj(obj, (long (*)())fprintf, fp, SLOT_W, 1);
+    dumpObj(obj, (long (*)(FILE*, const char*, ...))fprintf, fp, SLOT_W, 1);
     for (olist = GET__children(obj); olist; olist = olist->next)
         saveSelfAndChildren(olist->o, fp);
 
@@ -610,7 +610,7 @@ int saveSelfAndChildren(VObj* obj, FILE* fp)
 /*
  * flag: 1=dump only if not same as default
  */
-int dumpObj(VObj* obj, long (*dumpFunc)(), FILE* dumpDest, int filter, int flag)
+int dumpObj(VObj* obj, long (*dumpFunc)(FILE*, const char*, ...), FILE* dumpDest, int filter, int flag)
 {
     SlotInfo* sip;
     VObjList* olist;
@@ -796,11 +796,11 @@ VObj* clone(VObj* original)
             break;
 
         case PROC:
-            ((long (*)())(*originalp))(original, clonep);
+            ((long (*)(VObj*, long*))(*originalp))(original, clonep);
             break;
 
         case FUNC:
-            *clonep = ((long (*)())(*originalp))();
+            *clonep = ((long (*)(void))(*originalp))();
             break;
 
         case ARRY:

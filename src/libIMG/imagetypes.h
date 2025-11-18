@@ -43,8 +43,8 @@ int mcidasIdent();
  */
 
 struct {
-    int (*identifier)(); /* print out image info if this kind of image */
-    Image* (*loader)();  /* load image if this kind of image */
+    int (*identifier)(char*, char*); /* print out image info if this kind of image */
+    Image* (*loader)(char*, char*, int);  /* load image if this kind of image */
     char* name;          /* name of this image format */
 } ImageTypes[] = {fbmIdent,       fbmLoad,       "FBM Image",
                   sunRasterIdent, sunRasterLoad, "Sun Rasterfile",

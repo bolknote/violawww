@@ -80,89 +80,57 @@ Creates vertical fractions with a horizontal division line.
 
 ---
 
-### 5. `<paren>...</paren>` - Extensible Parentheses
-Creates parentheses that automatically stretch to match the height of their content.
-
-```html
-<math><paren>x</paren></math>
-```
+### 5. Extensible Parentheses `()` and Brackets `[]`
+Use literal `()` and `[]` characters within `<math>` tags to create extensible parentheses and brackets that automatically stretch to match the height of their content.
 
 **Examples:**
 ```html
 <!-- Simple parentheses -->
-<math><paren>x + y</paren></math>
+<math>(x + y)</math>
 
 <!-- Parentheses automatically stretch for fractions -->
-<math><paren><box>a<over>b</box></paren></math>
+<math>(<box>a<over>b</box>)</math>
 
 <!-- Nested fractions with large outer parentheses -->
-<math><paren><box>d1 + d2<over>x1 + <paren><box>a1 + a2<over>b1 + b2</box></paren></box></paren></math>
+<math>(<box>d1 + d2<over>x1 + (<box>a1 + a2<over>b1 + b2</box>)</box>)</math>
 
-<!-- Multiple fractions -->
-<math>v = <paren><box>x + y<over>z</box></paren> + e</math>
-```
-
-**Features:**
-- Parentheses are drawn using vector graphics (not font characters)
-- Height automatically adjusts to content (tallest child + 2 pixels)
-- Width: PAREN_WIDTH (5px) on each side
-- Can contain any mathematical elements (fractions, symbols, text)
-- Supports nesting: `<paren>a + <paren>b</paren></paren>`
-
-**Technical Details:**
-- Uses `MINFO_LPAREN` (15) and `MINFO_RPAREN` (16) tokens internally
-- Left parenthesis drawn with curved lines (5 segments)
-- Right parenthesis drawn symmetrically
-- Both parentheses share the same height as the parent LPAREN node
-
----
-
-### 6. `<bracket>...</bracket>` - Extensible Square Brackets
-Creates square brackets that automatically stretch to match the height of their content.
-
-```html
-<math><bracket>x + y</bracket></math>
-```
-
-**Examples:**
-```html
-<!-- Simple brackets -->
-<math><bracket>x</bracket></math>
-
-<!-- Brackets with fractions -->
-<math><bracket><box>a<over>b</box></bracket></math>
+<!-- Square brackets with fractions -->
+<math>[<box>a<over>b</box>]</math>
 
 <!-- Integral with brackets -->
-<math><bracket>&integral;<sup>1</sup><sub>0</sub> f(x)</bracket></math>
+<math>&integral;<sup>b</sup><sub>a</sub> [f(x) + g(x)] dx</math>
 
 <!-- Nested structures -->
-<math><bracket>x + <paren>y + z</paren></bracket></math>
+<math>[x + (y + z)]</math>
 ```
 
 **Features:**
-- Square brackets drawn using vector graphics
+- Parentheses and brackets are drawn using vector graphics (not font characters)
 - Height automatically adjusts to content (tallest child + 2 pixels)
-- Width: BRACK_WIDTH (5px) on each side
-- Can contain any mathematical elements
-- Commonly used to denote intervals or evaluation bounds
+- Width: 5px on each side
+- Can contain any mathematical elements (fractions, symbols, text)
+- Supports nesting: `(a + (b + c))` or `[(x)]`
+- Works at any nesting level (in subscripts, superscripts, fractions, etc.)
 
 **Technical Details:**
-- Uses `MINFO_LBRACK` (17) and `MINFO_RBRACK` (18) tokens internally
-- Left bracket: vertical line with top and bottom horizontal strokes
-- Right bracket: mirror of left bracket
-- Both brackets share the same height as the parent LBRACK node
+- Characters `(`, `)`, `[`, `]` are parsed by Viola scripts and converted to internal tokens
+- Uses `MINFO_LPAREN` (15) and `MINFO_RPAREN` (16) for parentheses
+- Uses `MINFO_LBRACK` (17) and `MINFO_RBRACK` (18) for square brackets
+- Left parenthesis drawn with curved lines (5 segments)
+- Right parenthesis drawn symmetrically
+- Brackets drawn with vertical line and horizontal strokes
+- Each opening bracket/paren creates a container node with its matching closing bracket/paren as a child
 
-**Difference from text `()` and `[]`:**
-- Text parentheses/brackets: Fixed size from font
-- `<paren>`/`<bracket>` tags: Dynamically stretch to content height
-- Example: `(<box>a<over>b</box>)` shows small parens with large fraction
-- Better: `<paren><box>a<over>b</box></paren>` shows properly sized parens
+**Why extensible?**
+- Regular text `()` and `[]` from fonts are fixed size
+- Extensible brackets stretch to match tall content like fractions
+- Compare: `(<box>a<over>b</box>)` with extensible vs. font-based parentheses
 
 ---
 
 ## Mathematical Entities (Symbols)
 
-### 7. `&integral;` - Integral Symbol (∫)
+### 6. `&integral;` - Integral Symbol (∫)
 The integral symbol, typically used with limits.
 
 ```html
@@ -182,7 +150,7 @@ The integral symbol, typically used with limits.
 
 ---
 
-### 8. `&sigma;` - Sigma Symbol (Σ) / Summation
+### 7. `&sigma;` - Sigma Symbol (Σ) / Summation
 The summation symbol.
 
 ```html
@@ -197,7 +165,7 @@ The summation symbol.
 
 ---
 
-### 9. `&infin;` - Infinity Symbol (∞)
+### 8. `&infin;` - Infinity Symbol (∞)
 The infinity symbol.
 
 ```html
@@ -212,7 +180,7 @@ The infinity symbol.
 
 ---
 
-### 10. `&pi;` - Pi Symbol (π)
+### 9. `&pi;` - Pi Symbol (π)
 The mathematical constant pi.
 
 ```html
@@ -274,17 +242,17 @@ The mathematical constant pi.
 ### Extensible Parentheses with Nested Fractions
 ```html
 <!-- The original author's vision (from htmath.c sample code) -->
-<math>v = <paren><box>d1 + d2<over>x1 + <paren><box>a1 + a2<over>b1 + b2</box></paren></box></paren> e</math>
+<math>v = (<box>d1 + d2<over>x1 + (<box>a1 + a2<over>b1 + b2</box>)</box>) e</math>
 ```
 
 ### Integral with Brackets
 ```html
-<math><bracket>&integral;<sup>b</sup><sub>a</sub> f(x) + g(x)</bracket> dx</math>
+<math>&integral;<sup>b</sup><sub>a</sub> [f(x) + g(x)] dx</math>
 ```
 
 ### Summation with Parentheses
 ```html
-<math>&sigma;<sup>n</sup><sub>i=1</sub> <paren>a<sub>i</sub> + b<sub>i</sub></paren></math>
+<math>&sigma;<sup>n</sup><sub>i=1</sub> (a<sub>i</sub> + b<sub>i</sub>)</math>
 ```
 
 ---
@@ -320,10 +288,9 @@ The math engine uses these internal tokens (not directly accessible in HTML):
 ### Limitations
 
 1. **No Nested Superscripts**: `<sup><sup>...</sup></sup>` is not supported due to recursion protection
-2. **Text Parentheses Don't Stretch**: Plain `()` and `[]` in HTML are rendered as fixed-size text characters; use `<paren>` and `<bracket>` tags for extensible brackets
-3. **No Square Roots**: No `<sqrt>` or similar tag implemented
-4. **Limited Symbols**: Only `&integral;`, `&sigma;`, `&infin;`, `&pi;` are supported as special math symbols
-5. **No Other Brackets**: Braces `{}` and angle brackets `<>` are not supported
+2. **No Square Roots**: No `<sqrt>` or similar tag implemented
+3. **Limited Symbols**: Only `&integral;`, `&sigma;`, `&infin;`, `&pi;` are supported as special math symbols
+4. **No Other Brackets**: Braces `{}` and angle brackets `<>` are not supported (only `()` and `[]`)
 
 ### Rendering Details
 
@@ -339,27 +306,16 @@ The math engine uses these internal tokens (not directly accessible in HTML):
 
 - **Math Engine**: `src/viola/htmath.c`
 - **HTML Scripts**:
-  - `src/viola/embeds/HTML_math_script.v`
+  - `src/viola/embeds/HTML_math_script.v` - Main math container, handles `()` and `[]` parsing
   - `src/viola/embeds/HTML_box_script.v`
   - `src/viola/embeds/HTML_over_script.v`
-  - `src/viola/embeds/HTML_sup_script.v`
-  - `src/viola/embeds/HTML_sub_script.v`
-  - `src/viola/embeds/HTML_paren_script.v`
-  - `src/viola/embeds/HTML_bracket_script.v`
+  - `src/viola/embeds/HTML_sup_script.v` - Superscripts, handles nested `()` and `[]`
+  - `src/viola/embeds/HTML_sub_script.v` - Subscripts, handles nested `()` and `[]`
+  - `src/viola/embeds/HTML_above_script.v` - Handles nested `()` and `[]`
+  - `src/viola/embeds/HTML_below_script.v` - Handles nested `()` and `[]`
 - **Entity Definitions**: `src/libWWW/HTMLDTD.c`, `src/libWWW/HTML.c`
 
----
 
-## Test Files
 
-- `examples/testMathAll.html` - Comprehensive overview of all features
-- `examples/testBox.html` - Fraction examples
-- `examples/testMathComplex.html` - Complex mathematical formulas
-- `examples/testMathE.html` - Specific tests for text ordering
-- `examples/testParen.html` - Extensible parentheses and brackets examples
-- `examples/testEntities2.html` - Entity symbols display test
-
----
-
-*Last updated: November 16, 2025*
+*Last updated: November 18, 2025*
 

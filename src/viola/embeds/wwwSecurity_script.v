@@ -6,7 +6,22 @@
 		/* need to check that the file is indeed a temporary
 		 * file created by viola...
 		 */
-		if (findPattern(arg[1], "/tmp/") != -1) { /* very feeble */
+		if (nthChar(arg[1], 0, 4) == "/tmp/" || nthChar(arg[1], 0, 8) == "/var/tmp/") {
+			deleteFile(arg[1]);
+			return 1;
+		}
+
+		tmpDir = environVar("TMPDIR");
+		if (isBlank(tmpDir) == 1) return 0;
+		
+		if (nthChar(tmpDir, strlen(tmpDir) - 1) != '/') {
+			tmpDir = concat(tmpDir, "/");
+		}
+
+		pos = findPattern(arg[1], tmpDir);
+		last = strlen(tmpDir) - 1;
+
+		if (pos != -1 && pos == last) {
 			deleteFile(arg[1]);
 			return 1;
 		}

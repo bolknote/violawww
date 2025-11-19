@@ -155,6 +155,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 - **OpenSSL 3.x**: For HTTPS support (`brew install openssl@3`)
 - **ICU4C**: For UTF-8 transliteration (`brew install icu4c`)
+- **ImageMagick**: For PostScript image support (`brew install imagemagick`) - required if you need to display PostScript/PS figures
 
 **Note**: Without OpenMotif, only the pure X11 version (`viola`) will be built. The Motif version (`vw`) requires OpenMotif.
 
@@ -168,7 +169,7 @@ cd violawww
 # Install dependencies (macOS)
 brew install --cask xquartz    # X11 window system
 brew install openmotif byacc   # Required for building
-brew install openssl@3 icu4c   # Optional (HTTPS + UTF-8)
+brew install openssl@3 icu4c imagemagick   # Optional (HTTPS + UTF-8 transliteration + PostScript images)
 
 # Compile (parallel build)
 make clean

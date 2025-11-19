@@ -3,7 +3,7 @@
 	case "D":
 		return -1;
 	break;
-	case 'R':
+	case 'R': /* resize */
 		/* arg[1]	y
 		 * arg[2]	width
 		 */
@@ -22,6 +22,10 @@
 		 * arg[2]	w
 		 * arg[3]	y
 		 * arg[4]	src
+		 * arg[5]	delayP
+		 * arg[6]	delayWidth
+		 * arg[7]	delayHeight
+		 * arg[8]	ismap
 		 */
 		set("parent", arg[1]);
 		set("width", arg[2]);
@@ -29,44 +33,23 @@
 		set("y", style[0]);
 		set("x", arg[3] + style[2]);
 
-/*bleh*/	localSource = HTTPGet(arg[4]);
-		fnNoExt = parseHTTPAddress("name", concat(localSource, ".ps"));
-		system(concat("mv ", localSource, " /tmp/", fnNoExt, ".ps"));
-		localSource = concat("/tmp/", fnNoExt, ".ps");
-/*
-print("arg[4]={", arg[4], "}\n");
-print("localSource={", localSource, "}\n");
-print("fnNoExt={", fnNoExt, "}\n");
-*/
+		localSource = HTTPGet(arg[4]);
+
 		if (arg[5] > 0) {
 			after(arg[5], self(), 
 				"loadData", localSource, arg[6], arg[7]);
 			set("width", arg[6]);
 			set("height", arg[7]);
 			return height();
-		} else {
-			BITPLANES = 1;
-			system("rm -f /tmp/ps2gif.tmp");
-			saveFile("/tmp/ps2gif.tmp",
-			   concat("(pstoppm.ps) run\n",
-				  "80 80 ppmsetdensity\n",
-				  "(/tmp/) ppmsetprefix\n",
-				  "(", fnNoExt, ") ppm", BITPLANES, "run\n",
-				  "80 80 ppmsetdensity\n"));
-			system("cd /tmp; gs -DNODISPLAY -dSAFER -q < /tmp/ps2gif.tmp");
+		} else {				
+			localFile = concat(localSource, ".gif");
 
-/*			system(concat("rm -f /tmp/", fnNoExt));
-*/
-			localFile = concat("/tmp/", fnNoExt, ".gif");
-/*
-print("localFile={", localFile, "}\n");
-print("fnNoExt={", fnNoExt, "}\n");
-*/
-			system(concat("ppmtogif < /tmp/", 
-					fnNoExt, ".ppm > ", localFile));
+			system(concat("magick -density 80 -background white \"",
+				localSource, "\" -alpha remove -alpha off -colors 256 \"",
+				localFile,
+			"\""));
 
-			system(concat("rm -f /tmp/", fnNoExt, ".ppm"));
-			system("rm -f /tmp/ps2gif.tmp");
+			send("wwwSecurity", "rmTmpFile", localSource);
 
 			/* to get the gif in its natural dimension */
 			set("width", 0);
@@ -90,6 +73,12 @@ print("fnNoExt={", fnNoExt, "}\n");
 	break;
 	case "clone":
 		return clone(cloneID());
+	break;
+	case "freeSelf":
+		if (isBlank(localFile) == 0) {
+			send("wwwSecurity", "rmTmpFile", localFile);
+		}
+		return;
 	break;
 	}
 	usual();

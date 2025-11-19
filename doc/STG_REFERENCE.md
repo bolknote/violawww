@@ -1,0 +1,1048 @@
+# ViolaWWW Stylesheet (STG) Reference
+
+## Introduction
+
+ViolaWWW uses a hierarchical stylesheet system called **STG** (Stylesheet) that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.
+
+> **Historical Note**: This stylesheet system was experimental and specific to the Viola browser. It was never adopted as a web standard, but represents an early attempt at separating presentation from content.
+
+**References**:
+- [Original Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
+- Implementation: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
+
+---
+
+## Linking Stylesheets
+
+### Basic Syntax
+
+Stylesheets are linked using the HTML `<LINK>` tag in the document head or body:
+
+```html
+<link rel="style" href="HTML_sodium.stg">
+```
+
+### Multiple Stylesheets and Live Switching
+
+**⚠️ CRITICAL CONCEPT**: Unlike CSS, STG stylesheets apply **only from the point of inclusion downward** in the document. Viola processes `<link rel="style">` by freeing the currently loaded stylesheet (`STG_clean()` in `HTML_link_script.v`) and then loading the new file, so only **one** stylesheet is active at any time. This means:
+
+1. **Position matters**: A `<link>` tag only affects HTML elements that appear **after** it in the document
+2. **Multiple stylesheets**: You can include many `<link>` tags throughout your document to swap styles mid-stream
+3. **No stacking**: Each `<link rel="style">` **replaces** the previous stylesheet rather than layering on top of it
+
+```html
+<html>
+<head>
+  <title>Multiple Stylesheets Demo</title>
+  <link rel="style" href="base.stg">
+</head>
+<body>
+  <h1>Title</h1>
+  <p>This paragraph uses ONLY base.stg styles</p>
+  
+  <!-- Second stylesheet replaces the active one from here onward -->
+  <link rel="style" href="special.stg">
+  
+  <p>This paragraph now uses ONLY special.stg</p>
+  <p>All subsequent content uses special.stg until another link appears</p>
+  
+  <!-- Third stylesheet replaces special.stg -->
+  <link rel="style" href="extra.stg">
+  
+  <p>This uses only extra.stg</p>
+  
+  <address>
+    <!-- Fourth stylesheet loads for everything after this point -->
+    <link rel="style" href="address.stg">
+    <p>This uses only address.stg</p>
+  </address>
+</body>
+</html>
+```
+
+**How it works**:
+- First `<h1>` and first `<p>`: styled by **base.stg** (loaded in `<head>`)
+- Second and third `<p>`: styled by **special.stg** (base was freed just before these paragraphs)
+- Fourth `<p>`: styled by **extra.stg**
+- `<address>` section: styled by **address.stg** (and everything after the link keeps using it until another stylesheet is loaded)
+
+**Use case**: This allows you to change styles mid-document, useful for:
+- Different sections with different visual themes
+- Testing multiple style variations in one document
+- Progressive style enhancement as the document loads
+
+---
+
+## STG Syntax Overview
+
+### Basic Structure
+
+STG files use a Lisp-like syntax with parentheses to define hierarchical rules:
+
+```
+(TAG_SELECTOR
+    attribute=value
+    
+    (NESTED_TAG_SELECTOR
+        attribute=value
+    )
+)
+```
+
+### Comments
+
+STG does not have a formal comment syntax. Use whitespace liberally for readability.
+
+---
+
+## Major Selectors (Tag-Based)
+
+### Single Tag Selector
+
+Select a single HTML tag:
+
+```
+(P
+    FGColor=black
+    BGColor=white
+)
+```
+
+### Multiple Tag Selector
+
+Select multiple tags with the same styles using comma separation:
+
+```
+(H1,H2,H3
+    FGColor=red
+    fontWeight=bold
+)
+```
+
+This applies the same styles to `<H1>`, `<H2>`, and `<H3>` tags.
+
+### Nested Selectors (Context Sensitivity)
+
+Nested selectors create context-dependent styles. Child selectors only apply when they appear inside the parent tag:
+
+```
+(BODY
+    FGColor=black
+    BGColor=white
+    
+    (P
+        fontSize=normal
+    )
+    
+    (ADDRESS
+        FGColor=blue
+        
+        (P
+            fontSlant=italic
+        )
+    )
+)
+```
+
+**How it works**:
+- `<P>` tags directly in `<BODY>` get `fontSize=normal`
+- `<P>` tags inside `<ADDRESS>` get `fontSlant=italic` and inherit `FGColor=blue` from `ADDRESS`
+
+### Inheritance
+
+Attributes are **inherited** down the tree unless explicitly overridden:
+
+```
+(BODY
+    FGColor=black        # All children inherit black text
+    BGColor=white
+    
+    (H1
+        FGColor=red      # H1 overrides to red text
+        BGColor=yellow   # H1 overrides to yellow background
+    )
+    
+    (P)                   # P inherits black text, white background from BODY
+)
+```
+
+**Note**: The lone `(P)` engages the `<P>` tag in this context even without additional attributes.
+
+---
+
+## Minor Selectors (Attribute-Based)
+
+### Syntax
+
+**⚠️ IMPORTANT**: Minor selectors work **ONLY** with the HTML `style=""` attribute. Other HTML attributes are not supported by the current implementation.
+
+Minor selectors allow styling based on the value of the `style` attribute in HTML:
+
+```
+(TAG
+    attribute=value
+    
+    {STYLE "VALUE"
+        attribute=value
+    }
+)
+```
+
+**Technical detail**: The attribute name `STYLE` is hardcoded in the implementation (`libstg.c:562`). You cannot use other attribute names like `{CLASS "value"}` or `{ID "value"}` - only `{STYLE "value"}` is supported.
+
+### Example: Style-Based Variants
+
+```
+(P
+    BGColor=white
+    FGColor=black
+    
+    {STYLE "WARNING"
+        FGColor=red
+        BDColor=orange
+        border=2
+    }
+    
+    {STYLE "NOTE"
+        FGColor=blue
+        BDColor=cyan
+        border=2
+    }
+)
+```
+
+**HTML Usage**:
+
+```html
+<p>Normal paragraph with black text.</p>
+
+<p style="WARNING">Warning paragraph with red text and orange border.</p>
+
+<p style="NOTE">Note paragraph with blue text and cyan border.</p>
+```
+
+### How Minor Selectors Work
+
+1. The base tag selector `(P)` applies default styles to all `<P>` tags
+2. Minor selectors `{STYLE "WARNING"}` match when the HTML has `style="WARNING"`
+3. Styles from the minor selector are **added** to the base styles
+4. Minor styles take precedence over inherited styles
+
+### Understanding Minor Selector Syntax
+
+**Internal representation**: When the parser reads `{STYLE "WARNING"}`, it creates a minor selector with a list of **two separate identifiers**:
+1. First ID: `STYLE` (the attribute name)
+2. Second ID: `WARNING` (the attribute value)
+
+Both identifiers are stored equally in the minor's `IDList`. The matching algorithm (`matchMinor` function) requires **both** identifiers to be present in the list for a match.
+
+**Equivalent syntaxes**:
+```
+{STYLE "WARNING"}      # With quotes (recommended)
+{STYLE WARNING}        # Without quotes (works if no spaces)
+{STYLE,WARNING}        # With explicit comma
+```
+
+**When quotes are required**:
+- Use quotes if the value contains spaces: `{STYLE "MY WARNING"}`
+- Without quotes, each word becomes a separate ID: `{STYLE MY WARNING}` creates three IDs (incorrect)
+
+**What won't work**:
+```
+{CLASS "highlight"}    # ❌ Only STYLE attribute is supported
+{ID "main"}            # ❌ Only STYLE attribute is supported
+{ROLE "navigation"}    # ❌ Only STYLE attribute is supported
+```
+
+### Multiple Minor Selectors
+
+You can define multiple minor selectors for the same tag:
+
+```
+(DIV
+    BGColor=white
+    
+    {STYLE "HIGHLIGHT"}
+    {STYLE "ALERT"}
+    {STYLE "INFO"}
+)
+```
+
+---
+
+## Style Attributes Reference
+
+### Color Attributes
+
+#### `FGColor=<color>` - Foreground (Text) Color
+
+Sets the text color.
+
+```
+(P FGColor=black)
+(H1 FGColor=red)
+```
+
+**Supported Colors**: 
+- **Basic colors**: `black`, `white`, `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`
+- **Extended colors**: `maroon`, `orange`, `navy`, `brown`, `purple`
+- **Light variants**: `lightyellow`, `lightgray`, `lightcyan`, `lightblue`, `lightgreen`
+- **Dark variants**: `darkblue`, `darkred`, `darkgreen`, `darkgray`
+- **Grey scale** (X11 color names): `grey0` through `grey100` (also `gray0` through `gray100`)
+  - You can use **any number from 0 to 100**: `grey0`, `grey1`, `grey2`, ..., `grey99`, `grey100`
+  - `grey0` = black (0% brightness)
+  - `grey25` = 25% brightness (dark grey)
+  - `grey50` = 50% brightness (medium grey)
+  - `grey75` = 75% brightness (light grey)
+  - `grey100` = white (100% brightness)
+  - **Commonly used in codebase**: `grey24`, `grey30`, `grey40`, `grey45`, `grey55`, `grey60`, `grey70`, `grey75`, `grey80`, `grey95`, `grey97`
+  
+> **Note**: ViolaWWW uses X11 color names via `XParseColor()`, so **any valid X11 color** is supported, including the complete X11 color database (over 600 colors). Both `grey` and `gray` spellings work identically.
+
+**Additional X11 Colors** (partial list):
+- **Slate variants**: `slate`, `slategray`, `slategray1` through `slategray4`, `lightslategray`, `darkslategray`
+- **Coral/Pink**: `coral`, `lightcoral`, `pink`, `lightpink`, `hotpink`, `deeppink`
+- **Violet/Purple**: `violet`, `darkviolet`, `blueviolet`, `purple`, `mediumpurple`, `darkorchid`
+- **Cyan variants**: `cyan`, `lightcyan`, `darkcyan`, `aquamarine`, `turquoise`, `darkturquoise`
+- **Gold/Tan**: `gold`, `goldenrod`, `lightgoldenrod`, `tan`, `wheat`, `burlywood`
+- **Forest/Lime**: `forestgreen`, `limegreen`, `springgreen`, `seagreen`, `palegreen`
+- **Fire brick/Sienna**: `firebrick`, `indianred`, `sienna`, `saddlebrown`, `peru`
+- And hundreds more... (see `/usr/share/X11/rgb.txt` on Unix systems)
+
+#### `BGColor=<color>` - Background Color
+
+Sets the background color.
+
+```
+(BODY BGColor=white)
+(ADDRESS BGColor=lightyellow)
+```
+
+#### `BDColor=<color>` - Border Color
+
+Sets the border color (used with `border` attribute).
+
+```
+(SECTION BDColor=red border=1)
+```
+
+### Font Attributes
+
+#### `fontSize=<size>` - Font Size
+
+Sets the font size.
+
+```
+(P fontSize=normal)
+(H1 fontSize=largest)
+```
+
+**Values**:
+- `smallest`
+- `small`
+- `normal` (default)
+- `large`
+- `largest`
+
+#### `fontWeight=<weight>` - Font Weight
+
+Sets the font weight (boldness).
+
+```
+(STRONG fontWeight=bold)
+(B fontWeight=bold)
+```
+
+**Values**:
+- `normal` (default)
+- `bold`
+
+#### `fontSlant=<slant>` - Font Slant
+
+Sets the font slant (italic).
+
+```
+(I fontSlant=italic)
+(EM fontSlant=italic)
+```
+
+**Values**:
+- `normal` (default)
+- `italic`
+
+#### `fontSpacing=<spacing>` - Font Spacing
+
+Sets the font to monospace.
+
+```
+(CODE fontSpacing=mono)
+(KBD fontSpacing=mono)
+(PRE fontSpacing=mono)
+```
+
+**Values**:
+- `proportional` (default)
+- `mono` (monospace)
+
+### Layout Attributes
+
+#### `align=<alignment>` - Text Alignment
+
+Sets horizontal text alignment.
+
+```
+(H1 align=center)
+(P align=left)
+(H2 align=right)
+```
+
+**Values**:
+- `left` (default)
+- `center`
+- `right`
+
+#### `border=<width>` - Border Width
+
+Sets the border width in pixels (requires `BDColor`).
+
+```
+(SECTION border=1 BDColor=black)
+(DIV border=2 BDColor=red)
+```
+
+**Values**: Integer pixel values (e.g., `1`, `2`, `3`)
+
+### Special Effects
+
+#### `blink=<milliseconds>` - Text Blinking
+
+Makes text blink at specified interval.
+
+```
+(P
+    blink=1000
+    blinkColorOn=green
+    blinkColorOff=black
+)
+```
+
+#### `blinkColorOn=<color>` - Blink "On" Color
+
+Color when blink is in "on" state.
+
+#### `blinkColorOff=<color>` - Blink "Off" Color
+
+Color when blink is in "off" state.
+
+**Example**:
+
+```
+(ADDRESS
+    (P
+        fontSlant=italic
+        blinkColorOn=green
+        blinkColorOff=black
+        blink=1000
+    )
+)
+```
+
+---
+
+## Complete Examples
+
+### Example 1: Basic Document Styles
+
+**File**: `base.stg`
+
+```
+(BODY
+    FGColor=black
+    BGColor=white
+    fontSize=normal
+    
+    (H1
+        fontSize=largest
+        fontWeight=bold
+        FGColor=darkblue
+        align=center
+    )
+    
+    (H2
+        fontSize=large
+        fontWeight=bold
+        FGColor=darkred
+    )
+    
+    (P
+        fontSize=normal
+    )
+    
+    (A
+        FGColor=blue
+    )
+    
+    (CODE
+        fontSpacing=mono
+        FGColor=darkgreen
+        BGColor=lightgray
+    )
+)
+```
+
+### Example 2: Context-Sensitive Styles
+
+**File**: `HTML_sodium.stg`
+
+```
+(BODY,HPANE,INPUT,P
+    FGColor=black
+    BGColor=grey70
+    BDColor=grey70
+    align=left
+
+    (SECTION
+        border=1
+        BDColor=red
+    )
+
+    (H1
+        FGColor=white
+        BGColor=red
+        BDColor=black
+        align=center
+    )
+
+    (H2,H3
+        FGColor=white
+        BGColor=maroon
+        BDColor=maroon
+        align=right
+    )
+
+    (A FGColor=red)
+    (BOLD,EMPH,STRONG fontWeight=bold)
+    (CMD,KBD,SCREEN,LISTING,EXAMPLE fontSpacing=mono)
+    (I fontSlant=italic)
+
+    (ADDRESS
+        align=left
+        FGColor=white
+        BGColor=blue
+        BDColor=blue
+        
+        (P)
+    )
+)
+```
+
+**Explanation**:
+- Base styles apply to `BODY`, `HPANE`, `INPUT`, and `P` tags
+- `SECTION` tags get a red border
+- `H1` gets centered white text on red background
+- `H2` and `H3` get white text on maroon background, right-aligned
+- Links (`A`) are red
+- Bold tags get bold weight
+- Monospace tags get mono spacing
+- Italic tags get italic slant
+- `ADDRESS` gets blue background
+- `P` inside `ADDRESS` inherits all `ADDRESS` styles
+
+### Example 3: Nested Context
+
+**File**: `HTML_address1.stg`
+
+```
+(P
+    FGColor=black
+    BGColor=grey70
+    BDColor=grey70
+    align=left
+
+    (ADDRESS
+        align=left
+        FGColor=black
+        BGColor=grey70
+        BDColor=grey70
+        
+        (P
+            fontSlant=italic
+            blinkColorOn=green
+            blinkColorOff=black
+            blink=1000
+        )
+    )
+)
+```
+
+**Result**:
+- Normal `<P>` tags: black text, grey background
+- `<P>` inside `<ADDRESS>`: italic, blinking green/black
+
+### Example 4: Attribute-Based Styling (Minors)
+
+**File**: `test_minors.stg`
+
+```
+(P
+    BGColor=white
+    FGColor=black
+    
+    {STYLE "WARNING"
+        FGColor=red
+        BDColor=orange
+        border=2
+    }
+    
+    {STYLE "NOTE"
+        FGColor=blue
+        BDColor=cyan
+        border=2
+    }
+)
+```
+
+**HTML**:
+
+```html
+<p>Normal paragraph.</p>
+
+<p style="WARNING">
+    This is a warning with red text and orange border.
+</p>
+
+<p style="NOTE">
+    This is a note with blue text and cyan border.
+</p>
+```
+
+### Example 5: Multiple Stylesheets in One Document
+
+This example demonstrates the "cascading downward" behavior from the [original Viola specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html).
+
+**HTML File**: `test_multiple.html`
+
+```html
+<html>
+<head>
+    <title>Multiple Stylesheets Test</title>
+</head>
+<body>
+    <link rel="style" href="HTML_sodium.stg">
+    
+    <h1>Simple Stylesheets Test</h1>
+    
+    <p>This document demonstrates three different stylesheets applied 
+       at different points. Note that the H1 above is center-aligned 
+       as specified by the first stylesheet.</p>
+    
+    <h2>Context Sensitivity</h2>
+    
+    <p>The following three ADDRESS sections are each under influence 
+       of three different stylesheets.</p>
+    
+    <!-- First ADDRESS uses only HTML_sodium.stg -->
+    <address>
+        <p>wei@ora.com</p>
+        <p>Digital Media Group, O'Reilly & Associates</p>
+    </address>
+    
+    <link rel="style" href="HTML_address1.stg">
+    <p>Second stylesheet in effect starting from here. 
+       The ADDRESS paragraphs below will be blinking.</p>
+    
+    <!-- Second ADDRESS uses HTML_sodium.stg + HTML_address1.stg -->
+    <address>
+        <p>wei@ora.com</p>
+        <p>Digital Media Group, O'Reilly & Associates</p>
+    </address>
+    
+    <link rel="style" href="HTML_address2.stg">
+    <p>Third stylesheet in effect starting from here.</p>
+    
+    <!-- Third ADDRESS uses all three stylesheets -->
+    <address>
+        <p>wei@ora.com</p>
+        <p>Digital Media Group, O'Reilly & Associates</p>
+    </address>
+</body>
+</html>
+```
+
+**First Stylesheet**: `HTML_sodium.stg`
+
+```
+(BODY,HPANE,INPUT,P
+    FGColor=black
+    BGColor=grey70
+    BDColor=grey70
+    align=left
+
+    (H1
+        FGColor=white
+        BGColor=red
+        BDColor=black
+        align=center
+    )
+
+    (H2
+        FGColor=white
+        BGColor=maroon
+        align=right
+    )
+
+    (ADDRESS
+        align=left
+        FGColor=white
+        BGColor=blue
+        BDColor=blue
+        
+        (P)
+    )
+)
+```
+
+**Second Stylesheet**: `HTML_address1.stg`
+
+```
+(P
+    FGColor=black
+    BGColor=grey70
+    
+    (ADDRESS
+        align=left
+        FGColor=black
+        BGColor=grey70
+        
+        (P
+            fontSlant=italic
+            blinkColorOn=green
+            blinkColorOff=black
+            blink=1000
+        )
+    )
+)
+```
+
+**Third Stylesheet**: `HTML_address2.stg`
+
+```
+(P
+    FGColor=black
+    BGColor=grey70
+    
+    (ADDRESS
+        align=right
+        
+        (P
+            fontSlant=italic
+        )
+    )
+)
+```
+
+**Result**:
+1. **First `<address>`**: White text on blue background (from `HTML_sodium.stg`)
+2. **Second `<address>`**: Black italic text on grey background, blinking green/black (from `HTML_address1.stg`, which replaced the previous stylesheet before this block)
+3. **Third `<address>`**: Black italic text, right-aligned (from `HTML_address2.stg`, which replaced the second stylesheet)
+
+**Key Points**:
+- Each `<link>` tag affects only content that appears **after** it
+- Later stylesheets **replace** earlier ones instead of merging with them
+- Switching styles mid-document still lets you give different sections distinct looks, but only one stylesheet is active at a time
+
+---
+
+## Technical Implementation Details
+
+### Parser Structure
+
+The STG parser (`libstg.c`) uses a hierarchical data structure:
+
+- **STGLib**: Library containing all stylesheet groups
+- **STGGroup**: A stylesheet file's parsed representation
+- **STGMajor**: A major selector (tag-based) with:
+  - Tag ID list (e.g., `P`, `H1`, `BODY`)
+  - Attribute assertions (style properties)
+  - Child major selectors (nested context)
+  - Child minor selectors (attribute-based)
+- **STGMinor**: A minor selector (attribute-based) with:
+  - Attribute name/value pairs (e.g., `STYLE="WARNING"`)
+  - Style property assertions
+- **STGAssert**: A style property (e.g., `FGColor=red`)
+
+### Context Matching Algorithm
+
+When rendering an HTML element, the browser:
+
+1. **Builds context array**: Creates an array of `[tag, attr]` pairs starting with the **current** element and walking up the ancestor chain. `context[0]` is the current tag ID, `context[1]` is the current element’s `style` value ID (or `NULL`), `context[2]`/`context[3]` represent the parent, and so on.
+   - Example: for `<P style="WARNING">` inside `<ADDRESS>` inside `<BODY>`, the context array is `[P, WARNING, ADDRESS, NULL, BODY, NULL]` and `contextCount` is `3` (one entry per tag level).
+
+2. **Searches for matching majors**: Finds all major selectors matching the current tag
+
+3. **Filters by context**: Eliminates majors that don't match the parent hierarchy
+
+4. **Validates context depth**: Rejects styles if the HTML context is shallower than the stylesheet nesting
+   - **Important limitation**: If stylesheet has `(BODY (ADDRESS (P)))` but HTML only has `<P>` without parents, the style **won't apply**
+   - Exception: First-level nesting is allowed (e.g., `(BODY (H1))` can match top-level `<H1>`)
+   - This prevents deeply nested stylesheet rules from accidentally matching shallow HTML elements
+
+5. **Checks for minor match**: If element has attributes (like `style="WARNING"`), searches for matching minor selector
+   - The minor must have **both** `STYLE` and the attribute value in its IDList
+   - Minor matching is performed by `matchMinor()` function (`libstg.c:487-533`)
+
+6. **Applies styles**: Merges styles from:
+   - Inherited styles from parent majors
+   - Matching major selector
+   - Matching minor selector (highest priority)
+   
+   Priority order (lowest to highest):
+   - Parent inheritance → Major selector → Minor selector
+
+### Style Priority
+
+From lowest to highest priority:
+
+1. **Inherited styles** from parent tags
+2. **Major selector** styles (tag-based)
+3. **Minor selector** styles (attribute-based)
+
+Later styles override earlier ones.
+
+### Memory Management
+
+- Tag names and attribute names are converted to integer IDs for fast comparison
+- Style strings are saved using `saveString()` for efficient memory usage
+- Tree structures are freed recursively when stylesheet is unloaded
+
+**Key memory functions**:
+- `freeGroup(STGLib* lib, STGGroup** group)` - Free a single stylesheet group
+- `freeLib(STGLib* lib)` - Free entire library and all groups (prevents memory leaks)
+- Internal recursive freeing: `free_major_tree()`, `free_minor_list()`, `free_assert_list()`, `free_str_list()`
+
+### API Functions
+
+**Initialization**:
+```c
+STGLib* STG_init(
+    int (*tagNameCmp_f)(),           // Tag name comparison function
+    long (*tagName2ID_f)(),          // Convert tag name to ID
+    char* (*tagID2Name_f)(),         // Convert tag ID to name
+    int (*tagAttrNameCmp_f)(),       // Attribute name comparison
+    long (*tagAttrName2ID_f)(),      // Convert attribute name to ID
+    char* (*tagAttrID2Name_f)()      // Convert attribute ID to name
+);
+```
+
+**Parsing**:
+```c
+STGGroup* STG_makeGroup(STGLib* lib, char* gspec);  // Parse stylesheet string
+```
+
+**Querying**:
+```c
+// Find matching style for element context
+int STG_findStyle(
+    STGGroup* group,
+    char* context[],      // Array of [tag, attr, tag, attr, ...]
+    int contextCount,     // Number of context levels
+    STGResult results[],  // Output: array of major/minor pairs
+    int maxResults        // Maximum results to return
+);
+
+// Find attribute in major/minor hierarchy
+STGAssert* STGFindAssertWithMinor(STGMajor* major, STGMinor* minor, char* attrName);
+STGAssert* STGFindAssert(STGMajor* major, char* attrName);  // Legacy, no minor support
+```
+
+**Debugging**:
+```c
+void STG_dumpLib(STGLib* lib);          // Print entire library
+void STG_dumpGroup(STGGroup* group);    // Print stylesheet group
+void STG_dumpMajor(STGMajor* major, int level);    // Print major selector tree
+void STG_dumpMinor(STGMinor* minor, int level);    // Print minor selector
+void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
+```
+
+**Tracing**: Set `WWW_TraceFlag = 1` to enable detailed parser trace output to stdout.
+
+---
+
+## Limitations and Notes
+
+### Current Limitations
+
+1. **Attribute selectors**: **ONLY** the `STYLE` attribute is supported for minor selectors
+   - Hardcoded in `libstg.c:562`: `stg_tagName2ID("STYLE")`
+   - No support for `CLASS`, `ID`, `ROLE`, or any other HTML attributes
+   - This is a fundamental implementation limitation, not a design choice
+   
+2. **Context depth validation**: Stylesheet nesting must match or be shallower than HTML structure
+   - Style `(BODY (ADDRESS (P)))` won't match standalone `<P>` tag
+   - Exception: First-level nesting (`(BODY (H1))`) can match top-level tags
+   - This prevents unintended style application but may surprise users
+   
+3. **Selector specificity**: No complex selectors like CSS (e.g., no `>`, `+`, `~` combinators)
+
+4. **Pseudo-classes**: No `:hover`, `:active`, `:visited` support
+
+5. **Dynamic updates**: Stylesheets are loaded at document parse time, not dynamically
+
+6. **Cascading order**: Order of `<link>` tags matters for applying styles
+
+7. **Parser buffer limits**: Parse context uses fixed 1000-byte buffers (`ParseContext` struct)
+   - Very long tag names or attribute values may be truncated
+   - No error reporting for buffer overflow
+
+### Best Practices
+
+1. **Use hierarchical nesting**: Leverage context-sensitive styles for maintainability
+2. **Group similar tags**: Use comma separation for tags with identical styles
+3. **Inherit wisely**: Set common properties at parent level to reduce repetition
+4. **Test context**: Verify that nested selectors match intended HTML structure
+5. **Minimize minor selectors**: Use minor selectors sparingly as they add complexity
+
+### Known Issues
+
+1. **Parser is case-sensitive** for tag names (use uppercase: `BODY`, not `body`)
+   - Tag comparison uses configured comparison function (`stg_tagNameCmp`)
+   
+2. **No error reporting**: Invalid syntax may be silently ignored
+   - Parser prints errors to stdout with `printf()` but continues parsing
+   - Example: `"libstg: major: error-- no left side to '='."`
+   - No structured error handling or recovery mechanism
+   
+3. **Whitespace handling**: Spaces, tabs, and newlines are treated equally
+   - Whitespace is skipped by `is_space()` helper (`libstg.c:23-25`)
+   - Whitespace around `=` signs is automatically handled
+   
+4. **Quote handling**: String values should be quoted if they contain spaces or special characters
+   - Without quotes, each space-separated word becomes a separate token
+   - Special characters `=`,`,`,`(`,`)`,`{`,`}` always act as delimiters
+   
+5. **Memory management**: Tag and attribute names are converted to integer IDs and stored as `(char*)(long)` casts
+   - This assumes pointer size equals long size (works on most modern systems)
+   - Values are saved via `saveString()` which must be implemented by the caller
+   
+6. **Minor selector limitations**: Nested minors are not supported
+   - If the parser encounters a `{` while already inside a minor block it simply bails out of the block, often without a helpful error message, so the rest of the minor definition is ignored
+   - Only one level of attribute-based styling is supported
+
+---
+
+## Example HTML Document with Stylesheet
+
+**HTML File**: `test.html`
+
+```html
+<html>
+<head>
+    <title>STG Test</title>
+    <link rel="style" href="mystyle.stg">
+</head>
+<body>
+    <h1>Welcome to ViolaWWW</h1>
+    
+    <p>This is a normal paragraph.</p>
+    
+    <p style="WARNING">
+        <strong>Warning:</strong> This is important!
+    </p>
+    
+    <address>
+        <p>Contact: wei@ora.com</p>
+    </address>
+    
+    <section>
+        <h2>Section Title</h2>
+        <p>Section content here.</p>
+    </section>
+</body>
+</html>
+```
+
+**Stylesheet**: `mystyle.stg`
+
+```
+(BODY
+    FGColor=black
+    BGColor=white
+    fontSize=normal
+    
+    (H1
+        fontSize=largest
+        fontWeight=bold
+        FGColor=white
+        BGColor=navy
+        align=center
+    )
+    
+    (H2
+        fontSize=large
+        fontWeight=bold
+        FGColor=maroon
+    )
+    
+    (P
+        fontSize=normal
+        
+        {STYLE "WARNING"
+            FGColor=red
+            BDColor=orange
+            border=2
+            fontWeight=bold
+        }
+    )
+    
+    (ADDRESS
+        FGColor=darkblue
+        fontSlant=italic
+        BGColor=lightyellow
+    )
+    
+    (SECTION
+        border=1
+        BDColor=grey70
+    )
+    
+    (STRONG
+        fontWeight=bold
+    )
+)
+```
+
+---
+
+## Comparison with CSS
+
+| Feature | STG | CSS |
+|---------|-----|-----|
+| **Syntax** | Lisp-like parentheses | Curly braces |
+| **Nesting** | Native hierarchical | Requires preprocessors (Sass/Less) |
+| **Context sensitivity** | Built-in | Via descendant selectors |
+| **Attribute selectors** | Limited (`{STYLE "value"}`) | Full support (`[attr="value"]`) |
+| **Inheritance** | Automatic down tree | Via `inherit` keyword |
+| **Specificity** | Context depth-based | Complex specificity rules |
+| **Cascading** | Document order (top-down) | Multiple cascade layers |
+| **Dynamic** | Static at load | Can be dynamic (JavaScript) |
+
+---
+
+## File Locations
+
+- **Parser**: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
+- **Example Stylesheets**: `examples/*.stg`
+- **Test Files**: `test/test_stg_*.c`
+
+---
+
+## See Also
+
+- [Web Archive: Original Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html)
+- `MATH_REFERENCE.md` - Mathematical notation in ViolaWWW
+- `README.md` - Project overview
+
+---
+
+*Last updated: November 19, 2025*
+

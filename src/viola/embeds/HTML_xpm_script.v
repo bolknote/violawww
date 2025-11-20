@@ -4,7 +4,7 @@
 		set("label", get("label"));
 		return get("height");
 	break;
-	case 'R':
+	case "R":
 		/* arg[1]	y
 		 * arg[2]	width
 		 */
@@ -14,6 +14,7 @@
 		set("y", arg[1] + vspan);
 		set("x", style[2]);
 		set("width", arg[2] - x() - style[3]);
+		set("content", get("content"));
 		vspan += get("height") + style[1];
 		render();
 		return vspan;
@@ -22,7 +23,7 @@
 		return;
 	break;
 	case "gotoAnchor":
-		return 0;
+		return "";
 	break;
 	case "buttonPress":
 		xy = mouseLocal();
@@ -50,6 +51,19 @@
 		drawLine(x1, y1 - 5, x1, y1 + 5);
 		drawLine(x1 + 5, y1, x1 - 5, y1);
 		send(top, "follow_href", ref);
+	break;
+	case "make":
+		/* arg[1]	parent
+		 * arg[2]	w
+		 * arg[3]	h
+		 * arg[4]	label (XPM data)
+		 * arg[5]	ismap
+		 */
+		set("parent", arg[1]);
+		set("width", arg[2]);
+		set("label", arg[4]);
+		ismap = arg[5];
+		return get("height");
 	break;
 	case "clone":
 		return clone(cloneID());

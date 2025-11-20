@@ -126,6 +126,8 @@ COL2 		HTML_col2 		0 0 0 1 0		1 1 1 2\n\
 COL3 		HTML_col3 		0 0 0 1 0		1 1 1 2\n\
 COL4 		HTML_col4 		0 0 0 1 0		1 1 1 2\n\
 FIGDATA		HTML_figdata 		1 0 0 1 0		0 1 0 0\n\
+XBM		HTML_xbm 		0 0 0 1 0		0 0 0 0\n\
+XPM		HTML_xpm 		0 0 0 1 0		0 0 0 0\n\
 L 		HTML_txt 		0 0 0 1 0		3 7 1 2\n\
 AUTHOR		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ENTRY		HTML_ignore		1 0 0 0 0		0 0 0 0\n\

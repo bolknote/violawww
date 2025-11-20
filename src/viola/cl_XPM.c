@@ -168,8 +168,17 @@ long helper_XPM_set(VObj* self, Packet* result, int argc, Packet argv[], long la
         unsigned int width = 0, height = 0;
         int hotx, hoty;
         Pixmap pixmap;
+        char* trimmedStr;
 
         result->info.s = SaveString(PkInfo2Str(&argv[1]));
+        
+        /* Trim leading and trailing whitespace from XPM data */
+        trimmedStr = trimEdgeSpaces(result->info.s);
+        if (trimmedStr != result->info.s) {
+            free(result->info.s);
+            result->info.s = SaveString(trimmedStr);
+        }
+        
         if (GET_label(self))
             free(GET_label(self));
         SET_label(self, result->info.s);

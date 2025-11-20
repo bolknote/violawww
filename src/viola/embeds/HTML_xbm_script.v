@@ -52,6 +52,22 @@
 		drawLine(x1 + 5, y1, x1 - 5, y1);
 		send(top, "follow_href", ref);
 	break;
+	case "make":
+		/* arg[1]	parent
+		 * arg[2]	w
+		 * arg[3]	h
+		 * arg[4]	label (XBM data)
+		 * arg[5]	ismap
+		 */
+		set("parent", arg[1]);
+		set("width", arg[2]);
+		set("label", arg[4]);
+		ismap = arg[5];
+		return get("height");
+	break;
+	case "clone":
+		return clone(cloneID());
+	break;
 	case "init":
 		usual();
 		SGMLBuildDoc_setColors();

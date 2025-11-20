@@ -34,6 +34,7 @@
 #include "slotaccess.h"
 #include "utils.h"
 #include "vlist.h"
+#include "viola.h"
 #include <ctype.h>
 #include <limits.h>
 #include <pwd.h>
@@ -191,15 +192,10 @@ void signalHandler(sig) int sig;
         exiting = 1;
 
         fprintf(stderr, "signalHandler: caught nonfatal signal %d.\n", sig);
-        fprintf(stderr, "signalHandler: freeing fonts.\n");
+        fprintf(stderr, "signalHandler: cleaning up resources...\n");
         fflush(stderr);
 
-        free_fonts();
-
-        fprintf(stderr, "signalHandler: freeing X resources.\n");
-        fflush(stderr);
-
-        freeAllObjects();
+        freeViolaResources();
 
         fprintf(stderr, "signalHandler: exiting.\n");
         fflush(stderr);

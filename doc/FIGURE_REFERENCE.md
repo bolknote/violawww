@@ -301,11 +301,4 @@ The FIGURE element was part of early HTML extensions proposed for ViolaWWW befor
 
 Many of these features were later incorporated into HTML standards (IMG tag, AREA/MAP elements for image maps, etc.).
 
-## See Also
-
-- [MATH_REFERENCE.md](MATH_REFERENCE.md) - Mathematical notation support
-- [STG_REFERENCE.md](STG_REFERENCE.md) - Stylesheet reference
-- `examples/test_figa.html` - Interactive image map example
-- `examples/test_xbm_inline2.html` - Inline XBM and XPM examples
-- `examples/test_figure_ps.html` - PostScript figure example
 

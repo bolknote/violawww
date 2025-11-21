@@ -31,11 +31,13 @@
 #include <Xm/Label.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
+#include <Xm/MwmUtil.h>
 #include <Xm/PushB.h>
 #include <Xm/RowColumn.h>
 #include <Xm/ScrollBar.h>
 #include <Xm/TextF.h>
 #include <Xm/Xm.h>
+#include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -517,6 +519,34 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     XtManageChild(mainWin);
 
     XtRealizeWidget(shell);
+
+    /* Make window fixed size */
+    {
+        Display *dpy = XtDisplay(shell);
+        Window win = XtWindow(shell);
+        XSizeHints hints;
+        Dimension width, height;
+        
+        /* Get current window size */
+        XtVaGetValues(shell, XmNwidth, &width, XmNheight, &height, NULL);
+        
+        /* Set min and max to current size to prevent resizing */
+        memset(&hints, 0, sizeof(XSizeHints));
+        hints.flags = PMinSize | PMaxSize;
+        hints.min_width = hints.max_width = (int)width;
+        hints.min_height = hints.max_height = (int)height;
+        XSetWMNormalHints(dpy, win, &hints);
+        
+        /* Disable resize and maximize via MWM hints */
+        {
+            int funcs  = MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE;
+            int decors = MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH;
+            XtVaSetValues(shell,
+                          XmNmwmFunctions,   funcs,
+                          XmNmwmDecorations, decors,
+                          NULL);
+        }
+    }
 
     /* Set color of main scrollbar to be palattable. */
     if (XDefaultDepthOfScreen(XtScreen(shell)) == 1) {

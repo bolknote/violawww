@@ -948,6 +948,12 @@ void flipGlobe(XtPointer clientData, XtIntervalId* intervalID) {
 
     dvi->globeNum = (dvi->globeNum ? 0 : 1);
     XtVaSetValues(dvi->titleIcon, XmNlabelPixmap, globes[dvi->globeNum], NULL);
+    
+    /* Force widget to redraw */
+    if (XtIsRealized(dvi->titleIcon)) {
+        XClearArea(XtDisplay(dvi->titleIcon), XtWindow(dvi->titleIcon), 0, 0, 0, 0, True);
+    }
+    
     dvi->intervalID = XtAppAddTimeOut(appCon, GLOBE_TIME, flipGlobe, clientData);
 }
 

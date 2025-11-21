@@ -679,7 +679,7 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
     Widget buttonBox, button;
     ClientData* clientData;
     XmString xms;
-    int nbuttons = 7;
+    int nbuttons = 5;
 
     buttonBox = XtVaCreateManagedWidget(
         "buttonBox", xmFormWidgetClass, form, XmNbottomAttachment, XmATTACH_FORM, XmNleftAttachment,
@@ -739,7 +739,7 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
     xms = XmStringCreateSimple("Clone Page");
     button = XtVaCreateManagedWidget(
         "Clone Page", xmPushButtonWidgetClass, buttonBox, XmNleftAttachment, XmATTACH_WIDGET,
-        XmNleftWidget, button, XmNrightAttachment, XmATTACH_POSITION, XmNrightPosition, 5,
+        XmNleftWidget, button, XmNrightAttachment, XmATTACH_FORM,
         XmNlabelString, xms, XmNtraversalOn, FALSE, XmNnavigationType, XmNONE, NULL);
     XmStringFree(xms);
     clientData = (ClientData*)calloc(1, sizeof(ClientData));
@@ -747,28 +747,6 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
     clientData->shellInfo = (void*)docViewInfo;
     XtAddCallback(button, XmNactivateCallback, clonePageCB, (XtPointer)clientData);
     setHelp(button, helpLabel, "Duplicate the current document for navigation.");
-
-    xms = XmStringCreateSimple("Clone App");
-    button = XtVaCreateManagedWidget("Clone App", xmPushButtonWidgetClass, buttonBox,
-                                     XmNleftAttachment, XmATTACH_WIDGET, XmNleftWidget, button,
-                                     XmNrightAttachment, XmATTACH_POSITION, XmNrightPosition, 6,
-                                     XmNlabelString, xms, XmNtraversalOn, FALSE, XmNnavigationType,
-                                     XmNONE, XmNsensitive, FALSE, NULL);
-    XmStringFree(xms);
-    XtAddCallback(button, XmNactivateCallback, cloneApp, (XtPointer)docViewInfo);
-    setHelp(button, helpLabel, "Duplicate the current document view in a new application window.");
-
-    xms = XmStringCreateSimple("Close");
-    button = XtVaCreateManagedWidget("Close", xmPushButtonWidgetClass, buttonBox, XmNleftAttachment,
-                                     XmATTACH_WIDGET, XmNleftWidget, button, XmNrightAttachment,
-                                     XmATTACH_FORM, XmNlabelString, xms, XmNsensitive,
-                                     (docViewInfo->shell != topWidget ? TRUE : FALSE),
-                                     XmNtraversalOn, FALSE, XmNnavigationType, XmNONE, NULL);
-    XmStringFree(xms);
-    if (docViewInfo->shell != topWidget) {
-        XtAddCallback(button, XmNactivateCallback, closeThisShell, (XtPointer)docViewInfo);
-        setHelp(button, helpLabel, "Close this particular cloned document viewer window.");
-    }
 
     return (buttonBox);
 }

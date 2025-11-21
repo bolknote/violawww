@@ -20,8 +20,29 @@
 #include "dialog.h"
 #include "history.h"
 #include "vw.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <X11/keysym.h>
+
+static KeySym mnemonicToKeySym(char mnemonic)
+{
+    if (mnemonic == '\0')
+        return NoSymbol;
+
+    char buffer[2] = { mnemonic, '\0' };
+    KeySym keySym = XStringToKeysym(buffer);
+
+    if (keySym != NoSymbol)
+        return keySym;
+
+    if (islower((unsigned char)mnemonic)) {
+        buffer[0] = (char)toupper((unsigned char)mnemonic);
+        keySym = XStringToKeysym(buffer);
+    }
+
+    return keySym;
+}
 
 Widget buildPulldownMenu(Widget parent, char* menuTitle, char* menuMnemonic, MenuItem* items, Widget helpLabel, void* shellInfo)
 {
@@ -33,11 +54,12 @@ Widget buildPulldownMenu(Widget parent, char* menuTitle, char* menuMnemonic, Men
     pullDown = XmCreatePulldownMenu(parent, menuTitle, NULL, 0);
 
     str = XmStringCreateSimple(menuTitle);
-    if (menuMnemonic && *menuMnemonic != '\0') {
+    KeySym cascadeMnemonic = (menuMnemonic ? mnemonicToKeySym(*menuMnemonic) : NoSymbol);
+    if (cascadeMnemonic != NoSymbol) {
         cascade = XtVaCreateManagedWidget(menuTitle, xmCascadeButtonWidgetClass, parent,
                                           XmNsubMenuId, pullDown,
                                           XmNlabelString, str,
-                                          XmNmnemonic, (KeySym)*menuMnemonic,
+                                          XmNmnemonic, cascadeMnemonic,
                                           NULL);
     } else {
         cascade = XtVaCreateManagedWidget(menuTitle, xmCascadeButtonWidgetClass, parent,
@@ -57,8 +79,9 @@ Widget buildPulldownMenu(Widget parent, char* menuTitle, char* menuMnemonic, Men
         if (!items[i].sensitive)
             XtVaSetValues(widget, XmNsensitive, FALSE, NULL);
 
-        if (items[i].mnemonic != '\0')
-            XtVaSetValues(widget, XmNmnemonic, (KeySym)items[i].mnemonic, NULL);
+        KeySym itemMnemonic = mnemonicToKeySym(items[i].mnemonic);
+        if (itemMnemonic != NoSymbol)
+            XtVaSetValues(widget, XmNmnemonic, itemMnemonic, NULL);
 
         if (items[i].accelerator) {
             str = XmStringCreateSimple(items[i].accelText);

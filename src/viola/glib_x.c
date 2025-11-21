@@ -1009,13 +1009,15 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
         sizeHints.y = y;
         sizeHints.width = width;
         sizeHints.height = height;
+        /* Make window fixed size */
+        sizeHints.min_width = sizeHints.max_width = width;
+        sizeHints.min_height = sizeHints.max_height = height;
 #else /* X11R4 or later */
         sizeHints.flags = USPosition | USSize | PMinSize | PMaxSize;
+        /* Make window fixed size */
+        sizeHints.min_width = sizeHints.max_width = width;
+        sizeHints.min_height = sizeHints.max_height = height;
 #endif
-        sizeHints.min_width = GET_minWidth(self);
-        sizeHints.min_height = GET_minHeight(self);
-        sizeHints.max_width = GET_maxWidth(self);
-        sizeHints.max_height = GET_maxHeight(self);
 
         if (!AllBlank(GET_label(self)))
             window_name = GET_label(self);
@@ -1024,8 +1026,32 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
 
 #ifdef X11R3
         /* set Properties for window manager (always before mapping) */
-        XSetStandardProperties(display, win, window_name, icon_name, violaPixmap, &argv, argc,
+        XSetStandardProperties(display, w, window_name, icon_name, violaPixmap, &argv, argc,
                                &sizeHints);
+        
+        /* Set MWM hints to disable resize and maximize */
+        {
+            Atom mwm_hints_atom = XInternAtom(display, "_MOTIF_WM_HINTS", False);
+            if (mwm_hints_atom != None) {
+                struct {
+                    unsigned long flags;
+                    unsigned long functions;
+                    unsigned long decorations;
+                    long input_mode;
+                    unsigned long status;
+                } mwm_hints;
+                
+                mwm_hints.flags = 1L << 1 | 1L << 2; /* MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS */
+                mwm_hints.functions = 0x0F & ~(1L << 1) & ~(1L << 2); /* MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE */
+                mwm_hints.decorations = 0x3F & ~(1L << 1); /* MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH */
+                mwm_hints.input_mode = 0;
+                mwm_hints.status = 0;
+                
+                XChangeProperty(display, w, mwm_hints_atom, mwm_hints_atom,
+                                32, PropModeReplace,
+                                (unsigned char *)&mwm_hints, 5);
+            }
+        }
 #else /* X11R4 or later */
         {
             /* format of the window name and icon name
@@ -1061,13 +1087,36 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
             sizeHints.y = y;
             sizeHints.width = width;
             sizeHints.height = height;
-            sizeHints.min_width = GET_minWidth(self);
-            sizeHints.min_height = GET_minHeight(self);
-            sizeHints.max_width = GET_maxWidth(self);
-            sizeHints.max_height = GET_maxHeight(self);
+            /* Make window fixed size */
+            sizeHints.min_width = sizeHints.max_width = width;
+            sizeHints.min_height = sizeHints.max_height = height;
             sizeHints.flags = USPosition | USSize | PMinSize | PMaxSize;
 
             XSetWMNormalHints(display, w, &sizeHints);
+            
+            /* Set MWM hints to disable resize and maximize */
+            {
+                Atom mwm_hints_atom = XInternAtom(display, "_MOTIF_WM_HINTS", False);
+                if (mwm_hints_atom != None) {
+                    struct {
+                        unsigned long flags;
+                        unsigned long functions;
+                        unsigned long decorations;
+                        long input_mode;
+                        unsigned long status;
+                    } mwm_hints;
+                    
+                    mwm_hints.flags = 1L << 1 | 1L << 2; /* MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS */
+                    mwm_hints.functions = 0x0F & ~(1L << 1) & ~(1L << 2); /* MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE */
+                    mwm_hints.decorations = 0x3F & ~(1L << 1); /* MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH */
+                    mwm_hints.input_mode = 0;
+                    mwm_hints.status = 0;
+                    
+                    XChangeProperty(display, w, mwm_hints_atom, mwm_hints_atom,
+                                    32, PropModeReplace,
+                                    (unsigned char *)&mwm_hints, 5);
+                }
+            }
         }
 #endif
     }

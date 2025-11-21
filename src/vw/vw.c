@@ -383,11 +383,6 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
                                    FORM_SPACING, XmNverticalSpacing, FORM_SPACING,
                                    XmNnavigationType, XmEXCLUSIVE_TAB_GROUP, NULL);
 
-    toolBarForm = XtVaCreateManagedWidget("toolBarForm", xmFormWidgetClass, form, XmNtopAttachment,
-                                          XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM,
-                                          XmNrightAttachment, XmATTACH_FORM, XmNnavigationType,
-                                          XmEXCLUSIVE_TAB_GROUP, XmNheight, toolBarHeight, NULL);
-#ifdef UNUSED
     topForm =
         XtVaCreateManagedWidget("topForm", xmFormWidgetClass, form, XmNtopAttachment, XmATTACH_FORM,
                                 XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM,
@@ -420,18 +415,14 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     XtVaGetValues(title, XmNbackground, &bg, NULL);
     XtVaSetValues(title, XmNborderColor, bg, NULL);
     XmStringFree(xms);
-    XmFontListFree(titleFontList);
 
     /* URL selection mechanism. */
     XtAddEventHandler(title, ButtonReleaseMask, FALSE, titleButtonEH, (XtPointer)docViewInfo);
-    /*
-    XtAddEventHandler(title, 0L, TRUE,
-                      urlSelectionRequest, (XtPointer) docViewInfo);
-    XtAddEventHandler(title, 0L, TRUE,
-                      urlSelectionClear, (XtPointer) title);
-    */
 
-#endif // UNUSED
+    toolBarForm = XtVaCreateManagedWidget("toolBarForm", xmFormWidgetClass, form, XmNtopAttachment,
+                                          XmATTACH_WIDGET, XmNtopWidget, topForm, XmNleftAttachment, XmATTACH_FORM,
+                                          XmNrightAttachment, XmATTACH_FORM, XmNnavigationType,
+                                          XmEXCLUSIVE_TAB_GROUP, XmNheight, toolBarHeight, NULL);
 
     /* Dynamic help area. */
     messageText = XtVaCreateManagedWidget(
@@ -449,67 +440,56 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     if (mainHelpWidget == NULL)
         mainHelpWidget = messageText;
 
-    /*
-        setHelp(titleIcon, messageText, "Click with the mouse to go to the HOME document.");
-        setHelp(title, messageText, "Click left MB to reload document.  Click right MB to copy URL
-       to clipboard."); setHelp(messageText, messageText, "Contextual help message area.");
-    */
+    setHelp(titleIcon, messageText, "Click with the mouse to go to the HOME document.");
+    setHelp(title, messageText, "Click left MB to reload document.  Click right MB to copy URL to clipboard.");
+    setHelp(messageText, messageText, "Contextual help message area.");
 
     docViewInfo->hotlistListWidget = NULL;
     docViewInfo->currentHotlistItem = -1;
     docViewInfo->hotlistSize = 0; /* size of the list allocated */
 
     /* Quick action buttons at bottom of interface. */
-    /*
-        buttonBox = makeButtons(form, messageText, docViewInfo);
-        XtVaSetValues(messageText,
-                      XmNbottomAttachment, XmATTACH_WIDGET,
-                      XmNbottomWidget, buttonBox,
-                      NULL);
-        XtVaSetValues(form,
-                      XmNbottomAttachment, XmATTACH_WIDGET,
-                      XmNbottomWidget, messageText,
-                      NULL);
-    */
+    buttonBox = makeButtons(form, messageText, docViewInfo);
 
     /* Search region.  Only becomes active when a document is searchable. */
-    /*
-        searchLabel = XtVaCreateManagedWidget("Index: ",
-                                    xmLabelWidgetClass, form,
-                                    XmNleftAttachment, XmATTACH_FORM,
-                                    XmNbottomAttachment, XmATTACH_WIDGET,
-                                    XmNbottomWidget, messageText,
-                                    XmNrecomputeSize, FALSE,
-                                    XmNheight, SEARCH_HEIGHT,
-                                    XmNsensitive, FALSE,
-                                    NULL);
-        docViewInfo->searchLabel = searchLabel;
+    searchLabel = XtVaCreateWidget("Index: ",
+                                xmLabelWidgetClass, form,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNbottomAttachment, XmATTACH_WIDGET,
+                                XmNbottomWidget, buttonBox,
+                                XmNrecomputeSize, FALSE,
+                                XmNheight, SEARCH_HEIGHT,
+                                NULL);
+    docViewInfo->searchLabel = searchLabel;
 
-        searchField = XtVaCreateManagedWidget("searchField",
-                                    xmTextFieldWidgetClass, form,
-                                    XmNtopAttachment, XmATTACH_OPPOSITE_WIDGET,
-                                    XmNtopOffset, 0,
-                                    XmNtopWidget, searchLabel,
-                                    XmNleftAttachment, XmATTACH_WIDGET,
-                                    XmNleftWidget, searchLabel,
-                                    XmNrightAttachment, XmATTACH_FORM,
-                                    XmNbottomAttachment, XmATTACH_WIDGET,
-                                    XmNbottomWidget, messageText,
-                                    XmNsensitive, FALSE,
-                                    NULL);
-        setHelp(searchLabel, messageText, "Index entry field.");
-        setHelp(searchField, messageText, "Index entry field.");
+    searchField = XtVaCreateWidget("searchField",
+                                xmTextFieldWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_OPPOSITE_WIDGET,
+                                XmNtopOffset, 0,
+                                XmNtopWidget, searchLabel,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, searchLabel,
+                                XmNrightAttachment, XmATTACH_FORM,
+                                XmNbottomAttachment, XmATTACH_WIDGET,
+                                XmNbottomWidget, buttonBox,
+                                NULL);
+    
+    XtVaSetValues(messageText,
+                  XmNbottomAttachment, XmATTACH_WIDGET,
+                  XmNbottomWidget, buttonBox,
+                  NULL);
+    setHelp(searchLabel, messageText, "Index entry field.");
+    setHelp(searchField, messageText, "Index entry field.");
 
-        XtAddCallback(searchField, XmNactivateCallback,
-                      searchCallback, (XtPointer) docViewInfo);
-        docViewInfo->searchText = searchField;
-    */
+    XtAddCallback(searchField, XmNactivateCallback,
+                  searchCallback, (XtPointer) docViewInfo);
+    docViewInfo->searchText = searchField;
 
     /* Main document view area ... where Viola displays document. */
     frame = XtVaCreateManagedWidget(
         "frame", xmFrameWidgetClass, form, XmNtopAttachment, XmATTACH_WIDGET, XmNtopWidget,
         toolBarForm, XmNbottomAttachment, XmATTACH_WIDGET, XmNbottomWidget,
-        messageText /*searchLabel*/, XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment,
+        messageText, XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment,
         XmATTACH_FORM, XmNshadowThickness, 3, XmNnavigationType, XmNONE, NULL);
 
     canvasForm = XtVaCreateManagedWidget("canvasForm", xmFormWidgetClass, frame,
@@ -551,50 +531,46 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     }
 
     /* Make the icon. */
-    /*
-        if (!icon) {
-            Pixel fg, bg;
-            XtVaGetValues(titleIcon, XmNforeground, &fg, XmNbackground, &bg, NULL);
-            icon = XCreatePixmapFromBitmapData(XtDisplay(titleIcon),
-                                               XtWindow(titleIcon),
-                                               WWW_bits, WWW_width, WWW_height,
-                                               fg, bg,
-                                               XDefaultDepthOfScreen(XtScreen(titleIcon)));
-        }
-        XtVaSetValues(shell, XmNiconPixmap, icon, NULL);
-    */
+    if (!icon) {
+        Pixel fg, bg;
+        XtVaGetValues(titleIcon, XmNforeground, &fg, XmNbackground, &bg, NULL);
+        icon = XCreatePixmapFromBitmapData(XtDisplay(titleIcon),
+                                           XtWindow(titleIcon),
+                                           WWW_bits, WWW_width, WWW_height,
+                                           fg, bg,
+                                           XDefaultDepthOfScreen(XtScreen(titleIcon)));
+    }
+    XtVaSetValues(shell, XmNiconPixmap, icon, NULL);
 
     /* Set the title icon to a globe or the app icon if necessary. */
-    /*
-        if (!globes[0]) {
-            int status;
-            Pixmap mask;
-            XpmAttributes xpma;
+    if (!globes[0]) {
+        int status;
+        Pixmap mask;
+        XpmAttributes xpma;
 
-            status = XpmCreatePixmapFromData(XtDisplay(titleIcon),
-                                             XtWindow(titleIcon),
-                                             globe1,
-                                             &globes[0],
-                                             &mask,
-                                             NULL);
-            if (status != XpmSuccess) {
-                fprintf(stderr, "Couldn't create globe1 pixmap!\n");
-                globes[0] = icon;
-            }
-
-            status = XpmCreatePixmapFromData(XtDisplay(titleIcon),
-                                             XtWindow(titleIcon),
-                                             globe2,
-                                             &globes[1],
-                                             &mask,
-                                             NULL);
-            if (status != XpmSuccess) {
-                fprintf(stderr, "Couldn't create globe2 pixmap!\n");
-                globes[1] = icon;
-            }
+        status = XpmCreatePixmapFromData(XtDisplay(titleIcon),
+                                         XtWindow(titleIcon),
+                                         globe1,
+                                         &globes[0],
+                                         &mask,
+                                         NULL);
+        if (status != XpmSuccess) {
+            fprintf(stderr, "Couldn't create globe1 pixmap!\n");
+            globes[0] = icon;
         }
-        XtVaSetValues(titleIcon, XmNlabelPixmap, globes[0], NULL);
-    */
+
+        status = XpmCreatePixmapFromData(XtDisplay(titleIcon),
+                                         XtWindow(titleIcon),
+                                         globe2,
+                                         &globes[1],
+                                         &mask,
+                                         NULL);
+        if (status != XpmSuccess) {
+            fprintf(stderr, "Couldn't create globe2 pixmap!\n");
+            globes[1] = icon;
+        }
+    }
+    XtVaSetValues(titleIcon, XmNlabelPixmap, globes[0], NULL);
 
     /* Finish filling the docViewInfo structure. */
     docViewInfo->scrollBar = scrollBar;
@@ -698,18 +674,16 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     return (docViewInfo);
 }
 
-#ifdef UNUSED
 Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
 {
     Widget buttonBox, button;
     ClientData* clientData;
     XmString xms;
-    int nbuttons = 5;
+    int nbuttons = 7;
 
     buttonBox = XtVaCreateManagedWidget(
         "buttonBox", xmFormWidgetClass, form, XmNbottomAttachment, XmATTACH_FORM, XmNleftAttachment,
-        XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM, XmNfractionBase, nbuttons, XmNlabelString,
-        xms, XmNnavigationType, XmNONE, NULL);
+        XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM, XmNfractionBase, nbuttons, XmNnavigationType, XmNONE, NULL);
 
     xms = XmStringCreateSimple("Back Up");
     button = XtVaCreateManagedWidget("Back Up", xmPushButtonWidgetClass, buttonBox,
@@ -756,7 +730,10 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
         XmNleftWidget, button, XmNrightAttachment, XmATTACH_POSITION, XmNrightPosition, 4,
         XmNlabelString, xms, XmNtraversalOn, FALSE, XmNnavigationType, XmNONE, NULL);
     XmStringFree(xms);
-    XtAddCallback(button, XmNactivateCallback, showSource, (XtPointer)docViewInfo);
+    clientData = (ClientData*)calloc(1, sizeof(ClientData));
+    clientData->data = NULL;
+    clientData->shellInfo = (void*)docViewInfo;
+    XtAddCallback(button, XmNactivateCallback, showSourceCB, (XtPointer)clientData);
     setHelp(button, helpLabel, "View the SGML source of the current document.");
 
     xms = XmStringCreateSimple("Clone Page");
@@ -765,7 +742,10 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
         XmNleftWidget, button, XmNrightAttachment, XmATTACH_POSITION, XmNrightPosition, 5,
         XmNlabelString, xms, XmNtraversalOn, FALSE, XmNnavigationType, XmNONE, NULL);
     XmStringFree(xms);
-    XtAddCallback(button, XmNactivateCallback, clonePage, (XtPointer)docViewInfo);
+    clientData = (ClientData*)calloc(1, sizeof(ClientData));
+    clientData->data = NULL;
+    clientData->shellInfo = (void*)docViewInfo;
+    XtAddCallback(button, XmNactivateCallback, clonePageCB, (XtPointer)clientData);
     setHelp(button, helpLabel, "Duplicate the current document for navigation.");
 
     xms = XmStringCreateSimple("Clone App");
@@ -789,11 +769,9 @@ Widget makeButtons(Widget form, Widget helpLabel, DocViewInfo* docViewInfo)
         XtAddCallback(button, XmNactivateCallback, closeThisShell, (XtPointer)docViewInfo);
         setHelp(button, helpLabel, "Close this particular cloned document viewer window.");
     }
-    */
 
-        return (buttonBox);
+    return (buttonBox);
 }
-#endif
 
 void closeAppShell(DocViewInfo* docViewInfo) {
     /* Tell the Viola object to free itself. */

@@ -56,6 +56,7 @@ extern Widget mainHelpWidget;
 extern int activeHelpLock;
 
 void clonePageDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont);
+void closePageDirectCB(Widget button, XtPointer clientData, XtPointer callData);
 
 static MenuItem clonePageMenuItems[] = {
     {"Close", &xmPushButtonWidgetClass, 'C', "Ctrl<Key>C", "Ctrl-C", closePageCB, NULL,
@@ -168,18 +169,6 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
                                    FORM_SPACING, XmNverticalSpacing, FORM_SPACING, NULL);
 
     localDocViewInfo->topMostWidget = form;
-/*
-    menuBar = XmCreateMenuBar(form, "menuBar", NULL, 0);
-    for (i=0; clonePageMainMenus[i].title != NULL; i++)
-        buildPulldownMenu(menuBar,
-                          clonePageMainMenus[i].title,
-                          clonePageMainMenus[i].mnemonic,
-                          clonePageMainMenus[i].menuItems,
-                          helpLabel,
-                          localDocViewInfo);
-    XtManageChild(menuBar);
-*/
-#ifdef UNUSED
 
     titleForm = XtVaCreateManagedWidget("titleForm", xmFormWidgetClass, form, XmNtopAttachment,
                                         XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM,
@@ -189,7 +178,6 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
         "Close", xmPushButtonWidgetClass, titleForm, XmNtopAttachment, XmATTACH_FORM,
         XmNbottomAttachment, XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM, XmNrecomputeSize,
         FALSE, XmNhighlightThickness, 0, XmNmarginHeight, 6, XmNmarginWidth, 6, NULL);
-    XtAddCallback(closeB, XmNactivateCallback, closePage, (XtPointer)localDocViewInfo);
 
     titleFrame = XtVaCreateManagedWidget(
         "titleFrame", xmFrameWidgetClass, titleForm, XmNtopAttachment, XmATTACH_FORM,
@@ -203,8 +191,7 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     else
         xms = makeXMSTitle(parentDocViewInfo->docName, parentDocViewInfo->URL);
     title = XtVaCreateManagedWidget("cloneTitle", xmLabelWidgetClass, titleFrame, XmNlabelString,
-                                    xms, XmNmarginHeight, 4, XmNmarginWidth, 4, XmNborderWidth, 4,
-                                    XmNfontList, titleFontList, NULL);
+                                    xms, XmNmarginHeight, 4, XmNmarginWidth, 4, XmNborderWidth, 4, NULL);
     XtVaGetValues(title, XmNbackground, &bg, NULL);
     XtVaSetValues(title, XmNborderColor, bg, NULL);
     XmStringFree(xms);
@@ -212,28 +199,19 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     /* URL selection mechanism. */
     XtAddEventHandler(title, ButtonReleaseMask, FALSE, titleButtonEH, (XtPointer)localDocViewInfo);
 
-#endif
-
     helpLabel = XtVaCreateManagedWidget(
         "helpLabel", xmLabelWidgetClass, form, XmNbottomAttachment, XmATTACH_FORM,
         XmNrightAttachment, XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM, XmNrecomputeSize,
         FALSE, XmNborderWidth, 1, XmNalignment, XmALIGNMENT_BEGINNING, NULL);
 
     localDocViewInfo->msgLabel = helpLabel;
-    /*
-        setHelp(closeB, helpLabel, "Close this particular document viewer.");
-        setHelp(title, helpLabel, "Click left MB to reload document.  Click right MB to copy URL to
-       clipboard.");
-    */
 
-    menuBar = XmCreateMenuBar(form, "menuBar", NULL, 0);
-    for (i = 0; clonePageMainMenus[i].title != NULL; i++)
-        buildPulldownMenu(menuBar, clonePageMainMenus[i].title, &clonePageMainMenus[i].mnemonic,
-                          clonePageMainMenus[i].menuItems, helpLabel, localDocViewInfo);
-    XtManageChild(menuBar);
+    XtAddCallback(closeB, XmNactivateCallback, closePageDirectCB, (XtPointer)localDocViewInfo);
+    setHelp(closeB, helpLabel, "Close this particular document viewer.");
+    setHelp(title, helpLabel, "Click left MB to reload document.  Click right MB to copy URL to clipboard.");
 
     frame = XtVaCreateManagedWidget(
-        "frame", xmFormWidgetClass, form, XmNtopAttachment, XmATTACH_WIDGET, XmNtopWidget, menuBar,
+        "frame", xmFormWidgetClass, form, XmNtopAttachment, XmATTACH_WIDGET, XmNtopWidget, titleForm,
         XmNbottomAttachment, XmATTACH_WIDGET, XmNbottomWidget, helpLabel, XmNleftAttachment,
         XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM, XmNshadowThickness, 4, XmNshadowType,
         XmSHADOW_ETCHED_IN, XmNhorizontalSpacing, 4, XmNverticalSpacing, 4, NULL);
@@ -257,8 +235,6 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
             "Clicking on links in this document will cause the main window to display the result "
             "of the link.");
     XtAddEventHandler(violaCanvas, ButtonPressMask, FALSE, mouseWheelScrollEH, (XtPointer)localDocViewInfo);
-
-    XmMainWindowSetAreas(form, menuBar, (Widget)NULL, (Widget)NULL, (Widget)NULL, frame);
 
     localDocViewInfo->docName = makeString(parentDocViewInfo->docName);
     localDocViewInfo->URL = makeString(parentDocViewInfo->URL);
@@ -557,6 +533,10 @@ void closePageShell(DocViewInfo* dvi) {
 
 void closePageCB(Widget button, XtPointer clientData, XtPointer callData) {
     closePageShell((DocViewInfo*)((ClientData*)clientData)->shellInfo);
+}
+
+void closePageDirectCB(Widget button, XtPointer clientData, XtPointer callData) {
+    closePageShell((DocViewInfo*)clientData);
 }
 
 /*
@@ -1104,25 +1084,35 @@ void newDocument(char* arg[], int argc, void* clientData) {
     if (dvi->cloneID != atol(arg[1]))
         return;
 
+    if (dvi->URL)
+        free(dvi->URL);
     dvi->URL = makeString(arg[2]);
-#ifdef UNUSED
-    if (argc > 3 && arg[3]) {
-        if (!strcmp(arg[2], arg[3])) {
-            /* Viola sets the doc's title to its URL when there is
-             * no official <TITLE> in the document. */
+    
+    /* Only update title if widget exists (for cloned windows) */
+    if (dvi->title) {
+        if (argc > 3 && arg[3]) {
+            if (!strcmp(arg[2], arg[3])) {
+                /* Viola sets the doc's title to its URL when there is
+                 * no official <TITLE> in the document. */
+                if (dvi->docName && strlen(dvi->docName) > 0)
+                    free(dvi->docName);
+                dvi->docName = "";
+                xms = makeXMSTitle(dvi->URL, dvi->docName);
+            } else {
+                if (dvi->docName && strlen(dvi->docName) > 0)
+                    free(dvi->docName);
+                dvi->docName = makeString(arg[3]);
+                xms = makeXMSTitle(dvi->docName, dvi->URL);
+            }
+        } else {
+            if (dvi->docName && strlen(dvi->docName) > 0)
+                free(dvi->docName);
             dvi->docName = "";
             xms = makeXMSTitle(dvi->URL, dvi->docName);
-        } else {
-            dvi->docName = makeString(arg[3]);
-            xms = makeXMSTitle(dvi->docName, dvi->URL);
         }
-    } else {
-        dvi->docName = "";
-        xms = makeXMSTitle(dvi->URL, dvi->docName);
+        XtVaSetValues(dvi->title, XmNlabelString, xms, NULL);
+        XmStringFree(xms);
     }
-    XtVaSetValues(dvi->title, XmNlabelString, xms, NULL);
-    XmStringFree(xms);
-#endif
     if (!strcmp("newDocument", arg[0])) {
         historyAdd(dvi, arg[2]);
     } else {
@@ -1253,8 +1243,32 @@ void searchModeMH(char* arg[], int argc, void* clientData) {
 
     isIndex = !strcmp("searchOn", arg[0]);
 
-    if (dvi->searchLabel)
-        XtVaSetValues(dvi->searchLabel, XmNsensitive, isIndex, NULL);
-    if (dvi->searchText)
-        XtVaSetValues(dvi->searchText, XmNsensitive, isIndex, NULL);
+    if (isIndex) {
+        if (dvi->searchLabel)
+            XtManageChild(dvi->searchLabel);
+        if (dvi->searchText)
+            XtManageChild(dvi->searchText);
+        if (dvi->msgLabel) {
+            XtVaSetValues(dvi->msgLabel,
+                         XmNbottomAttachment, XmATTACH_WIDGET,
+                         XmNbottomWidget, dvi->searchLabel,
+                         NULL);
+        }
+    } else {
+        if (dvi->searchLabel)
+            XtUnmanageChild(dvi->searchLabel);
+        if (dvi->searchText)
+            XtUnmanageChild(dvi->searchText);
+        /* Find buttonBox widget - it's a child of the same form as msgLabel */
+        if (dvi->msgLabel) {
+            Widget form = XtParent(dvi->msgLabel);
+            Widget buttonBox = XtNameToWidget(form, "buttonBox");
+            if (buttonBox) {
+                XtVaSetValues(dvi->msgLabel,
+                             XmNbottomAttachment, XmATTACH_WIDGET,
+                             XmNbottomWidget, buttonBox,
+                             NULL);
+            }
+        }
+    }
 }

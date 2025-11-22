@@ -143,7 +143,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 
 *Modern web browsing with the classic Motif interface*
 
-<img src=https://github.com/user-attachments/assets/006bc02f-c674-4f3f-b3b0-93033dc2364d width=636 height=785>
+<img src=https://github.com/user-attachments/assets/74be8482-9a0c-43a2-b415-d6f9a317bd73 width=636 height=785>
 
 ---
 

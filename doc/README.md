@@ -4,6 +4,25 @@ This directory contains technical documentation for ViolaWWW's advanced HTML fea
 
 ## Available Documentation
 
+### [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md)
+Complete reference for all built-in functions available in the Viola language.
+
+Topics covered:
+- HTTP Operations
+- SGML/HTML Operations
+- STG (Stylesheet) Operations
+- String Operations
+- Object Operations
+- File Operations
+- System Operations
+- Mathematical Functions
+- Input/Output Operations
+- Time Functions
+- Graphics Functions
+- Utility Functions
+
+All functions include parameter descriptions and return values.
+
 ### [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md)
 Complete reference for the `<FIGURE>` element and related tags:
 - **FIGURE** - Advanced image embedding element

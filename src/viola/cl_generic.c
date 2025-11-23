@@ -1136,8 +1136,6 @@ long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc,
     Packet* packet3 = makePacket(); /* file */
     Packet* packet4 = makePacket(); /* anchor */
     char *addr, *relative, *path, *anchor;
-    long i;
-    size_t length;
 
     if (argc >= 1)
         addr = PkInfo2Str(&argv[0]);
@@ -1167,8 +1165,7 @@ long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc,
     free(parsed_host);    /* Free the result from HTParse */
     path = HTParse(addr, relative, PARSE_PATH | PARSE_PUNCTUATION);
 
-    length = strlen(path);
-    for (i = length; i >= 0; i--)
+    for (size_t i = strlen(path); i >= 0; i--) {
         if (path[i] == '/') {
             strncpy(buff, path, i + 1);
             buff[i + 1] = '\0';
@@ -1176,6 +1173,7 @@ long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc,
             packet3->info.s = saveString(path + i + 1);
             goto lameLoopEsc;
         }
+    }
     packet2->info.s = saveString("");
     packet3->info.s = saveString(path);
 lameLoopEsc:

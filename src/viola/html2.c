@@ -1329,7 +1329,7 @@ void CB_HTML_etag(int element_number)
         /* Replace dataBuff content with converted title for normal label processing */
         if (pending_title) {
             /* Replace the raw title in dataBuff with converted title */
-            int pending_len = strlen(pending_title);
+            size_t pending_len = strlen(pending_title);
             if (dataBuffIdxStackIdx >= 0 && pending_len < (DATABUFF_SIZE - dataBuffIdxStack[dataBuffIdxStackIdx])) {
                 src_starti = dataBuffIdxStack[dataBuffIdxStackIdx];
                 /* Clear old data */
@@ -1344,7 +1344,7 @@ void CB_HTML_etag(int element_number)
         } else if (anchor && HTAnchor_title(anchor)) {
             /* Replace with title from anchor */
             char* anchor_title = HTAnchor_title(anchor);
-            int anchor_title_len = strlen(anchor_title);
+            size_t anchor_title_len = strlen(anchor_title);
             if (dataBuffIdxStackIdx >= 0 && anchor_title_len < (DATABUFF_SIZE - dataBuffIdxStack[dataBuffIdxStackIdx])) {
                 src_starti = dataBuffIdxStack[dataBuffIdxStackIdx];
                 /* Clear old data */

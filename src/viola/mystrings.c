@@ -119,7 +119,7 @@ int GetNextPhrase(char* str, int i, char* destStr, char* cutOffWord)
 {
     char c;
     int x, y, ci = i, cuti = 0, parenLevel = 0, quoteToggle = 0;
-    int cutOffWordLen = strlen(cutOffWord);
+    size_t cutOffWordLen = strlen(cutOffWord);
     extern int hush;
 
     while ((c = str[ci])) {
@@ -718,18 +718,16 @@ char* deBracket(char* list) {
     if (!list[0]) {
         return list;
     } else {
-        long i;
         char c;
-        size_t len;
 
-        for (i = 0; (c = list[i]); i++) {
+        for (size_t i = 0; (c = list[i]); i++) {
             if (c == '{') {
                 list[i] = ' ';
                 break;
             }
         }
-        len = strlen(list);
-        for (i = len; i >= 0; i--) {
+
+        for (size_t i = strlen(list); i >= 0; i--) {
             if (list[i] == '}') {
                 list[i] = '\0';
                 break;

@@ -4324,7 +4324,7 @@ long meth_generic_str(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_generic_strlen(VObj* self, Packet* result, int argc, Packet argv[]) {
     clearPacket(result);
     result->type = PKT_INT;
-    result->info.i = strlen(PkInfos2Str(argc, argv));
+    result->info.i = (long)strlen(PkInfos2Str(argc, argv));
     return 1;
 }
 

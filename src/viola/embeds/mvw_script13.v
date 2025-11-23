@@ -1,7 +1,7 @@
 
 	switch (arg[0]) {
 	case "shownPositionV":
-		return send(nthChild(2), arg[0], arg[1]);
+		return send(nthChild(0), arg[0], arg[1]);
 	break;
 	case "addTool":
 	case "addTool_sticky":
@@ -14,19 +14,19 @@
 	break;
 	case "reload":
 	case "showSource":
-		return send(nthChild(2), arg[0]);
+		return send(nthChild(0), arg[0]);
 	break;
 	case "saveAs":
-		return send(nthChild(2), arg[0], arg[1]);
+		return send(nthChild(0), arg[0], arg[1]);
 	break;
 	case "clonePage":
 		/* arg[1]	cookie
 		 */
-		send(nthChild(2), "clonePage");
+		send(nthChild(0), "clonePage");
 		tearPageID = tearPageID + 1;
 		new = clone(tearPageID);
 		tweak(new, "set(\"parent\", \"\");");
-		send(new, "torn", send(nthChild(2), "whichPageP"), arg[1]);
+		send(new, "torn", send(nthChild(0), "whichPageP"), arg[1]);
 		send(parent(), "showPageClone_return", arg[1], new);
 		return;
 	break;
@@ -34,13 +34,13 @@
 		tearPageID = tearPageID + 1;
 		new = clone(tearPageID);
 		tweak(new, "set(\"parent\", \"\");");
-		send(new, "torn", send(nthChild(2), "whichPageP"));
+		send(new, "torn", send(nthChild(0), "whichPageP"));
 		send(new, "render");
 		return;
 	break;
 	case "torn":
 		set("label", 
-			send(send(nthChild(2), "whichPageP"), "queryAddress"));
+			send(send(nthChild(0), "whichPageP"), "queryAddress"));
 		objectListSend_children("torn", arg[1], arg[2]);
 		return;
 	break;
@@ -50,7 +50,7 @@
 		return;
 	break;
 	case "whichPageP":
-		return send(nthChild(2), "whichPageP");
+		return send(nthChild(0), "whichPageP");
 	break;
 	case "quit":
 		set("visible", 0);

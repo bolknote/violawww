@@ -101,6 +101,49 @@ VObjList* appendObjToList(VObjList* olist, VObj* obj)
     }
     return olist;
 }
+
+VObjList* scanVObjListNode(VObjList* head, long objID)
+{
+    VObjList* current = head;
+    while (current) {
+        if ((long)current->o == objID)
+            return current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+VObjList* removeVObjListNode(VObjList* head, long objID)
+{
+    VObjList *current = head, *previous = NULL;
+    while (current) {
+        if ((long)current->o == objID) {
+            if (previous)
+                previous->next = current->next;
+            else
+                head = current->next;
+            return head;
+        }
+        previous = current;
+        current = current->next;
+    }
+    return head;
+}
+
+VObjList* prependVObjListNode(VObjList* head, VObj* obj)
+{
+    VObjList* node = (VObjList*)malloc(sizeof(VObjList));
+    if (!node)
+        return head;
+    node->o = obj;
+    node->next = head;
+    return node;
+}
+
+VObjList* appendVObjListNode(VObjList* head, VObj* obj)
+{
+    return appendObjToList(head, obj);
+}
 /*
 VObjList *removeObjFromList(olist, obj)
         VObjList *olist;

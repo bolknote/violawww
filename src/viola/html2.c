@@ -1406,7 +1406,7 @@ void CB_HTML_etag(int element_number)
             if (parent_bstate && parent_bstate->obj /*lame check*/) {
                 VObjList* olist;
                 olist = GET__children(parent_bstate->obj);
-                removeVObjListNode(&olist, (long)bstate->obj);
+                olist = removeVObjListNode(olist, (long)bstate->obj);
                 SET__children(parent_bstate->obj, olist);
             }
         } else {
@@ -1476,7 +1476,7 @@ void CB_HTML_etag(int element_number)
                 VObj* parent = GET__parent(bstate->obj);
                 if (parent) {
                     VObjList* olist = GET__children(parent);
-                    removeVObjListNode(&olist, (long)bstate->obj);
+                    olist = removeVObjListNode(olist, (long)bstate->obj);
                     sendMessage1(bstate->obj, "freeSelf");
                     SET__children(parent, olist);
                 }

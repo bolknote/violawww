@@ -19,23 +19,10 @@ extern VObj* VPrevObj;         /* refers to the previous object	*/
 
 extern int securityMode;
 
-/*
- * scans and return the VObjList node objentified by obj
- */
-#define scanVObjListNode(head_olist, obj) (VObjList*)scanVListNode((VList*)head_olist, obj, cmp_int)
-
-/*
- * remove and return the VObjList node identified by obj
- */
-#define removeVObjListNode(head_olist, obj)                                                        \
-    (VObjList*)removeVListNode((VList*)head_olist, obj, cmp_int)
-
-/*
- * prepend and return the VObjList node
- */
-#define prependVObjListNode(head_olist, obj) (VObjList*)prependVListNode((VList*)head_olist, obj)
-
-#define appendVObjListNode(olist, obj) appendObjToList(olist, obj)
+VObjList* scanVObjListNode(VObjList* head, long objID);
+VObjList* removeVObjListNode(VObjList* head, long objID);
+VObjList* prependVObjListNode(VObjList* head, VObj* obj);
+VObjList* appendVObjListNode(VObjList* head, VObj* obj);
 
 /*int validObjectP();*/
 #define validObjectP(self) objObj2ExistP->get(objObj2ExistP, self)

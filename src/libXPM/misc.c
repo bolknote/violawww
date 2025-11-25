@@ -22,8 +22,8 @@ int xpmFreeColorTable(char*** colorTable, int ncolors) {
                 free(colorTable[a]);
             }
         free(colorTable);
-        return 0;
     }
+    return 0;
 }
 
 /*
@@ -38,6 +38,7 @@ int xpmInitInternAttrib(xpmInternAttrib* attrib) {
     attrib->xcolors = NULL;
     attrib->colorStrings = NULL;
     attrib->mask_pixel = UNDEF_PIXEL;
+    return 0;
 }
 
 // Free the xpmInternAttrib pointers which have been allocated
@@ -54,6 +55,7 @@ int xpmFreeInternAttrib(xpmInternAttrib* attrib) {
                 free(attrib->colorStrings[a]);
         free(attrib->colorStrings);
     }
+    return 0;
 }
 
 /*
@@ -99,6 +101,7 @@ int XpmFreeAttributes(XpmAttributes* attributes) {
         }
         attributes->valuemask = 0;
     }
+    return 0;
 }
 
 /*
@@ -120,4 +123,5 @@ int xpmSetAttributes(xpmInternAttrib* attrib, XpmAttributes* attributes) {
         attributes->height = attrib->height;
         attributes->valuemask |= XpmSize;
     }
+    return 0;
 }

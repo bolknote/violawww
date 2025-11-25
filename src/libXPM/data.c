@@ -93,6 +93,7 @@ int xpmNextString(xpmData* mdata) {
                 ;
         break;
     }
+    return 0;
 }
 
 // skip whitespace and compute the following unsigned int,
@@ -188,6 +189,8 @@ int xpmUngetC(int c, xpmData* mdata) {
             /* if not natural XPM2 */
             mdata->InsideString = !mdata->InsideString;
         return (ungetc(c, mdata->stream.file));
+    default:
+        return -1; /* unknown type */
     }
 }
 
@@ -242,6 +245,7 @@ int xpmGetCmt(xpmData* mdata, char** cmt) {
             *cmt = NULL;
         break;
     }
+    return 0;
 }
 
 /*

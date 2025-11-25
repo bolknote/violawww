@@ -1791,6 +1791,7 @@ int http_progress_notify(int n)
         }
         perishableActiveHelp--;
     }
+    return 0;
 }
 
 void user_message(char* message)
@@ -2057,13 +2058,17 @@ char* dumpHotList(int mode)
     return NULL;
 }
 
+/*
+ * Save the hot list to file.
+ * Returns: 1 on success, 0 on failure (could not open file)
+ */
 int saveHotList() {
     HotListItem* hip;
 
     HotList_fp = fopen(HotList_path, "w+");
 
     if (!HotList_fp) {
-        return 0;
+        return 0; /* failure: could not open file */
     }
     fprintf(HotList_fp, "ncsa-xmosaic-hotlist-format-1\nDefault\n"); /*ick*/
     for (hip = theHotList; hip; hip = hip->next) {
@@ -2071,6 +2076,7 @@ int saveHotList() {
         fprintf(HotList_fp, "%s\n", hip->comment);
     }
     fclose(HotList_fp);
+    return 1; /* success */
 }
 
 char* HotList_nextLine() {

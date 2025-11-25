@@ -2039,6 +2039,7 @@ int tfed_jumpToLine(VObj* self, int destLine)
             if (tf) i = jumpLine(tf, w, fontID, destLine);
             return i;
     */
+    return 0;
 }
 #define TolowerChar(x) (isupper(x) ? tolower(x) : x)
 

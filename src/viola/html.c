@@ -1056,15 +1056,12 @@ PUBLIC HTParentAnchor* HText_nodeAnchor ARGS1(HText*, text) {
 **	The index corresponds to the number we print in the anchor.
 */
 PUBLIC HTChildAnchor* HText_childNumber ARGS2(HText*, text, int, number) {
-#ifdef UNUSED
-    printf("HTChildAnchor \n");
     TextAnchor* a;
     for (a = text->first_anchor; a; a = a->next) {
         if (a->number == number)
             return a->anchor;
     }
-    return (HTChildAnchor*)0; /* Fail */
-#endif
+    return NULL; /* not found */
 }
 
 /*		Browsing functions

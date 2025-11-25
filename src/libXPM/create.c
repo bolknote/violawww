@@ -490,6 +490,7 @@ static int _putbits(char* src, int dstoffset, int numbits, char* dst)
         }
         numbits = numbits - dstoffset;
     }
+    return 0;
 }
 
 /*
@@ -559,6 +560,7 @@ static int SetImagePixels(XImage* image, unsigned int width, unsigned int height
                     *dst++ = *src++;
             }
     }
+    return 0;
 }
 
 /*
@@ -602,6 +604,7 @@ static int SetImagePixels32(XImage* image, unsigned int width, unsigned int heig
                 addr[1] = pixels[*iptr] >> 8;
                 addr[0] = pixels[*iptr];
             }
+    return 0;
 }
 
 /*

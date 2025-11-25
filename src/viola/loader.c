@@ -157,9 +157,9 @@ int load_object(char* filename, char* pathname)
 
     while (status) {
         slotc = 0;
-        status = load_objects_slots(fp, slotv, &slotc);
+        status = load_objects_slots(fp, &slotv, &slotc);
         if (slotc > 0) {
-            if ((obj = instantiateObj(slotv, &slotc))) {
+            if ((obj = instantiateObj(&slotv, &slotc))) {
                 objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(obj))), (long)obj);
                 objObj2ExistP->put_replace(objObj2ExistP, (long)obj, 1);
                 newObj[newObjCount++] = obj;
@@ -427,9 +427,9 @@ int loadFromBuiltInCache(char* filename)
 
     while (status) {
         slotc = 0;
-        status = load_objects_slots_fromBuiltInCache(slotsInfo, &slotsInfoIdx, slotv, &slotc);
+        status = load_objects_slots_fromBuiltInCache(slotsInfo, &slotsInfoIdx, &slotv, &slotc);
         if (slotc > 0) {
-            if ((obj = instantiateObj(slotv, &slotc))) {
+            if ((obj = instantiateObj(&slotv, &slotc))) {
                 char* objname = GET_name(obj);
                 if (!objname) {
                     fprintf(stderr, "Object has NULL name\n");

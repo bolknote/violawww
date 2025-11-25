@@ -266,7 +266,7 @@ long meth_cosmic_create(VObj* self, Packet* result, int argc, Packet argv[]) {
     if (slotc <= 0)
         return 0;
 
-    if ((obj = instantiateObj(slotv, &slotc))) {
+    if ((obj = instantiateObj(&slotv, &slotc))) {
         objID2Obj->put_replace(objID2Obj, storeIdent(saveString(GET_name(obj))), (long)obj);
         objObj2ExistP->put_replace(objObj2ExistP, (long)obj, 1);
         /*		SET__memoryGroup(obj, newMemoryGroup(1024));

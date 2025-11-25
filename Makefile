@@ -20,8 +20,8 @@ OPENSSL_AVAILABLE := $(shell test -d "$(OPENSSL_PREFIX)/include" && echo yes || 
 
 # Compiler flags
 ARCH_FLAGS = -arch arm64
-CFLAGS = -Os $(ARCH_FLAGS) -std=gnu17 -Wno-everything -D__DARWIN__ -funsigned-char
-CFLAGS_LIBS = -Os $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common -funsigned-char \
+CFLAGS = -O2 $(ARCH_FLAGS) -std=gnu17 -Wno-everything -D__DARWIN__ -funsigned-char
+CFLAGS_LIBS = -O2 $(ARCH_FLAGS) -Wno-everything -no-cpp-precomp -fno-common -funsigned-char \
               -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED
 
 # Add ICU support if available

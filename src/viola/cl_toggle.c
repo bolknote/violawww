@@ -30,9 +30,9 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_toggle_NCSlots[] = {{0}};
+SlotInfo cl_toggle_NCSlots[] = {0};
 SlotInfo cl_toggle_NPSlots[] = {
-    {STR_toggleState, LONG | SLOT_RW, 0}, {STR_toggleStyle, PTRS | SLOT_RW, (long)"check"}, {{0}}};
+    {STR_toggleState, LONG | SLOT_RW, 0}, {STR_toggleStyle, PTRS | SLOT_RW, (long)"check"}, {0}};
 SlotInfo cl_toggle_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"toggle"},
                                {
                                    STR_classScript,
@@ -112,8 +112,8 @@ SlotInfo cl_toggle_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"toggle"},
 	}\n\
 ",
                                },
-                               {{0}}};
-SlotInfo cl_toggle_PSlots[] = {{STR__classInfo, CLSI, (long)&class_toggle}, {{0}}};
+                               {0}};
+SlotInfo cl_toggle_PSlots[] = {{STR__classInfo, CLSI, (long)&class_toggle}, {0}};
 
 SlotInfo* slots_toggle[] = {(SlotInfo*)cl_toggle_NCSlots, (SlotInfo*)cl_toggle_NPSlots,
                             (SlotInfo*)cl_toggle_CSlots, (SlotInfo*)cl_toggle_PSlots};
@@ -127,7 +127,7 @@ MethodInfo meths_toggle[] = {
     {STR_render, meth_toggle_render},
     {STR_seta, meth_toggle_set},
     {STR_toggle, meth_toggle_toggle},
-    {{0}}};
+    {0}};
 
 ClassInfo class_toggle = {
     helper_toggle_get, helper_toggle_set, slots_toggle, /* class slot information	*/

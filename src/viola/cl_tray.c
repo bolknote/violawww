@@ -30,10 +30,10 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_tray_NCSlots[] = {{0}};
-SlotInfo cl_tray_NPSlots[] = {{0}};
-SlotInfo cl_tray_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"tray"}, {{0}}};
-SlotInfo cl_tray_PSlots[] = {{STR__classInfo, CLSI, (long)&class_tray}, {{0}}};
+SlotInfo cl_tray_NCSlots[] = {0};
+SlotInfo cl_tray_NPSlots[] = {0};
+SlotInfo cl_tray_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"tray"}, {0}};
+SlotInfo cl_tray_PSlots[] = {{STR__classInfo, CLSI, (long)&class_tray}, {0}};
 
 SlotInfo* slots_tray[] = {(SlotInfo*)cl_tray_NCSlots, (SlotInfo*)cl_tray_NPSlots,
                           (SlotInfo*)cl_tray_CSlots, (SlotInfo*)cl_tray_PSlots};
@@ -43,7 +43,7 @@ MethodInfo meths_tray[] = {
     {STR_config, meth_tray_config},
     {STR_initialize, meth_tray_initialize},
     {STR_render, meth_tray_render},
-    {{0}}};
+    {0}};
 
 ClassInfo class_tray = {
     helper_field_get, helper_field_set, slots_tray, /* class slot information	*/

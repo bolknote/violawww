@@ -30,10 +30,10 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_rubber_NCSlots[] = {{0}};
-SlotInfo cl_rubber_NPSlots[] = {{0}};
-SlotInfo cl_rubber_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"rubber"}, {{0}}};
-SlotInfo cl_rubber_PSlots[] = {{STR__classInfo, CLSI, (long)&class_rubber}, {{0}}};
+SlotInfo cl_rubber_NCSlots[] = {0};
+SlotInfo cl_rubber_NPSlots[] = {0};
+SlotInfo cl_rubber_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"rubber"}, {0}};
+SlotInfo cl_rubber_PSlots[] = {{STR__classInfo, CLSI, (long)&class_rubber}, {0}};
 
 SlotInfo* slots_rubber[] = {(SlotInfo*)cl_rubber_NCSlots, (SlotInfo*)cl_rubber_NPSlots,
                             (SlotInfo*)cl_rubber_CSlots, (SlotInfo*)cl_rubber_PSlots};
@@ -43,7 +43,7 @@ MethodInfo meths_rubber[] = {
     {STR_config, meth_rubber_config},
     {STR_initialize, meth_rubber_initialize},
     {STR_render, meth_rubber_render},
-    {{0}}};
+    {0}};
 
 ClassInfo class_rubber = {
     helper_field_get, helper_field_set, slots_rubber, /* class slot information	*/

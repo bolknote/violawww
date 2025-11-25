@@ -49,9 +49,9 @@
 #include <sys/select.h>
 #endif
 
-SlotInfo cl_socket_NCSlots[] = {{0}};
+SlotInfo cl_socket_NCSlots[] = {0};
 SlotInfo cl_socket_NPSlots[] = {
-    {STR_host, PTRS | SLOT_RW, (long)""}, {STR_port, LONG | SLOT_RW, 0}, {{0}}};
+    {STR_host, PTRS | SLOT_RW, (long)""}, {STR_port, LONG | SLOT_RW, 0}, {0}};
 SlotInfo cl_socket_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"socket"},
                                {
                                    STR_classScript,
@@ -130,8 +130,8 @@ SlotInfo cl_socket_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"socket"},
 	}\n\
 ",
                                },
-                               {{0}}};
-SlotInfo cl_socket_PSlots[] = {{STR__classInfo, CLSI, (long)&class_socket}, {{0}}};
+                               {0}};
+SlotInfo cl_socket_PSlots[] = {{STR__classInfo, CLSI, (long)&class_socket}, {0}};
 
 SlotInfo* slots_socket[] = {(SlotInfo*)cl_socket_NCSlots, (SlotInfo*)cl_socket_NPSlots,
                             (SlotInfo*)cl_socket_CSlots, (SlotInfo*)cl_socket_PSlots};
@@ -148,7 +148,7 @@ MethodInfo meths_socket[] = {
         meth_socket_get,
     },
     {STR_seta, meth_socket_set},
-    {{0}}};
+    {0}};
 
 ClassInfo class_socket = {
     helper_socket_get, helper_socket_set, slots_socket, /* class slot information	*/

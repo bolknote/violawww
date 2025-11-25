@@ -31,14 +31,14 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_project_NCSlots[] = {{0}};
+SlotInfo cl_project_NCSlots[] = {0};
 SlotInfo cl_project_NPSlots[] = {{STR_filePath, PTRS | SLOT_RW, (long)""},
                                  {STR_projectIcon, PTRS | SLOT_RW, (long)""},
                                  {STR__projectIcon, /* internalized format */
                                   PTRV, 0},
-                                 {{0}}};
-SlotInfo cl_project_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"project"}, {{0}}};
-SlotInfo cl_project_PSlots[] = {{STR__classInfo, CLSI, (long)&class_project}, {{0}}};
+                                 {0}};
+SlotInfo cl_project_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"project"}, {0}};
+SlotInfo cl_project_PSlots[] = {{STR__classInfo, CLSI, (long)&class_project}, {0}};
 
 SlotInfo* slots_project[] = {(SlotInfo*)cl_project_NCSlots, (SlotInfo*)cl_project_NPSlots,
                              (SlotInfo*)cl_project_CSlots, (SlotInfo*)cl_project_PSlots};
@@ -54,7 +54,7 @@ MethodInfo meths_project[] = {
     {STR_initialize, meth_project_initialize},
     {STR_render, meth_project_render},
     {STR_seta, meth_project_set},
-    {{0}}};
+    {0}};
 
 ClassInfo class_project = {
     helper_project_get, helper_project_set, slots_project, /* class slot information	*/

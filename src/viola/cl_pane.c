@@ -40,7 +40,7 @@ char* paneConfigStr[] = {"freeForm",
                          "westToEast_edge",
                          "eastToWest_edge",
                          "center",
-                         {0}};
+                         0};
 
 SlotInfo cl_pane_NCSlots[] = {0};
 SlotInfo cl_pane_NPSlots[] = {{STR_paneConfig, PTRS | SLOT_RW, (long)"freeForm"},

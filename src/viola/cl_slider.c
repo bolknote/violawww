@@ -33,12 +33,12 @@
 
 extern void process_event(XEvent* ep, int tool);
 
-SlotInfo cl_slider_NCSlots[] = {{0}};
+SlotInfo cl_slider_NCSlots[] = {0};
 SlotInfo cl_slider_NPSlots[] = {
     {
         STR_direction, PTRS | SLOT_RW, (long)"t" /* default is top2bottom */
     },
-    {{0}}};
+    {0}};
 SlotInfo cl_slider_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"slider"},
                                {
                                    STR_classScript,
@@ -177,8 +177,8 @@ SlotInfo cl_slider_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"slider"},
 	}\n\
 ",
                                },
-                               {{0}}};
-SlotInfo cl_slider_PSlots[] = {{STR__classInfo, CLSI, (long)&class_slider}, {{0}}};
+                               {0}};
+SlotInfo cl_slider_PSlots[] = {{STR__classInfo, CLSI, (long)&class_slider}, {0}};
 
 SlotInfo* slots_slider[] = {(SlotInfo*)cl_slider_NCSlots, (SlotInfo*)cl_slider_NPSlots,
                             (SlotInfo*)cl_slider_CSlots, (SlotInfo*)cl_slider_PSlots};
@@ -194,7 +194,7 @@ MethodInfo meths_slider[] = {
     {STR_processMouseInput, meth_slider_processMouseInput},
     {STR_render, meth_slider_render},
     {STR_seta, meth_slider_set},
-    {{0}}};
+    {0}};
 
 ClassInfo class_slider = {
     helper_slider_get, helper_slider_set, slots_slider, /* class slot information	*/

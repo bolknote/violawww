@@ -32,12 +32,12 @@
 #include <ctype.h>
 #include <string.h>
 
-SlotInfo cl_txt_NCSlots[] = {{0}};
+SlotInfo cl_txt_NCSlots[] = {0};
 SlotInfo cl_txt_NPSlots[] = {{STR_font, /* font identifier */
                               PTRS | SLOT_RW, (long)"fixed"},
                              {STR__font, /* (internal) font id */
                               LONG, 0},
-                             {{0}}};
+                             {0}};
 SlotInfo cl_txt_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txt"},
                             {
                                 STR_classScript,
@@ -86,8 +86,8 @@ SlotInfo cl_txt_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txt"},
 		}\n\
 	",
                             },
-                            {{0}}};
-SlotInfo cl_txt_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txt}, {{0}}};
+                            {0}};
+SlotInfo cl_txt_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txt}, {0}};
 
 SlotInfo* slots_txt[] = {(SlotInfo*)cl_txt_NCSlots, (SlotInfo*)cl_txt_NPSlots,
                          (SlotInfo*)cl_txt_CSlots, (SlotInfo*)cl_txt_PSlots};
@@ -109,7 +109,7 @@ MethodInfo meths_txt[] = {
     {STR_initialize, meth_txt_initialize},
     {STR_render, meth_txt_render},
     {STR_seta, meth_txt_set},
-    {{0}}};
+    {0}};
 
 ClassInfo class_txt = {
     helper_txt_get, helper_txt_set, slots_txt, /* class slot information	*/

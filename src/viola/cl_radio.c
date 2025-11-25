@@ -30,9 +30,9 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_radio_NCSlots[] = {{0}};
+SlotInfo cl_radio_NCSlots[] = {0};
 SlotInfo cl_radio_NPSlots[] = {
-    {STR_toggleState, LONG | SLOT_RW, 0}, {STR_toggleStyle, PTRS | SLOT_RW, (long)"check"}, {{0}}};
+    {STR_toggleState, LONG | SLOT_RW, 0}, {STR_toggleStyle, PTRS | SLOT_RW, (long)"check"}, {0}};
 SlotInfo cl_radio_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"radio"},
                               {
                                   STR_classScript,
@@ -97,15 +97,15 @@ SlotInfo cl_radio_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"radio"},
 	}\n\
 ",
                               },
-                              {{0}}};
-SlotInfo cl_radio_PSlots[] = {{STR__classInfo, CLSI, (long)&class_radio}, {{0}}};
+                              {0}};
+SlotInfo cl_radio_PSlots[] = {{STR__classInfo, CLSI, (long)&class_radio}, {0}};
 
 SlotInfo* slots_radio[] = {(SlotInfo*)cl_radio_NCSlots, (SlotInfo*)cl_radio_NPSlots,
                            (SlotInfo*)cl_radio_CSlots, (SlotInfo*)cl_radio_PSlots};
 
 MethodInfo meths_radio[] = {
     /* local methods */
-    {{0}}};
+    {0}};
 
 ClassInfo class_radio = {
     helper_toggle_get, helper_toggle_set, slots_radio, /* class slot information	*/

@@ -29,8 +29,8 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_txtButton_NCSlots[] = {{0}};
-SlotInfo cl_txtButton_NPSlots[] = {{{0}}};
+SlotInfo cl_txtButton_NCSlots[] = {0};
+SlotInfo cl_txtButton_NPSlots[] = {0};
 SlotInfo cl_txtButton_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtButton"},
                                   {
                                       STR_classScript,
@@ -107,10 +107,10 @@ SlotInfo cl_txtButton_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtButton"}
 		}\n\
 	",
                                   },
-                                  {{0}}};
+                                  {0}};
 SlotInfo cl_txtButton_PSlots[] = {{STR__classInfo, CLSI, (long)&class_txtButton},
                                   {STR_border, LONG | SLOT_RW, BORDER_BUTTON},
-                                  {{0}}};
+                                  {0}};
 
 SlotInfo* slots_txtButton[] = {(SlotInfo*)cl_txtButton_NCSlots, (SlotInfo*)cl_txtButton_NPSlots,
                                (SlotInfo*)cl_txtButton_CSlots, (SlotInfo*)cl_txtButton_PSlots};
@@ -119,7 +119,7 @@ MethodInfo meths_txtButton[] = {
     /* local methods */
     {STR_initialize, meth_txtButton_initialize},
     {STR_render, meth_txtButton_render},
-    {{0}}};
+    {0}};
 
 ClassInfo class_txtButton = {
     helper_txt_get,  helper_txt_set, slots_txtButton, /* class slot information	*/

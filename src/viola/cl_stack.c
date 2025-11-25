@@ -30,13 +30,13 @@
 #include "utils.h"
 #include <ctype.h>
 
-SlotInfo cl_stack_NCSlots[] = {{0}};
+SlotInfo cl_stack_NCSlots[] = {0};
 SlotInfo cl_stack_NPSlots[] = {{STR_BCardList, PTRS | SLOT_RW, (long)""},
                                {STR_FCardList, PTRS | SLOT_RW, (long)""},
                                {STR__BCardList, OBJL, 0},
                                {STR__FCardList, OBJL, 0},
                                {STR__currentCard, OBJP, 0},
-                               {{0}}};
+                               {0}};
 SlotInfo cl_stack_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"stack"},
                               {
                                   STR_classScript,
@@ -66,8 +66,8 @@ SlotInfo cl_stack_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"stack"},
 	}\n\
 ",
                               },
-                              {{0}}};
-SlotInfo cl_stack_PSlots[] = {{STR__classInfo, CLSI, (long)&class_stack}, {{0}}};
+                              {0}};
+SlotInfo cl_stack_PSlots[] = {{STR__classInfo, CLSI, (long)&class_stack}, {0}};
 
 SlotInfo* slots_stack[] = {(SlotInfo*)cl_stack_NCSlots, (SlotInfo*)cl_stack_NPSlots,
                            (SlotInfo*)cl_stack_CSlots, (SlotInfo*)cl_stack_PSlots};
@@ -91,7 +91,7 @@ MethodInfo meths_stack[] = {
     {STR_render, meth_stack_render},
     {STR_seta, meth_stack_set},
     {STR_setCurrentCard, meth_stack_setCurrentCard},
-    {{0}}};
+    {0}};
 
 ClassInfo class_stack = {
     helper_stack_get, helper_stack_set, slots_stack, /* class slot information	*/

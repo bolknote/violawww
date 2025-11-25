@@ -40,13 +40,13 @@ extern int replaceNodeLine(TFLineNode* to, TFLineNode* from, int freeOldSpaceP, 
 #include "html2.h"
 #include "sgml.h"
 
-SlotInfo cl_txtDisp_NCSlots[] = {{0}};
+SlotInfo cl_txtDisp_NCSlots[] = {0};
 SlotInfo cl_txtDisp_NPSlots[] = {{STR_cursor, LONG, 0},
                                  {STR_wrap, LONG | SLOT_RW, 1},
                                  {STR_verbatim, LONG | SLOT_RW, 0},
                                  {STR_format, LONG | SLOT_RW, FORMAT_NONE},
                                  {STR__TFStruct, TFLD, 0},
-                                 {{0}}};
+                                 {0}};
 SlotInfo cl_txtDisp_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtDisp"},
                                 {
                                     STR_classScript,
@@ -157,9 +157,9 @@ SlotInfo cl_txtDisp_CSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"txtDisp"},
 		}\n\
 	",
                                 },
-                                {{0}}};
+                                {0}};
 SlotInfo cl_txtDisp_PSlots[] = {
-    {STR__classInfo, CLSI, (long)&class_txtDisp}, {STR_border, LONG | SLOT_RW, BORDER_NONE}, {{0}}};
+    {STR__classInfo, CLSI, (long)&class_txtDisp}, {STR_border, LONG | SLOT_RW, BORDER_NONE}, {0}};
 
 SlotInfo* slots_txtDisp[] = {(SlotInfo*)cl_txtDisp_NCSlots, (SlotInfo*)cl_txtDisp_NPSlots,
                              (SlotInfo*)cl_txtDisp_CSlots, (SlotInfo*)cl_txtDisp_PSlots};
@@ -251,7 +251,7 @@ MethodInfo meths_txtDisp[] = {
     {STR_setSelection, meth_txtDisp_setSelection},
     {STR_setRevVideoFlag, meth_txtDisp_setRevVideoFlag},
     {STR_totalLineCount, meth_txtDisp_totalLineCount},
-    {{0}}};
+    {0}};
 
 ClassInfo class_txtDisp = {
     helper_txtDisp_get, helper_txtDisp_set, slots_txtDisp, /* class slot information	*/

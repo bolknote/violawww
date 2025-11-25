@@ -100,6 +100,7 @@ int g3_addtohash(tableentry* hash[], tableentry* te, int n, int a, int b)
         hash[pos] = te;
         te++;
     }
+    return 0;
 }
 
 tableentry* g3_hashfind(tableentry* hash[], int length, int code, int a, int b)

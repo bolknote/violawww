@@ -2981,5 +2981,6 @@ int GLShadeColor(int orig_red, int orig_green, int orig_blue, float shade)
         newPixel = approximateColor(70 * 650, 70 * 650, 70 * 650);
         if (!newPixel)
             return -1;
+        return newPixel;
     }
 }

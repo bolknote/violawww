@@ -21,6 +21,7 @@
 int babble(char* name, struct cmuwm_header* headerp) {
     printf("%s is a %lux%lu %lu plane CMU WM raster\n", name, memToVal(headerp->width, sizeof(long)),
            memToVal(headerp->height, sizeof(long)), memToVal(headerp->depth, sizeof(short)));
+    return 0;
 }
 
 int cmuwmIdent(char* fullname, char* name)

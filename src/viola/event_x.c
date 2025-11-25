@@ -516,6 +516,7 @@ int eventLoop() {
             */
         }
     }
+    return 0;
 }
 
 void process_event(XEvent* ep, int tool)
@@ -1013,6 +1014,7 @@ long handle_ButtonPress(XButtonEvent* ep, VObj** dragObjp, int tool, int* resize
         return 0;
     } break;
     }
+    return 0;
 }
 
 long handle_ButtonRelease(XButtonEvent* ep, VObj** dragObjp, int tool, int* resize_corner, int* mouseDown)
@@ -1149,6 +1151,7 @@ long handle_ButtonRelease(XButtonEvent* ep, VObj** dragObjp, int tool, int* resi
         *mouseDown = 0;
         break;
     }
+    return 0;
 }
 
 long handle_MotionNotify(XEvent* ep, VObj** dragObjp, int tool, int* resize_corner, int* mouseDown, int * from_x, int * from_y)
@@ -1315,6 +1318,7 @@ long handle_MotionNotify(XEvent* ep, VObj** dragObjp, int tool, int* resize_corn
         }
         break;
     }
+    return 0;
 }
 
 #ifdef INLINED_handle_ExposeNotify
@@ -1350,7 +1354,9 @@ long handle_ResizeRequest(XResizeRequestEvent* ep)
         intBuff[2] = ep->width;
         intBuff[3] = ep->height;
         sendTokenMessageAndInts(obj, STR_config, intBuff, 4);
+        return 0;
     }
+    return 0;
 }
 
 long handle_ConfigureNotify(XConfigureEvent* ep)
@@ -1368,7 +1374,9 @@ long handle_ConfigureNotify(XConfigureEvent* ep)
         intBuff[2] = ep->width;
         intBuff[3] = ep->height;
         sendTokenMessageAndInts(obj, STR_config, intBuff, 4);
+        return 0;
     }
+    return 0;
 }
 
 char* eventChar(XKeyEvent* e)

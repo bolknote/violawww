@@ -1500,7 +1500,13 @@ Pixmap GLMakeXBMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
      * peter@hpkslx.mayfield.HP.COM */
     if (!tmpfile) {
         tmpfile = saveString("/tmp/violaXXXXXX");
-        mktemp(tmpfile);
+        int fd = mkstemp(tmpfile);
+        if (fd == -1) {
+            free(tmpfile);
+            tmpfile = NULL;
+            return 0;
+        }
+        close(fd);
     }
     if (saveFile(tmpfile, bitmapStr) != 0) {
         unlink(tmpfile);
@@ -1552,7 +1558,14 @@ Pixmap GLMakeXPMFromASCII(Window w, char* bitmapStr, unsigned int* width, unsign
          * XPM functions take as data string or file pointer...
          */
         tmpFile = saveString("/tmp/violaXXXXXX");
-        mktemp(tmpFile);
+        int fd = mkstemp(tmpFile);
+        if (fd == -1) {
+            free(attributes);
+            free(tmpFile);
+            tmpFile = NULL;
+            return 0;
+        }
+        close(fd);
     }
     if (saveFile(tmpFile, bitmapStr) != 0) {
         unlink(tmpFile);

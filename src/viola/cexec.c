@@ -2127,8 +2127,12 @@ Packet* execObjScript(VObj* obj)
 
 #ifdef SCRIPT_FROM_FILENOT
         tmpfile = saveString("/tmp/violaXXXXXX");
-        mktemp(tmpfile);
-        fp = fopen(tmpfile, "w");
+        int fd = mkstemp(tmpfile);
+        if (fd == -1) {
+            free(tmpfile);
+            return NULL;
+        }
+        fp = fdopen(fd, "w+");
         fputs(yyscript, fp);
         fclose(fp);
         fp = fopen(tmpfile, "r");
@@ -2155,6 +2159,7 @@ Packet* execObjScript(VObj* obj)
 #ifdef SCRIPT_FROM_FILENOT
         fclose(fp);
         unlink(tmpfile);
+        free(tmpfile);
 #endif // SCRIPT_FROM_FILENOT
 
         /* collect identifiers and assign reference offset */
@@ -2236,8 +2241,12 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
 
 #ifdef SCRIPT_FROM_FILENOT
         tmpfile = saveString("/tmp/violaXXXXXX");
-        mktemp(tmpfile);
-        fp = fopen(tmpfile, "w");
+        int fd = mkstemp(tmpfile);
+        if (fd == -1) {
+            free(tmpfile);
+            return NULL;
+        }
+        fp = fdopen(fd, "w+");
         fputs(yyscript, fp);
         fclose(fp);
         fp = fopen(tmpfile, "r");
@@ -2259,6 +2268,7 @@ Packet* execObjClassScript(VObj* obj, Packet* result) {
 #ifdef SCRIPT_FROM_FILENOT
         fclose(fp);
         unlink(tmpfile);
+        free(tmpfile);
 #endif // SCRIPT_FROM_FILENOT
 
         if (flag_printAST)
@@ -2336,8 +2346,12 @@ Packet* execScript(VObj* obj, Packet* result, char* script)
 
 #ifdef SCRIPT_FROM_FILENOT
     tmpfile = saveString("/tmp/violaXXXXXX");
-    mktemp(tmpfile);
-    fp = fopen(tmpfile, "w");
+    int fd = mkstemp(tmpfile);
+    if (fd == -1) {
+        free(tmpfile);
+        return 0;
+    }
+    fp = fdopen(fd, "w+");
     fputs(yyscript, fp);
     fclose(fp);
     fp = fopen(tmpfile, "r");
@@ -2359,6 +2373,7 @@ Packet* execScript(VObj* obj, Packet* result, char* script)
 #ifdef SCRIPT_FROM_FILENOT
     fclose(fp);
     unlink(tmpfile);
+    free(tmpfile);
 #endif // SCRIPT_FROM_FILENOT
 
     if (flag_printAST)

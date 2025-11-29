@@ -656,7 +656,7 @@ void tile(MAST* self, int level)
             }
         }
         mast->width = hspan;
-        mast->height = (float)maxHeight * 1.7;
+        mast->height = (int)((float)maxHeight * 1.7);
         break;
     case MINFO_LPAREN:
     case MINFO_LBRACK:
@@ -1297,14 +1297,14 @@ void drawMAST(MAST* self, int level, Window w)
 
             y0 = mast->ry + 1;
             y5 = y0 + mast->height - 2;
-            y1 = y0 + ylen;
-            y2 = y0 + ylen3;
-            y3 = y5 - ylen3;
-            y4 = y5 - ylen;
+            y1 = (int)(y0 + ylen);
+            y2 = (int)(y0 + ylen3);
+            y3 = (int)(y5 - ylen3);
+            y4 = (int)(y5 - ylen);
 
             x0 = mast->rx + 1;
             x2 = x0 + PAREN_WIDTH;
-            x1 = x2 - xlen;
+            x1 = (int)(x2 - xlen);
 
             XDrawLine(display, w, gc_fg, x2, y0, x1, y1);
             XDrawLine(display, w, gc_fg, x1, y1, x0, y2);
@@ -1318,7 +1318,7 @@ void drawMAST(MAST* self, int level, Window w)
 
             /*			x2 = mast->rx + mast->width;*/
             x2 = mast->rx + mast->width - PAREN_WIDTH;
-            x1 = x2 - xlen;
+            x1 = (int)(x2 - xlen);
             x0 = x2 - PAREN_WIDTH;
 
             XDrawLine(display, w, gc_fg, x0, y0, x1, y1);
@@ -1462,14 +1462,14 @@ void drawMAST(MAST* self, int level, Window w)
             fpath = fpath_integral;
             width = INTEGRAL_WIDTH - 2;
             height = mast->height - 2;
-            lx = width - (fpath->x * width) + sx;
-            ly = fpath->y * height + sy;
+            lx = (int)(width - (fpath->x * width) + sx);
+            ly = (int)(fpath->y * height + sy);
             fpathPts[0].x = lx;
             fpathPts[0].y = ly;
             for (i = 1; i < FPATH_COUNT_INTEGRAL - 1; i++) {
                 fpath++;
-                x = width - (fpath->x * width) + sx;
-                y = fpath->y * height + sy;
+                x = (int)(width - (fpath->x * width) + sx);
+                y = (int)(fpath->y * height + sy);
                 fpathPts[i].x = x;
                 fpathPts[i].y = y;
                 /*XDrawLine(display, w, gc_fg, lx, ly, x, y);*/

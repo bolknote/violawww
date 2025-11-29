@@ -406,7 +406,7 @@ void c_m_line(unsigned char* dp, int number, int line)
             red = fmaps[0][*r];
             green = fmaps[1][*g];
             blue = fmaps[2][*b];
-            *dp = 0.35 * red + 0.55 * green + 0.1 * blue;
+            *dp = (unsigned char)(0.35 * red + 0.55 * green + 0.1 * blue);
         }
     }
 }

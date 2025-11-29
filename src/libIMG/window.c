@@ -548,12 +548,12 @@ XImageInfo* imageInWindow(Display* disp,
         if (!winwidth) {
             winwidth = image->width;
             if (winwidth > DisplayWidth(disp, scrn) * 0.9)
-                winwidth = DisplayWidth(disp, scrn) * 0.9;
+                winwidth = (unsigned int)(DisplayWidth(disp, scrn) * 0.9);
         }
         if (!winheight) {
             winheight = image->height;
             if (winheight > DisplayHeight(disp, scrn) * 0.9)
-                winheight = DisplayHeight(disp, scrn) * 0.9;
+                winheight = (unsigned int)(DisplayHeight(disp, scrn) * 0.9);
         }
     }
 

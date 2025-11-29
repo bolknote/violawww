@@ -673,8 +673,8 @@ PRIVATE void blank_lines ARGS2(HText*, text, int, newlines) {
  * See also: setStyle.
  */
 PUBLIC void HText_appendParagraph ARGS1(HText*, text) {
-    int after = text->style->spaceAfter;
-    int before = text->style->spaceBefore;
+    int after = (int)text->style->spaceAfter;
+    int before = (int)text->style->spaceBefore;
     int i = after > before ? after : before;
 
     /*	if (!before && !after) blank_lines(text, 1);
@@ -768,7 +768,7 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
 
     style = text->style;
     font = style->font;
-    indent = text->in_line_1 ? style->indent1st : style->leftIndent;
+    indent = (int)(text->in_line_1 ? style->indent1st : style->leftIndent);
 
     if (ch == '\r') {
         return; /* badness? */
@@ -782,7 +782,7 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
         HTTabStop* tab;
         int target; /* Where to tab to, in pixel value */
         int here = indent + text->px;
-        int limit = text->tfstruct->width - style->rightIndent;
+        int limit = text->tfstruct->width - (int)style->rightIndent;
 
         if (style->tabs) {
             int i, spaceWidth = FontWidths(text->fontID)['n'];
@@ -794,7 +794,7 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
             }
 
             for (i = 0;; i++) {
-                target = style->tabs[i].position * spaceWidth + indent;
+                target = (int)(style->tabs[i].position * spaceWidth) + indent;
 #ifdef VERBOSE_APPENDCHARACTER
                 printf("[%d] here=%d, target=%d\n", i, here, target);
 #endif
@@ -806,12 +806,12 @@ PUBLIC void HText_appendCharacter ARGS2(HText*, text, char, ch) {
                     return;
                 }
             }
-        } else if (style->leftIndent) { /* Use 2nd indent */
-            if (here >= style->leftIndent) {
+        } else if (style->leftIndent != 0) { /* Use 2nd indent */
+            if (here >= (int)style->leftIndent) {
                 new_line(text); /* wrap */
                 return;
             } else {
-                target = style->leftIndent;
+                target = (int)style->leftIndent;
             }
         } else {
             int tabWidth = FontWidths(text->fontID)['n'] * 9;

@@ -27,7 +27,7 @@ typedef struct Packet Packet;
 #define PTRS 5  /* string */
 #define PTRA 6  /* string, append to */
 #define ATTR 7  /* attributes */
-#define FUNC 8  /* set value to function */
+#define SFUNC 8  /* set value to function */
 #define PROC 9  /* procedure, don't set slot value */
 #define CLSI 10 /* classInfo */
 #define PCOD 11 /* pcode */

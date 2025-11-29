@@ -344,7 +344,7 @@ long initSlot(VObj* self, long* slotp, SlotInfo* sip, long val)
     case PTRS:
         return *slotp = (long)saveString((char*)val);
 
-    case FUNC:
+    case SFUNC:
         return *slotp = ((long (*)(void))val)();
 
     case PROC:
@@ -381,7 +381,7 @@ char* returnSlotCast(int type)
         return "(union PCode*)";
     case LONG:
     case PROC:
-    case FUNC:
+    case SFUNC:
     default:
         return "(long)";
     }
@@ -709,7 +709,7 @@ int dumpObj(VObj* obj, long (*dumpFunc)(FILE*, const char*, ...), FILE* dumpDest
             dumpFunc(dumpDest, "tfstruct ptr=%d}\n", obj[i]);
             break;
         case PROC:
-        case FUNC:
+        case SFUNC:
         default:
             dumpFunc(dumpDest, "unknown val=%d}\n", obj[i]);
             break;
@@ -791,7 +791,7 @@ VObj* clone(VObj* original)
             ((long (*)(VObj*, long*))(*originalp))(original, clonep);
             break;
 
-        case FUNC:
+        case SFUNC:
             *clonep = ((long (*)(void))(*originalp))();
             break;
 

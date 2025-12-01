@@ -63,7 +63,9 @@ INCLUDES = -I$(BREW_PREFIX)/include \
 DEPFLAGS = -MMD -MP
 
 # Linker flags
-LDFLAGS = $(ARCH_FLAGS) -L$(BREW_PREFIX)/lib \
+# -dead_strip removes unreferenced code (macOS ld64)
+LDFLAGS = $(ARCH_FLAGS) -Wl,-dead_strip \
+          -L$(BREW_PREFIX)/lib \
           -L$(OPENMOTIF_PREFIX)/lib \
           -L/opt/X11/lib
 LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lm $(ICU_LIBS) $(SSL_LIBS)

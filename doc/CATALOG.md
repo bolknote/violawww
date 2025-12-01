@@ -4,8 +4,8 @@ The Personal URL Catalog is a hierarchical bookmark organizer for ViolaWWW, allo
 
 ## Opening the Catalog
 
-- **Menu:** Navigate → Personal URL Catalog
-- **From browser:** File → Add to Catalog (adds the current page)
+- **Menu:** Test → Catalog
+- **Add current page:** File → Add to Catalog
 
 ## Features
 

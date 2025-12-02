@@ -168,6 +168,10 @@ static void calculateCellWidth(Catalog* catalog);
 #define MAX_LABEL_WIDTH 80
 #define MAX_LABEL_LINES 3
 
+/* Canvas minimum size - slightly smaller than ScrolledWindow to avoid scrollbars */
+#define CANVAS_MIN_WIDTH  396
+#define CANVAS_MIN_HEIGHT 246
+
 /*
  * Wrap text into multiple lines for display under icons.
  * - Lines 1-2: word-wrap within MAX_LABEL_WIDTH
@@ -268,38 +272,23 @@ static void updateCanvasSize(Catalog* catalog) {
     if (!catalog || !catalog->canvas || !catalog->currentFolder) return;
     
     Folder* folder = catalog->currentFolder;
-    int contentHeight = 0;
-    int contentWidth = 0;
+    int contentHeight = 20;  /* minimum padding */
+    int contentWidth = 20;
     
     /* Find the extent of all items */
     for (int i = 0; i < folder->nItems; i++) {
         Item* item = folder->items[i];
-        int itemBottom = item->y + CATALOG_GRID_Y;  /* item position + cell height */
+        int itemBottom = item->y + CATALOG_GRID_Y;
         int itemRight = item->x + CATALOG_GRID_X;
         if (itemBottom > contentHeight) contentHeight = itemBottom;
         if (itemRight > contentWidth) contentWidth = itemRight;
     }
     
-    /* Add padding */
-    contentHeight += 20;
-    contentWidth += 20;
+    /* Canvas must fill visible area but not exceed it unless content requires */
+    if (contentWidth < CANVAS_MIN_WIDTH) contentWidth = CANVAS_MIN_WIDTH;
+    if (contentHeight < CANVAS_MIN_HEIGHT) contentHeight = CANVAS_MIN_HEIGHT;
     
-    /* Get current canvas size - don't shrink below visible area */
-    Dimension currentWidth, currentHeight;
-    XtVaGetValues(catalog->canvas, XmNwidth, &currentWidth, XmNheight, &currentHeight, NULL);
-    
-    /* Only resize if content needs more space */
-    int newHeight = (contentHeight > (int)currentHeight) ? contentHeight : (int)currentHeight;
-    int newWidth = (contentWidth > (int)currentWidth) ? contentWidth : (int)currentWidth;
-    
-    /* But don't make it bigger than needed */
-    if (contentHeight < 250) newHeight = 250;  /* minimum visible height */
-    else newHeight = contentHeight;
-    
-    if (contentWidth < 400) newWidth = 400;  /* minimum visible width */
-    else newWidth = contentWidth;
-    
-    XtVaSetValues(catalog->canvas, XmNheight, newHeight, XmNwidth, newWidth, NULL);
+    XtVaSetValues(catalog->canvas, XmNheight, contentHeight, XmNwidth, contentWidth, NULL);
 }
 
 /* ---- MENUS  -------------------------------------------------------- */
@@ -1131,7 +1120,7 @@ static void findOpenLocation(Folder* folder, int* x, int* y) {
             if (!occupied) {
                 *x = testX;
                 *y = testY;
-                return;
+        return;
             }
         }
     }
@@ -2032,7 +2021,7 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
         XAllocNamedColor(XtDisplay(shell), cmap, "grey75", &color, &exact);
 
         canvas = XtVaCreateManagedWidget("canvas", xmDrawingAreaWidgetClass, canvasFrame,
-            XmNwidth, 400, XmNheight, 250,  /* Same as ScrolledWindow visible area */
+            XmNwidth, CANVAS_MIN_WIDTH, XmNheight, CANVAS_MIN_HEIGHT,
             XmNborderWidth, 0,
             XmNbackground, color.pixel,
             NULL);
@@ -2109,6 +2098,9 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
             }
         }
     }
+
+    /* Size canvas to fit content */
+    updateCanvasSize(catalog);
 
     XtPopup(shell, XtGrabNone);
 }

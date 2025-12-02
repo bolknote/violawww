@@ -62,6 +62,20 @@ Topics covered:
 
 ---
 
+## Sound
+
+### [SOUND_REFERENCE.md](SOUND_REFERENCE.md)
+Audio playback capabilities in ViolaWWW.
+
+Topics covered:
+- Viola script functions: `bell()`, `bellVolume()`
+- Playing audio files in HTML (hyperlinks, `<INSERT>` tag)
+- Auto-play and looping with `AFTER` attribute
+- Supported audio formats (AU, AIFF, MP3, AAC, FLAC, etc.)
+- macOS implementation using `afplay`
+
+---
+
 ## Programming Language
 
 ViolaWWW includes a built-in scripting language called **Viola**.

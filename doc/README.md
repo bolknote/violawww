@@ -126,15 +126,6 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 
 Many of these innovations influenced the development of HTML standards and modern web browsers.
 
-## Contributing
-
-When adding new features or fixing bugs, please:
-
-1. Update or create documentation in this directory
-2. Add example files to `examples/` directory
-3. Include references to relevant documentation in code comments
-4. Test with various example files
-
 ## See Also
 
 - [Main README](../README.md) - Project overview and build instructions

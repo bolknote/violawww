@@ -1007,13 +1007,18 @@ static void catalogButtonUpEH(Widget widget, XtPointer clientData, XEvent* event
         }
         catalog->modified = 1;
     } else if (catalog->dragState == DRAG_SELECT_RECT && catalog->xorGC) {
-        /* Erase selection rectangle */
+        /* Erase selection rectangle (normalize coordinates) */
         Display* display = XtDisplay(widget);
         Window window = XtWindow(widget);
         if (window) {
-            XDrawRectangle(display, window, catalog->xorGC,
-                           catalog->selectRectX, catalog->selectRectY,
-                           (unsigned int)catalog->selectRectW, (unsigned int)catalog->selectRectH);
+            int eraseX = catalog->selectRectX;
+            int eraseY = catalog->selectRectY;
+            int eraseW = catalog->selectRectW;
+            int eraseH = catalog->selectRectH;
+            if (eraseW < 0) { eraseX += eraseW; eraseW = -eraseW; }
+            if (eraseH < 0) { eraseY += eraseH; eraseH = -eraseH; }
+            XDrawRectangle(display, window, catalog->xorGC, eraseX, eraseY,
+                           (unsigned int)eraseW, (unsigned int)eraseH);
         }
 
         /* Select all items within rectangle */
@@ -1057,16 +1062,20 @@ static void catalogButtonMotionEH(Widget widget, XtPointer clientData, XEvent* e
         Window window = XtWindow(widget);
 
         if (window) {
-            /* Erase old rectangle */
-            XDrawRectangle(display, window, catalog->xorGC,
-                           catalog->selectRectX, catalog->selectRectY,
-                           (unsigned int)catalog->selectRectW, (unsigned int)catalog->selectRectH);
+            /* Erase old rectangle (normalize coordinates for proper XOR erase) */
+            int oldX = catalog->selectRectX;
+            int oldY = catalog->selectRectY;
+            int oldW = catalog->selectRectW;
+            int oldH = catalog->selectRectH;
+            if (oldW < 0) { oldX += oldW; oldW = -oldW; }
+            if (oldH < 0) { oldY += oldH; oldH = -oldH; }
+            XDrawRectangle(display, window, catalog->xorGC, oldX, oldY, (unsigned int)oldW, (unsigned int)oldH);
 
             /* Update rectangle */
             catalog->selectRectW = (short)(me->x - catalog->selectRectX);
             catalog->selectRectH = (short)(me->y - catalog->selectRectY);
 
-            /* Draw new rectangle */
+            /* Draw new rectangle (normalize coordinates) */
             int x = catalog->selectRectX;
             int y = catalog->selectRectY;
             int w = catalog->selectRectW;

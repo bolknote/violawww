@@ -163,6 +163,145 @@ static void selectAllCB(Widget widget, XtPointer clientData, XtPointer callData)
 static void aboutCatalogCB(Widget widget, XtPointer clientData, XtPointer callData);
 static void calculateCellWidth(Catalog* catalog);
 
+/* ---- LABEL WRAPPING ------------------------------------------------- */
+
+#define MAX_LABEL_WIDTH 80
+#define MAX_LABEL_LINES 3
+
+/*
+ * Wrap text into multiple lines for display under icons.
+ * - Lines 1-2: word-wrap within MAX_LABEL_WIDTH
+ * - Line 3: remainder without wrapping (will be clipped)
+ * Returns newly allocated string with \n separators.
+ */
+static char* wrapLabelText(const char* text, XmFontList fontList) {
+    if (!text || !fontList) return text ? strdup(text) : NULL;
+    
+    /* Check if text already fits */
+    XmString testXms = XmStringCreateLocalized((char*)text);
+    Dimension textWidth = XmStringWidth(fontList, testXms);
+    XmStringFree(testXms);
+    
+    if (textWidth <= MAX_LABEL_WIDTH) {
+        return strdup(text);
+    }
+    
+    /* Need to wrap - allocate result buffer */
+    size_t len = strlen(text);
+    char* result = (char*)malloc(len + MAX_LABEL_LINES + 1);  /* extra space for \n */
+    if (!result) return strdup(text);
+    result[0] = '\0';
+    
+    char* textCopy = strdup(text);
+    if (!textCopy) { free(result); return strdup(text); }
+    
+    char* word;
+    char* saveptr = NULL;
+    char currentLine[256] = "";
+    int lineNum = 0;
+    
+    word = strtok_r(textCopy, " ", &saveptr);
+    while (word && lineNum < MAX_LABEL_LINES) {
+        char testLine[256];
+        
+        if (currentLine[0] == '\0') {
+            strcpy(testLine, word);
+        } else {
+            snprintf(testLine, sizeof(testLine), "%s %s", currentLine, word);
+        }
+        
+        /* Measure test line width */
+        XmString xms = XmStringCreateLocalized(testLine);
+        Dimension lineWidth = XmStringWidth(fontList, xms);
+        XmStringFree(xms);
+        
+        if (lineWidth <= MAX_LABEL_WIDTH || currentLine[0] == '\0') {
+            /* Word fits or it's the first word on line */
+            strcpy(currentLine, testLine);
+            word = strtok_r(NULL, " ", &saveptr);
+        } else {
+            /* Word doesn't fit - finish current line */
+            if (result[0] != '\0') strcat(result, "\n");
+            strcat(result, currentLine);
+            lineNum++;
+            
+            if (lineNum >= MAX_LABEL_LINES - 1) {
+                /* Line 3: append all remaining text without wrapping */
+                currentLine[0] = '\0';
+                strcpy(currentLine, word);
+                word = strtok_r(NULL, " ", &saveptr);
+                while (word) {
+                    strcat(currentLine, " ");
+                    strcat(currentLine, word);
+                    word = strtok_r(NULL, " ", &saveptr);
+                }
+            } else {
+                currentLine[0] = '\0';
+            }
+        }
+    }
+    
+    /* Append last line if not empty */
+    if (currentLine[0] != '\0') {
+        if (result[0] != '\0') strcat(result, "\n");
+        strcat(result, currentLine);
+    }
+    
+    free(textCopy);
+    return result;
+}
+
+/*
+ * Create XmString from text, wrapping if necessary.
+ */
+static XmString createWrappedLabel(const char* text, XmFontList fontList) {
+    char* wrapped = wrapLabelText(text, fontList);
+    XmString xms = XmStringCreateLtoR(wrapped, XmFONTLIST_DEFAULT_TAG);
+    free(wrapped);
+    return xms;
+}
+
+/*
+ * Update canvas size to fit all items (enables scrolling only when needed)
+ */
+static void updateCanvasSize(Catalog* catalog) {
+    if (!catalog || !catalog->canvas || !catalog->currentFolder) return;
+    
+    Folder* folder = catalog->currentFolder;
+    int contentHeight = 0;
+    int contentWidth = 0;
+    
+    /* Find the extent of all items */
+    for (int i = 0; i < folder->nItems; i++) {
+        Item* item = folder->items[i];
+        int itemBottom = item->y + CATALOG_GRID_Y;  /* item position + cell height */
+        int itemRight = item->x + CATALOG_GRID_X;
+        if (itemBottom > contentHeight) contentHeight = itemBottom;
+        if (itemRight > contentWidth) contentWidth = itemRight;
+    }
+    
+    /* Add padding */
+    contentHeight += 20;
+    contentWidth += 20;
+    
+    /* Get current canvas size - don't shrink below visible area */
+    Dimension currentWidth, currentHeight;
+    XtVaGetValues(catalog->canvas, XmNwidth, &currentWidth, XmNheight, &currentHeight, NULL);
+    
+    /* Only resize if content needs more space */
+    int newHeight = (contentHeight > (int)currentHeight) ? contentHeight : (int)currentHeight;
+    int newWidth = (contentWidth > (int)currentWidth) ? contentWidth : (int)currentWidth;
+    
+    /* But don't make it bigger than needed */
+    if (contentHeight < 250) newHeight = 250;  /* minimum visible height */
+    else newHeight = contentHeight;
+    
+    if (contentWidth < 400) newWidth = 400;  /* minimum visible width */
+    else newWidth = contentWidth;
+    
+    XtVaSetValues(catalog->canvas, XmNheight, newHeight, XmNwidth, newWidth, NULL);
+}
+
 /* ---- MENUS  -------------------------------------------------------- */
 
 static MenuItem catalogFileMenuItems[] = {
@@ -418,7 +557,8 @@ static Item* parseLine(FILE* fp, char* line, Catalog* catalog) {
         link->gc = catalog->gc;
 
         if (link->name) {
-            link->nameXMS = XmStringCreateLocalized(link->name);
+            link->nameXMS = catalogFontList ? createWrappedLabel(link->name, catalogFontList) 
+                                            : XmStringCreateLocalized(link->name);
             link->nx = link->x;
             link->ny = (short)(link->y + link->h + 4);
         }
@@ -457,7 +597,8 @@ static Folder* parseFolder(FILE* fp, char* headerData, Catalog* catalog) {
     folder->allocedItems = ITEM_ALLOC_CHUNK;
 
     if (folder->name) {
-        folder->nameXMS = XmStringCreateLocalized(folder->name);
+        folder->nameXMS = catalogFontList ? createWrappedLabel(folder->name, catalogFontList)
+                                          : XmStringCreateLocalized(folder->name);
         folder->nx = folder->x;
         folder->ny = (short)(folder->y + folder->h + 4);
     }
@@ -558,7 +699,8 @@ int readCatalog(Catalog* catalog, const char* filename) {
                     link->ny = (short)(link->y + link->h + 4);
                     
                     if (link->name) {
-                        link->nameXMS = XmStringCreateLocalized(link->name);
+                        link->nameXMS = catalogFontList ? createWrappedLabel(link->name, catalogFontList)
+                                                        : XmStringCreateLocalized(link->name);
                     }
                     
                     /* Add to folder */
@@ -682,10 +824,10 @@ static void drawItem(Widget canvas, Item* item, Catalog* catalog, int selected) 
     if (selected || item->state == SELECTED) {
         /* Calculate selection box to encompass icon and text */
         int selX, selY, selW, selH;
-        int textWidth = 0;
+        Dimension textWidth = 0, textHeight = 0;
         
         if (item->nameXMS && catalogFontList) {
-            textWidth = XmStringWidth(catalogFontList, item->nameXMS);
+            XmStringExtent(catalogFontList, item->nameXMS, &textWidth, &textHeight);
         }
         
         /* Use max of icon width and text width */
@@ -695,7 +837,7 @@ static void drawItem(Widget canvas, Item* item, Catalog* catalog, int selected) 
         selX = item->x + item->w / 2 - contentWidth / 2 - 2;
         selY = item->y - 2;
         selW = contentWidth + 4;
-        selH = item->h + 20;  /* icon + text height */
+        selH = item->h + textHeight + 8;  /* icon + actual text height + padding */
         
         XDrawRectangle(display, window, gc, selX, selY,
                        (unsigned int)selW, (unsigned int)selH);
@@ -958,11 +1100,18 @@ static void catalogExposureEH(Widget widget, XtPointer clientData, XEvent* event
 /* ---- ITEM OPERATIONS ------------------------------------------------ */
 
 static void findOpenLocation(Folder* folder, int* x, int* y) {
-    /* Simple grid-based placement */
+    /* Grid-based placement using actual canvas width */
     int gridX = CATALOG_GRID_X;
     int gridY = CATALOG_GRID_Y;
     int col = 0, row = 0;
-    int maxCols = 5;
+    
+    /* Calculate maxCols based on canvas width */
+    Dimension canvasWidth = 400;  /* default */
+    if (theCatalog && theCatalog->canvas) {
+        XtVaGetValues(theCatalog->canvas, XmNwidth, &canvasWidth, NULL);
+    }
+    int maxCols = (canvasWidth - 20) / gridX;
+    if (maxCols < 1) maxCols = 1;
 
     /* Find first empty grid position */
     for (row = 0; row < 100; row++) {
@@ -982,7 +1131,7 @@ static void findOpenLocation(Folder* folder, int* x, int* y) {
             if (!occupied) {
                 *x = testX;
                 *y = testY;
-        return;
+                return;
             }
         }
     }
@@ -1013,7 +1162,8 @@ Link* createNewLink(Catalog* catalog, const char* url, const char* name, const c
     link->ny = (short)(link->y + link->h + 4);
 
     if (link->name) {
-        link->nameXMS = XmStringCreateLocalized(link->name);
+        link->nameXMS = catalogFontList ? createWrappedLabel(link->name, catalogFontList)
+                                        : XmStringCreateLocalized(link->name);
     }
 
     /* Add to current folder */
@@ -1059,7 +1209,8 @@ Folder* createNewFolder(Catalog* catalog, const char* name) {
     folder->numy = (short)(folder->y + folder->h / 2 - 6);
 
     if (folder->name) {
-        folder->nameXMS = XmStringCreateLocalized(folder->name);
+        folder->nameXMS = catalogFontList ? createWrappedLabel(folder->name, catalogFontList)
+                                          : XmStringCreateLocalized(folder->name);
     }
     folder->nItemsXMS = XmStringCreateLocalized("0");
 
@@ -1105,6 +1256,7 @@ void openFolder(Folder* folder, Catalog* catalog) {
 
     calculateCellWidth(catalog);
     deselectAll(catalog);
+    updateCanvasSize(catalog);
     redrawCatalog(catalog);
 }
 
@@ -1151,6 +1303,7 @@ void deleteSelectedItems(Catalog* catalog) {
     snprintf(countStr, sizeof(countStr), "%d", folder->nItems);
     folder->nItemsXMS = XmStringCreateLocalized(countStr);
 
+    updateCanvasSize(catalog);
     redrawCatalog(catalog);
 }
 
@@ -1195,6 +1348,7 @@ void addCurrentPageToCatalog(Catalog* catalog, DocViewInfo* dvi) {
     const char* name = (title && strlen(title) > 0) ? title : url;
 
     createNewLink(catalog, url, name, NULL);
+    updateCanvasSize(catalog);
     redrawCatalog(catalog);
 }
 
@@ -1212,11 +1366,11 @@ static void newFolderOkCB(Widget widget, XtPointer clientData, XtPointer callDat
 
     if (name && strlen(name) > 0) {
         createNewFolder(data->catalog, name);
-        redrawCatalog(data->catalog);
     } else {
         createNewFolder(data->catalog, "New Folder");
-        redrawCatalog(data->catalog);
     }
+    updateCanvasSize(data->catalog);
+    redrawCatalog(data->catalog);
 
     if (name) XtFree(name);
 
@@ -1299,6 +1453,7 @@ static void newLinkOkCB(Widget widget, XtPointer clientData, XtPointer callData)
 
     if (url && strlen(url) > 0) {
         createNewLink(data->catalog, url, name && strlen(name) > 0 ? name : url, NULL);
+        updateCanvasSize(data->catalog);
         redrawCatalog(data->catalog);
     }
 
@@ -1420,6 +1575,7 @@ static void goUpFolderCB(Widget widget, XtPointer clientData, XtPointer callData
 
         calculateCellWidth(catalog);
         deselectAll(catalog);
+        updateCanvasSize(catalog);
         redrawCatalog(catalog);
     }
 }
@@ -1460,7 +1616,8 @@ static void renameOkCB(Widget widget, XtPointer clientData, XtPointer callData) 
 
         /* Update XmString */
         if (data->item->nameXMS) XmStringFree(data->item->nameXMS);
-        data->item->nameXMS = XmStringCreateLocalized(data->item->name);
+        data->item->nameXMS = catalogFontList ? createWrappedLabel(data->item->name, catalogFontList)
+                                              : XmStringCreateLocalized(data->item->name);
 
         /* For links, also update URL if field exists */
         if (data->item->type == LINK && data->urlField) {
@@ -1643,26 +1800,11 @@ static int compareItemsByName(const void* a, const void* b) {
     return strcasecmp(nameA, nameB);
 }
 
-/* Calculate cellWidth based on maximum text width in folder */
+/* Set fixed cellWidth - labels are now wrapped to MAX_LABEL_WIDTH */
 static void calculateCellWidth(Catalog* catalog) {
-    if (!catalog || !catalog->currentFolder) return;
-    
-    Folder* folder = catalog->currentFolder;
-    int maxTextWidth = 0;
-    int maxIconWidth = 0;
-    
-    for (int i = 0; i < folder->nItems; i++) {
-        Item* item = folder->items[i];
-        if (item->nameXMS && catalogFontList) {
-            Dimension textWidth = XmStringWidth(catalogFontList, item->nameXMS);
-            if (textWidth > maxTextWidth) maxTextWidth = textWidth;
-        }
-        if (item->w > maxIconWidth) maxIconWidth = item->w;
-    }
-    
-    int cellWidth = (maxTextWidth > maxIconWidth ? maxTextWidth : maxIconWidth) + 20;
-    if (cellWidth < CATALOG_GRID_X) cellWidth = CATALOG_GRID_X;
-    catalog->cellWidth = (short)cellWidth;
+    if (!catalog) return;
+    /* Fixed width: MAX_LABEL_WIDTH(80) + padding(20) = 100 */
+    catalog->cellWidth = CATALOG_GRID_X;
 }
 
 void cleanupFolder(Widget widget, XtPointer clientData, XtPointer callData) {
@@ -1711,6 +1853,7 @@ void cleanupFolder(Widget widget, XtPointer clientData, XtPointer callData) {
     }
 
     catalog->modified = 1;
+    updateCanvasSize(catalog);
     redrawCatalog(catalog);
 }
 
@@ -1869,13 +2012,15 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
     XmStringFree(xms);
     catalog->catalogTitleText = catalogFileText;
 
-    /* Canvas - original from author */
+    /* Canvas - original from author, with automatic scrolling */
     canvasFrame = XtVaCreateManagedWidget("canvasFrame", xmScrolledWindowWidgetClass, form,
         XmNtopAttachment, XmATTACH_WIDGET, XmNtopWidget, titleFrame,
         XmNbottomAttachment, XmATTACH_WIDGET, XmNbottomWidget, helpLabel,
         XmNleftAttachment, XmATTACH_FORM,
         XmNrightAttachment, XmATTACH_FORM,
         XmNshadowThickness, 1,
+        XmNscrollingPolicy, XmAUTOMATIC,
+        XmNscrollBarDisplayPolicy, XmAS_NEEDED,
         XmNwidth, 400, XmNheight, 250, NULL);
 
     setHelp(canvasFrame, helpLabel, "Double click on a document or folder to open it.");
@@ -1887,7 +2032,7 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
         XAllocNamedColor(XtDisplay(shell), cmap, "grey75", &color, &exact);
 
         canvas = XtVaCreateManagedWidget("canvas", xmDrawingAreaWidgetClass, canvasFrame,
-            XmNwidth, 400, XmNheight, 400,
+            XmNwidth, 400, XmNheight, 250,  /* Same as ScrolledWindow visible area */
             XmNborderWidth, 0,
             XmNbackground, color.pixel,
             NULL);

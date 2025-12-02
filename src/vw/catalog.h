@@ -28,8 +28,8 @@
 #define DEFAULT_CATALOG_FILE "~/.viola-catalog"
 
 /* Grid spacing for icon layout */
-#define CATALOG_GRID_X 80
-#define CATALOG_GRID_Y 70
+#define CATALOG_GRID_X 100  /* Fixed cell width: MAX_LABEL_WIDTH(80) + padding(20) */
+#define CATALOG_GRID_Y 90   /* Height for icon(32) + 3 lines of text + spacing */
 #define CATALOG_ICON_SIZE 32
 
 /* Double-click timeout in milliseconds */

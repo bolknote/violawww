@@ -66,6 +66,18 @@ Topics covered:
 
 ViolaWWW includes a built-in scripting language called **Viola**.
 
+### [VIOLA_LANGUAGE.md](VIOLA_LANGUAGE.md)
+Complete language reference for Viola — the scripting language and object file format.
+
+Topics covered:
+- Object file format (`.v` files) syntax
+- Widget classes (vpane, hpane, field, txtButton, etc.)
+- Scripting language syntax (C-like)
+- Data types, operators, control structures
+- Event model and message passing
+- Built-in functions overview
+- Complete examples
+
 ### [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md)
 Complete reference for all built-in functions in the Viola language.
 

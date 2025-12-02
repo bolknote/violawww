@@ -65,9 +65,28 @@ Topics covered:
 - File format specification
 - Implementation notes (original vs. restored code)
 
+### [HMML_REFERENCE.md](HMML_REFERENCE.md)
+HMML (HyperMedia Markup Language) — Pei-Yuan Wei's experimental markup language that predated/paralleled HTML.
+
+Topics covered:
+- Historical context (quotes from Tim Berners-Lee, 1993)
+- Complete tag reference (SECTION, H1-H3, P, LISTING, QUOTE, etc.)
+- Inline images (XBM, XPM) and external images (PIC)
+- VOBJF — embedded interactive Viola objects (precursor to Java applets)
+- Binary format (.hmmlb) specification
+- Processing pipeline (onsgmls → sgmlsA2B → .hmmlb)
+- Stylesheet format
+
 ## ViolaWWW HTML Extensions
 
 ViolaWWW implemented many pioneering features that were ahead of their time:
+
+### HMML — HyperMedia Markup Language
+- **Alternative to HTML** developed in parallel (1992-1994)
+- **SGML-based** with proper DTD and validation
+- **VOBJF element** — embedded interactive objects (precursor to Java applets/JavaScript)
+- **Inline images** — XBM and XPM data embedded directly in documents
+- **Binary compilation** — .hmml → .hmmlb for faster loading
 
 ### Image Handling
 - **FIGURE element** with inline data support (text-based formats)
@@ -95,11 +114,15 @@ ViolaWWW implemented many pioneering features that were ahead of their time:
 
 ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered many features that were later standardized in HTML:
 
+- **HMML** - HyperMedia Markup Language, an SGML-based alternative to HTML
+- **Embedded objects** - VOBJF predated Java applets and JavaScript
 - **Images in documents** - FIGURE element predated IMG
 - **Client-side image maps** - FIGA predated AREA/MAP
 - **Stylesheets** - STG system predated CSS
 - **Tables** - Implemented before HTML 3.0
 - **Forms** - Rich form elements
+
+As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML for multimedia from O'Reilly."*
 
 Many of these innovations influenced the development of HTML standards and modern web browsers.
 

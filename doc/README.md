@@ -126,16 +126,6 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 
 Many of these innovations influenced the development of HTML standards and modern web browsers.
 
-## Examples
-
-The `examples/` directory contains numerous test files demonstrating these features:
-
-- `test_xbm_inline2.html` - Inline XBM and XPM images
-- `test_figa.html` - Interactive image maps with FIGA
-- `test_figure_ps.html` - PostScript figures
-- `testMath*.html` - Mathematical notation examples
-- Various form and table examples
-
 ## Contributing
 
 When adding new features or fixing bugs, please:

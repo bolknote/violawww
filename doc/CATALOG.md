@@ -4,7 +4,7 @@ The Personal URL Catalog is a hierarchical bookmark organizer for ViolaWWW, allo
 
 ## Opening the Catalog
 
-- **Menu:** Test → Catalog
+- **Menu:** Tools → Catalog
 - **Add current page:** File → Add to Catalog
 
 ## Features
@@ -84,7 +84,7 @@ END
 The following elements were present in the original 1994 codebase:
 
 1. **Data Structures**: `Item`, `Folder`, `Link`, `Catalog` structs in `catalog.h`
-2. **Menu Structure**: Commented-out menu items indicating planned functionality
+2. **Menu Structure**: Commented-out `testMenuItems[]` with "Catalog" entry
 3. **Folder Icon**: The 16×16 closed folder icon from `HTML__foldIcon` (used for `<UL FOLD=yes>` tags)
 4. **Basic Window Layout**: Shell, canvas, and menu bar setup code
 
@@ -116,7 +116,8 @@ The following features were implemented based on the original design intent:
    - Grey75 background matching Motif style
 
 5. **User Interface**
-   - "Add Current Page" integration with browser
+   - **Tools menu** added to main menu bar (original had commented-out "Test" menu)
+   - "Add Current Page" integration with browser (File menu)
    - Rename dialog for items
    - About Catalog dialog
    - Non-resizable window (per original design)

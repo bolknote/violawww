@@ -57,7 +57,7 @@ static void closeCatalogWindow(Catalog* catalog);
 /* 32x32 folder icon - scaled 2x from HTML__foldIcon folderClosed */
 static char* folderIconXPM[] = {
 "32 32 2 1",
-"  c grey75",
+"  c None",
 ". c black",
 "                                ",
 "                                ",
@@ -97,7 +97,7 @@ static char* folderIconXPM[] = {
 static char* linkIconXPM[] = {
 "30 32 3 1",
 "  c black",
-". c grey75",
+". c None",
 "X c white",
 "..............................",
 "..............................",
@@ -788,9 +788,18 @@ static void drawItem(Widget canvas, Item* item, Catalog* catalog, int selected) 
 
     /* Draw icon - must check icon is valid pixmap (non-zero) */
     if (item->icon != 0 && item->w > 0 && item->h > 0) {
+        /* Use mask for transparency */
+        Pixmap mask = (item->type == FOLDER) ? defaultFolderMask : defaultLinkMask;
+        if (mask) {
+            XSetClipMask(display, gc, mask);
+            XSetClipOrigin(display, gc, (int)item->x, (int)item->y);
+        }
         XCopyArea(display, item->icon, window, gc, 0, 0,
                   (unsigned int)item->w, (unsigned int)item->h,
                   (int)item->x, (int)item->y);
+        if (mask) {
+            XSetClipMask(display, gc, None);
+        }
     } else {
         /* Draw placeholder rectangle when icon not available */
         XDrawRectangle(display, window, gc, item->x, item->y,
@@ -2023,18 +2032,11 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
 
     setHelp(canvasFrame, helpLabel, "Double click on a document or folder to open it.");
 
-    /* Use grey75 background to match icon backgrounds */
-    {
-        XColor color, exact;
-        Colormap cmap = DefaultColormapOfScreen(XtScreen(shell));
-        XAllocNamedColor(XtDisplay(shell), cmap, "grey75", &color, &exact);
-
-        canvas = XtVaCreateManagedWidget("canvas", xmDrawingAreaWidgetClass, canvasFrame,
-            XmNwidth, CANVAS_MIN_WIDTH, XmNheight, CANVAS_MIN_HEIGHT,
-            XmNborderWidth, 0,
-            XmNbackground, color.pixel,
-            NULL);
-    }
+    /* Canvas uses default application background color */
+    canvas = XtVaCreateManagedWidget("canvas", xmDrawingAreaWidgetClass, canvasFrame,
+        XmNwidth, CANVAS_MIN_WIDTH, XmNheight, CANVAS_MIN_HEIGHT,
+        XmNborderWidth, 0,
+        NULL);
     catalog->canvas = canvas;
 
     /* Add event handlers for mouse interaction */

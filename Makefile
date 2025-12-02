@@ -18,6 +18,11 @@ ICU_AVAILABLE := $(shell test -d "$(ICU_PREFIX)/include" && echo yes || echo no)
 # Check if OpenSSL is available
 OPENSSL_AVAILABLE := $(shell test -d "$(OPENSSL_PREFIX)/include" && echo yes || echo no)
 
+# Auto-detect OpenSP (onsgmls) for HMML support
+OPENSP_PREFIX := $(shell brew --prefix open-sp 2>/dev/null)
+SGMLS_PATH := $(shell command -v onsgmls 2>/dev/null || echo "$(OPENSP_PREFIX)/bin/onsgmls")
+SGMLS_AVAILABLE := $(shell test -x "$(SGMLS_PATH)" && echo yes || echo no)
+
 # Compiler flags
 ARCH_FLAGS = -arch arm64
 CFLAGS = -O2 $(ARCH_FLAGS) -std=gnu17 -Wno-everything -D__DARWIN__ -funsigned-char
@@ -90,10 +95,14 @@ LIBSTYLE = $(LIBSTYLE_DIR)/libstg.o
 # Binary targets
 VIOLA = $(VIOLA_DIR)/viola
 VW = $(VW_DIR)/vw
+SGMLSA2B = $(VIOLA_DIR)/sgmlsA2B
 
 # Default target
 .PHONY: all
 all: config_info $(VW) $(VIOLA)
+ifeq ($(SGMLS_AVAILABLE),yes)
+all: $(SGMLSA2B)
+endif
 
 .PHONY: config_info
 config_info:
@@ -104,6 +113,11 @@ endif
 ifeq ($(OPENSSL_AVAILABLE),no)
 	@echo "⚠ Building without OpenSSL (HTTPS will not be supported)"
 	@echo "  Install with: brew install openssl@3"
+	@echo ""
+endif
+ifeq ($(SGMLS_AVAILABLE),no)
+	@echo "⚠ Building without OpenSP (HMML format will not be supported)"
+	@echo "  Install with: brew install open-sp"
 	@echo ""
 endif
 
@@ -328,6 +342,27 @@ $(VW_DIR)/%.o: $(VW_DIR)/%.c
 -include $(VW_OBJS:.o=.d)
 
 # ============================================================================
+# sgmlsA2B utility (for HMML support)
+# ============================================================================
+
+.PHONY: sgmlsA2B
+sgmlsA2B: $(SGMLSA2B)
+
+$(SGMLSA2B): $(VIOLA_DIR)/sgmlsA2B.c $(VIOLA_DIR)/mystrings.o $(VIOLA_DIR)/hash.o
+	@echo "=== Building sgmlsA2B (HMML support) ==="
+ifeq ($(SGMLS_AVAILABLE),yes)
+	$(CC) $(CFLAGS) -DSGMLS_PATH='"$(SGMLS_PATH)"' -I$(VIOLA_DIR) -o $@ $< $(VIOLA_DIR)/mystrings.o $(VIOLA_DIR)/hash.o
+	@echo "=== sgmlsA2B built successfully (using $(SGMLS_PATH)) ==="
+else
+	@echo "WARNING: onsgmls not found, sgmlsA2B may not work correctly"
+	$(CC) $(CFLAGS) -I$(VIOLA_DIR) -o $@ $< $(VIOLA_DIR)/mystrings.o $(VIOLA_DIR)/hash.o
+endif
+	@# Copy sgmlsA2B next to vw for easy discovery
+	@cp $@ $(VW_DIR)/sgmlsA2B
+	@ls -lh $@ $(VW_DIR)/sgmlsA2B
+	@echo ""
+
+# ============================================================================
 # Utility targets
 # ============================================================================
 
@@ -343,7 +378,36 @@ clean:
 distclean: clean
 	@echo "=== Cleaning all build artifacts ==="
 	rm -f $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
-	rm -f $(VIOLA) $(VW)
+	rm -f $(VIOLA) $(VW) $(SGMLSA2B) $(VW_DIR)/sgmlsA2B
+	@echo "Done"
+
+# Installation (creates symlinks in /usr/local/bin)
+PREFIX ?= /usr/local
+.PHONY: install
+install: all
+	@echo "=== Installing ViolaWWW to $(PREFIX) ==="
+	@mkdir -p $(PREFIX)/bin
+	@mkdir -p $(PREFIX)/share/viola
+	@cp $(VW) $(PREFIX)/bin/vw
+	@cp $(VIOLA) $(PREFIX)/bin/viola
+ifeq ($(SGMLS_AVAILABLE),yes)
+	@cp $(SGMLSA2B) $(PREFIX)/bin/sgmlsA2B
+endif
+	@cp -r res $(PREFIX)/share/viola/
+	@echo ""
+	@echo "Installed to $(PREFIX)"
+	@echo "  vw      -> $(PREFIX)/bin/vw"
+	@echo "  viola   -> $(PREFIX)/bin/viola"
+	@echo "  sgmlsA2B-> $(PREFIX)/bin/sgmlsA2B"
+	@echo "  res/    -> $(PREFIX)/share/viola/res/"
+	@echo ""
+	@echo "Set VIOLA_PATH=$(PREFIX)/share/viola/apps to use installed version"
+
+.PHONY: uninstall
+uninstall:
+	@echo "=== Uninstalling ViolaWWW from $(PREFIX) ==="
+	rm -f $(PREFIX)/bin/vw $(PREFIX)/bin/viola $(PREFIX)/bin/sgmlsA2B
+	rm -rf $(PREFIX)/share/viola
 	@echo "Done"
 
 # ============================================================================
@@ -381,14 +445,6 @@ san:
 		CFLAGS_LIBS='$(CFLAGS_LIBS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined' \
 		LDFLAGS='$(LDFLAGS) -fsanitize=address,undefined' all
 
-.PHONY: install
-install: $(VW) $(VIOLA)
-	@echo "=== Installing binaries ==="
-	@mkdir -p $(HOME)/bin
-	install -m 755 $(VW) $(HOME)/bin/
-	install -m 755 $(VIOLA) $(HOME)/bin/
-	@echo "Installed to $(HOME)/bin/"
-
 # ============================================================================
 # Development helpers
 # ============================================================================
@@ -424,6 +480,7 @@ info:
 	@echo "Detected paths:"
 	@echo "  Homebrew:   $(BREW_PREFIX)"
 	@echo "  OpenMotif:  $(OPENMOTIF_PREFIX)"
+	@echo "  onsgmls:    $(SGMLS_PATH) ($(SGMLS_AVAILABLE))"
 	@echo ""
 	@echo "Source directories:"
 	@echo "  libWWW:   $(LIBWWW_DIR)"

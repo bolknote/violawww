@@ -163,6 +163,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **OpenSSL 3.x**: For HTTPS support (`brew install openssl@3`)
 - **ICU4C**: For UTF-8 transliteration (`brew install icu4c`)
 - **ImageMagick**: For PostScript image support (`brew install imagemagick`) - required if you need to display PostScript/PS figures
+- **OpenSP**: For HMML document support (`brew install open-sp`) - provides `onsgmls` SGML parser for legacy HMML format
 
 **Note**: Without OpenMotif, only the pure X11 version (`viola`) will be built. The Motif version (`vw`) requires OpenMotif.
 
@@ -176,7 +177,7 @@ cd violawww
 # Install dependencies (macOS)
 brew install --cask xquartz    # X11 window system
 brew install openmotif byacc   # Required for building
-brew install openssl@3 icu4c imagemagick   # Optional (HTTPS + UTF-8 transliteration + PostScript images)
+brew install openssl@3 icu4c imagemagick open-sp  # HTTPS, UTF-8 transliteration, PostScript, HMML support
 
 # Compile (parallel build)
 make clean
@@ -453,6 +454,44 @@ or closed (Connection: close)
   ↓
 Parse & Render
 ```
+
+---
+
+## HMML Support (Legacy Format)
+
+ViolaWWW originally supported **HMML** (HyperMedia Markup Language) — Pei-Yuan Wei's experimental markup language that predated/paralleled HTML in the early 1990s.
+
+### What is HMML?
+
+HMML was ViolaWWW's native document format with elements like:
+- `HMML` (root), `BODY`, `SECTION`, `TITLE`
+- `H1-H3` headers, `P` paragraphs
+- `PIC`, `XBM`, `XPM` for images
+- `VOBJF` for embedded Viola objects
+- `LISTING`, `EXAMPLE`, `QUOTE`
+
+### File Extensions
+
+- `.hmml` — text HMML documents (require SGML parsing)
+- `.hmmlb` — binary HMML (pre-parsed)
+
+### Requirements
+
+HMML support requires the **OpenSP** SGML parser:
+
+```bash
+# macOS
+brew install open-sp
+
+# Linux (Debian/Ubuntu)
+sudo apt-get install opensp
+```
+
+The `onsgmls` utility from OpenSP is used to parse HMML documents. The path is configured in `src/viola/sgmlsA2B.c` via the `SGMLS_PATH` constant (default: `/opt/homebrew/bin/onsgmls`).
+
+### Note
+
+HMML is essentially a historical curiosity. Modern web content uses HTML, which ViolaWWW parses natively without external dependencies.
 
 ---
 

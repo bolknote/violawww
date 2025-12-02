@@ -39,19 +39,7 @@
 */
 		tmpFile = makeTempFile();
 
-/*
-		print("exec: ", concat(sgmlsA2BPath, " HMML ", localFile, 
-						" > ", tmpFile), "\n");
-		print("############ sgmls'ing ########\n");
 		stat = system(concat(sgmlsA2BPath, " HMML ", localFile, 
-					" > ", tmpFile));
-*/
-/*
-		print("exec: ", concat("sgmls ", localFile, 
-						" > ", tmpFile), "\n");
-		print("############ sgmls'ing ########\n");
-*/
-		stat = system(concat("sgmls ", localFile, 
 					" > ", tmpFile));
 
 /*		print("stat=", stat, "\n");*/
@@ -61,7 +49,7 @@
 		if (stat == -1) {
 			send("VWHandler_fail", "reason", 
 		   concat("VWHandler_hmml:\nFailed to convert document from HMML to HMMLB.\n",
-"Possibly due to viola unable to find the programs: sgmlsA2B and/or sgmls"));
+"onsgmls not found. Install OpenSP: brew install open-sp (macOS) or apt-get install opensp (Linux)"));
 
 			return 0;
 		}
@@ -74,7 +62,7 @@
 */
 		HTTPCurrentDocAddrSet(sourceFile);
 
-		docObj = SGMLBuildDoc(UNUSED,
+		docObj = SGMLBuildDocB(UNUSED,
 			    tmpFile, arg[2], docName, arg[4], arg[5]);
 
 		send(docObj, "nameAndURL", docName, sourceFile);
@@ -92,9 +80,17 @@
 		return;
 	break;
 	case "init":
-		/* use sgmlsA2B to genereate binary format 
+		/* Path to sgmlsA2B converter (converts SGML to binary format)
+		 * sgmlsA2B internally uses onsgmls from OpenSP package
+		 * macOS: brew install open-sp
+		 * Linux: apt-get install opensp
+		 *
+		 * Uses VIOLA_SGMLSA2B env var if set, otherwise "sgmlsA2B" in PATH
 		 */
-		sgmlsA2BPath = "sgmlsA2B";
+		sgmlsA2BPath = environVar("VIOLA_SGMLSA2B");
+		if (isBlank(sgmlsA2BPath)) {
+			sgmlsA2BPath = "sgmlsA2B";
+		}
 	break;
 	}
 	usual();

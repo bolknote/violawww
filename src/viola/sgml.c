@@ -357,7 +357,7 @@ VObj* SGMLBuildDoc(char* srcp, char* url, VObj* parent, char* name, int width, c
     int h = 0;
     int y = 0;
     int i, j;
-    char dtd[32];
+    char dtd[128];
     char data[100];
     int tagSize, tagID;
     FILE* fp;
@@ -868,7 +868,7 @@ VObj* SGMLBuildDoc_B(char* srcp, char* url, VObj* parent, char* name, int width,
     int h = 0;
     int y = 0;
     int i, j;
-    char dtd[32];
+    char dtd[128];
     char data[100];
     int tagSize, tagID;
     FILE* fp;

@@ -12,6 +12,15 @@
 #include "utils.h"
 #include <strings.h>
 
+/*
+ * Path to the SGML parser (onsgmls from OpenSP package).
+ * On macOS with Homebrew: brew install open-sp
+ * On Linux: apt-get install opensp
+ */
+#ifndef SGMLS_PATH
+#define SGMLS_PATH "/opt/homebrew/bin/onsgmls"
+#endif
+
 int verbose = 0;
 
 #define ATTR_STACK_SIZE 512
@@ -446,8 +455,7 @@ int main(int argc, char** argv)
         sdecl = argv[2];
         doc = argv[3];
     }
-    /*	sprintf(cmd, "%s %s %s", "/usr/local/bin/sgmls", sdecl, doc);*/
-    sprintf(cmd, "%s %s %s", "sgmls", sdecl, doc);
+    sprintf(cmd, "%s %s %s 2>/dev/null", SGMLS_PATH, sdecl, doc);
     fp = popen(cmd, "r");
     if (!fp) {
         fprintf(stderr, "popen() failed\n");
@@ -464,7 +472,8 @@ int main(int argc, char** argv)
 
     /*	printf(">>>%s<<<\n", buff);*/
 
-    printf("Binary SGMLS file format, version=%d\n", version);
+    /* Header info goes to stderr, not stdout (stdout is binary data) */
+    fprintf(stderr, "Binary SGMLS file format, version=%d\n", version);
     emitInt(0);
     emitInt(0x12345678);
     emitInt(version);

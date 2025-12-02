@@ -1,0 +1,20 @@
+# HMML Stylesheet - HyperMedia Markup Language
+# Format: TAG TYPE inline notify flushAlways flushOnSub hpane top bottom left right
+#
+HMML		HTML__doc		0 0 0 1 0		0 10 10 10
+TITLE		HTML_title		0 0 0 0 0		0 0 0 0
+SECTION		HTML_fld		0 0 0 1 0		10 10 20 20
+H1		HTML_header_big		0 0 0 1 0		15 10 0 0
+H2		HTML_header_medium	0 0 0 1 0		12 8 0 0
+H3		HTML_header_small	0 0 0 1 0		10 6 0 0
+P		HTML_txt		0 0 0 1 0		8 8 10 10
+LISTING		HTML_listing		0 0 0 1 0		10 10 20 20
+EXAMPLE		HTML_example		0 0 0 1 0		10 10 30 30
+QUOTE		HTML_fld		0 0 0 1 0		10 10 40 40
+AUTHOR		HTML_txtItalic		0 0 0 0 0		10 10 50 10
+PIC		HTML_img		1 0 0 0 0		5 5 10 10
+LABEL		HTML_txt		0 0 0 1 0		0 0 0 0
+XBM		HTML_xbm		0 0 0 1 0		5 5 10 10
+XPM		HTML_xpm		0 0 0 1 0		5 5 10 10
+VOBJF		HTML_vobjf		0 0 0 1 0		10 10 10 10
+ITITLE		HTML_txtItalic		1 0 0 0 0		0 0 0 0

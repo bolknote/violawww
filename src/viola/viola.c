@@ -186,6 +186,22 @@ char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen
     parseCommandLine(argc, argv, startObj, &startObjCount, &violaPath,
                      &startWithCommandLineInterpreter, &scriptSnipet);
 
+    /* Set default sgmlPath relative to violaPath if not specified */
+    if (!sgmlPath && violaPath) {
+        /* violaPath typically ends with "apps", go up one level to find "res" */
+        char* lastSlash;
+        char defaultSgmlPath[512];
+        strncpy(defaultSgmlPath, violaPath, sizeof(defaultSgmlPath) - 1);
+        defaultSgmlPath[sizeof(defaultSgmlPath) - 1] = '\0';
+        lastSlash = strrchr(defaultSgmlPath, '/');
+        if (lastSlash) {
+            strcpy(lastSlash, "/res");
+            sgmlPath = saveString(defaultSgmlPath);
+            if (verbose)
+                fprintf(stderr, "Using default VIOLA_SGML=``%s''\n", sgmlPath);
+        }
+    }
+
     /* initUserWWW(DFLT_USR_WWW_HOME); */ /*PATCHED*/
 
     if (!init_sys())

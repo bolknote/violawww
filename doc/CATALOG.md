@@ -83,10 +83,9 @@ END
 
 The following elements were present in the original 1994 codebase:
 
-1. **Data Structures**: `Item`, `Folder`, `Link`, `Catalog` structs in `catalog.h`
+1. **Data Structures**: `Item`, `Folder`, `Link`, `Catalog` structs in `catalog.h` (with `Pixmap icon` and `iconFile` fields)
 2. **Menu Structure**: Commented-out `testMenuItems[]` with "Catalog" entry
-3. **Folder Icon**: The 16×16 closed folder icon from `HTML__foldIcon` (used for `<UL FOLD=yes>` tags)
-4. **Basic Window Layout**: Shell, canvas, and menu bar setup code
+3. **Basic Window Layout**: Shell, canvas, and menu bar setup code
 
 ### Reconstructed/Added (2024 restoration)
 
@@ -110,10 +109,11 @@ The following features were implemented based on the original design intent:
    - Adaptive selection highlight box
 
 4. **Visual Enhancements**
-   - Link icon: redrawn based on the document image in `reload.xpm`
-   - 2× scaled icons (32×32 folder, 30×32 link) for modern displays
+   - Folder icon: borrowed from `HTML__foldIcon` (used for `<UL FOLD=yes>` collapsible lists), scaled 2× to 32×32
+   - Link icon: redrawn based on `link.xpm`, scaled 2× to 30×32
+   - True transparency support via XPM masks
    - Item count displayed inside folder icons
-   - Grey75 background matching Motif style
+   - Default application background color
 
 5. **User Interface**
    - Catalog added to **Navigation menu** (original had commented-out "Test" menu)
@@ -138,5 +138,5 @@ This restoration aimed to honor Pei-Yuan Wei's original vision while making the 
 - Patterns established elsewhere in ViolaWWW
 - Standard Motif/X11 interface guidelines
 
-The folder icon specifically comes from the browser's own rendering of collapsible lists (`<UL FOLD=yes>`), maintaining visual consistency with the rest of the application.
+The folder icon was borrowed from the browser's `HTML__foldIcon` object (used for collapsible lists with `<UL FOLD=yes>`), maintaining visual consistency with the rest of the application.
 

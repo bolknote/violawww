@@ -256,13 +256,8 @@ print("\n");
 		case "VWHandler_au":
 			sourceFile = HTTPGet(docURL);
 
-			/* a hack. don't know where play usually 
-			 * lives..
-			 */
-			print(concat(environVar("VIOLA"),
-					"/play ", sourceFile, "\n"));
-			system(concat(environVar("VIOLA"),
-					"/play ", sourceFile, "&"));
+			/* Use macOS built-in afplay for audio playback */
+			system(concat("/usr/bin/afplay ", sourceFile, " &"));
 			return 1;/*OK*/
 		break;
 		case "VWHandler_pgp":

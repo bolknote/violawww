@@ -8,6 +8,9 @@
 #include <stdarg.h>
 #include <math.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <mach-o/dyld.h>
+#include <libgen.h>
 
 // Logging
 static FILE *logfp = NULL;
@@ -497,13 +500,7 @@ static void draw_axes(Drawable d) {
 }
 
 static void redraw(void) {
-    if (!dpy || !win) {
-        fprintf(stderr, "vplot: redraw skipped - dpy=%p, win=0x%lx\n", (void*)dpy, (unsigned long)win);
-        return;
-    }
-
-    fprintf(stderr, "vplot: redraw() called, win=0x%lx, size=%dx%d\n", 
-            (unsigned long)win, win_w, win_h);
+    if (!dpy || !win) return;
 
     Drawable target = use_backbuf && backbuf ? backbuf : win;
     
@@ -523,7 +520,6 @@ static void redraw(void) {
     }
     
     XFlush(dpy);
-    fprintf(stderr, "vplot: redraw() done\n");
 }
 
 static void setup_backbuf(void) {
@@ -537,8 +533,6 @@ static void handle_cmd(char *line) {
     if (nl) *nl = '\0';
     if (*line == '\0') return;
 
-    fprintf(stderr, "vplot: received cmd: '%s'\n", line);
-
     // Make a copy since strtok modifies the string
     char linecopy[1024];
     strncpy(linecopy, line, sizeof(linecopy)-1);
@@ -551,10 +545,7 @@ static void handle_cmd(char *line) {
         char *sid = strtok(NULL," \t");
         char *sw  = strtok(NULL," \t");
         char *sh  = strtok(NULL," \t");
-        if (!sid || !sw || !sh) {
-            fprintf(stderr, "vplot: window cmd missing args\n");
-            return;
-        }
+        if (!sid || !sw || !sh) return;
 
         if (!dpy) {
             dpy = XOpenDisplay(NULL);
@@ -563,26 +554,20 @@ static void handle_cmd(char *line) {
                 exit(1);
             }
             screen = DefaultScreen(dpy);
-            fprintf(stderr, "vplot: opened display, screen=%d\n", screen);
         }
 
         win = (Window)strtoul(sid, NULL, 0);
         win_w = atoi(sw);
         win_h = atoi(sh);
-        fprintf(stderr, "vplot: window cmd: win=0x%lx (%lu), w=%d, h=%d\n", 
-                (unsigned long)win, (unsigned long)win, win_w, win_h);
 
         if (gc) XFreeGC(dpy, gc);
         gc = XCreateGC(dpy, win, 0, NULL);
-        if (!gc) {
-            fprintf(stderr, "vplot: failed to create GC\n");
-            return;
-        }
+        if (!gc) return;
+        
         fg = BlackPixel(dpy, screen);
         bg = WhitePixel(dpy, screen);
         /* Set default background to match Viola widget's LightSteelBlue4 */
         set_color(&bg, "LightSteelBlue4");
-        fprintf(stderr, "vplot: created GC, fg=%lu, bg=%lu\n", fg, bg);
 
         setup_backbuf();
         redraw();
@@ -649,6 +634,25 @@ static void handle_cmd(char *line) {
     } else if (!strcmp(cmd, "file")) {
         char *path = strtok(NULL, " \t\n\r");
         if (path) {
+            char resolved_path[1024];
+            
+            /* If path starts with /off/ or doesn't exist, try relative to vplot */
+            if (strncmp(path, "/off/", 5) == 0 || access(path, R_OK) != 0) {
+                /* Get path to this executable */
+                char exe_path[1024];
+                uint32_t size = sizeof(exe_path);
+                if (_NSGetExecutablePath(exe_path, &size) == 0) {
+                    char *exe_dir = dirname(exe_path);
+                    /* Models are in off/ subdirectory next to vplot */
+                    if (strncmp(path, "/off/", 5) == 0) {
+                        snprintf(resolved_path, sizeof(resolved_path), "%s/off/%s", exe_dir, path + 5);
+                    } else {
+                        snprintf(resolved_path, sizeof(resolved_path), "%s/%s", exe_dir, path);
+                    }
+                    path = resolved_path;
+                }
+            }
+            
             logmsg("vplot: loading model '%s'\n", path);
             if (load_off_model(path)) {
                 redraw();

@@ -41,6 +41,8 @@
 #include <unistd.h>
 #include <util.h>   /* macOS: openpty, forkpty */
 #include <termios.h>
+#include <mach-o/dyld.h>  /* _NSGetExecutablePath */
+#include <libgen.h>       /* dirname */
 
 SlotInfo cl_TTY_NCSlots[] = {0};
 SlotInfo cl_TTY_NPSlots[] = {{
@@ -156,13 +158,59 @@ ClassInfo class_TTY = {
     &class_client,                             /* super class info		*/
 };
 
+/* Find vplot relative to the ViolaWWW executable */
+static const char* find_vplot_path(void) {
+    static char vplot_path[1024] = {0};
+    
+    if (vplot_path[0]) return vplot_path;  /* Already found */
+    
+    /* Get path to current executable */
+    char exe_path[1024];
+    uint32_t size = sizeof(exe_path);
+    if (_NSGetExecutablePath(exe_path, &size) == 0) {
+        /* Get directory containing executable */
+        char *exe_dir = dirname(exe_path);
+        /* vplot_dir is at project root, executable is in src/vw/ or src/viola/ */
+        /* Go up two levels from src/vw/ to project root */
+        snprintf(vplot_path, sizeof(vplot_path), "%s/../../vplot_dir/vplot", exe_dir);
+        
+        /* Check if it exists */
+        if (access(vplot_path, X_OK) == 0) {
+            return vplot_path;
+        }
+        
+        /* Try one level up (in case running from src/) */
+        snprintf(vplot_path, sizeof(vplot_path), "%s/../vplot_dir/vplot", exe_dir);
+        if (access(vplot_path, X_OK) == 0) {
+            return vplot_path;
+        }
+    }
+    
+    /* Fallback: try PLOT_PATH environment variable */
+    char *plot_path_env = getenv("PLOT_PATH");
+    if (plot_path_env && *plot_path_env) {
+        snprintf(vplot_path, sizeof(vplot_path), "%s/vplot", plot_path_env);
+        if (access(vplot_path, X_OK) == 0) {
+            return vplot_path;
+        }
+    }
+    
+    /* Last resort: try current directory */
+    snprintf(vplot_path, sizeof(vplot_path), "./vplot_dir/vplot");
+    if (access(vplot_path, X_OK) == 0) {
+        return vplot_path;
+    }
+    
+    vplot_path[0] = '\0';
+    return NULL;
+}
+
 long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) {
     int master_fd;
     pid_t pid;
     char* args[16];
     int n;
     char *path;
-    char *plot_path_env;
 
     result->type = PKT_INT;
     result->canFree = 0;
@@ -170,19 +218,13 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     /* Set up argument list */
     path = GET_path(self);
     
-    /* Workaround for 64-bit pointer truncation issue: 
-     * if path is empty/invalid, try to construct from PLOT_PATH env var */
+    /* If path is empty/invalid, find vplot automatically */
     if (!path || !*path || strlen(path) < 5) {
-        plot_path_env = getenv("PLOT_PATH");
-        if (plot_path_env && *plot_path_env) {
-            static char path_buf[512];
-            snprintf(path_buf, sizeof(path_buf), "%s/vplot", plot_path_env);
-            path = path_buf;
-        }
+        path = (char*)find_vplot_path();
     }
     
     if (!path || !*path) {
-        MERROR(self, "startClient: path not set");
+        MERROR(self, "startClient: cannot find vplot executable");
         result->info.i = -1;
         return 0;
     }

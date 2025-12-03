@@ -90,6 +90,7 @@ LIBIMG_DIR = $(SRC_DIR)/libIMG
 LIBSTYLE_DIR = $(SRC_DIR)/libStyle
 VIOLA_DIR = $(SRC_DIR)/viola
 VW_DIR = $(SRC_DIR)/vw
+VPLOT_DIR = $(SRC_DIR)/vplot
 
 # Library targets
 LIBWWW = $(LIBWWW_DIR)/libwww.a
@@ -102,10 +103,11 @@ LIBSTYLE = $(LIBSTYLE_DIR)/libstg.o
 VIOLA = $(VIOLA_DIR)/viola
 VW = $(VW_DIR)/vw
 SGMLSA2B = $(VIOLA_DIR)/sgmlsA2B
+VPLOT = vplot_dir/vplot
 
 # Default target
 .PHONY: all
-all: config_info $(VW) $(VIOLA)
+all: config_info $(VW) $(VIOLA) $(VPLOT)
 ifeq ($(SGMLS_AVAILABLE),yes)
 all: $(SGMLSA2B)
 endif
@@ -355,6 +357,21 @@ $(VW_DIR)/%.o: $(VW_DIR)/%.c
 
 # Include automatically generated dependencies
 -include $(VW_OBJS:.o=.d)
+
+# ============================================================================
+# vplot - 3D plotter for plot.v example
+# ============================================================================
+
+.PHONY: vplot
+vplot: $(VPLOT)
+
+$(VPLOT): $(VPLOT_DIR)/vplot.c
+	@echo "=== Building vplot ==="
+	@mkdir -p vplot_dir
+	$(CC) $(CFLAGS) -I/opt/X11/include -L/opt/X11/lib -o $@ $< -lX11 -lm
+	@echo "=== vplot built successfully! ==="
+	@ls -lh $@
+	@echo ""
 
 # ============================================================================
 # sgmlsA2B utility (for HMML support)

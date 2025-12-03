@@ -186,7 +186,7 @@ ViolaWWW supports **all valid X11 color names** (over 600 colors). The complete 
 
 To see all available colors on your system, you can run:
 ```bash
-cat /usr/share/X11/rgb.txt | grep -v "^!" | awk '{print $4}' | sort -u
+awk '!/^!/{print $4}' /usr/share/X11/rgb.txt | sort -u
 ```
 
 ---

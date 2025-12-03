@@ -81,6 +81,7 @@ static int use_backbuf = 0;
 static unsigned long fg = 0, bg = 0;
 static double cam_x = 30.0, cam_y = 30.0, cam_z = 0.0;
 static int win_w = 400, win_h = 400;
+static double display_scale = 1.0;  // For HiDPI/Retina displays
 
 // Domain and interval for equation plotting
 static double domain_x1 = -2.0, domain_x2 = 2.0;
@@ -263,6 +264,64 @@ static void set_color(unsigned long *dst, const char *name) {
     }
 }
 
+static double detect_display_scale(void) {
+    if (!dpy) return 1.0;
+    
+    double scale = 1.0;
+    
+    logmsg("vplot: detect_display_scale() called\n");
+    
+#ifdef __APPLE__
+    /* macOS with Retina: XQuartz hides real DPI, default to 2x 
+     * This matches the visual size from 90s era 640x480/800x600 displays */
+    scale = 2.0;
+    logmsg("vplot: macOS detected, defaulting to scale=2.0\n");
+#endif
+    
+    /* Method 1: Check Xft.dpi resource (set by XQuartz for Retina) */
+    char *dpi_str = XGetDefault(dpy, "Xft", "dpi");
+    logmsg("vplot: Xft.dpi = %s\n", dpi_str ? dpi_str : "(null)");
+    if (dpi_str) {
+        double dpi = atof(dpi_str);
+        if (dpi > 0 && dpi != 96.0) {
+            /* Standard DPI is 96, Retina typically reports 192 */
+            scale = dpi / 96.0;
+            logmsg("vplot: detected Xft.dpi=%s, scale=%.2f\n", dpi_str, scale);
+        }
+    }
+    
+    /* Method 2: If still default, check physical vs logical screen size */
+#ifndef __APPLE__
+    if (scale == 1.0) {
+        int screen_w = DisplayWidth(dpy, screen);
+        int screen_mm = DisplayWidthMM(dpy, screen);
+        double physical_dpi = (screen_mm > 0) ? (double)screen_w / ((double)screen_mm / 25.4) : 0;
+        logmsg("vplot: screen %dx? pixels, %dmm wide, physical DPI=%.1f\n", 
+               screen_w, screen_mm, physical_dpi);
+        if (screen_mm > 0 && physical_dpi > 140) {  /* Likely HiDPI */
+            scale = physical_dpi / 96.0;
+            /* Round to common scale factors */
+            if (scale > 1.8 && scale < 2.2) scale = 2.0;
+            else if (scale > 1.4 && scale < 1.6) scale = 1.5;
+            logmsg("vplot: using physical DPI scale=%.2f\n", scale);
+        }
+    }
+#endif
+    
+    /* Method 3: Check VPLOT_SCALE environment variable for manual override */
+    char *scale_env = getenv("VPLOT_SCALE");
+    if (scale_env) {
+        double env_scale = atof(scale_env);
+        if (env_scale > 0) {
+            scale = env_scale;
+            logmsg("vplot: using VPLOT_SCALE=%.2f\n", scale);
+        }
+    }
+    
+    logmsg("vplot: final display_scale=%.2f\n", scale);
+    return scale;
+}
+
 typedef struct { double x,y,z; } Vec3;
 
 // Forward declarations
@@ -442,7 +501,8 @@ static Vec3 rot(Vec3 v) {
 }
 
 static void project(Vec3 v, int *px, int *py) {
-    double scale = (win_w < win_h ? win_w : win_h) * 0.35;
+    /* Apply display_scale to make models appear same size on HiDPI displays */
+    double scale = (win_w < win_h ? win_w : win_h) * 0.35 * display_scale;
     *px = (int)(win_w/2  + v.x * scale);
     *py = (int)(win_h/2  - v.y * scale);
 }
@@ -596,6 +656,7 @@ static void handle_cmd(char *line) {
                 exit(1);
             }
             screen = DefaultScreen(dpy);
+            display_scale = detect_display_scale();
         }
 
         win = (Window)strtoul(sid, NULL, 0);

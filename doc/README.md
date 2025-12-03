@@ -60,6 +60,26 @@ Topics covered:
 - Applying styles to HTML elements
 - Layout control (margins, padding, positioning)
 
+### [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md)
+**Experimental 3D Graphics Tags** — an early proto-VRML concept designed in 1994 but never implemented.
+
+⚠️ **Note:** These tags are parsed but not rendered. This document is preserved for historical interest.
+
+This was Pei-Yuan Wei's independent proposal for SGML-based 3D graphics, developed around the same time as (but separately from) the VRML specification.
+
+Topics covered:
+- Container: `<GRAPHICS>`
+- Primitives: `<CIRCLE>`, `<OVAL>`, `<RECT>`, `<SQUARE>`, `<LINE>`, `<POINT>`, `<POLYGON>`
+- Transformations: `<POS>`, `<SIZE>`, `<ROT>`, `<SCALE>`, `<AXIS>`
+- Appearance: `<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>`
+- Interactivity: `<BUTTON>`, `<HINT>`, `<TEXT>`
+- The `SC` attribute for multi-user synchronization
+- Original design document and examples
+
+Historical sources:
+- [vrmlNotes.txt](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — original design document
+- [new tags list](https://web.archive.org/web/20040420173124/http://www.xcf.berkeley.edu/~wei/viola/new) — stylesheet additions
+
 ---
 
 ## Multimedia
@@ -144,6 +164,7 @@ ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered m
 | FIGA (image maps) | HTML AREA/MAP |
 | STG stylesheets | CSS |
 | Tables | HTML 3.0 Tables |
+| 3D Graphics tags (unimplemented) | VRML, WebGL |
 
 As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML for multimedia from O'Reilly."*
 

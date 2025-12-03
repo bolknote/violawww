@@ -434,7 +434,7 @@ PUBLIC BOOL HTEditable ARGS1(CONST char*, filename) {
 #ifdef NO_GROUPS
     return NO; /* Safe answer till we find the correct algorithm */
 #else
-    int groups[NGROUPS];
+    gid_t groups[NGROUPS];
     uid_t myUid;
     int ngroups; /* The number of groups  */
     struct stat fileStatus;
@@ -452,7 +452,7 @@ PUBLIC BOOL HTEditable ARGS1(CONST char*, filename) {
                 (unsigned int)fileStatus.st_mode, fileStatus.st_uid, fileStatus.st_gid, myUid,
                 ngroups);
         for (i = 0; i < ngroups; i++)
-            fprintf(stderr, " %d", groups[i]);
+            fprintf(stderr, " %u", groups[i]);
         fprintf(stderr, ")\n");
     }
 

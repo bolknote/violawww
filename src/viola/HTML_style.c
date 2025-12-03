@@ -146,27 +146,28 @@ LABEL		HTML_label		0 0 0 0 0		0 0 0 0\n\
 BYLINE		HTML_byline		0 0 0 0 0		0 0 0 0\n\
 BASE		HTML_base		0 0 0 0 0		0 0 0 0\n\
 CHANGED		HTML_changed		0 0 0 0 0		0 0 0 0\n\
-#experimental\n\
+#proto-vrml graphics (implemented)\n\
+GRAPHICS	HTML_graphics		0 0 0 1 0		5 5 5 5\n\
+RECT		HTML_rect		0 0 0 1 0		0 0 0 0\n\
+CIRCLE 		HTML_circle		0 0 0 1 0		0 0 0 0\n\
+OVAL		HTML_oval		0 0 0 1 0		0 0 0 0\n\
+SQUARE		HTML_square		0 0 0 1 0		0 0 0 0\n\
+LINE		HTML_line		0 0 0 1 0		0 0 0 0\n\
+POLYGON 	HTML_polygon		0 0 0 1 0		0 0 0 0\n\
+POINT		HTML_point		1 0 0 1 0		0 0 0 0\n\
+POS		HTML_pos		1 0 0 1 0		0 0 0 0\n\
+SIZE		HTML_size		1 0 0 1 0		0 0 0 0\n\
+FGCOLOR		HTML_fgcolor		1 0 0 1 0		0 0 0 0\n\
+BDCOLOR		HTML_bdcolor		1 0 0 1 0		0 0 0 0\n\
+BGCOLOR		HTML_bgcolor		1 0 0 1 0		0 0 0 0\n\
+#proto-vrml (not yet implemented)\n\
 AXIS 		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-BDCOLOR		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-BGCOLOR		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 BUTTON 		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-CIRCLE 		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-FGCOLOR		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-GRAPHICS	HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 HINT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-LINE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-OVAL		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-POINT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-POLYGON 	HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-POS		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-RECT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ROT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 SCALE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-SIZE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 TEXT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ACTION		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-SQUARE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 SCRIPT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 STYLE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ";

@@ -5179,6 +5179,193 @@ static SlotStruct objDesc_HTML_giff[] = {
     {"height", _slotValue_HTML_giff4}, {(char*)0, (char*)0},
 };
 
+/* === Proto-VRML Graphics Objects === */
+
+static char _slotValue_HTML_graphics0[] = "field";
+static char _slotValue_HTML_graphics1[] = "HTML_graphics";
+static char _slotValue_HTML_graphics2[] = {
+#include "embeds/HTML_graphics_script.v.h"
+};
+static char _slotValue_HTML_graphics3[] = "200";
+static char _slotValue_HTML_graphics4[] = "100";
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_graphics[] = {
+    {"class", _slotValue_HTML_graphics0},  {"name", _slotValue_HTML_graphics1},
+    {"script", _slotValue_HTML_graphics2}, {"width", _slotValue_HTML_graphics3},
+    {"height", _slotValue_HTML_graphics4}, {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_rect0[] = "field";
+static char _slotValue_HTML_rect1[] = "HTML_rect";
+static char _slotValue_HTML_rect2[] = {
+#include "embeds/HTML_rect_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_rect[] = {
+    {"class", _slotValue_HTML_rect0},
+    {"name", _slotValue_HTML_rect1},
+    {"script", _slotValue_HTML_rect2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_circle0[] = "field";
+static char _slotValue_HTML_circle1[] = "HTML_circle";
+static char _slotValue_HTML_circle2[] = {
+#include "embeds/HTML_circle_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_circle[] = {
+    {"class", _slotValue_HTML_circle0},
+    {"name", _slotValue_HTML_circle1},
+    {"script", _slotValue_HTML_circle2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_oval0[] = "field";
+static char _slotValue_HTML_oval1[] = "HTML_oval";
+static char _slotValue_HTML_oval2[] = {
+#include "embeds/HTML_oval_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_oval[] = {
+    {"class", _slotValue_HTML_oval0},
+    {"name", _slotValue_HTML_oval1},
+    {"script", _slotValue_HTML_oval2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_square0[] = "field";
+static char _slotValue_HTML_square1[] = "HTML_square";
+static char _slotValue_HTML_square2[] = {
+#include "embeds/HTML_square_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_square[] = {
+    {"class", _slotValue_HTML_square0},
+    {"name", _slotValue_HTML_square1},
+    {"script", _slotValue_HTML_square2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_line0[] = "field";
+static char _slotValue_HTML_line1[] = "HTML_line";
+static char _slotValue_HTML_line2[] = {
+#include "embeds/HTML_line_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_line[] = {
+    {"class", _slotValue_HTML_line0},
+    {"name", _slotValue_HTML_line1},
+    {"script", _slotValue_HTML_line2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_polygon0[] = "field";
+static char _slotValue_HTML_polygon1[] = "HTML_polygon";
+static char _slotValue_HTML_polygon2[] = {
+#include "embeds/HTML_polygon_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_polygon[] = {
+    {"class", _slotValue_HTML_polygon0},
+    {"name", _slotValue_HTML_polygon1},
+    {"script", _slotValue_HTML_polygon2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_point0[] = "field";
+static char _slotValue_HTML_point1[] = "HTML_point";
+static char _slotValue_HTML_point2[] = {
+#include "embeds/HTML_point_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_point[] = {
+    {"class", _slotValue_HTML_point0},
+    {"name", _slotValue_HTML_point1},
+    {"script", _slotValue_HTML_point2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_pos0[] = "field";
+static char _slotValue_HTML_pos1[] = "HTML_pos";
+static char _slotValue_HTML_pos2[] = {
+#include "embeds/HTML_pos_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_pos[] = {
+    {"class", _slotValue_HTML_pos0},
+    {"name", _slotValue_HTML_pos1},
+    {"script", _slotValue_HTML_pos2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_size0[] = "field";
+static char _slotValue_HTML_size1[] = "HTML_size";
+static char _slotValue_HTML_size2[] = {
+#include "embeds/HTML_size_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_size[] = {
+    {"class", _slotValue_HTML_size0},
+    {"name", _slotValue_HTML_size1},
+    {"script", _slotValue_HTML_size2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_fgcolor0[] = "field";
+static char _slotValue_HTML_fgcolor1[] = "HTML_fgcolor";
+static char _slotValue_HTML_fgcolor2[] = {
+#include "embeds/HTML_fgcolor_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_fgcolor[] = {
+    {"class", _slotValue_HTML_fgcolor0},
+    {"name", _slotValue_HTML_fgcolor1},
+    {"script", _slotValue_HTML_fgcolor2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_bdcolor0[] = "field";
+static char _slotValue_HTML_bdcolor1[] = "HTML_bdcolor";
+static char _slotValue_HTML_bdcolor2[] = {
+#include "embeds/HTML_bdcolor_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_bdcolor[] = {
+    {"class", _slotValue_HTML_bdcolor0},
+    {"name", _slotValue_HTML_bdcolor1},
+    {"script", _slotValue_HTML_bdcolor2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_bgcolor0[] = "field";
+static char _slotValue_HTML_bgcolor1[] = "HTML_bgcolor";
+static char _slotValue_HTML_bgcolor2[] = {
+#include "embeds/HTML_bgcolor_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_bgcolor[] = {
+    {"class", _slotValue_HTML_bgcolor0},
+    {"name", _slotValue_HTML_bgcolor1},
+    {"script", _slotValue_HTML_bgcolor2},
+    {(char*)0, (char*)0},
+};
+
+/* === End of Proto-VRML Graphics Objects === */
+
 static char _slotValue_HTML_head0[] = "field";
 static char _slotValue_HTML_head1[] = "HTML_head";
 static char _slotValue_HTML_head2[] = {
@@ -7205,6 +7392,32 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_gif,
                                "HTML_giff.v",
                                objDesc_HTML_giff,
+                               "HTML_graphics.v",
+                               objDesc_HTML_graphics,
+                               "HTML_rect.v",
+                               objDesc_HTML_rect,
+                               "HTML_circle.v",
+                               objDesc_HTML_circle,
+                               "HTML_oval.v",
+                               objDesc_HTML_oval,
+                               "HTML_square.v",
+                               objDesc_HTML_square,
+                               "HTML_line.v",
+                               objDesc_HTML_line,
+                               "HTML_polygon.v",
+                               objDesc_HTML_polygon,
+                               "HTML_point.v",
+                               objDesc_HTML_point,
+                               "HTML_pos.v",
+                               objDesc_HTML_pos,
+                               "HTML_size.v",
+                               objDesc_HTML_size,
+                               "HTML_fgcolor.v",
+                               objDesc_HTML_fgcolor,
+                               "HTML_bdcolor.v",
+                               objDesc_HTML_bdcolor,
+                               "HTML_bgcolor.v",
+                               objDesc_HTML_bgcolor,
                                "HTML_head.v",
                                objDesc_HTML_head,
                                "HTML_header_big.v",

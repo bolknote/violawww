@@ -1,5 +1,45 @@
-// vplot - 3D equation plotter for ViolaWWW
-// gcc -o vplot vplot.c -I/opt/X11/include -L/opt/X11/lib -lX11 -lm
+/*
+ * vplot - 3D surface plotter and OFF model viewer for ViolaWWW
+ *
+ * Copyright (c) 2025 Evgeny Stepanischev
+ *
+ * This is a reverse-engineered reimplementation based on the commands
+ * found in the original plot.v script from ViolaWWW. It emulates the
+ * original V-Plot utility written by Scott Silvey in the early 1990s.
+ *
+ * The original V-Plot was an external X11 program that ViolaWWW
+ * communicated with via pseudo-terminal (TTY class) to render 3D
+ * graphics in an embedded window.
+ *
+ * USAGE:
+ *   vplot reads commands from stdin and renders to an X11 window.
+ *   It is designed to be spawned by ViolaWWW's TTY class.
+ *
+ * SUPPORTED COMMANDS:
+ *   window <wid> <width> <height>  - Set target X11 window ID and size
+ *   domain <x1> <x2> <y1> <y2>     - Set the X/Y domain for equations
+ *   interval <step>                - Set grid step size for equations
+ *   equation <expr>                - Set z=f(x,y) equation to plot
+ *                                    Supports: sin, cos, exp, sqrt, abs
+ *                                    Variables: x, y
+ *                                    Operators: + - * / ^
+ *   file <path>                    - Load 3D model in OFF format
+ *   bgcolor <color>                - Set background color (X11 name)
+ *   fgcolor <color>                - Set foreground/line color
+ *   cx <angle>                     - Set camera X rotation (0-360)
+ *   cy <angle>                     - Set camera Y rotation
+ *   cz <angle>                     - Set camera Z rotation
+ *   expose                         - Force redraw
+ *   mbuf on|off                    - Enable/disable double buffering
+ *   quit                           - Exit the program
+ *
+ * OFF FILE FORMAT:
+ *   Supports standard OFF (Object File Format) files with optional
+ *   "OFF" header. Comments starting with # are ignored.
+ *
+ * BUILD:
+ *   cc -o vplot vplot.c -I/opt/X11/include -L/opt/X11/lib -lX11 -lm
+ */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdio.h>

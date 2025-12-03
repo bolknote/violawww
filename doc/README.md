@@ -60,6 +60,16 @@ Topics covered:
 - Applying styles to HTML elements
 - Layout control (margins, padding, positioning)
 
+### [COLOR_REFERENCE.md](COLOR_REFERENCE.md)
+Complete color specification guide.
+
+Topics covered:
+- X11 color names (over 600 colors supported)
+- Basic, extended, and grey scale colors
+- Light and dark color variants
+- Usage in STG stylesheets, Viola objects, and VPLOT
+- Color attributes reference (`FGColor`, `BGColor`, `BDColor`)
+
 ### [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md)
 **Experimental 3D Graphics Tags** — an early proto-VRML concept designed in 1994 but never implemented.
 

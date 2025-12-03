@@ -593,6 +593,8 @@ static void handle_cmd(char *line) {
         if (*eq) {
             strncpy(equation, eq, sizeof(equation)-1);
             equation[sizeof(equation)-1] = '\0';
+            /* Switch from model to equation mode */
+            clear_model();
         }
     } else if (!strcmp(cmd, "bgcolor")) {
         /* Ignore bgcolor - use Viola widget's LightSteelBlue4 background */

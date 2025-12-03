@@ -49,8 +49,10 @@
 #include <math.h>
 #include <ctype.h>
 #include <unistd.h>
+#ifdef __APPLE__
 #include <mach-o/dyld.h>
 #include <libgen.h>
+#endif
 
 // Logging
 static FILE *logfp = NULL;
@@ -70,9 +72,9 @@ static void logmsg(const char *fmt, ...) {
 }
 
 static Display *dpy = NULL;
-static int screen;
+static int screen = 0;
 static Window win = 0;
-static GC gc;
+static GC gc = NULL;
 static Pixmap backbuf = 0;
 static int use_backbuf = 0;
 
@@ -97,7 +99,7 @@ static double parse_factor(void);
 static double parse_primary(void);
 
 static void skip_spaces(void) {
-    while (*expr_ptr && isspace(*expr_ptr)) expr_ptr++;
+    while (*expr_ptr && isspace((unsigned char)*expr_ptr)) expr_ptr++;
 }
 
 static double parse_number(void) {
@@ -120,7 +122,7 @@ static double parse_primary(void) {
     }
     
     // Check for functions and variables
-    if (strncmp(expr_ptr, "sin", 3) == 0 && !isalnum(expr_ptr[3])) {
+    if (strncmp(expr_ptr, "sin", 3) == 0 && !isalnum((unsigned char)expr_ptr[3])) {
         expr_ptr += 3;
         skip_spaces();
         if (*expr_ptr == '(') {
@@ -132,7 +134,7 @@ static double parse_primary(void) {
         }
         return 0;
     }
-    if (strncmp(expr_ptr, "cos", 3) == 0 && !isalnum(expr_ptr[3])) {
+    if (strncmp(expr_ptr, "cos", 3) == 0 && !isalnum((unsigned char)expr_ptr[3])) {
         expr_ptr += 3;
         skip_spaces();
         if (*expr_ptr == '(') {
@@ -144,7 +146,7 @@ static double parse_primary(void) {
         }
         return 0;
     }
-    if (strncmp(expr_ptr, "exp", 3) == 0 && !isalnum(expr_ptr[3])) {
+    if (strncmp(expr_ptr, "exp", 3) == 0 && !isalnum((unsigned char)expr_ptr[3])) {
         expr_ptr += 3;
         skip_spaces();
         if (*expr_ptr == '(') {
@@ -156,7 +158,7 @@ static double parse_primary(void) {
         }
         return 0;
     }
-    if (strncmp(expr_ptr, "sqrt", 4) == 0 && !isalnum(expr_ptr[4])) {
+    if (strncmp(expr_ptr, "sqrt", 4) == 0 && !isalnum((unsigned char)expr_ptr[4])) {
         expr_ptr += 4;
         skip_spaces();
         if (*expr_ptr == '(') {
@@ -168,7 +170,7 @@ static double parse_primary(void) {
         }
         return 0;
     }
-    if (strncmp(expr_ptr, "abs", 3) == 0 && !isalnum(expr_ptr[3])) {
+    if (strncmp(expr_ptr, "abs", 3) == 0 && !isalnum((unsigned char)expr_ptr[3])) {
         expr_ptr += 3;
         skip_spaces();
         if (*expr_ptr == '(') {
@@ -182,11 +184,11 @@ static double parse_primary(void) {
     }
     
     // Variables
-    if (*expr_ptr == 'x' && !isalnum(expr_ptr[1])) {
+    if (*expr_ptr == 'x' && (expr_ptr[1] == '\0' || !isalnum((unsigned char)expr_ptr[1]))) {
         expr_ptr++;
         return expr_x;
     }
-    if (*expr_ptr == 'y' && !isalnum(expr_ptr[1])) {
+    if (*expr_ptr == 'y' && (expr_ptr[1] == '\0' || !isalnum((unsigned char)expr_ptr[1]))) {
         expr_ptr++;
         return expr_y;
     }
@@ -627,14 +629,17 @@ static void handle_cmd(char *line) {
         if (sv) interval = atof(sv);
         if (interval <= 0) interval = 0.1;
     } else if (!strcmp(cmd, "equation")) {
-        // Get the rest of the line as equation
-        char *eq = line + 8; // skip "equation"
-        while (*eq && isspace(*eq)) eq++;
-        if (*eq) {
-            strncpy(equation, eq, sizeof(equation)-1);
-            equation[sizeof(equation)-1] = '\0';
-            /* Switch from model to equation mode */
-            clear_model();
+        // Get the rest of the line as equation (find "equation" in original line)
+        char *eq = strstr(line, "equation");
+        if (eq) {
+            eq += 8; // skip "equation"
+            while (*eq && isspace((unsigned char)*eq)) eq++;
+            if (*eq) {
+                strncpy(equation, eq, sizeof(equation)-1);
+                equation[sizeof(equation)-1] = '\0';
+                /* Switch from model to equation mode */
+                clear_model();
+            }
         }
     } else if (!strcmp(cmd, "bgcolor")) {
         /* Ignore bgcolor - use Viola widget's LightSteelBlue4 background */
@@ -680,7 +685,8 @@ static void handle_cmd(char *line) {
             
             /* If path starts with /off/ or doesn't exist, try relative to vplot */
             if (strncmp(path, "/off/", 5) == 0 || access(path, R_OK) != 0) {
-                /* Get path to this executable */
+#ifdef __APPLE__
+                /* Get path to this executable (macOS) */
                 char exe_path[1024];
                 uint32_t size = sizeof(exe_path);
                 if (_NSGetExecutablePath(exe_path, &size) == 0) {
@@ -693,6 +699,22 @@ static void handle_cmd(char *line) {
                     }
                     path = resolved_path;
                 }
+#else
+                /* On Linux, try /proc/self/exe */
+                char exe_path[1024];
+                ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
+                if (len > 0) {
+                    exe_path[len] = '\0';
+                    char *slash = strrchr(exe_path, '/');
+                    if (slash) *slash = '\0';
+                    if (strncmp(path, "/off/", 5) == 0) {
+                        snprintf(resolved_path, sizeof(resolved_path), "%s/off/%s", exe_path, path + 5);
+                    } else {
+                        snprintf(resolved_path, sizeof(resolved_path), "%s/%s", exe_path, path);
+                    }
+                    path = resolved_path;
+                }
+#endif
             }
             
             logmsg("vplot: loading model '%s'\n", path);

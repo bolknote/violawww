@@ -19,6 +19,10 @@ The original design document is preserved at:
 The list of new tags added to the stylesheet:
 - [new tags file](https://web.archive.org/web/20040420173124/http://www.xcf.berkeley.edu/~wei/viola/new)
 
+Original source code (1995) with tag definitions:
+- [HTMLDTD.c](https://github.com/bolknote/violawww/blob/aaf72be/src/libWWW/Library/Implementation/HTMLDTD.c) — DTD with GRAPHICS, RECT, CIRCLE, OVAL, LINE, POLYGON, POS, SIZE, ROT, SCALE, AXIS, FGCOLOR, BGCOLOR, BDCOLOR, BUTTON
+- [HTML_style.c](https://github.com/bolknote/violawww/blob/aaf72be/src/viola/HTML_style.c) — stylesheet mappings (tags marked `HTML_ignore` — defined but not implemented)
+
 ### Timeline
 
 | Date | Event |

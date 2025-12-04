@@ -176,13 +176,59 @@
 									tpy[pi] = int(ty + shapeAY);
 								}
 								}
-								/* Draw lines connecting all points */
-								for (pi = 0; pi < numPoints - 1; pi++) {
-									drawLine(tpx[pi], tpy[pi], tpx[pi + 1], tpy[pi + 1]);
+								/* Draw filled polygon based on number of points */
+								if (numPoints == 3) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2]);
 								}
-								/* Close polygon */
-								if (numPoints >= 3) {
-									drawLine(tpx[numPoints - 1], tpy[numPoints - 1], tpx[0], tpy[0]);
+								if (numPoints == 4) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3]);
+								}
+								if (numPoints == 5) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4]);
+								}
+								if (numPoints == 6) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5]);
+								}
+								if (numPoints == 7) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6]);
+								}
+								if (numPoints == 8) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7]);
+								}
+								if (numPoints == 9) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8]);
+								}
+								if (numPoints == 10) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9]);
+								}
+								if (numPoints == 11) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10]);
+								}
+								if (numPoints == 12) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10], tpx[11], tpy[11]);
+								}
+								if (numPoints == 13) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10], tpx[11], tpy[11], tpx[12], tpy[12]);
+								}
+								if (numPoints == 14) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10], tpx[11], tpy[11], tpx[12], tpy[12], tpx[13], tpy[13]);
+								}
+								if (numPoints == 15) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10], tpx[11], tpy[11], tpx[12], tpy[12], tpx[13], tpy[13], tpx[14], tpy[14]);
+								}
+								if (numPoints >= 16) {
+									drawFillPolygon(tpx[0], tpy[0], tpx[1], tpy[1], tpx[2], tpy[2], tpx[3], tpy[3], tpx[4], tpy[4], tpx[5], tpy[5], tpx[6], tpy[6], tpx[7], tpy[7], tpx[8], tpy[8], tpx[9], tpy[9], tpx[10], tpy[10], tpx[11], tpy[11], tpx[12], tpy[12], tpx[13], tpy[13], tpx[14], tpy[14], tpx[15], tpy[15]);
+								}
+								/* Draw border with BDCOLOR if set */
+								shapeBD = send(childName, "getBD");
+								if (shapeBD != "" && shapeBD != "0") {
+									set("FGColor", shapeBD);
+									for (pi = 0; pi < numPoints - 1; pi++) {
+										drawLine(tpx[pi], tpy[pi], tpx[pi + 1], tpy[pi + 1]);
+									}
+									if (numPoints >= 3) {
+										drawLine(tpx[numPoints - 1], tpy[numPoints - 1], tpx[0], tpy[0]);
+									}
 								}
 							}
 						} else {

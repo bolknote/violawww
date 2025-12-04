@@ -1491,8 +1491,8 @@ Draws a filled oval within the bounding box.
 
 ---
 
-### drawFillPolygon(x0, y0, x1, y1, x2, y2, x3, y3)
-Draws a filled quadrilateral (4-point polygon). Useful for drawing rotated rectangles.
+### drawFillPolygon(x0, y0, x1, y1, x2, y2, ...)
+Draws a filled polygon with variable number of points (3 to 16). Useful for drawing triangles, rotated rectangles, and other polygons.
 
 **Parameters:**
 - `x0` (int) - first point x-coordinate
@@ -1501,15 +1501,20 @@ Draws a filled quadrilateral (4-point polygon). Useful for drawing rotated recta
 - `y1` (int) - second point y-coordinate
 - `x2` (int) - third point x-coordinate
 - `y2` (int) - third point y-coordinate
-- `x3` (int) - fourth point x-coordinate
-- `y3` (int) - fourth point y-coordinate
+- ... additional point coordinates (up to 16 points total)
 
 **Returns:** (int) 1 on success
 
 **Example:**
 ```c
-/* Draw a rotated rectangle */
+/* Draw a filled triangle */
+drawFillPolygon(x0, y0, x1, y1, x2, y2);
+
+/* Draw a filled quadrilateral (rotated rectangle) */
 drawFillPolygon(cx[0], cy[0], cx[1], cy[1], cx[2], cy[2], cx[3], cy[3]);
+
+/* Draw a filled pentagon */
+drawFillPolygon(x0, y0, x1, y1, x2, y2, x3, y3, x4, y4);
 ```
 
 ---

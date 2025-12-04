@@ -625,25 +625,28 @@ long meth_field_drawFillRect(VObj* self, Packet* result, int argc, Packet argv[]
 }
 
 /*
- * drawFillPolygon(x0, y0, x1, y1, x2, y2, x3, y3)
- * Draw filled quadrilateral (4 points)
+ * drawFillPolygon(x0, y0, x1, y1, ...)
+ * Draw filled polygon with variable number of points (3 to 8)
+ * Arguments come in pairs: x0,y0, x1,y1, x2,y2, ...
  */
 long meth_field_drawFillPolygon(VObj* self, Packet* result, int argc, Packet argv[]) {
-    int px[4], py[4];
-    px[0] = (int)PkInfo2Int(&argv[0]);
-    py[0] = (int)PkInfo2Int(&argv[1]);
-    px[1] = (int)PkInfo2Int(&argv[2]);
-    py[1] = (int)PkInfo2Int(&argv[3]);
-    px[2] = (int)PkInfo2Int(&argv[4]);
-    py[2] = (int)PkInfo2Int(&argv[5]);
-    px[3] = (int)PkInfo2Int(&argv[6]);
-    py[3] = (int)PkInfo2Int(&argv[7]);
+    int px[16], py[16];
+    int npoints = argc / 2;
+    int i;
+    
+    if (npoints < 3) npoints = 3;
+    if (npoints > 16) npoints = 16;
+    
+    for (i = 0; i < npoints && i * 2 + 1 < argc; i++) {
+        px[i] = (int)PkInfo2Int(&argv[i * 2]);
+        py[i] = (int)PkInfo2Int(&argv[i * 2 + 1]);
+    }
 
     clearPacket(result);
     if (GET_window(self)) {
         if (GET__classInfo(self) != &class_glass) {
             GLPrepareObjColor(self);
-            GLDrawFillPolygon(GET_window(self), px, py, 4);
+            GLDrawFillPolygon(GET_window(self), px, py, npoints);
             return 1;
         }
     }

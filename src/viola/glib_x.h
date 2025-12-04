@@ -119,7 +119,8 @@ extern GC gc_link;         /* color for unvisited links */
 extern GC gc_link_visited; /* color for visited links */
 extern GC gc_subWindow;
 
-/* Update link colors from STG stylesheet */
+/* Link color management for STG stylesheet */
+void GLResetLinkColors(void);  /* Reset to default (black) */
 void GLSetLinkColor(char* colorname);
 void GLSetLinkVisitedColor(char* colorname);
 extern int mouseCursorIsBusy;

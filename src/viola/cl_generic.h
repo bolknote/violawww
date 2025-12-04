@@ -152,6 +152,7 @@ long meth_generic_sendToInterface(VObj* self, Packet* result, int argc, Packet a
 long meth_generic_isURLVisited(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_setLinkColor(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_setLinkVisitedColor(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_resetLinkColors(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_setMouse(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_setResource(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_setSelection(VObj* self, Packet* result, int argc, Packet argv[]);

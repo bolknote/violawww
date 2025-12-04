@@ -698,31 +698,15 @@ int GLInit(Display* dpy, Screen* scrn)
     gc_mesh = XCreateGC(display, rootWindow, GCForeground | GCBackground | GCFillStyle | GCStipple,
                         &gcvalues);
 
-    /* gc_link - default blue for unvisited links */
-    {
-        XColor linkColor;
-        if (XParseColor(display, colormap, "blue", &linkColor) &&
-            XAllocColor(display, colormap, &linkColor)) {
-            gcvalues.foreground = linkColor.pixel;
-        } else {
-            gcvalues.foreground = FGPixel;
-        }
-        gcvalues.background = BGPixel;
-        gc_link = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
-    }
+    /* gc_link - default black (same as gc_fg), STG can override via FGColor on A tag */
+    gcvalues.foreground = FGPixel;
+    gcvalues.background = BGPixel;
+    gc_link = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
 
-    /* gc_link_visited - default purple for visited links */
-    {
-        XColor visitedColor;
-        if (XParseColor(display, colormap, "purple", &visitedColor) &&
-            XAllocColor(display, colormap, &visitedColor)) {
-            gcvalues.foreground = visitedColor.pixel;
-        } else {
-            gcvalues.foreground = FGPixel;
-        }
-        gcvalues.background = BGPixel;
-        gc_link_visited = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
-    }
+    /* gc_link_visited - default black (same as gc_fg), STG can override via traversedForegroundColor */
+    gcvalues.foreground = FGPixel;
+    gcvalues.background = BGPixel;
+    gc_link_visited = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
 
     /* subwindow */
     gcvalues.function = GXinvert;
@@ -2351,6 +2335,13 @@ int GLSetFGColor(VObj* self, char* colorname)
         return 0;
 
     return 1;
+}
+
+/* Reset link colors to default (black) - called when stylesheet is loaded */
+void GLResetLinkColors(void)
+{
+    XSetForeground(display, gc_link, FGPixel);
+    XSetForeground(display, gc_link_visited, FGPixel);
 }
 
 /* Set color for unvisited links from STG stylesheet */

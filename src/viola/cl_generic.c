@@ -343,6 +343,7 @@ MethodInfo meths_generic[] = {
     {STR_isURLVisited, meth_generic_isURLVisited},
     {STR_setLinkColor, meth_generic_setLinkColor},
     {STR_setLinkVisitedColor, meth_generic_setLinkVisitedColor},
+    {STR_resetLinkColors, meth_generic_resetLinkColors},
     {STR_seta, meth_generic_set},
     {STR_setMouse, meth_generic_setMouse},
     {STR_setResource, meth_generic_setResource},
@@ -4258,6 +4259,23 @@ long meth_generic_setLinkVisitedColor(VObj* self, Packet* result, int argc, Pack
         GLSetLinkVisitedColor(colorname);
         result->info.i = 1;
     }
+    
+    return 1;
+}
+
+/*
+ * resetLinkColors()
+ *
+ * Reset link colors to default (black).
+ * Called when loading a new stylesheet to clear previous colors.
+ */
+long meth_generic_resetLinkColors(VObj* self, Packet* result, int argc, Packet argv[]) {
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 1;
+    
+    GLResetLinkColors();
     
     return 1;
 }

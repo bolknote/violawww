@@ -9,7 +9,8 @@
 			STG_clean(0/*useless arg*/);
 			localFile = HTTPGet(href);
 			loadSTG(localFile);
-			/* Apply link colors from STG */
+			/* Reset link colors to default (black) then apply from STG */
+			resetLinkColors();
 			tagPtr = STG_tagPtr("A");
 			if (tagPtr) {
 				fc = STG_attr(tagPtr, "FGColor");

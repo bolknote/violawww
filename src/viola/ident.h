@@ -619,6 +619,7 @@ enum {
     STR_isURLVisited, /* Check if URL is in history (for traversed link color) */
     STR_setLinkColor, /* Set color for unvisited links */
     STR_setLinkVisitedColor, /* Set color for visited links */
+    STR_resetLinkColors, /* Reset link colors to default (black) */
     STR_LAST_OF_THE_PREDEFINED
 };
 

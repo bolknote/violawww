@@ -5043,6 +5043,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                                 meth_generic_isURLVisited(NULL, &pkt_result, 1, pkt_argv);
                                 isVisited = pkt_result.info.i;
                             }
+                            /* gc_link/gc_link_visited default to black, STG can override */
                             usegc = isVisited ? gc_link_visited : gc_link;
                         } else
                             usegc = gc_fg;

@@ -1871,6 +1871,63 @@ if (isURLVisited("http://www.example.com/page.html")) {
 
 ---
 
+### setLinkColor(colorname)
+Sets the color for unvisited links.
+
+This function is typically called automatically when processing STG stylesheets with `FGColor` attribute on `A` tags. It can also be called directly from Viola scripts.
+
+**Parameters:**
+- `colorname` (string) - X11 color name (e.g., "red", "blue", "navy")
+
+**Returns:** (int) 1 on success, 0 on failure
+
+**Example:**
+```
+setLinkColor("red");  /* Unvisited links will be red */
+```
+
+**See also:** `setLinkVisitedColor`, `resetLinkColors`, `FGColor` in STG_REFERENCE.md
+
+---
+
+### setLinkVisitedColor(colorname)
+Sets the color for visited links.
+
+This function is typically called automatically when processing STG stylesheets with `traversedForegroundColor` attribute on `A` tags. It can also be called directly from Viola scripts.
+
+**Parameters:**
+- `colorname` (string) - X11 color name (e.g., "purple", "blue", "maroon")
+
+**Returns:** (int) 1 on success, 0 on failure
+
+**Example:**
+```
+setLinkVisitedColor("purple");  /* Visited links will be purple */
+```
+
+**See also:** `setLinkColor`, `resetLinkColors`, `traversedForegroundColor` in STG_REFERENCE.md
+
+---
+
+### resetLinkColors()
+Resets link colors to the default (black).
+
+This function is called automatically when loading a new STG stylesheet to ensure that link colors are reset before applying new styles. Without this, colors from a previous stylesheet would persist.
+
+**Parameters:** None
+
+**Returns:** (int) 1
+
+**Example:**
+```
+resetLinkColors();  /* Both visited and unvisited links are now black */
+setLinkColor("blue");  /* Now unvisited links are blue, visited remain black */
+```
+
+**See also:** `setLinkColor`, `setLinkVisitedColor`
+
+---
+
 ### activeHelp([message])
 Displays a message in the active help field.
 

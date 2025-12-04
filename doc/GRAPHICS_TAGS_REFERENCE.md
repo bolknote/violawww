@@ -1,8 +1,6 @@
 # ViolaWWW Experimental 3D Graphics Tags
 
-This document describes experimental 3D graphics tags that were designed for ViolaWWW but **never fully implemented**. These tags are defined in the DTD and parsed by the browser, but their content is ignored.
-
-⚠️ **Note:** This is a historical document. None of these tags produce any visual output.
+This document describes the experimental 3D graphics tags implemented in ViolaWWW based on Pei-Yuan Wei's 1994 proto-VRML proposal.
 
 ---
 
@@ -29,6 +27,7 @@ The list of new tags added to the stylesheet:
 | May 1994 | First VRML specification draft (Mark Pesce, Tony Parisi) |
 | Nov 1994 | VRML 1.0 released (based on SGI's Open Inventor format) |
 | 1997 | VRML 2.0 / VRML97 standardized |
+| 2025 | Graphics tags implemented in this ViolaWWW restoration |
 
 Wei's proposal was an independent parallel effort, not an implementation of VRML.
 
@@ -36,33 +35,19 @@ Wei's proposal was an independent parallel effort, not an implementation of VRML
 
 ## Implementation Status
 
-All 18 graphics-related tags are:
-- ✅ **Defined in DTD** (`src/libWWW/HTMLDTD.c`, `HTMLDTD.h`)
-- ✅ **Parsed by SGML parser** (attributes extracted correctly)
-- ❌ **Not rendered** — all mapped to `HTML_ignore` in `src/viola/HTML_style.c`
-
-In the source code, these tags are marked with `/*vr exp*/` comments (VR experimental):
-
-```
-AXIS        HTML_ignore     1 0 0 0 0       0 0 0 0
-BDCOLOR     HTML_ignore     1 0 0 0 0       0 0 0 0
-BGCOLOR     HTML_ignore     1 0 0 0 0       0 0 0 0
-BUTTON      HTML_ignore     1 0 0 0 0       0 0 0 0
-CIRCLE      HTML_ignore     1 0 0 0 0       0 0 0 0
-FGCOLOR     HTML_ignore     1 0 0 0 0       0 0 0 0
-GRAPHICS    HTML_ignore     1 0 0 0 0       0 0 0 0
-HINT        HTML_ignore     1 0 0 0 0       0 0 0 0
-LINE        HTML_ignore     1 0 0 0 0       0 0 0 0
-OVAL        HTML_ignore     1 0 0 0 0       0 0 0 0
-POINT       HTML_ignore     1 0 0 0 0       0 0 0 0
-POLYGON     HTML_ignore     1 0 0 0 0       0 0 0 0
-POS         HTML_ignore     1 0 0 0 0       0 0 0 0
-RECT        HTML_ignore     1 0 0 0 0       0 0 0 0
-ROT         HTML_ignore     1 0 0 0 0       0 0 0 0
-SCALE       HTML_ignore     1 0 0 0 0       0 0 0 0
-SIZE        HTML_ignore     1 0 0 0 0       0 0 0 0
-TEXT        HTML_ignore     1 0 0 0 0       0 0 0 0
-```
+| Feature | Status |
+|---------|--------|
+| Container (`<GRAPHICS>`) | ✅ Implemented |
+| Primitives (RECT, CIRCLE, OVAL, LINE, POLYGON) | ✅ Implemented |
+| Position (`<POS>`) | ✅ Implemented |
+| Size (`<SIZE>`) | ✅ Implemented |
+| Colors (FGCOLOR, BGCOLOR, BDCOLOR) | ✅ Implemented |
+| 2D Rotation (`<ROT Z=...>`) | ✅ Implemented |
+| 3D Rotation (`<ROT X=...>`, `<ROT Y=...>`) | ✅ Implemented with perspective |
+| Scale (`<SCALE>`) | ✅ Implemented |
+| Axis (`<AXIS>`) | ✅ Implemented |
+| Interactive scripting (`<ACTION>`, `<BUTTON>`) | ❌ Not implemented |
+| Multi-user sync (`SC` attribute) | ❌ Not implemented |
 
 ---
 
@@ -71,7 +56,7 @@ TEXT        HTML_ignore     1 0 0 0 0       0 0 0 0
 ### Container
 
 #### `<GRAPHICS>`
-Container element for a 3D graphics scene.
+Container element for a 2D/3D graphics scene.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
@@ -80,34 +65,21 @@ Container element for a 3D graphics scene.
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
 
-**Example from design document:**
+**Example:**
 ```html
-<GRAPHICS width=100 height=100>
-  <SQUARE ID="sq1">
-    ...
-  </SQUARE>
+<GRAPHICS WIDTH=300 HEIGHT=200>
+  <BGCOLOR NAME="black"></BGCOLOR>
+  <RECT ID="r1">
+    <POS X=50 Y=50></POS>
+    <SIZE X=100 Y=80></SIZE>
+    <FGCOLOR NAME="red"></FGCOLOR>
+  </RECT>
 </GRAPHICS>
 ```
 
 ---
 
 ### Geometric Primitives
-
-#### `<CIRCLE>`
-A circle shape.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `ID` | string | Unique identifier |
-| `NAME` | string | Object name |
-
-#### `<OVAL>`
-An ellipse/oval shape.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `ID` | string | Unique identifier |
-| `NAME` | string | Object name |
 
 #### `<RECT>`
 A rectangle shape.
@@ -117,65 +89,109 @@ A rectangle shape.
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
 
-#### `<SQUARE>`
-A square shape.
+**Example:**
+```html
+<RECT ID="myRect">
+  <POS X=10 Y=10></POS>
+  <SIZE X=80 Y=60></SIZE>
+  <FGCOLOR NAME="blue"></FGCOLOR>
+  <BDCOLOR NAME="red"></BDCOLOR>
+</RECT>
+```
+
+#### `<CIRCLE>`
+A circle shape (equal width and height).
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
+
+**Example:**
+```html
+<CIRCLE ID="c1">
+  <POS X=100 Y=50></POS>
+  <SIZE X=60 Y=60></SIZE>
+  <FGCOLOR NAME="green"></FGCOLOR>
+</CIRCLE>
+```
+
+#### `<OVAL>`
+An ellipse/oval shape.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `ID` | string | Unique identifier |
+| `NAME` | string | Object name |
+
+**Example:**
+```html
+<OVAL ID="o1">
+  <POS X=50 Y=30></POS>
+  <SIZE X=100 Y=50></SIZE>
+  <FGCOLOR NAME="purple"></FGCOLOR>
+</OVAL>
+```
 
 #### `<LINE>`
-A line segment.
+A line segment from (X,Y) to (X+W, Y+H).
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
 
-#### `<POINT>`
-A point in 2D space.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `ID` | string | Unique identifier |
-| `X` | number | X coordinate |
-| `Y` | number | Y coordinate |
+**Example:**
+```html
+<LINE ID="l1">
+  <POS X=10 Y=10></POS>
+  <SIZE X=100 Y=50></SIZE>
+  <FGCOLOR NAME="white"></FGCOLOR>
+</LINE>
+```
 
 #### `<POLYGON>`
-A polygon defined by multiple points.
+A polygon defined by multiple `<POINT>` children.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
+
+**Example (triangle):**
+```html
+<POLYGON ID="tri">
+  <FGCOLOR NAME="yellow"></FGCOLOR>
+  <POINT X=50 Y=100></POINT>
+  <POINT X=100 Y=20></POINT>
+  <POINT X=150 Y=100></POINT>
+</POLYGON>
+```
+
+#### `<POINT>`
+A point defining a polygon vertex.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `X` | number | X coordinate |
+| `Y` | number | Y coordinate |
 
 ---
 
 ### Transformations
-
-These tags define 3D transformations with X, Y, Z coordinates and the special `SC` attribute.
-
-#### The `SC` Attribute
-
-From the design document:
-> "The SC attribute says that whenever the attributes in this object changes, relay the change to a server that broadcasts the change to all other browsers looking at this object..."
-
-This was intended for **multi-user synchronization** — a remarkably forward-thinking feature for 1994, predating WebSockets by over 15 years.
 
 #### `<POS>`
 Position/translation of an object.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `SC` | flag | Sync changes to server |
 | `X` | number | X position |
 | `Y` | number | Y position |
-| `Z` | number | Z position (depth) |
+| `Z` | number | Z position (depth) — not used in 2D |
 
 **Example:**
 ```html
-<POS SC x=60 y=40>
+<POS X=60 Y=40></POS>
 ```
 
 #### `<SIZE>`
@@ -183,29 +199,37 @@ Size/dimensions of an object.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `SC` | flag | Sync changes to server |
 | `X` | number | Width |
 | `Y` | number | Height |
-| `Z` | number | Depth |
+| `Z` | number | Depth — not used in 2D |
 
 **Example:**
 ```html
-<SIZE SC x=20 y=20>
+<SIZE X=100 Y=80></SIZE>
 ```
 
 #### `<ROT>`
-Rotation of an object.
+Rotation of an object in 3D space with perspective projection.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `SC` | flag | Sync changes to server |
-| `X` | number | Rotation around X axis |
-| `Y` | number | Rotation around Y axis |
-| `Z` | number | Rotation around Z axis |
+| `X` | number | Rotation around X axis (tilt forward/back) |
+| `Y` | number | Rotation around Y axis (turn left/right) |
+| `Z` | number | Rotation around Z axis (2D rotation) |
 
-**Example:**
+**Examples:**
 ```html
-<ROT SC>
+<!-- 2D rotation: 45 degrees clockwise -->
+<ROT Z=45></ROT>
+
+<!-- 3D tilt forward -->
+<ROT X=30></ROT>
+
+<!-- 3D turn right -->
+<ROT Y=45></ROT>
+
+<!-- Combined 3D rotation -->
+<ROT X=20 Y=30 Z=15></ROT>
 ```
 
 #### `<SCALE>`
@@ -213,18 +237,32 @@ Scale transformation.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `SC` | flag | Sync changes to server |
-| `X` | number | X scale factor |
-| `Y` | number | Y scale factor |
-| `Z` | number | Z scale factor |
+| `X` | number | X scale factor (default 1.0) |
+| `Y` | number | Y scale factor (default 1.0) |
+| `Z` | number | Z scale factor for perspective |
 
-**Example from design:**
+**Examples:**
 ```html
-<SCALE x=1 y=1 z=1.5>
+<!-- Scale to half size -->
+<SCALE X=0.5 Y=0.5></SCALE>
+
+<!-- Scale to double size -->
+<SCALE X=2 Y=2></SCALE>
+
+<!-- Non-uniform scale -->
+<SCALE X=1.5 Y=0.8></SCALE>
 ```
 
 #### `<AXIS>`
-Defines an axis (possibly for rotation reference). No attributes defined.
+Defines the center point for rotation and scaling.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `X` | number | X coordinate of axis center |
+| `Y` | number | Y coordinate of axis center |
+| `Z` | number | Z coordinate of axis center |
+
+By default, transformations use the center of the shape. Use `<AXIS>` to change the pivot point.
 
 ---
 
@@ -240,19 +278,11 @@ Foreground/fill color.
 
 **Example:**
 ```html
-<FGCOLOR name="blue">
+<FGCOLOR NAME="blue"></FGCOLOR>
 ```
 
 #### `<BGCOLOR>`
-Background color.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `NAME` | string | Named color |
-| `RGB` | string | RGB color value |
-
-#### `<BDCOLOR>`
-Border color.
+Background color of the GRAPHICS container.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
@@ -261,25 +291,170 @@ Border color.
 
 **Example:**
 ```html
-<BDCOLOR name="red">
+<BGCOLOR NAME="black"></BGCOLOR>
+```
+
+#### `<BDCOLOR>`
+Border color of a shape.
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `NAME` | string | Named color |
+| `RGB` | string | RGB color value |
+
+**Example:**
+```html
+<BDCOLOR NAME="red"></BDCOLOR>
 ```
 
 ---
 
-### Interactivity
+## Complete Examples
 
-#### `<BUTTON>`
-An interactive button element.
+### Basic Shapes
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `ID` | string | Unique identifier for targeting |
-| `HREF` | URL | Link destination |
-| `NAME` | string | Button name |
-
-**Example from design:**
 ```html
-<BUTTON ID="btn_closer">
+<GRAPHICS WIDTH=400 HEIGHT=120>
+<BGCOLOR NAME="lightgray"></BGCOLOR>
+
+<RECT ID="rect1">
+  <POS X=10 Y=20></POS>
+  <SIZE X=70 Y=70></SIZE>
+  <FGCOLOR NAME="blue"></FGCOLOR>
+</RECT>
+
+<CIRCLE ID="circle1">
+  <POS X=100 Y=20></POS>
+  <SIZE X=70 Y=70></SIZE>
+  <FGCOLOR NAME="red"></FGCOLOR>
+</CIRCLE>
+
+<OVAL ID="oval1">
+  <POS X=190 Y=30></POS>
+  <SIZE X=90 Y=50></SIZE>
+  <FGCOLOR NAME="green"></FGCOLOR>
+</OVAL>
+
+<LINE ID="line1">
+  <POS X=300 Y=20></POS>
+  <SIZE X=80 Y=70></SIZE>
+  <FGCOLOR NAME="purple"></FGCOLOR>
+</LINE>
+
+</GRAPHICS>
+```
+
+### 3D Rotation Demo
+
+```html
+<GRAPHICS WIDTH=400 HEIGHT=120>
+<BGCOLOR NAME="navy"></BGCOLOR>
+
+<!-- No rotation -->
+<RECT ID="r1">
+  <POS X=30 Y=20></POS>
+  <SIZE X=60 Y=80></SIZE>
+  <FGCOLOR NAME="cyan"></FGCOLOR>
+</RECT>
+
+<!-- Tilted forward (ROT X) -->
+<RECT ID="r2">
+  <POS X=120 Y=20></POS>
+  <SIZE X=60 Y=80></SIZE>
+  <FGCOLOR NAME="cyan"></FGCOLOR>
+  <ROT X=45></ROT>
+</RECT>
+
+<!-- Turned right (ROT Y) -->
+<RECT ID="r3">
+  <POS X=210 Y=20></POS>
+  <SIZE X=60 Y=80></SIZE>
+  <FGCOLOR NAME="cyan"></FGCOLOR>
+  <ROT Y=45></ROT>
+</RECT>
+
+<!-- 2D rotation (ROT Z) -->
+<RECT ID="r4">
+  <POS X=300 Y=20></POS>
+  <SIZE X=60 Y=80></SIZE>
+  <FGCOLOR NAME="cyan"></FGCOLOR>
+  <ROT Z=45></ROT>
+</RECT>
+
+</GRAPHICS>
+```
+
+### Scene Composition (House)
+
+```html
+<GRAPHICS WIDTH=300 HEIGHT=200>
+<BGCOLOR NAME="skyblue"></BGCOLOR>
+
+<!-- Grass -->
+<RECT ID="grass">
+  <POS X=0 Y=150></POS>
+  <SIZE X=300 Y=50></SIZE>
+  <FGCOLOR NAME="green"></FGCOLOR>
+</RECT>
+
+<!-- House body -->
+<RECT ID="house">
+  <POS X=80 Y=80></POS>
+  <SIZE X=140 Y=100></SIZE>
+  <FGCOLOR NAME="brown"></FGCOLOR>
+</RECT>
+
+<!-- Roof (triangle) -->
+<POLYGON ID="roof">
+  <FGCOLOR NAME="red"></FGCOLOR>
+  <POINT X=60 Y=80></POINT>
+  <POINT X=150 Y=20></POINT>
+  <POINT X=240 Y=80></POINT>
+</POLYGON>
+
+<!-- Door -->
+<RECT ID="door">
+  <POS X=130 Y=120></POS>
+  <SIZE X=40 Y=60></SIZE>
+  <FGCOLOR NAME="saddlebrown"></FGCOLOR>
+</RECT>
+
+<!-- Windows -->
+<RECT ID="window1">
+  <POS X=95 Y=100></POS>
+  <SIZE X=25 Y=25></SIZE>
+  <FGCOLOR NAME="lightblue"></FGCOLOR>
+</RECT>
+
+<RECT ID="window2">
+  <POS X=180 Y=100></POS>
+  <SIZE X=25 Y=25></SIZE>
+  <FGCOLOR NAME="lightblue"></FGCOLOR>
+</RECT>
+
+<!-- Sun -->
+<CIRCLE ID="sun">
+  <POS X=240 Y=10></POS>
+  <SIZE X=40 Y=40></SIZE>
+  <FGCOLOR NAME="yellow"></FGCOLOR>
+</CIRCLE>
+
+</GRAPHICS>
+```
+
+---
+
+## Not Implemented
+
+The following features from the original design are **not implemented**:
+
+### Interactive Scripting
+
+The `<ACTION>`, `<BUTTON>`, and inline `<SCRIPT TYPE="viola">` tags are not implemented. The original design proposed:
+
+```html
+<!-- NOT IMPLEMENTED -->
+<BUTTON ID="btn">
   <ACTION>
     <SCRIPT TYPE="viola">
       switch (arg[0]) {
@@ -287,149 +462,37 @@ An interactive button element.
         send("#sq1", "closer");
       break;
       }
-      usual();
     </SCRIPT>
   </ACTION>
-  <POS SC x=10 y=5>
-  <SIZE SC x=30 y=15>
-  <LABEL>Closer</LABEL>
+  <LABEL>Click Me</LABEL>
 </BUTTON>
 ```
 
-#### `<HINT>`
-Tooltip/hint text for an object. No attributes — content is the hint text.
+### Multi-User Synchronization
 
-**Example:**
-```html
-<HINT>Click on me, and I'll twist</HINT>
-```
+The `SC` attribute for broadcasting state changes to other viewers is not implemented.
 
-#### `<TEXT>`
-Text element within graphics context. No attributes defined in DTD.
+### Other Tags
 
----
-
-### Scripting (Also Unimplemented)
-
-The design document proposed inline Viola scripting:
-
-#### `<ACTION>`
-Event handler container. Defined in DTD but mapped to `HTML_ignore`.
-
-#### `<SCRIPT TYPE="viola">`
-Inline Viola script. The `SCRIPT` tag exists in DTD with `SGML_CDATA` content model, but is mapped to `HTML_ignore`.
-
-**Proposed syntax:**
-```html
-<ACTION>
-  <SCRIPT TYPE="viola">
-    switch (arg[0]) {
-    case "buttonUp":
-      for (i = 0; i < 30; i++) {
-        rotate(0, 0, 1.0);
-        render();
-      }
-      return;
-    break;
-    }
-    usual();
-  </SCRIPT>
-</ACTION>
-```
-
-**Note:** While inline `<SCRIPT>` was never implemented, Viola scripting **does work** via external files using the `<VOBJF>` tag:
-```html
-<VOBJF HREF="widget.v"></VOBJF>
-```
-
----
-
-## Complete Example from Design Document
-
-This example demonstrates the intended usage — a scene with a square that can be moved closer or farther by clicking buttons:
-
-```html
-<HTML>
-<H1>A Revelation in Perspectives</H1>
-<P>
-Things look smaller when it's farther away, bigger when it's closer.
-
-<GRAPHIC width=100 height=100>
-<SQUARE ID="sq1">
-  <ACTION>
-    <ON ARG0="buttonUp">
-      <REPEAT FROM=0 TO=30 INC=1><ROTATE x=0 y=0 z=1></REPEAT>
-    </ON>
-    <ON ARG0="shrink"><SCALE x=1 y=1 z=1.5></ON>
-    <ON ARG0="expand"><SCALE x=1 y=1 z=0.5></ON>
-  </ACTION>
-
-  <POS SC x=60 y=40>
-  <SIZE SC x=20 y=20>
-  <ROT SC>
-  <FGCOLOR name="blue">
-  <BDCOLOR name="red">
-  <HINT>Click on me, and I'll twist</HINT>
-</SQUARE>
-
-<BUTTON ID="btn_closer">
-  <ACTION>
-    <ON ARG0="buttonUp"><SEND DEST="#sq1" ARG0="closer"></ON>
-  </ACTION>
-  <POS SC x=10 y=5>
-  <SIZE SC x=30 y=15>
-  <LABEL>Closer</LABEL>
-  <HINT>Bring the square closer to view</HINT>
-</BUTTON>
-
-<BUTTON ID="btn_farther">
-  <ACTION>
-    <SCRIPT TYPE="viola">
-      switch (arg[0]) {
-      case "buttonUp":
-        send("#sq1", "farther");
-      break;
-      }
-      usual();
-    </SCRIPT>
-  </ACTION>
-  <POS SC x=40 y=5>
-  <SIZE SC x=30 y=15>
-  <LABEL>Further</LABEL>
-  <HINT>Push the square further from view</HINT>
-</BUTTON>
-
-</GRAPHIC>
-```
-
----
-
-## Why It Was Never Completed
-
-These experimental tags represent an ambitious vision from 1994:
-- 3D graphics natively in HTML (before WebGL by ~17 years)
-- Multi-user synchronization (before WebSockets)
-- Declarative scene graphs (before Three.js, A-Frame)
-
-However, ViolaWWW development slowed as:
-1. NCSA Mosaic and later Netscape Navigator gained market dominance
-2. The separate VRML specification (1994-1997) took a different, non-HTML approach
-3. Resources were limited for a solo developer project
-
-The DTD definitions remain as a historical record of an early, independent attempt to bring 3D graphics to the web.
+- `<HINT>` — tooltip text
+- `<TEXT>` — text within graphics
+- `<SQUARE>` — use `<RECT>` with equal width/height instead
 
 ---
 
 ## Source Code References
 
-- **DTD definitions:** `src/libWWW/HTMLDTD.c` (lines 127-203, 358-463)
-- **Element enum:** `src/libWWW/HTMLDTD.h` (marked with `/*vr exp*/` comments)
-- **Stylesheet mapping:** `src/viola/HTML_style.c` (lines 150-169)
+- **DTD definitions:** `src/libWWW/HTMLDTD.c`
+- **Element enum:** `src/libWWW/HTMLDTD.h`
+- **Stylesheet mapping:** `src/viola/HTML_style.c`
+- **Graphics container:** `src/viola/embeds/HTML_graphics_script.v`
+- **Primitives:** `src/viola/embeds/HTML_rect_script.v`, `HTML_circle_script.v`, etc.
 
 ---
 
 ## See Also
 
-- [VIOLA_LANGUAGE.md](VIOLA_LANGUAGE.md) — The scripting language that would have powered these objects
-- [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md) — 2D image embedding that *was* implemented
+- [VIOLA_LANGUAGE.md](VIOLA_LANGUAGE.md) — The scripting language
+- [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md) — 2D image embedding
+- [COLOR_REFERENCE.md](COLOR_REFERENCE.md) — Available color names
 - [vrmlNotes.txt (archive.org)](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — Original design document

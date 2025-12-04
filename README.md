@@ -126,6 +126,36 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `htmath.h`, `htmath.c`, `embeds/HTML_math_script.v`
 - **HTML Tag**: `<MATH>` element support
 
+#### Proto-VRML Graphics Tags (Partial Implementation)
+- Implementation of Pei-Yuan Wei's 1994 experimental 3D graphics proposal
+- Container: `<GRAPHICS>` with WIDTH, HEIGHT attributes
+- Primitives: `<RECT>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`
+- Positioning and sizing: `<POS>`, `<SIZE>` with X, Y, Z coordinates
+- 3D transformations with perspective projection:
+  - `<ROT X=... Y=... Z=...>` — rotation around all three axes
+  - `<SCALE X=... Y=... Z=...>` — scaling with perspective
+  - `<AXIS>` — transformation center point
+- Colors: `<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>` with named colors
+- **Not implemented**: Interactive scripting (`<ACTION>`, `<BUTTON>`), multi-user sync (`SC` attribute)
+- **Files**: `embeds/HTML_graphics_script.v`, `HTML_rect_script.v`, `HTML_polygon_script.v`, etc.
+- **Documentation**: [GRAPHICS_TAGS_REFERENCE.md](doc/GRAPHICS_TAGS_REFERENCE.md)
+
+#### TTY Interface Restoration
+- Restored inter-process communication via TTY class
+- Run external programs and capture their output
+- Bidirectional communication with child processes
+- Configurable delimiters for output parsing
+- **Documentation**: [TTY_REFERENCE.md](doc/TTY_REFERENCE.md)
+
+#### VPLOT 3D Surface Plotter
+- Interactive 3D surface and wireframe model viewer
+- Mathematical expression parser (sin, cos, exp, sqrt, abs, etc.)
+- Real-time rotation via sliders or mouse drag
+- Support for OFF file format (3D models)
+- HiDPI/Retina display support
+- **Files**: `examples/plot.v`, `examples/vplot.v`
+- **Documentation**: [VPLOT_REFERENCE.md](doc/VPLOT_REFERENCE.md)
+
 #### Infrastructure Improvements
 - 64-bit architecture support (from 32-bit original)
 - Socket timeouts (30s for HTTP/HTTPS, 5s for Wayback API)
@@ -591,6 +621,9 @@ Contributions are welcome! Areas of interest:
 - Internet Archive (Wayback Machine) integration
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII via iconv + ICU)
 - Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
+- Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, etc.)
+- TTY interface restoration for external process communication
+- VPLOT 3D surface plotter implementation
 - Socket timeouts and error handling
 - Modern build system improvements
 - Comprehensive test suite

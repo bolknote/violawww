@@ -71,20 +71,18 @@ Topics covered:
 - Color attributes reference (`FGColor`, `BGColor`, `BDColor`)
 
 ### [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md)
-**Experimental 3D Graphics Tags** — an early proto-VRML concept designed in 1994 but never implemented.
+**Experimental 3D Graphics Tags** — Pei-Yuan Wei's 1994 proto-VRML concept, now implemented.
 
-⚠️ **Note:** These tags are parsed but not rendered. This document is preserved for historical interest.
-
-This was Pei-Yuan Wei's independent proposal for SGML-based 3D graphics, developed around the same time as (but separately from) the VRML specification.
+This was Wei's independent proposal for SGML-based 3D graphics, developed around the same time as (but separately from) the VRML specification.
 
 Topics covered:
-- Container: `<GRAPHICS>`
-- Primitives: `<CIRCLE>`, `<OVAL>`, `<RECT>`, `<SQUARE>`, `<LINE>`, `<POINT>`, `<POLYGON>`
-- Transformations: `<POS>`, `<SIZE>`, `<ROT>`, `<SCALE>`, `<AXIS>`
+- Container: `<GRAPHICS>` with WIDTH, HEIGHT
+- Primitives: `<RECT>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`
+- Transformations: `<POS>`, `<SIZE>`, `<ROT>` (X/Y/Z with perspective), `<SCALE>`, `<AXIS>`
 - Appearance: `<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>`
-- Interactivity: `<BUTTON>`, `<HINT>`, `<TEXT>`
-- The `SC` attribute for multi-user synchronization
-- Original design document and examples
+- Complete examples including 3D rotation demo and scene composition
+
+**Not implemented:** Interactive scripting (`<ACTION>`, `<BUTTON>`, inline `<SCRIPT>`), multi-user sync (`SC` attribute).
 
 Historical sources:
 - [vrmlNotes.txt](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — original design document
@@ -174,7 +172,9 @@ ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered m
 | FIGA (image maps) | HTML AREA/MAP |
 | STG stylesheets | CSS |
 | Tables | HTML 3.0 Tables |
-| 3D Graphics tags (unimplemented) | VRML, WebGL |
+| 3D Graphics tags | VRML, WebGL |
+| TTY (external processes) | Web Workers, WebAssembly |
+| VPLOT (3D visualization) | WebGL, Three.js |
 
 As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML for multimedia from O'Reilly."*
 

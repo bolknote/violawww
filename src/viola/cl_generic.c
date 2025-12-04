@@ -231,6 +231,7 @@ MethodInfo meths_generic[] = {
     {STR_bell, meth_generic_bell},
     {STR_bellVolume, meth_generic_bellVolume},
     {STR_char, meth_generic_char},
+    {STR_charHeight, meth_generic_charHeight},
     {STR_clear, meth_generic_clear},
     {STR_cli, meth_generic_cli},
     {STR_clone, meth_generic_clone},
@@ -1998,6 +1999,17 @@ long meth_generic_bellVolume(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_char(VObj* self, Packet* result, int argc, Packet argv[]) {
     result->type = PKT_CHR;
     result->info.c = (char)PkInfos2Str(argc, argv)[0];
+    result->canFree = 0;
+    return 1;
+}
+
+/*
+ * charHeight(fontID)
+ * Returns the maximum height of the specified font.
+ */
+long meth_generic_charHeight(VObj* self, Packet* result, int argc, Packet argv[]) {
+    result->info.i = FontMaxHeight(PkInfo2Int(&argv[0]));
+    result->type = PKT_INT;
     result->canFree = 0;
     return 1;
 }

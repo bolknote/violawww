@@ -80,9 +80,10 @@ Topics covered:
 - Primitives: `<RECT>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`
 - Transformations: `<POS>`, `<SIZE>`, `<ROT>` (X/Y/Z with perspective), `<SCALE>`, `<AXIS>`
 - Appearance: `<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>`
+- Interactive: `<BUTTON>` with LABEL, HREF, HINT, colors
 - Complete examples including 3D rotation demo and scene composition
 
-**Not implemented:** Interactive scripting (`<ACTION>`, `<BUTTON>`, inline `<SCRIPT>`), multi-user sync (`SC` attribute).
+**Not implemented:** Interactive scripting (`<ACTION>`, inline `<SCRIPT>`), multi-user sync (`SC` attribute).
 
 Historical sources:
 - [vrmlNotes.txt](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — original design document

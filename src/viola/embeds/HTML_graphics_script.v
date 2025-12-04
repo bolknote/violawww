@@ -1,5 +1,14 @@
 
 	switch (arg[0]) {
+	case "i":
+	case "I":
+	case "T":
+	case "TI":
+	case "TD":
+	case "TT":
+		/* Ignore parser bookkeeping messages */
+		return;
+	break;
 	case "addChild":
 		/* Child primitive registering itself - store in array */
 		childObj = arg[1];
@@ -421,10 +430,12 @@
 										set("FGColor", "black");
 									}
 									/* Center text in button */
+									/* drawText draws from baseline, so we need to account for descent */
 									labelW = textWidth(1, btnLabel);
 									labelH = charHeight(1);
 									textX = shapeX + ((shapeW - labelW) / 2);
-									textY = shapeY + ((shapeH + labelH) / 2) - 3;
+
+									textY = shapeY + ((shapeH - labelH) / 2);
 									/* Shift text when pressed */
 									if (isPressed == 1) {
 										textX = textX + 1;
@@ -541,13 +552,36 @@
 			_pressedButton = "";
 			send(self(), "expose");
 			if (href != "" && href != "0") {
-				loadDoc(href);
+				/* Use www object to load URL */
+				send("www", "show", href);
 			}
 		}
 		return;
 	break;
 	case "mouseMove":
-		/* Show hint for button under mouse (hint stored but not displayed yet) */
+		/* Show hint for button under mouse */
+		mx = arg[1];
+		my = arg[2];
+		for (bi = 0; bi < gfxChildCount; bi++) {
+			btn = gfxChildArr[bi];
+			if (btn != "" && exist(btn) == 1) {
+				if (send(btn, "getShapeType") == "button") {
+					bx = send(btn, "getX");
+					by = send(btn, "getY");
+					bw = send(btn, "getW");
+					bh = send(btn, "getH");
+					if (mx >= bx && mx <= bx + bw && my >= by && my <= by + bh) {
+						hint = send(btn, "getHint");
+						if (hint != "" && hint != "0") {
+							send("www.mesg.tf", "show", hint);
+						}
+						return;
+					}
+				}
+			}
+		}
+		/* Clear hint when not over button */
+		send("www.mesg.tf", "show", "");
 		return;
 	break;
 	}

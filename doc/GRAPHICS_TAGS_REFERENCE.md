@@ -46,8 +46,8 @@ Wei's proposal was an independent parallel effort, not an implementation of VRML
 | 3D Rotation (`<ROT X=...>`, `<ROT Y=...>`) | ✅ Implemented with perspective |
 | Scale (`<SCALE>`) | ✅ Implemented |
 | Axis (`<AXIS>`) | ✅ Implemented |
-| Button (`<BUTTON>`) | ✅ Implemented (visual, click, HREF) |
-| Hint (`<HINT>`) | ⚠️ Stored only (no tooltip display) |
+| Button (`<BUTTON>`) | ✅ Implemented (visual, click, HREF, colors) |
+| Hint (HINT attribute) | ✅ Shown in status bar on hover |
 | Interactive scripting (`<ACTION>`, `<SCRIPT>`) | ❌ Not implemented |
 | Multi-user sync (`SC` attribute) | ❌ Not implemented |
 
@@ -320,11 +320,11 @@ A clickable button within the graphics container.
 |-----------|------|-------------|
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
-| `LABEL` | string | Button text |
-| `HINT` | string | Tooltip text (stored, not displayed) |
+| `LABEL` | string | Button text (centered on button) |
+| `HINT` | string | Tooltip text (shown in status bar on hover) |
 | `HREF` | string | URL to load when clicked |
 
-The button renders with a 3D effect (raised appearance) and "depresses" when clicked.
+The button renders with a 3D effect (raised appearance) and "depresses" when clicked. The label text is vertically centered using font metrics.
 
 **Example:**
 ```html
@@ -352,14 +352,14 @@ The button renders with a 3D effect (raised appearance) and "depresses" when cli
 </BUTTON>
 ```
 
-#### `<HINT>`
-Tooltip text for a button (child element).
+#### HINT attribute
+Tooltip text for a button, displayed in the status bar when the mouse hovers over the button.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `TEXT` | string | Hint text |
+| `HINT` | string | Hint text shown in status bar |
 
-**Note:** Currently stored but not displayed as tooltip.
+**Note:** The hint is displayed in the browser's status bar (message field), not as a floating tooltip.
 
 ---
 

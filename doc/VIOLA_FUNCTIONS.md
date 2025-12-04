@@ -1321,7 +1321,26 @@ Calculates text width.
 - `fontID` (int) - font identifier
 - `text` (string) - text
 
-**Returns:** (int) text width
+**Returns:** (int) text width in pixels
+
+---
+
+### charHeight(fontID)
+Returns the maximum height of a font.
+
+**Parameters:**
+- `fontID` (int) - font identifier (0=fixed, 1=normal, 2=bold, etc.)
+
+**Returns:** (int) font height in pixels
+
+**Example:**
+```c
+/* Center text vertically in a button */
+labelH = charHeight(1);
+textY = buttonY + ((buttonH - labelH) / 2);
+```
+
+**See also:** `textWidth`
 
 ---
 

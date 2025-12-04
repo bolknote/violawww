@@ -464,26 +464,26 @@
 									}
 									drawFillRect(shapeX, shapeY, shapeX + shapeW, shapeY + shapeH);
 								}
-								if (shapeType == "circle") {
-									if (hasBorder == 1) {
-										set("FGColor", shapeBD);
-										drawFillOval(shapeX - 2, shapeY - 2, shapeX + shapeW + 2, shapeY + shapeH + 2);
-									}
-									if (shapeFG != "") {
-										set("FGColor", shapeFG);
-									}
-									drawFillOval(shapeX, shapeY, shapeX + shapeW, shapeY + shapeH);
+							if (shapeType == "circle") {
+								if (hasBorder == 1) {
+									set("FGColor", shapeBD);
+									drawFillOval(shapeX - 2, shapeY - 2, shapeW + 4, shapeH + 4);
 								}
-								if (shapeType == "oval") {
-									if (hasBorder == 1) {
-										set("FGColor", shapeBD);
-										drawFillOval(shapeX - 2, shapeY - 2, shapeX + shapeW + 2, shapeY + shapeH + 2);
-									}
-									if (shapeFG != "") {
-										set("FGColor", shapeFG);
-									}
-									drawFillOval(shapeX, shapeY, shapeX + shapeW, shapeY + shapeH);
+								if (shapeFG != "") {
+									set("FGColor", shapeFG);
 								}
+								drawFillOval(shapeX, shapeY, shapeW, shapeH);
+							}
+							if (shapeType == "oval") {
+								if (hasBorder == 1) {
+									set("FGColor", shapeBD);
+									drawFillOval(shapeX - 2, shapeY - 2, shapeW + 4, shapeH + 4);
+								}
+								if (shapeFG != "") {
+									set("FGColor", shapeFG);
+								}
+								drawFillOval(shapeX, shapeY, shapeW, shapeH);
+							}
 							if (shapeType == "line") {
 								drawLine(shapeX, shapeY, shapeX + shapeW, shapeY + shapeH);
 							}

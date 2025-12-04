@@ -4,23 +4,50 @@
 	case "R":
 		return 0;
 	break;
+	case "D":
+		/* Send rotation to parent primitive */
+		p = parent();
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_rect", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_circle", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_oval", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_line", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_polygon", "getCurrentPrimitive");
+		}
+		if (p != "" && p != "0" && p != "(NULL)") {
+			if (hasX == 1) {
+				send(p, "setRotX", myRotX);
+			}
+			if (hasY == 1) {
+				send(p, "setRotY", myRotY);
+			}
+			if (hasZ == 1) {
+				send(p, "setRotZ", myRotZ);
+			}
+		}
+		return 0;
+	break;
 	case "AA":
 		switch (arg[1]) {
 		case "X":
 			myRotX = float(arg[2]);
 			hasX = 1;
-			/* Send X rotation immediately - only set X, leave others as 0 */
-			send(parent(), "setRotX", myRotX);
 		break;
 		case "Y":
 			myRotY = float(arg[2]);
 			hasY = 1;
-			send(parent(), "setRotY", myRotY);
 		break;
 		case "Z":
 			myRotZ = float(arg[2]);
 			hasZ = 1;
-			send(parent(), "setRotZ", myRotZ);
 		break;
 		}
 		return;
@@ -39,9 +66,9 @@
 	break;
 	case "init":
 		usual();
-		rotX = 0;
-		rotY = 0;
-		rotZ = 0;
+		myRotX = 0;
+		myRotY = 0;
+		myRotZ = 0;
 		hasX = 0;
 		hasY = 0;
 		hasZ = 0;

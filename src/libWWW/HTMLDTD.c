@@ -194,7 +194,7 @@ static attr pos_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
 static attr option_attr[] = {{"CHECKED"}, {"DISABLED"}, {"NAME"}, {"SELECTED"}, {"VALUE"}, {0}};
 
-static attr rect_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr rect_attr[] = {{"ID"}, {"NAME"}, {"PARENT"}, {"X"}, {"Y"}, {"W"}, {"H"}, {"FGCOLOR"}, {"BDCOLOR"}, {0}};
 
 static attr rot_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
@@ -330,6 +330,14 @@ static HTMLElement th_validSubElements[] = {
     HTML_TT,    HTML_U,    HTML_UL,     HTML_UNDER, HTML_VAR,    HTML_VINSERT,
 };
 
+/* Valid children for GRAPHICS container */
+#define graphics_validSubElementsCount 14
+static HTMLElement graphics_validSubElements[] = {
+    HTML_RECT, HTML_CIRCLE, HTML_OVAL, HTML_LINE, HTML_POLYGON, HTML_POINT,
+    HTML_POS, HTML_SIZE, HTML_ROT, HTML_SCALE, HTML_AXIS,
+    HTML_FGCOLOR, HTML_BDCOLOR, HTML_BGCOLOR
+};
+
 #define loose_validSubElementsCount 84
 static HTMLElement loose_validSubElements[] = {
     HTML_A,        HTML_ADDRESS, HTML_AUTHOR,   HTML_B,         HTML_BASE,     HTML_BLOCKQUOTE,
@@ -360,8 +368,8 @@ static HTTag tags[] = {
     {"AXIS", axis_attr, HTML_AXIS_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"B", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
     {"BASE", base_attr, HTML_BASE_ATTRIBUTES, SGML_EMPTY, 0, 0},
-    {"BDCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_MIXED, 0, 0},
-    {"BGCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"BDCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_EMPTY, 0, 0},
+    {"BGCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"BLOCKQUOTE", no_attr, 0, SGML_MIXED, 0, 0},
     {"BODY", no_attr, 0, SGML_MIXED, 0, 0},
     {"BOLD", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
@@ -386,7 +394,7 @@ static HTTag tags[] = {
     {"EMPH", emph_attr, HTML_EMPH_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"ENTRY", entry_attr, HTML_ENTRY_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"EXAMPLE", example_attr, HTML_EXAMPLE_ATTRIBUTES, SGML_LITTERAL, 0, 0},
-    {"FGCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"FGCOLOR", color_attr, HTML_COLOR_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"FIGA", figa_attr, HTML_FIGA_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"FIGCAP", no_attr, 0, SGML_MIXED, 0, 0},
     {"FIGDATA", no_attr, 0, SGML_LITTERAL, 0, 0},
@@ -449,10 +457,10 @@ static HTTag tags[] = {
     {"PLAINTEXT", no_attr, 0, SGML_LITTERAL, 0, 0},
     {"POINT", point_attr, HTML_POINT_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"POLYGON", polygon_attr, HTML_POLYGON_ATTRIBUTES, SGML_MIXED, 0, 0},
-    {"POS", pos_attr, HTML_POS_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"POS", pos_attr, HTML_POS_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"PRE", pre_attr, HTML_PRE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"QUOTE", no_attr, 0, SGML_MIXED, 0, 0},
-    {"RECT", rect_attr, HTML_RECT_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"RECT", rect_attr, HTML_RECT_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"ROT", rot_attr, HTML_ROT_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SAMP", no_attr, 0, SGML_MIXED, 0, 0},
     {"SCALE", scale_attr, HTML_SCALE_ATTRIBUTES, SGML_EMPTY, 0, 0},
@@ -461,7 +469,7 @@ static HTTag tags[] = {
     {"SECTION", section_attr, HTML_SECTION_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SECURITY", security_attr, HTML_SECURITY_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SELECT", select_attr, HTML_SELECT_ATTRIBUTES, SGML_MIXED, 0, 0},
-    {"SIZE", size_attr, HTML_SIZE_ATTRIBUTES, SGML_MIXED, 0, 0},
+    {"SIZE", size_attr, HTML_SIZE_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SQUARE", square_attr, HTML_SQUARE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"STRONG", no_attr, 0, SGML_MIXED, 0, 0},
     {"STYLE", no_attr, 0, SGML_CDATA, 0, 0},

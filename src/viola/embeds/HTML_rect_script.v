@@ -1,5 +1,12 @@
 
 	switch (arg[0]) {
+	case "setCurrentPrimitive":
+		_currentPrimitive = arg[1];
+		return;
+	break;
+	case "getCurrentPrimitive":
+		return _currentPrimitive;
+	break;
 	case "getShapeType":
 		return "rect";
 	break;
@@ -57,10 +64,23 @@
 	break;
 	case "D":
 		/* Register with parent container */
-		p = parent();
-		/* Only register if parent is a GRAPHICS container */
-		if (findPattern(p, "HTML_graphics") >= 0) {
-			send(p, "addChild", self());
+		/* If PARENT attribute was set, search for that object */
+		if (_parentID != "" && _parentID != "0") {
+			/* Look up GRAPHICS by class registry */
+			parentObj = send("HTML_graphics", "findGfx", _parentID);
+			if (parentObj != "" && parentObj != "0" && exist(parentObj) == 1) {
+				send(parentObj, "addChild", self());
+			}
+		} else {
+			/* Use saved parent from AA */
+			p = _savedParent;
+			/* If still no parent, try getCurrentGfx */
+			if (p == "" || p == "0" || p == "(NULL)") {
+				p = send("HTML_graphics", "getCurrentGfx");
+			}
+			if (p != "" && p != "0" && p != "(NULL)" && findPattern(p, "HTML_graphics") >= 0) {
+				send(p, "addChild", self());
+			}
 		}
 		return 1; /* Keep object alive */
 	break;
@@ -68,10 +88,44 @@
 		return 0;
 	break;
 	case "AA":
+		/* Register self as current primitive for child tags */
+		send("HTML_rect", "setCurrentPrimitive", self());
+		/* Save parent on first attribute - parent() works during AA */
+		if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
+			_savedParent = parent();
+			/* If parent() failed, try getCurrentGfx from HTML_graphics class */
+			if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
+				_savedParent = send("HTML_graphics", "getCurrentGfx");
+			}
+		}
 		switch (arg[1]) {
 		case "ID":
 		case "NAME":
 			tagID = arg[2];
+		break;
+		case "PARENT":
+			/* Find GRAPHICS by ID and register with it */
+			parentID = arg[2];
+			/* Store for later use in D handler */
+			_parentID = parentID;
+		break;
+		case "X":
+			posX = int(arg[2]);
+		break;
+		case "Y":
+			posY = int(arg[2]);
+		break;
+		case "W":
+			sizeX = int(arg[2]);
+		break;
+		case "H":
+			sizeY = int(arg[2]);
+		break;
+		case "FGCOLOR":
+			fgColor = arg[2];
+		break;
+		case "BDCOLOR":
+			bdColor = arg[2];
 		break;
 		}
 		return;
@@ -155,6 +209,8 @@
 	break;
 	case "init":
 		usual();
+		/* Save parent now - it may become NULL later */
+		_savedParent = parent();
 		posX = 0;
 		posY = 0;
 		sizeX = 0;

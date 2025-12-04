@@ -1,5 +1,12 @@
 
 	switch (arg[0]) {
+	case "setCurrentPrimitive":
+		_currentPrimitive = arg[1];
+		return;
+	break;
+	case "getCurrentPrimitive":
+		return _currentPrimitive;
+	break;
 	case "getShapeType":
 		return "polygon";
 	break;
@@ -54,8 +61,11 @@
 	break;
 	case "D":
 		/* Register with parent container */
-		p = parent();
-		if (findPattern(p, "HTML_graphics") >= 0) {
+		p = _savedParent;
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_graphics", "getCurrentGfx");
+		}
+		if (p != "" && p != "0" && p != "(NULL)" && findPattern(p, "HTML_graphics") >= 0) {
 			send(p, "addChild", self());
 		}
 		return 1; /* Keep object alive */
@@ -64,6 +74,15 @@
 		return 0;
 	break;
 	case "AA":
+		/* Register self as current primitive for child tags */
+		send("HTML_polygon", "setCurrentPrimitive", self());
+		/* Save parent on first attribute */
+		if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
+			_savedParent = parent();
+			if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
+				_savedParent = send("HTML_graphics", "getCurrentGfx");
+			}
+		}
 		switch (arg[1]) {
 		case "ID":
 		case "NAME":
@@ -145,6 +164,7 @@
 		pointCount = 0;
 		fgColor = "black";
 		bdColor = "";
+		_savedParent = "";
 		_rotX = 0.0;
 		_rotY = 0.0;
 		_rotZ = 0.0;

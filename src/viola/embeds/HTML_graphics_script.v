@@ -1,15 +1,20 @@
 
 	switch (arg[0]) {
 	case "addChild":
-		/* Child primitive registering itself - store in script variable */
+		/* Child primitive registering itself - store in array */
 		childObj = arg[1];
-		if (gfxChildCount == 0) {
-			gfxChildren = childObj;
-		} else {
-			gfxChildren = concat(gfxChildren, " ", childObj);
-		}
+		gfxChildArr[gfxChildCount] = childObj;
 		gfxChildCount = gfxChildCount + 1;
 		return;
+	break;
+	case "setCurrentGfx":
+		/* Set current graphics container for children to find */
+		_currentGfx = arg[1];
+		return;
+	break;
+	case "getCurrentGfx":
+		/* Return current graphics container */
+		return _currentGfx;
 	break;
 	case "setBGColor":
 		/* Set background color from BGCOLOR child tag */
@@ -19,32 +24,12 @@
 	case "expose":
 		/* Let parent class draw background first */
 		usual();
-		/* Container draws all children using own window */
-		childList = gfxChildren;
-		if (gfxChildCount > 0 && isBlank(childList) == 0) {
-			/* Iterate through all children (space-separated list) */
-			numChildren = 1;
-			/* Count spaces to get number of children */
-			for (idx = 0; idx < strlen(childList); idx++) {
-				if (nthChar(childList, idx) == " ") {
-					numChildren = numChildren + 1;
-				}
-			}
-			
-			/* Draw each child */
-			startIdx = 0;
-			for (childNum = 0; childNum < numChildren; childNum++) {
-				/* Find next space or end */
-				endIdx = startIdx;
-				while (endIdx < strlen(childList) && nthChar(childList, endIdx) != " ") {
-					endIdx = endIdx + 1;
-				}
-				
-				/* Extract child name */
-				if (endIdx > startIdx) {
-					childName = nthChar(childList, startIdx, endIdx - 1);
-					
-					if (exist(childName) == 1) {
+		/* Container draws all children using array */
+		if (gfxChildCount > 0) {
+			/* Draw each child from array */
+			for (childNum = 0; childNum < gfxChildCount; childNum++) {
+				childName = gfxChildArr[childNum];
+				if (childName != "" && exist(childName) == 1) {
 						/* Query child for shape type, color, and transforms */
 						shapeType = send(childName, "getShapeType");
 						shapeFG = send(childName, "getFG");
@@ -396,9 +381,7 @@
 						}
 					}
 				}
-				startIdx = endIdx + 1;
 			}
-		}
 		return;
 	break;
 	case "D":
@@ -430,6 +413,11 @@
 		return vspan;
 	break;
 	case "AA":
+		/* On first attribute, register self as current graphics container */
+		if (_registeredAsCurrent == 0) {
+			_registeredAsCurrent = 1;
+			send("HTML_graphics", "setCurrentGfx", self());
+		}
 		switch (arg[1]) {
 		case "ID":
 		case "NAME":
@@ -462,7 +450,7 @@
 		gWidth = 0;
 		gHeight = 0;
 		gfxChildCount = 0;
-		gfxChildren = "";
+		_registeredAsCurrent = 0;
 		/* Use document colors */
 		SGMLBuildDoc_setColors();
 		return;

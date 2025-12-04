@@ -424,7 +424,7 @@ Attribute numbers
 
 #define HTML_RECT_ID 0
 #define HTML_RECT_NAME 1
-#define HTML_RECT_ATTRIBUTES 2
+#define HTML_RECT_ATTRIBUTES 9
 
 #define HTML_ROT_SC 0
 #define HTML_ROT_X 1

@@ -1,6 +1,7 @@
 
 	switch (arg[0]) {
 	case "D":
+		print("[OVER D] parent=", parent(), "\n");
 		set("y", -10);
 		send(parent(), "over");
 		return 0;

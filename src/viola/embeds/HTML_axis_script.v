@@ -4,24 +4,40 @@
 	case "R":
 		return 0;
 	break;
+	case "D":
+		/* Send axis to parent primitive */
+		p = parent();
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_rect", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_circle", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_oval", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_line", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_polygon", "getCurrentPrimitive");
+		}
+		if (p != "" && p != "0" && p != "(NULL)") {
+			send(p, "setAxis", axisX, axisY, axisZ);
+		}
+		return 0;
+	break;
 	case "AA":
 		switch (arg[1]) {
 		case "X":
 			axisX = int(arg[2]);
-			hasX = 1;
 		break;
 		case "Y":
 			axisY = int(arg[2]);
-			hasY = 1;
 		break;
 		case "Z":
 			axisZ = int(arg[2]);
-			hasZ = 1;
 		break;
-		}
-		/* Send whenever we have at least X/Y; Z is optional */
-		if (hasX == 1 && hasY == 1) {
-			send(parent(), "setAxis", axisX, axisY, axisZ);
 		}
 		return;
 	break;
@@ -42,9 +58,6 @@
 		axisX = 0;
 		axisY = 0;
 		axisZ = 0;
-		hasX = 0;
-		hasY = 0;
-		hasZ = 0;
 		return;
 	break;
 	}

@@ -4,6 +4,30 @@
 	case "R":
 		return 0;
 	break;
+	case "D":
+		/* Send position to parent primitive */
+		/* Try to find parent via getCurrentPrimitive from primitive classes */
+		p = parent();
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_rect", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_circle", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_oval", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_line", "getCurrentPrimitive");
+		}
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_polygon", "getCurrentPrimitive");
+		}
+		if (p != "" && p != "0" && p != "(NULL)") {
+			send(p, "setPos", posX, posY);
+		}
+		return 0;
+	break;
 	case "AA":
 		switch (arg[1]) {
 		case "X":
@@ -11,11 +35,9 @@
 		break;
 		case "Y":
 			posY = int(arg[2]);
-			/* Y is typically last - send to parent now */
-			send(parent(), "setPos", posX, posY);
 		break;
 		case "Z":
-			posZ = int(arg[2]); /* ignored for 2D */
+			posZ = int(arg[2]);
 		break;
 		}
 		return;

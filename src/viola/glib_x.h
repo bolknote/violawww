@@ -115,7 +115,13 @@ extern GC gc_copy0;
 extern GC gc_or;
 extern GC gc_dash;
 extern GC gc_mesh;
+extern GC gc_link;         /* color for unvisited links */
+extern GC gc_link_visited; /* color for visited links */
 extern GC gc_subWindow;
+
+/* Update link colors from STG stylesheet */
+void GLSetLinkColor(char* colorname);
+void GLSetLinkVisitedColor(char* colorname);
 extern int mouseCursorIsBusy;
 extern short* bits;
 extern int bits_width, bits_height;

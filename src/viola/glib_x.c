@@ -193,6 +193,8 @@ GC gc_copy0;
 GC gc_or;
 GC gc_dash;
 GC gc_mesh;
+GC gc_link;         /* color for unvisited links */
+GC gc_link_visited; /* color for visited links */
 GC gc_subWindow;
 
 /****************************************************************************
@@ -695,6 +697,32 @@ int GLInit(Display* dpy, Screen* scrn)
 
     gc_mesh = XCreateGC(display, rootWindow, GCForeground | GCBackground | GCFillStyle | GCStipple,
                         &gcvalues);
+
+    /* gc_link - default blue for unvisited links */
+    {
+        XColor linkColor;
+        if (XParseColor(display, colormap, "blue", &linkColor) &&
+            XAllocColor(display, colormap, &linkColor)) {
+            gcvalues.foreground = linkColor.pixel;
+        } else {
+            gcvalues.foreground = FGPixel;
+        }
+        gcvalues.background = BGPixel;
+        gc_link = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
+    }
+
+    /* gc_link_visited - default purple for visited links */
+    {
+        XColor visitedColor;
+        if (XParseColor(display, colormap, "purple", &visitedColor) &&
+            XAllocColor(display, colormap, &visitedColor)) {
+            gcvalues.foreground = visitedColor.pixel;
+        } else {
+            gcvalues.foreground = FGPixel;
+        }
+        gcvalues.background = BGPixel;
+        gc_link_visited = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
+    }
 
     /* subwindow */
     gcvalues.function = GXinvert;
@@ -2323,6 +2351,28 @@ int GLSetFGColor(VObj* self, char* colorname)
         return 0;
 
     return 1;
+}
+
+/* Set color for unvisited links from STG stylesheet */
+void GLSetLinkColor(char* colorname)
+{
+    XColor linkColor;
+    if (colorname && colorname[0] &&
+        XParseColor(display, colormap, colorname, &linkColor) &&
+        XAllocColor(display, colormap, &linkColor)) {
+        XSetForeground(display, gc_link, linkColor.pixel);
+    }
+}
+
+/* Set color for visited links from STG stylesheet */
+void GLSetLinkVisitedColor(char* colorname)
+{
+    XColor visitedColor;
+    if (colorname && colorname[0] &&
+        XParseColor(display, colormap, colorname, &visitedColor) &&
+        XAllocColor(display, colormap, &visitedColor)) {
+        XSetForeground(display, gc_link_visited, visitedColor.pixel);
+    }
 }
 
 int GLSetCRColor(VObj* self, char* colorname)

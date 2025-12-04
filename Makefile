@@ -277,7 +277,8 @@ VIOLA_SRCS = $(VIOLA_DIR)/DefaultStyles.c $(VIOLA_DIR)/ast.c $(VIOLA_DIR)/attr.c
              $(VIOLA_DIR)/sys.c $(VIOLA_DIR)/tfed.c $(VIOLA_DIR)/tfed2.c \
              $(VIOLA_DIR)/vlist.c $(VIOLA_DIR)/HTML_share.c $(VIOLA_DIR)/htmath.c \
              $(VIOLA_DIR)/viola.c $(VIOLA_DIR)/msgHandler.c $(VIOLA_DIR)/objs.c \
-             $(VIOLA_DIR)/HTML_style.c $(VIOLA_DIR)/memory_debug.c
+             $(VIOLA_DIR)/HTML_style.c $(VIOLA_DIR)/memory_debug.c \
+             $(VIOLA_DIR)/vw_stubs.c
 VIOLA_OBJS = $(VIOLA_SRCS:.c=.o)
 
 # macOS-specific: Objective-C sound library
@@ -337,8 +338,8 @@ VW_SRCS = $(VW_DIR)/box.c $(VW_DIR)/callbacks.c $(VW_DIR)/catalog.c \
           $(VW_DIR)/selection.c $(VW_DIR)/vw.c
 VW_OBJS = $(VW_SRCS:.c=.o)
 
-# VW needs all Viola objects except main.o
-VIOLA_OBJS_NO_MAIN = $(filter-out $(VIOLA_DIR)/main.o, $(VIOLA_OBJS))
+# VW needs all Viola objects except main.o and vw_stubs.o (stubs are for standalone viola only)
+VIOLA_OBJS_NO_MAIN = $(filter-out $(VIOLA_DIR)/main.o $(VIOLA_DIR)/vw_stubs.o, $(VIOLA_OBJS))
 
 .PHONY: vw
 vw: $(VW)

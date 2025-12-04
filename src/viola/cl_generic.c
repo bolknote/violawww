@@ -48,6 +48,10 @@
 #include "utils.h"
 #include "vlist.h"
 #include <ctype.h>
+
+/* For isURLVisited - access to document history */
+#include "../vw/vw.h"
+#include "../vw/history.h"
 #include <math.h>
 #include <stdlib.h>
 #include <sys/file.h>
@@ -336,6 +340,9 @@ MethodInfo meths_generic[] = {
     {STR_self, meth_generic_self},
     {STR_selectionInfo, meth_generic_selectionInfo},
     {STR_sendToInterface, meth_generic_sendToInterface},
+    {STR_isURLVisited, meth_generic_isURLVisited},
+    {STR_setLinkColor, meth_generic_setLinkColor},
+    {STR_setLinkVisitedColor, meth_generic_setLinkVisitedColor},
     {STR_seta, meth_generic_set},
     {STR_setMouse, meth_generic_setMouse},
     {STR_setResource, meth_generic_setResource},
@@ -4162,6 +4169,96 @@ long meth_generic_sendToInterface(VObj* self, Packet* result, int argc, Packet a
         free(arg[i]);
     free(arg);
 
+    return 1;
+}
+
+/*
+ * isURLVisited(url)
+ *
+ * Check if URL is in the browsing history (for traversed link color).
+ * Returns 1 if visited, 0 if not.
+ */
+long meth_generic_isURLVisited(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* url;
+    DocViewInfo* dvi;
+    
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 0;
+    
+    if (argc < 1)
+        return 1;
+    
+    url = PkInfo2Str(&argv[0]);
+    if (!url || !*url)
+        return 1;
+    
+    /* Check all document views for this URL in history */
+    if (docViews) {
+        Box* bp = docViews;
+        while (bp) {
+            dvi = (DocViewInfo*)bp->data;
+            if (dvi && isURLInHistory(dvi, url)) {
+                result->info.i = 1;
+                return 1;
+            }
+            bp = bp->next;
+        }
+    }
+    
+    return 1;
+}
+
+/*
+ * setLinkColor(colorname)
+ *
+ * Set the color for unvisited links.
+ * Called from STG stylesheet processing.
+ */
+long meth_generic_setLinkColor(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* colorname;
+    
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 0;
+    
+    if (argc < 1)
+        return 1;
+    
+    colorname = PkInfo2Str(&argv[0]);
+    if (colorname && *colorname) {
+        GLSetLinkColor(colorname);
+        result->info.i = 1;
+    }
+    
+    return 1;
+}
+
+/*
+ * setLinkVisitedColor(colorname)
+ *
+ * Set the color for visited links.
+ * Called from STG stylesheet processing.
+ */
+long meth_generic_setLinkVisitedColor(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* colorname;
+    
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 0;
+    
+    if (argc < 1)
+        return 1;
+    
+    colorname = PkInfo2Str(&argv[0]);
+    if (colorname && *colorname) {
+        GLSetLinkVisitedColor(colorname);
+        result->info.i = 1;
+    }
+    
     return 1;
 }
 

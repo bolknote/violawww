@@ -3162,6 +3162,23 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
             }
             break;
 
+        /*
+         * Visited link - treat same as 'b' (button/link)
+         * The actual visited check happens at render time
+         */
+        case 'v':
+            c = *(++(buildInfo->str));
+            if (c == STAG_OPEN) {
+                buildInfo->flags |= MASK_BUTTON;
+                ++(buildInfo->str);
+            } else if (c == STAG_CLOSE) {
+                buildInfo->flags &= ~MASK_BUTTON;
+                ++(buildInfo->str);
+            } else {
+                goto foobar;
+            }
+            break;
+
             /*
              * xrule
              */
@@ -5002,6 +5019,31 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                             XFillRectangle(display, w, gc_fg, segpx, localYOffset, segendpx - segpx,
                                            currentp->maxFontHeight);
                             usegc = gc_invert;
+                        } else if (flags & MASK_BUTTON) {
+                            /* Check if link is visited at render time */
+                            TFChar* search_tfcp = segheadtfcp;
+                            char* url = NULL;
+                            int isVisited = 0;
+                            for (; TFCChar(search_tfcp); search_tfcp++) {
+                                int tagID = TFCTagID(search_tfcp);
+                                if (tagID > 0 && tagID < currentp->tagInfoCount) {
+                                    url = (char*)currentp->tagInfo[tagID].info;
+                                    if (url && *url) break;
+                                }
+                            }
+                            if (url && *url) {
+                                extern long meth_generic_isURLVisited(VObj* self, Packet* result, int argc, Packet argv[]);
+                                Packet pkt_result, pkt_argv[1];
+                                pkt_result.type = PKT_INT;
+                                pkt_result.info.i = 0;
+                                pkt_result.canFree = 0;
+                                pkt_argv[0].type = PKT_STR;
+                                pkt_argv[0].info.s = url;
+                                pkt_argv[0].canFree = 0;
+                                meth_generic_isURLVisited(NULL, &pkt_result, 1, pkt_argv);
+                                isVisited = pkt_result.info.i;
+                            }
+                            usegc = isVisited ? gc_link_visited : gc_link;
                         } else
                             usegc = gc_fg;
                         XDrawText(display, w, usegc, segpx, *fontyoffset, &item, 1);

@@ -1844,6 +1844,33 @@ Sends a message to the program interface.
 
 ---
 
+### isURLVisited(url)
+Checks if a URL has been visited (is in the browsing history).
+
+This function is used internally for `traversedForegroundColor` support in STG stylesheets, but can also be called directly from Viola scripts.
+
+**Parameters:**
+- `url` (string) - the URL to check
+
+**Returns:** (int) 1 if visited, 0 if not visited
+
+**Example:**
+```
+if (isURLVisited("http://www.example.com/page.html")) {
+    /* User has visited this page before */
+    set("FGColor", "purple");
+} else {
+    /* Unvisited link */
+    set("FGColor", "blue");
+}
+```
+
+**Note:** In standalone Viola (without the VW Motif interface), this function always returns 0 since there is no persistent browsing history.
+
+**See also:** `traversedForegroundColor` in STG_REFERENCE.md
+
+---
+
 ### activeHelp([message])
 Displays a message in the active help field.
 

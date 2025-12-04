@@ -44,5 +44,6 @@ void showHistoryCB(Widget widget, XtPointer clientData, XtPointer callData);
 void hideHistory(Widget button, XtPointer clientData, XtPointer callData);
 void historySelect(DocViewInfo* dvi, char* url);
 void historySelectCB(Widget list, XtPointer clientData, XtPointer callData);
+int isURLInHistory(DocViewInfo* dvi, char* url);
 
 #endif /* _HISTORY_H_ */

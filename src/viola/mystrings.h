@@ -1,6 +1,9 @@
 /*
  *     mystrings.h
  */
+#ifndef _MYSTRINGS_H_
+#define _MYSTRINGS_H_
+
 #define SaveString saveString
 #define VSaveString(group, s) saveString(s)
 
@@ -159,3 +162,5 @@ char* enBracket(char* str);
 char* deBracket(char* str);
 char* listItem(char* list, int li, int hi);
 char* extractWord(char* text, long li, long hi, char* retStr);
+
+#endif /* _MYSTRINGS_H_ */

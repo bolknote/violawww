@@ -762,6 +762,19 @@ _Bool compareDocViewShell(void *vkey, void *vdata)
     return 0;
 }
 
+_Bool compareDocViewCloneID(void *vkey, void *vdata)
+{
+    long* cloneID = (long*)vkey;
+    DocViewInfo* dvData = (DocViewInfo*)vdata;
+
+    if (!vkey || !vdata)
+        return 0;
+
+    if (*cloneID == dvData->cloneID)
+        return 1;
+    return 0;
+}
+
 void freeDocViewInfo(void* vdvi) {
     DocViewInfo* dvi = (DocViewInfo*)vdvi;
 

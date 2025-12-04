@@ -12,8 +12,15 @@
 			else tt = compressSpaces(get("label"));
 
 			if (url) {
+				/* Use \v( for visited links, \b( for unvisited */
+				visited = isURLVisited(url);
+			if (visited == 1) {
+				t = concat("\\v(", tt,
+					"\\v)\\e(", HTTPEncodeURL(url), ") ");
+			} else {
 				t = concat("\\b(", tt,
 					"\\b)\\e(", HTTPEncodeURL(url), ") ");
+			}
 				url = 0;
 				return t;
 			} else {

@@ -126,6 +126,38 @@ void historySelect(DocViewInfo* dvi, char* url) {
     */
 }
 
+int isURLInHistory(DocViewInfo* dvi, char* url) {
+    int i;
+    size_t urlLen, histLen;
+    
+    if (!dvi || !url || !dvi->historyList)
+        return 0;
+    
+    urlLen = strlen(url);
+    
+    for (i = 0; i < dvi->nHistoryItems; i++) {
+        if (!dvi->historyList[i])
+            continue;
+            
+        /* Exact match */
+        if (!strcmp(url, dvi->historyList[i])) {
+            return 1;
+        }
+        
+        /* For relative URLs, check if history entry ends with the URL */
+        /* e.g. url="page.html" matches "file://host/path/page.html" */
+        histLen = strlen(dvi->historyList[i]);
+        if (histLen > urlLen) {
+            char* suffix = dvi->historyList[i] + histLen - urlLen;
+            /* Check that URL matches the end and is preceded by '/' */
+            if (!strcmp(url, suffix) && *(suffix - 1) == '/') {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 void setHistoryList(DocViewInfo* dvi, char* newList[], int numItems) {
     int i;
     XmStringTable listItems = NULL;
@@ -196,8 +228,11 @@ Widget createHistoryDialog(DocViewInfo* dvi) {
     XtSetArg(args[n], XmNautoUnmanage, FALSE);
     n++;
 
-    form = XmCreateFormDialog(dvi->shell, "History Manager", args, (Cardinal)n);
+    form = XmCreateFormDialog(dvi->shell, "historyDialog", args, (Cardinal)n);
     XtVaSetValues(form, XmNhorizontalSpacing, 6, XmNverticalSpacing, 6, NULL);
+    
+    /* Set window title for the dialog shell */
+    XtVaSetValues(XtParent(form), XmNtitle, "History Manager", NULL);
 
     labelForm = XtVaCreateManagedWidget(
         "labelForm", xmFormWidgetClass, form, XmNhorizontalSpacing, 4, XmNverticalSpacing, 4,

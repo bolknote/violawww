@@ -9,6 +9,14 @@
 			STG_clean(0/*useless arg*/);
 			localFile = HTTPGet(href);
 			loadSTG(localFile);
+			/* Apply link colors from STG */
+			tagPtr = STG_tagPtr("A");
+			if (tagPtr) {
+				fc = STG_attr(tagPtr, "FGColor");
+				if (fc) setLinkColor(fc);
+				tc = STG_attr(tagPtr, "traversedForegroundColor");
+				if (tc) setLinkVisitedColor(tc);
+			}
 			oarg = 0;
 			oargc = 0;
 		break;

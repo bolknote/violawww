@@ -1219,6 +1219,12 @@ strNIntPair symList[] = {STR_BCard,
                          "baseImageHeight",
                          STR_sendToInterface,
                          "sendToInterface", /* Scott: for motif */
+                         STR_isURLVisited,
+                         "isURLVisited", /* Check if URL is in history */
+                         STR_setLinkColor,
+                         "setLinkColor", /* Set color for unvisited links */
+                         STR_setLinkVisitedColor,
+                         "setLinkVisitedColor", /* Set color for visited links */
                          0,
                          NULL};
 

@@ -19,7 +19,7 @@ typedef struct TFChar {
     unsigned char c;
     unsigned short fontID;  /* Supports up to 65535 fonts/images */
     unsigned char tagID;
-    unsigned char flags;
+    unsigned short flags;
 } TFChar;
 
 /* This should be replaced with generalized viola objects
@@ -75,7 +75,8 @@ typedef struct TagInfo {
 #define MASK_REVERSE (1 << 1)    /* reverse video	*/
 /*#define MASK_UNDER	(1<<2)*/ /* underline		*/
 #define MASK_RELIEF (1 << 2)     /* for hypertext links	*/
-#define MASK_BUTTON (1 << 3)     /* fake button 		*/
+#define MASK_BUTTON (1 << 3)     /* fake button (unvisited link) */
+#define MASK_VISITED (1 << 8)    /* visited link */
 /*#define MASK_XRULE	(1<<4)*/ /* horizontal rule 	*/
 #define MASK_OBJ (1 << 4)        /* object be here 	*/
 #define MASK_NL (1 << 5)         /* really a newline	*/

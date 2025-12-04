@@ -326,6 +326,42 @@ Sets the border color (used with `border` attribute).
 (SECTION BDColor=red border=1)
 ```
 
+#### `traversedForegroundColor=<color>` - Visited Link Color
+
+Sets the text color for **visited (traversed) links**. This is the ViolaWWW equivalent of CSS's `:visited` pseudo-class.
+
+```
+(A
+    FGColor=red
+    traversedForegroundColor=blue
+)
+```
+
+**How it works**:
+- `FGColor` sets the color for unvisited links
+- `traversedForegroundColor` sets the color for links the user has already clicked
+- ViolaWWW checks the browsing history to determine if a link has been visited
+
+**CSS Equivalent**:
+
+```css
+a:link    { color: red; }   /* FGColor */
+a:visited { color: blue; }  /* traversedForegroundColor */
+```
+
+**Historical Note**: The term "traversed" was used in early web browsers (including ViolaWWW, 1992-1994) to describe links that the user had "traversed" or navigated through. This predates the CSS `:visited` terminology.
+
+**Original Source**: This attribute was found in the original ViolaWWW stylesheet from Pei Wei's archives:
+- [hmml.stg (Web Archive, 2004)](https://web.archive.org/web/20040329164901/http://www.xcf.berkeley.edu/~wei/viola/styles/hmml.stg)
+
+**Viola Function**: You can also programmatically check if a URL has been visited using the `isURLVisited(url)` function in Viola scripts:
+
+```
+if (isURLVisited("http://example.com/")) {
+    /* URL has been visited */
+}
+```
+
 ### Font Attributes
 
 #### `fontSize=<size>` - Font Size
@@ -480,6 +516,7 @@ Color when blink is in "off" state.
     
     (A
         FGColor=blue
+        traversedForegroundColor=purple
     )
     
     (CODE
@@ -489,6 +526,8 @@ Color when blink is in "off" state.
     )
 )
 ```
+
+**Note**: In this example, unvisited links appear blue, and visited links appear purple (similar to classic web browser defaults).
 
 ### Example 2: Context-Sensitive Styles
 
@@ -884,7 +923,8 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
    
 3. **Selector specificity**: No complex selectors like CSS (e.g., no `>`, `+`, `~` combinators)
 
-4. **Pseudo-classes**: No `:hover`, `:active`, `:visited` support
+4. **Pseudo-classes**: No `:hover`, `:active` support
+   - **Note**: Visited link styling IS supported via `traversedForegroundColor` attribute (see below)
 
 5. **Dynamic updates**: Stylesheets are loaded at document parse time, not dynamically
 

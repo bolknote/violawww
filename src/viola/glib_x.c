@@ -1566,14 +1566,15 @@ int GLPaintTextTransformed(Window w, GC gc, int fontID, int x0, int y0,
         return GLPaintText(w, gc, fontID, x0, y0, str);
     }
     
-    /* Create a pixmap with alpha channel for rotated text */
-    /* For rotated text, we need space for the diagonal */
+    /* Create a pixmap with alpha channel for transformed text */
+    /* Need space for diagonal (rotation) and scale */
     double diagonal = sqrt((double)(textWidth * textWidth + textHeight * textHeight));
     double maxScale = (scaleX > scaleY) ? scaleX : scaleY;
-    int pixSize = (int)(diagonal * maxScale) + 20;
-    if (pixSize < textWidth + 20) pixSize = textWidth + 20;
+    if (maxScale < 1.0) maxScale = 1.0;
+    int pixSize = (int)(diagonal * maxScale * 1.5) + 40;
+    if (pixSize < (int)(textWidth * maxScale) + 40) pixSize = (int)(textWidth * maxScale) + 40;
     if (pixSize < 1) pixSize = 1;
-    if (pixSize > 500) pixSize = 500;  /* Reasonable limit */
+    if (pixSize > 1000) pixSize = 1000;  /* Reasonable limit */
     
     /* Find ARGB32 format for alpha support */
     XRenderPictFormat* argbFormat = XRenderFindStandardFormat(display, PictStandardARGB32);
@@ -1666,18 +1667,25 @@ int GLPaintTextTransformed(Window w, GC gc, int fontID, int x0, int y0,
         cy = pixSize / 2.0;
     }
     
-    /* Transform: translate to origin, rotate, translate back */
-    /* Combined matrix for rotation around (cx,cy):
-     * [cosR, sinR, cx - cx*cosR - cy*sinR]
-     * [-sinR, cosR, cy + cx*sinR - cy*cosR]
-     * [0, 0, 1]
+    /* Transform: translate to origin, scale, rotate, translate back */
+    /* XRender transform is inverse (dst->src), so we use inverse operations */
+    /* Combined matrix for scale + rotation around (cx,cy):
+     * Scale factors are inverted (1/scale) because of inverse transform
      */
-    double trX = cx - cx * cosR - cy * sinR;
-    double trY = cy + cx * sinR - cy * cosR;
+    double invSX = 1.0 / scaleX;
+    double invSY = 1.0 / scaleY;
+    
+    /* Matrix: translate(-cx,-cy) * rotate(-angle) * scale(1/sx,1/sy) * translate(cx,cy) */
+    double a = cosR * invSX;
+    double b = sinR * invSX;
+    double c = -sinR * invSY;
+    double d = cosR * invSY;
+    double trX = cx - cx * a - cy * c;
+    double trY = cy - cx * b - cy * d;
     
     XTransform xform = {{
-        { XDoubleToFixed(cosR), XDoubleToFixed(sinR), XDoubleToFixed(trX) },
-        { XDoubleToFixed(-sinR), XDoubleToFixed(cosR), XDoubleToFixed(trY) },
+        { XDoubleToFixed(a), XDoubleToFixed(c), XDoubleToFixed(trX) },
+        { XDoubleToFixed(b), XDoubleToFixed(d), XDoubleToFixed(trY) },
         { XDoubleToFixed(0), XDoubleToFixed(0), XDoubleToFixed(1) }
     }};
     XRenderSetPictureTransform(display, srcPic, &xform);

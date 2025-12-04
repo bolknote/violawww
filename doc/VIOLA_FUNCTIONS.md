@@ -1586,17 +1586,19 @@ Draws text at the specified position.
 
 ---
 
-### drawTextTransformed(x, y, fontID, text, rotZ, scaleX, scaleY)
+### drawTextTransformed(x, y, fontID, text, rotZ, scaleX, scaleY [, axisX, axisY])
 Draws text with rotation and scaling using XRender extension.
 
 **Parameters:**
-- `x` (int) - x-coordinate (center of transformation)
-- `y` (int) - y-coordinate (center of transformation)
+- `x` (int) - x-coordinate (text position)
+- `y` (int) - y-coordinate (text position)
 - `fontID` (int) - font identifier
 - `text` (string) - text to draw
 - `rotZ` (float) - rotation angle in degrees (around Z axis)
 - `scaleX` (float) - horizontal scale factor (1.0 = normal)
 - `scaleY` (float) - vertical scale factor (1.0 = normal)
+- `axisX` (int, optional) - x-coordinate of rotation axis (default: center of text)
+- `axisY` (int, optional) - y-coordinate of rotation axis (default: center of text)
 
 **Returns:** (int) 1 on success
 
@@ -1604,9 +1606,12 @@ Draws text with rotation and scaling using XRender extension.
 ```
 /* Draw text rotated 45 degrees, scaled 1.5x */
 drawTextTransformed(100, 100, 1, "Hello", 45.0, 1.5, 1.5);
+
+/* Draw text rotated around custom point */
+drawTextTransformed(100, 100, 1, "Pivot", 30.0, 1.0, 1.0, 50, 50);
 ```
 
-**Note:** Falls back to regular drawText if no transformation is needed or XRender is unavailable.
+**Note:** Falls back to regular drawText if no transformation is needed or XRender is unavailable. If axisX/axisY are not specified, rotation occurs around the center of the text.
 
 ---
 

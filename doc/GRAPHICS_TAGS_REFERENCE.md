@@ -207,19 +207,17 @@ A point defining a polygon vertex.
 | `Y` | number | Y coordinate |
 
 #### `<TEXT>`
-Text within a graphics container. Supports transformations (rotation, scaling) via XRender.
+Text within a graphics container. Supports transformations (rotation, scaling) via XRender extension.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `ID` | string | Unique identifier |
 | `NAME` | string | Object name |
-
-The text content is placed between the opening and closing tags.
+| `LABEL` | string | Text content to display |
 
 **Example:**
 ```html
-<TEXT ID="label1">
-  Hello World
+<TEXT ID="label1" LABEL="Hello World">
   <POS X=50 Y=100></POS>
   <FGCOLOR NAME="blue"></FGCOLOR>
 </TEXT>
@@ -227,8 +225,7 @@ The text content is placed between the opening and closing tags.
 
 **With rotation:**
 ```html
-<TEXT ID="rotated">
-  Rotated Text
+<TEXT ID="rotated" LABEL="Rotated Text">
   <POS X=100 Y=80></POS>
   <FGCOLOR NAME="red"></FGCOLOR>
   <ROT Z=45>
@@ -237,13 +234,34 @@ The text content is placed between the opening and closing tags.
 
 **With scaling:**
 ```html
-<TEXT ID="scaled">
-  Large Text
+<TEXT ID="scaled" LABEL="Large Text">
   <POS X=50 Y=50></POS>
   <FGCOLOR NAME="green"></FGCOLOR>
   <SCALE X=2 Y=2>
 </TEXT>
 ```
+
+**With rotation + scaling:**
+```html
+<TEXT ID="combo" LABEL="Scale+Rot">
+  <POS X=150 Y=70></POS>
+  <FGCOLOR NAME="white"></FGCOLOR>
+  <SCALE X=1.5 Y=1.5>
+  <ROT Z=25>
+</TEXT>
+```
+
+**With custom axis (rotation point):**
+```html
+<TEXT ID="pivoted" LABEL="Pivot">
+  <POS X=100 Y=50></POS>
+  <FGCOLOR NAME="yellow"></FGCOLOR>
+  <ROT Z=30>
+  <AXIS X=100 Y=50>
+</TEXT>
+```
+
+**Note:** If `<AXIS>` is not specified, rotation occurs around the center of the text.
 
 ---
 

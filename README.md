@@ -129,7 +129,8 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 #### Proto-VRML Graphics Tags (Partial Implementation)
 - Implementation of Pei-Yuan Wei's 1994 experimental 3D graphics proposal
 - Container: `<GRAPHICS>` with WIDTH, HEIGHT attributes
-- Primitives: `<RECT>`, `<SQUARE>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`
+- Primitives: `<RECT>`, `<SQUARE>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`, `<TEXT>`
+- Text rendering: `<TEXT LABEL="...">` with XRender-based rotation and scaling
 - Positioning and sizing: `<POS>`, `<SIZE>` with X, Y, Z coordinates
 - 3D transformations with perspective projection:
   - `<ROT X=... Y=... Z=...>` — rotation around all three axes

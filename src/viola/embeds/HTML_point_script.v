@@ -4,6 +4,17 @@
 	case "R":
 		return 0;
 	break;
+	case "D":
+		/* Send point to parent polygon */
+		p = parent();
+		if (p == "" || p == "0" || p == "(NULL)") {
+			p = send("HTML_polygon", "getCurrentPrimitive");
+		}
+		if (p != "" && p != "0" && p != "(NULL)") {
+			send(p, "addPoint", pointX, pointY);
+		}
+		return 0;
+	break;
 	case "AA":
 		switch (arg[1]) {
 		case "ID":
@@ -14,8 +25,6 @@
 		break;
 		case "Y":
 			pointY = int(arg[2]);
-			/* Y is last - send to parent polygon now */
-			send(parent(), "addPoint", pointX, pointY);
 		break;
 		}
 		return;

@@ -154,7 +154,7 @@ OVAL		HTML_oval		0 0 0 1 0		0 0 0 0\n\
 SQUARE		HTML_square		0 0 0 1 0		0 0 0 0\n\
 LINE		HTML_line		0 0 0 1 0		0 0 0 0\n\
 POLYGON 	HTML_polygon		0 0 0 1 0		0 0 0 0\n\
-POINT		HTML_point		1 0 0 1 0		0 0 0 0\n\
+POINT		HTML_point		0 0 0 1 0		0 0 0 0\n\
 POS		HTML_pos		0 0 0 1 0		0 0 0 0\n\
 SIZE		HTML_size		0 0 0 1 0		0 0 0 0\n\
 FGCOLOR		HTML_fgcolor		0 0 0 1 0		0 0 0 0\n\

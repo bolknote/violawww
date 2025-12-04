@@ -213,6 +213,11 @@ int GLSetBGColorPixel(VObj*, unsigned long);
 
 #define GLInvertFillRect(w, x1, y1, x2, y2) GLPaintFillRect(w, gc_invert, x1, y1, x2, y2)
 
+/* filled polygon */
+int GLPaintFillPolygon(Window, GC, int*, int*, int);
+
+#define GLDrawFillPolygon(w, px, py, n) GLPaintFillPolygon(w, gc_fg, px, py, n)
+
 /* circle/oval
  */
 int GLPaintOval(Window, GC, int, int, int, int);

@@ -266,6 +266,7 @@ enum {
     STR_drawCursor,
     STR_drawFillOval,
     STR_drawFillRect,
+    STR_drawFillPolygon,
     STR_drawLine,
     STR_drawOval,
     STR_drawPoint,

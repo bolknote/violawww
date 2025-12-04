@@ -1348,6 +1348,22 @@ int GLPaintFillRect(Window w, GC gc, int x0, int y0, int x1, int y1)
 }
 
 /*
+** filled polygon (for rotated rectangles etc)
+*/
+int GLPaintFillPolygon(Window w, GC gc, int* px, int* py, int npoints)
+{
+    XPoint points[16];  /* Max 16 points should be enough for quads */
+    int i;
+    if (npoints > 16) npoints = 16;
+    for (i = 0; i < npoints; i++) {
+        points[i].x = px[i];
+        points[i].y = py[i];
+    }
+    XFillPolygon(display, w, gc, points, npoints, Convex, CoordModeOrigin);
+    return 1;
+}
+
+/*
 ** circle/oval
 **
 */

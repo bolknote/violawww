@@ -1491,6 +1491,29 @@ Draws a filled oval within the bounding box.
 
 ---
 
+### drawFillPolygon(x0, y0, x1, y1, x2, y2, x3, y3)
+Draws a filled quadrilateral (4-point polygon). Useful for drawing rotated rectangles.
+
+**Parameters:**
+- `x0` (int) - first point x-coordinate
+- `y0` (int) - first point y-coordinate
+- `x1` (int) - second point x-coordinate
+- `y1` (int) - second point y-coordinate
+- `x2` (int) - third point x-coordinate
+- `y2` (int) - third point y-coordinate
+- `x3` (int) - fourth point x-coordinate
+- `y3` (int) - fourth point y-coordinate
+
+**Returns:** (int) 1 on success
+
+**Example:**
+```c
+/* Draw a rotated rectangle */
+drawFillPolygon(cx[0], cy[0], cx[1], cy[1], cx[2], cy[2], cx[3], cy[3]);
+```
+
+---
+
 ### drawText(x, y, fontID, text)
 Draws text at the specified position.
 

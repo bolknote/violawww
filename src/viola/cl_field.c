@@ -208,6 +208,10 @@ MethodInfo meths_field[] = {
         meth_field_drawFillRect,
     },
     {
+        STR_drawFillPolygon,
+        meth_field_drawFillPolygon,
+    },
+    {
         STR_drawLine,
         meth_field_drawLine,
     },
@@ -614,6 +618,32 @@ long meth_field_drawFillRect(VObj* self, Packet* result, int argc, Packet argv[]
         if (GET__classInfo(self) != &class_glass) {
             GLPrepareObjColor(self);
             GLDrawFillRect(GET_window(self), x0, y0, x1, y1);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/*
+ * drawFillPolygon(x0, y0, x1, y1, x2, y2, x3, y3)
+ * Draw filled quadrilateral (4 points)
+ */
+long meth_field_drawFillPolygon(VObj* self, Packet* result, int argc, Packet argv[]) {
+    int px[4], py[4];
+    px[0] = (int)PkInfo2Int(&argv[0]);
+    py[0] = (int)PkInfo2Int(&argv[1]);
+    px[1] = (int)PkInfo2Int(&argv[2]);
+    py[1] = (int)PkInfo2Int(&argv[3]);
+    px[2] = (int)PkInfo2Int(&argv[4]);
+    py[2] = (int)PkInfo2Int(&argv[5]);
+    px[3] = (int)PkInfo2Int(&argv[6]);
+    py[3] = (int)PkInfo2Int(&argv[7]);
+
+    clearPacket(result);
+    if (GET_window(self)) {
+        if (GET__classInfo(self) != &class_glass) {
+            GLPrepareObjColor(self);
+            GLDrawFillPolygon(GET_window(self), px, py, 4);
             return 1;
         }
     }

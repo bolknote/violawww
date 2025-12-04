@@ -20,6 +20,7 @@ long meth_field_cycleColors(VObj* self, Packet* result, int argc, Packet argv[])
 long meth_field_deepObjectListSend(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_drawFillOval(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_drawFillRect(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_field_drawFillPolygon(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_drawLine(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_drawOval(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_field_drawRect(VObj* self, Packet* result, int argc, Packet argv[]);

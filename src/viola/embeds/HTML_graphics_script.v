@@ -328,11 +328,8 @@
 								
 								/* Draw transformed shape as polygon */
 								if (shapeType == "rect") {
-									/* Draw filled outline (rotated rect is 4 lines) */
-									drawLine(cx[0], cy[0], cx[1], cy[1]);
-									drawLine(cx[1], cy[1], cx[2], cy[2]);
-									drawLine(cx[2], cy[2], cx[3], cy[3]);
-									drawLine(cx[3], cy[3], cx[0], cy[0]);
+									/* Draw filled polygon for rotated rect */
+									drawFillPolygon(cx[0], cy[0], cx[1], cy[1], cx[2], cy[2], cx[3], cy[3]);
 									/* Border with different color if set */
 									if (shapeBD != "" && shapeBD != "0") {
 										set("FGColor", shapeBD);

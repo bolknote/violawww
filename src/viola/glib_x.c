@@ -1348,18 +1348,26 @@ int GLPaintFillRect(Window w, GC gc, int x0, int y0, int x1, int y1)
 }
 
 /*
-** filled polygon (for rotated rectangles etc)
+** filled polygon (for rotated rectangles, ellipses, etc)
 */
 int GLPaintFillPolygon(Window w, GC gc, int* px, int* py, int npoints)
 {
-    XPoint points[16];  /* Max 16 points should be enough for quads */
+    XPoint points[256];  /* Support up to 256 points for smooth curves */
     int i;
-    if (npoints > 16) npoints = 16;
+    int shape = Convex;  /* Assume convex by default */
+    
+    if (npoints > 256) npoints = 256;
+    
+    /* Use Complex hint for many-sided polygons (ellipse approximations) */
+    if (npoints > 8) {
+        shape = Complex;
+    }
+    
     for (i = 0; i < npoints; i++) {
         points[i].x = px[i];
         points[i].y = py[i];
     }
-    XFillPolygon(display, w, gc, points, npoints, Convex, CoordModeOrigin);
+    XFillPolygon(display, w, gc, points, npoints, shape, CoordModeOrigin);
     return 1;
 }
 

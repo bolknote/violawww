@@ -252,14 +252,16 @@
 								
 								/* For oval/circle, skip corner transformation and draw directly */
 								if (shapeType == "circle" || shapeType == "oval") {
-									/* Draw ellipse with 16-point polygon */
+									/* Draw ellipse with 32-point polygon for smooth curves */
 									centerX = origAX;
 									centerY = origAY;
 									radiusX = shapeW / 2;
 									radiusY = shapeH / 2;
 									
-									for (ai = 0; ai < 16; ai++) {
-										angle = ai * 22.5; /* 360/16 = 22.5 degrees */
+									/* Build polygon points */
+									beginPolygon();
+									for (ai = 0; ai < 32; ai++) {
+										angle = ai * 11.25; /* 360/32 = 11.25 degrees */
 										/* Start with ellipse point */
 										tx = radiusX * cos(angle);
 										ty = radiusY * sin(angle);
@@ -305,14 +307,59 @@
 											tx = tx * perspScale;
 											ty = ty * perspScale;
 										}
-										ellipseX[ai] = int(centerX + tx);
-										ellipseY[ai] = int(centerY + ty);
+										addPolygonPoint(int(centerX + tx), int(centerY + ty));
 									}
-									/* Draw the ellipse outline */
-									for (ai = 0; ai < 15; ai++) {
-										drawLine(ellipseX[ai], ellipseY[ai], ellipseX[ai + 1], ellipseY[ai + 1]);
+									/* Draw filled ellipse */
+									endFillPolygon();
+									
+									/* Draw border with BDCOLOR if set */
+									shapeBD = send(childName, "getBD");
+									if (shapeBD != "" && shapeBD != "0") {
+										set("FGColor", shapeBD);
+										/* Re-build polygon for border */
+										beginPolygon();
+										for (ai = 0; ai < 32; ai++) {
+											angle = ai * 11.25;
+											tx = radiusX * cos(angle);
+											ty = radiusY * sin(angle);
+											tz = 0;
+											tx = tx * sxVal;
+											ty = ty * syVal;
+											tz = tz * szVal;
+											if (rotYVal > 0.001 || rotYVal < -0.001) {
+												cosRY = cos(rotYVal);
+												sinRY = sin(rotYVal);
+												nx = (tx * cosRY) + (tz * sinRY);
+												nz = ((0 - tx) * sinRY) + (tz * cosRY);
+												tx = nx;
+												tz = nz;
+											}
+											if (rotXVal > 0.001 || rotXVal < -0.001) {
+												cosRX = cos(rotXVal);
+												sinRX = sin(rotXVal);
+												ny = (ty * cosRX) - (tz * sinRX);
+												nz = (ty * sinRX) + (tz * cosRX);
+												ty = ny;
+												tz = nz;
+											}
+											if (rotZVal > 0.001 || rotZVal < -0.001) {
+												cosR = cos(rotZVal);
+												sinR = sin(rotZVal);
+												nx = (tx * cosR) - (ty * sinR);
+												ny = (tx * sinR) + (ty * cosR);
+												tx = nx;
+												ty = ny;
+											}
+											perspD = 500;
+											if (tz > 0.001 || tz < -0.001) {
+												perspScale = perspD / (perspD + tz);
+												tx = tx * perspScale;
+												ty = ty * perspScale;
+											}
+											addPolygonPoint(int(centerX + tx), int(centerY + ty));
+										}
+										endDrawPolygon();
 									}
-									drawLine(ellipseX[15], ellipseY[15], ellipseX[0], ellipseY[0]);
 								} else {
 									/* For rect/line, transform 4 corners */
 									cx[0] = shapeX;

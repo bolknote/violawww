@@ -1099,6 +1099,10 @@ Returns the argument string passed via the -ar option.
 
 ---
 
+### Security Functions
+
+**Note:** For a comprehensive understanding of ViolaWWW's security architecture, design flaws, and vulnerabilities, see [SECURITY_REFERENCE.md](SECURITY_REFERENCE.md).
+
 ### securityMode([mode])
 Gets or sets the security mode.
 

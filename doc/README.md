@@ -116,6 +116,21 @@ Topics covered:
 
 ---
 
+## Security
+
+### [SECURITY_REFERENCE.md](SECURITY_REFERENCE.md)
+Complete analysis of ViolaWWW's security architecture and identified vulnerabilities.
+
+Topics covered:
+- Security levels and privilege checking (`notSecure()`)
+- Global security mode (`securityMode`)
+- Protected operations (`tweak()`, `loadFile()`, `exit()`, etc.)
+- Critical vulnerabilities (privilege escalation, object loading)
+- HTML tag security implications
+- Historical context and modern security comparison
+
+---
+
 ## Programming Language
 
 ViolaWWW includes a built-in scripting language called **Viola**.

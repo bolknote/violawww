@@ -60,6 +60,17 @@ Topics covered:
 - Applying styles to HTML elements
 - Layout control (margins, padding, positioning)
 
+### [FOSI_REFERENCE.md](FOSI_REFERENCE.md)
+**FOSI** (Formatting Output Specification Instance) — SGML-based stylesheet system (partial implementation).
+
+Topics covered:
+- FOSI document structure and SGML syntax
+- FONT element (size, weight, posture, colors)
+- INDENT element (margins, first-line indentation)
+- E-I-C (Element In Context) binding mechanism
+- Autonomous document format vs. stylesheet usage
+- Complete examples with styling demonstrations
+
 ### [COLOR_REFERENCE.md](COLOR_REFERENCE.md)
 Complete color specification guide.
 
@@ -188,6 +199,7 @@ ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered m
 | FIGURE element | HTML IMG |
 | FIGA (image maps) | HTML AREA/MAP |
 | STG stylesheets | CSS |
+| FOSI stylesheets | CSS |
 | Tables | HTML 3.0 Tables |
 | 3D Graphics tags | VRML, WebGL |
 | TTY (external processes) | Web Workers, WebAssembly |

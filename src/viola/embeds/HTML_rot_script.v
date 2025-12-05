@@ -19,7 +19,7 @@
 			}
 			/* Set SC flag on parent shape if SC attribute was present */
 			if (hasSC == 1) {
-				send(p, "setVariable", "_sc_rot", "1");
+				send(p, "enableSCRot");
 			}
 		}
 		return 0;

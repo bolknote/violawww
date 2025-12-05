@@ -139,7 +139,7 @@
 		posX = int(arg[1]);
 		posY = int(arg[2]);
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_pos") != "") {
+			if (_sc_pos == 1) {
 				discoveryBroadcast(get("name"), "setPos", arg[1], arg[2]);
 			}
 		} else {
@@ -157,7 +157,7 @@
 			sizeVal = sx;
 		}
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_size") != "") {
+			if (_sc_size == 1) {
 				discoveryBroadcast(get("name"), "setSize", arg[1], arg[2]);
 			}
 		} else {
@@ -168,7 +168,7 @@
 	case "setFGColor":
 		fgColor = arg[1];
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_fgcolor") != "") {
+			if (_sc_fgcolor == 1) {
 				discoveryBroadcast(get("name"), "setFGColor", arg[1]);
 			}
 		} else {
@@ -179,7 +179,7 @@
 	case "setBDColor":
 		bdColor = arg[1];
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_bdcolor") != "") {
+			if (_sc_bdcolor == 1) {
 				discoveryBroadcast(get("name"), "setBDColor", arg[1]);
 			}
 		} else {
@@ -194,7 +194,7 @@
 	case "setRotX":
 		_rotX = float(arg[1]);
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_rot") != "") {
+			if (_sc_rot == 1) {
 				discoveryBroadcast(get("name"), "setRotX", arg[1]);
 			}
 		} else {
@@ -205,7 +205,7 @@
 	case "setRotY":
 		_rotY = float(arg[1]);
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_rot") != "") {
+			if (_sc_rot == 1) {
 				discoveryBroadcast(get("name"), "setRotY", arg[1]);
 			}
 		} else {
@@ -216,7 +216,7 @@
 	case "setRotZ":
 		_rotZ = float(arg[1]);
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_rot") != "") {
+			if (_sc_rot == 1) {
 				discoveryBroadcast(get("name"), "setRotZ", arg[1]);
 			}
 		} else {
@@ -243,7 +243,7 @@
 			_scaleZ = float(arg[3]);
 		}
 		if (discoveryIsRemote() == 0) {
-			if (getVariable("_sc_scale") != "") {
+			if (_sc_scale == 1) {
 				discoveryBroadcast(get("name"), "setScale", arg[1], arg[2], arg[3]);
 			}
 		} else {
@@ -287,6 +287,30 @@
 	case "clone":
 		return clone(cloneID());
 	break;
+	case "enableSCPos":
+		_sc_pos = 1;
+		return;
+	break;
+	case "enableSCSize":
+		_sc_size = 1;
+		return;
+	break;
+	case "enableSCRot":
+		_sc_rot = 1;
+		return;
+	break;
+	case "enableSCScale":
+		_sc_scale = 1;
+		return;
+	break;
+	case "enableSCFGColor":
+		_sc_fgcolor = 1;
+		return;
+	break;
+	case "enableSCBDColor":
+		_sc_bdcolor = 1;
+		return;
+	break;
 	case "init":
 		usual();
 		_savedParent = parent();
@@ -306,6 +330,12 @@
 		_axisX = 0;
 		_axisY = 0;
 		_axisZ = 0;
+		_sc_pos = 0;
+		_sc_size = 0;
+		_sc_rot = 0;
+		_sc_scale = 0;
+		_sc_fgcolor = 0;
+		_sc_bdcolor = 0;
 		return;
 	break;
 	}

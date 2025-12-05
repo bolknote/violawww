@@ -32,7 +32,7 @@
 			/* Enable sync for foreground color on parent primitive */
 			p = parent();
 			if (p != "" && p != "0" && p != "(NULL)") {
-				send(p, "setVariable", "_sc_fgcolor", "1");
+				send(p, "enableSCFGColor");
 			}
 			discoveryEnable();
 		break;

@@ -15,7 +15,7 @@
 			send(p, "setSize", sizeX, sizeY);
 			/* Set SC flag on parent shape if SC attribute was present */
 			if (hasSC == 1) {
-				send(p, "setVariable", "_sc_size", "1");
+				send(p, "enableSCSize");
 			}
 		}
 		return 0;

@@ -15,7 +15,7 @@
 			send(p, "setPos", posX, posY);
 			/* Set SC flag on parent shape if SC attribute was present */
 			if (hasSC == 1) {
-				send(p, "setVariable", "_sc_pos", "1");
+				send(p, "enableSCPos");
 			}
 		}
 		return 0;

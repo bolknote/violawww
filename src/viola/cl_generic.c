@@ -4469,8 +4469,29 @@ long meth_generic_setSelection(VObj* self, Packet* result, int argc, Packet argv
  * Return: 1 if successful, 0 if error occured
  */
 long meth_generic_setVariable(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* varName;
+    char* varValue;
+    
+    if (argc < 2) {
+        clearPacket(result);
+        return 0;
+    }
+    
+    varName = PkInfo2Str(&argv[0]);
+    varValue = PkInfo2Str(&argv[1]);
+    
+    if (!varName || !varValue) {
+        clearPacket(result);
+        return 0;
+    }
+    
+    /* Copy the value string since setVariable_STR may store it */
+    varValue = saveString(varValue);
+    
+    SET__varList(self, setVariable_STR(GET__varList(self), varName, varValue, 1));
+    
     clearPacket(result);
-    return 0;
+    return 1;
 }
 
 /*

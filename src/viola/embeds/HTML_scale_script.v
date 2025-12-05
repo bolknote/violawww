@@ -11,7 +11,7 @@
 			send(p, "setScale", scaleX, scaleY, scaleZ);
 			/* Set SC flag on parent shape if SC attribute was present */
 			if (hasSC == 1) {
-				send(p, "setVariable", "_sc_scale", "1");
+				send(p, "enableSCScale");
 			}
 		}
 		return 0;

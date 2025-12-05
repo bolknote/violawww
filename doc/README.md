@@ -95,7 +95,7 @@ Topics covered:
 - Interactive: `<BUTTON>` with LABEL, HREF, HINT, colors
 - Complete examples including 3D rotation demo and scene composition
 
-**Not implemented:** Interactive scripting (`<ACTION>`, inline `<SCRIPT>`), multi-user sync (`SC` attribute).
+**Not implemented:** Multi-user sync (`SC` attribute).
 
 Historical sources:
 - [vrmlNotes.txt](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — original design document

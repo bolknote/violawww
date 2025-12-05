@@ -45,6 +45,11 @@
 #include <string.h>
 #include <limits.h>
 #include <sys/param.h>
+#include <sys/time.h>
+#include <sys/select.h>
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#endif
 
 #include "../libXPM/xpm.h"
 #include "../viola/ast.h"
@@ -312,27 +317,102 @@ int main(int argc, char* argv[])
 
     /* Peer discovery is initialized on-demand when SC attribute is found */
 
-    while (1) {
-        XtAppNextEvent(appCon, &event);
+    /* 
+     * Event loop with periodic idle processing.
+     * On macOS/XQuartz, we use a GCD timer to send synthetic X events
+     * that wake up the event loop even when cursor is not over window.
+     */
+    {
+        Display *dpy = XtDisplay(topWidget);
         
-        /* Handle mouse wheel events (buttons 4 and 5) specially */
-        /* Don't pass them to Viola, let VW scrollbar handle them */
-        if (event.type == ButtonPress || event.type == ButtonRelease) {
-            XButtonEvent* buttonEvt = (XButtonEvent*)&event;
-            if (buttonEvt->button == 4 || buttonEvt->button == 5) {
-                /* Call mouseWheelScrollEH directly since events are on Viola's window, not canvas */
-                DocViewInfo* dvi = (DocViewInfo*)mainViewInfo();
-                if (dvi) {
-                    Boolean cont = True;
-                    mouseWheelScrollEH(dvi->canvas, (XtPointer)dvi, &event, &cont);
+#ifdef __APPLE__
+        /* 
+         * macOS/XQuartz workaround: XQuartz freezes event delivery when 
+         * cursor is not over window. Use native GCD timer to periodically 
+         * send synthetic X events that wake up the event loop.
+         */
+        static Display *gcd_dpy;
+        static Window gcd_win;
+        static Atom gcd_wakeup_atom;
+        
+        gcd_dpy = dpy;
+        gcd_win = XtWindow(topWidget);
+        gcd_wakeup_atom = XInternAtom(dpy, "_VW_WAKEUP", False);
+        
+        dispatch_source_t timer = dispatch_source_create(
+            DISPATCH_SOURCE_TYPE_TIMER, 0, 0, 
+            dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0));
+        
+        dispatch_source_set_timer(timer, 
+            dispatch_time(DISPATCH_TIME_NOW, 0),
+            50 * NSEC_PER_MSEC,   /* 50ms interval = 20 Hz */
+            10 * NSEC_PER_MSEC);  /* 10ms leeway */
+        
+        dispatch_source_set_event_handler(timer, ^{
+            XClientMessageEvent ev = {0};
+            ev.type = ClientMessage;
+            ev.window = gcd_win;
+            ev.message_type = gcd_wakeup_atom;
+            ev.format = 32;
+            XSendEvent(gcd_dpy, gcd_win, False, NoEventMask, (XEvent*)&ev);
+            XFlush(gcd_dpy);
+        });
+        
+        dispatch_resume(timer);
+#endif
+        
+        while (1) {
+            XtInputMask mask;
+            
+            /* Process all pending X events and Xt timers */
+            while ((mask = XtAppPending(appCon)) != 0) {
+                if (mask & XtIMXEvent) {
+                    XtAppNextEvent(appCon, &event);
+                    
+#ifdef __APPLE__
+                    /* Ignore wakeup events from GCD timer */
+                    if (event.type == ClientMessage && 
+                        event.xclient.message_type == gcd_wakeup_atom) {
+                        continue;
+                    }
+#endif
+                    /* Handle mouse wheel events (buttons 4 and 5) specially */
+                    if (event.type == ButtonPress || event.type == ButtonRelease) {
+                        XButtonEvent* buttonEvt = (XButtonEvent*)&event;
+                        if (buttonEvt->button == 4 || buttonEvt->button == 5) {
+                            DocViewInfo* dvi = (DocViewInfo*)mainViewInfo();
+                            if (dvi) {
+                                Boolean cont = True;
+                                mouseWheelScrollEH(dvi->canvas, (XtPointer)dvi, &event, &cont);
+                            }
+                            continue;
+                        }
+                    }
+                    
+                    violaProcessEvent(&event);
+                    XtDispatchEvent(&event);
+                } else {
+                    /* Timer or alternate input - let Xt handle it */
+                    XtAppProcessEvent(appCon, mask);
                 }
-                /* Don't pass wheel events to Viola */
-                continue;
             }
+            
+            /* Call Viola idle functions for internal timers/animation */
+            doViolaIdle(NULL);
+            XFlush(dpy);
+            
+#ifndef __APPLE__
+            /* On non-macOS, use select with timeout as fallback */
+            {
+                int xfd = ConnectionNumber(dpy);
+                fd_set readfds;
+                struct timeval tv = {0, 20000};  /* 20ms */
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+#endif
         }
-        
-        violaProcessEvent(&event);
-        XtDispatchEvent(&event);
     }
 }
 

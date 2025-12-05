@@ -126,7 +126,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `htmath.h`, `htmath.c`, `embeds/HTML_math_script.v`
 - **HTML Tag**: `<MATH>` element support
 
-#### Proto-VRML Graphics Tags (Partial Implementation)
+#### Proto-VRML Graphics Tags (Full Implementation)
 - Implementation of Pei-Yuan Wei's 1994 experimental 3D graphics proposal
 - Container: `<GRAPHICS>` with WIDTH, HEIGHT attributes
 - Primitives: `<RECT>`, `<SQUARE>`, `<CIRCLE>`, `<OVAL>`, `<LINE>`, `<POLYGON>`, `<POINT>`, `<TEXT>`
@@ -138,7 +138,8 @@ This version brings ViolaWWW into the modern web era while preserving its unique
   - `<AXIS>` — transformation center point
 - Colors: `<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>` with named colors
 - Interactive elements: `<BUTTON>` with LABEL, HREF, HINT attributes (3D appearance, click handling, status bar hints)
-- **Not implemented**: Interactive scripting (`<ACTION>`, inline `<SCRIPT>`), multi-user sync (`SC` attribute)
+- Interactive scripting: `<ACTION>` with inline `<SCRIPT TYPE="viola">` for all shapes
+- Multi-user sync: `SC` attribute for real-time property synchronization via UDP broadcast
 - **Files**: `embeds/HTML_graphics_script.v`, `HTML_button_script.v`, `HTML_rect_script.v`, `HTML_polygon_script.v`, etc.
 - **Documentation**: [GRAPHICS_TAGS_REFERENCE.md](doc/GRAPHICS_TAGS_REFERENCE.md)
 
@@ -623,7 +624,7 @@ Contributions are welcome! Areas of interest:
 - Internet Archive (Wayback Machine) integration
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII via iconv + ICU)
 - Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
-- Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, etc.)
+- Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, SC sync, etc.)
 - TTY interface restoration for external process communication
 - VPLOT 3D surface plotter implementation
 - Socket timeouts and error handling

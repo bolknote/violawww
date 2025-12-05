@@ -2266,41 +2266,41 @@ Sends data to the client process. The `outDelimStr` is automatically appended.
 
 ---
 
-## Peer Discovery Functions
+## Peer Discovery and Sync Functions
 
-These functions implement the peer discovery mechanism from Pei-Yuan Wei's original proto-VRML design. Discovery is activated when pages contain the `SC` (synchronization) attribute on `<POS>`, `<SIZE>`, `<ROT>`, or `<SCALE>` tags within `<GRAPHICS>` containers.
+These functions implement the multi-user synchronization mechanism from Pei-Yuan Wei's original proto-VRML design. Sync is activated when pages contain the `SC` (synchronization) attribute on transformation or color tags within `<GRAPHICS>` containers.
 
 ### discoveryEnable()
-Enables peer discovery for the current page. Called automatically when an `SC` attribute is encountered during HTML parsing.
+Enables sync for the current page. Called automatically when an `SC` attribute is encountered during HTML parsing.
 
 **Parameters:** None
 
 **Returns:** (int) 1
 
-**Note:** This function sets an internal flag that allows `discoverySetPage()` to activate the discovery service. Without this flag being set, discovery remains dormant.
+**Note:** This function sets an internal flag that allows `discoverySetPage()` to activate the sync service. Without this flag being set, sync remains dormant.
 
 ---
 
 ### discoveryReset()
-Resets the discovery enabled flag. Called automatically at the start of loading a new page.
+Resets the sync enabled flag. Called automatically at the start of loading a new page.
 
 **Parameters:** None
 
 **Returns:** (int) 1
 
-**Note:** This ensures that discovery is only active for pages that explicitly contain `SC` attributes.
+**Note:** This ensures that sync is only active for pages that explicitly contain `SC` attributes.
 
 ---
 
 ### discoverySetPage(url)
-Notifies the peer discovery service of the current page URL. Only takes effect if `discoveryEnable()` was previously called (i.e., if the page contains `SC` attributes).
+Notifies the sync service of the current page URL. Only takes effect if `discoveryEnable()` was previously called (i.e., if the page contains `SC` attributes).
 
 **Parameters:**
 - `url` (string) - the URL of the current page
 
 **Returns:** (int) 1
 
-**Note:** On macOS, this uses Bonjour/DNS-SD to broadcast a hash of the URL. When another ViolaWWW instance on the local network is viewing the same page, a match message is logged to the console.
+**Note:** Computes a hash of the URL used to filter sync messages. Only messages with matching page hash are processed.
 
 **Example:**
 ```c
@@ -2311,6 +2311,60 @@ break;
 
 /* In mvw_script188.v after document is parsed */
 discoverySetPage(normURL);
+```
+
+---
+
+### discoveryBroadcast(id, func, args...)
+Broadcasts a property change to all other ViolaWWW instances viewing the same page.
+
+**Parameters:**
+- `id` (string) - object ID (name) to receive the message
+- `func` (string) - method name to call (e.g., "setRotZ", "setScale", "setFGColor")
+- `args...` (any) - arguments for the method (comma-separated in the broadcast)
+
+**Returns:** (int) 1
+
+**Note:** Messages are sent via UDP broadcast on port 54379. Only browsers viewing the same page (matching URL hash) will process the message.
+
+**Example:**
+```c
+/* Broadcast rotation change */
+discoveryBroadcast(get("name"), "setRotZ", arg[1]);
+
+/* Broadcast scale change */
+discoveryBroadcast(get("name"), "setScale", arg[1], arg[2], arg[3]);
+
+/* Broadcast color change */
+discoveryBroadcast(get("name"), "setFGColor", "red");
+```
+
+---
+
+### discoveryIsRemote()
+Checks if the current code is executing as a result of receiving a sync message from another browser.
+
+**Parameters:** None
+
+**Returns:** (int) 1 if processing a remote sync message, 0 if local action
+
+**Note:** Use this to prevent echo — when receiving a remote change, don't re-broadcast it. The initiating browser is "master", receivers are "slaves".
+
+**Example:**
+```c
+case "setRotZ":
+    _rotZ = float(arg[1]);
+    /* Only broadcast if this is a local change */
+    if (discoveryIsRemote() == 0) {
+        if (getVariable("_sc_rot") != "") {
+            discoveryBroadcast(get("name"), "setRotZ", arg[1]);
+        }
+    } else {
+        /* Force redraw after receiving remote change */
+        send(_savedParent, "expose");
+    }
+    return;
+break;
 ```
 
 **See also:** [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md) for `SC` attribute documentation

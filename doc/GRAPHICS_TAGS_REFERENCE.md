@@ -55,7 +55,7 @@ Wei's proposal was an independent parallel effort, not an implementation of VRML
 | Button (`<BUTTON>`) | ✅ Implemented (visual, click, HREF, colors) |
 | Hint (HINT attribute) | ✅ Shown in status bar on hover (all shapes) |
 | Interactive scripting (`<ACTION>`, `<SCRIPT>`) | ✅ Implemented for all shapes |
-| Multi-user sync (`SC` attribute) | ✅ Peer discovery implemented (macOS) |
+| Multi-user sync (`SC` attribute) | ✅ Implemented (UDP broadcast) |
 
 ---
 
@@ -627,47 +627,104 @@ The HINT attribute is also supported on all shapes to show tooltip text in the s
 
 ---
 
-## Not Implemented
+## Multi-User Synchronization (SC Attribute)
 
-The following features from the original design are **not implemented**:
+The `SC` (synchronization) attribute enables real-time property synchronization between multiple ViolaWWW browsers viewing the same page. This implements Pei-Yuan Wei's original proto-VRML vision for collaborative 3D environments.
 
-### Multi-User Synchronization
+### How It Works
 
-### Multi-User Synchronization (SC Attribute)
+When a page contains `SC` attributes on transformation tags (`<ROT>`, `<SCALE>`, `<POS>`, `<SIZE>`) or color tags (`<FGCOLOR>`, `<BGCOLOR>`, `<BDCOLOR>`), ViolaWWW will:
 
-The `SC` (synchronization) attribute enables peer discovery for collaborative viewing. When a page contains any `SC` attribute on `<POS>`, `<SIZE>`, `<ROT>`, or `<SCALE>` tags, ViolaWWW will:
+1. Enable the sync subsystem for that page
+2. Broadcast property changes via UDP (port 54379)
+3. Receive and apply changes from other browsers viewing the same page
+4. Use page URL hash to filter messages (only same-page sync)
 
-1. Register itself on the local network via Bonjour/DNS-SD (macOS)
-2. Discover other ViolaWWW instances on the network
-3. Log a message when another browser is viewing the same page
+### Supported Tags with SC
 
-**Example:**
+| Tag | Effect |
+|-----|--------|
+| `<ROT SC>` | Sync rotation (X, Y, Z axes) |
+| `<SCALE SC>` | Sync scale transformations |
+| `<POS SC>` | Sync position changes |
+| `<SIZE SC>` | Sync size changes |
+| `<FGCOLOR SC>` | Sync foreground color |
+| `<BGCOLOR SC>` | Sync background color |
+| `<BDCOLOR SC>` | Sync border color |
+
+### Example
+
 ```html
-<GRAPHICS WIDTH=200 HEIGHT=200>
-  <RECT ID="syncRect">
-    <POS SC X=50 Y=50></POS>
-    <ROT SC Z=0></ROT>
+<GRAPHICS ID="myGfx" WIDTH=400 HEIGHT=300>
+  <BGCOLOR>navy</BGCOLOR>
+  
+  <!-- Circle with synchronized scale -->
+  <CIRCLE ID="myCircle">
+    <POS X=150 Y=30></POS>
+    <SIZE X=80 Y=80></SIZE>
+    <FGCOLOR>green</FGCOLOR>
+    <SCALE SC X=1 Y=1></SCALE>
+  </CIRCLE>
+  
+  <!-- Rectangle with synchronized rotation -->
+  <RECT ID="myRect">
+    <POS X=30 Y=30></POS>
     <SIZE X=80 Y=60></SIZE>
-    <FGCOLOR NAME="blue"></FGCOLOR>
+    <FGCOLOR>red</FGCOLOR>
+    <ROT SC Z=0></ROT>
   </RECT>
+  
+  <!-- Oval with synchronized color -->
+  <OVAL ID="myOval">
+    <POS X=260 Y=40></POS>
+    <SIZE X=100 Y=60></SIZE>
+    <FGCOLOR SC>purple</FGCOLOR>
+  </OVAL>
 </GRAPHICS>
 ```
 
-When two ViolaWWW browsers view this page, console output shows:
-```
-[Discovery] Enabled by SC attribute
-[Discovery] Initializing (page has SC attributes)
-[Bonjour] Peer discovery active
-[Bonjour] Page changed: abc123 file:///path/to/page.html
-[Bonjour] *** PEER MATCH! ViolaWWW-Host-12345 is viewing the same page ***
-```
+### Testing Multi-User Sync
 
-**Platform Support:**
-- **macOS**: Full support via Bonjour/DNS-SD
-- **Linux**: Planned (Avahi)
-- **Other**: No-op (discovery functions compile but do nothing)
+1. Open `examples/test_action_shapes.html` in two ViolaWWW windows
+2. Click on shapes in one window to trigger their actions (rotate, scale, color change)
+3. Changes appear in both windows simultaneously
 
-**Note:** The current implementation provides peer discovery (finding browsers on the same page). Full state synchronization (broadcasting property changes) is planned for future development.
+### Technical Details
+
+- **Protocol**: UDP broadcast on port 54379
+- **Message Format**: `VIOLA|page_hash|instance_id|seq|object_id|method|args`
+- **Instance ID**: 64-bit unique identifier (PID + time + hostname hash)
+- **Echo Prevention**: Messages from self are ignored based on instance_id
+- **Master/Slave**: The browser initiating an action is "master"; receivers are "slaves" that only apply changes without re-broadcasting
+
+### Platform Support
+
+- **macOS**: Full support
+- **Linux**: Full support (UDP broadcast)
+- **Other Unix**: Should work (standard BSD sockets)
+
+### Scripting API
+
+From Viola scripts, use these functions:
+- `discoveryIsRemote()` — returns 1 if currently processing a remote sync message
+- `discoveryBroadcast(id, func, args...)` — broadcast a property change
+
+**Example script pattern:**
+```c
+case "setRotZ":
+    _rotZ = float(arg[1]);
+    /* Only broadcast if this is a local change, not received from peer */
+    if (discoveryIsRemote() == 0) {
+        if (getVariable("_sc_rot") != "") {
+            discoveryBroadcast(get("name"), "setRotZ", arg[1]);
+        }
+    } else {
+        /* Force redraw after receiving remote change */
+        send(_savedParent, "expose");
+    }
+    return;
+break;
+```
 
 ---
 

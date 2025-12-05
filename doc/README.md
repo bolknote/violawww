@@ -95,7 +95,7 @@ Topics covered:
 - Interactive: `<BUTTON>` with LABEL, HREF, HINT, colors
 - Complete examples including 3D rotation demo and scene composition
 
-**Not implemented:** Multi-user sync (`SC` attribute).
+**Multi-user sync:** `SC` attribute for real-time property synchronization via UDP broadcast.
 
 Historical sources:
 - [vrmlNotes.txt](https://web.archive.org/web/20040519161530/http://www.xcf.berkeley.edu/~wei/viola/dev/vrmlNotes.txt) — original design document

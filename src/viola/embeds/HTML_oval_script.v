@@ -28,6 +28,9 @@
 	case "getBD":
 		return bdColor;
 	break;
+	case "getHint":
+		return hintText;
+	break;
 	case "getRotX":
 		return _rotX;
 	break;
@@ -90,6 +93,9 @@
 		case "NAME":
 			tagID = arg[2];
 			set("name", arg[2]);
+		break;
+		case "HINT":
+			hintText = arg[2];
 		break;
 		}
 		return;
@@ -157,6 +163,23 @@
 		}
 		return;
 	break;
+	case "setHint":
+		hintText = arg[1];
+		return;
+	break;
+	case "setActionScript":
+		/* Receive action script from ACTION child */
+		_actionScript = arg[1];
+		return;
+	break;
+	case "buttonRelease":
+	case "buttonUp":
+		/* Execute action script if defined */
+		if (_actionScript != "" && _actionScript != "0") {
+			execScript(_actionScript);
+		}
+		return;
+	break;
 	case "config":
 		return;
 	break;
@@ -174,6 +197,8 @@
 		sizeY = 0;
 		fgColor = "black";
 		bdColor = "";
+		hintText = "";
+		_actionScript = "";
 		_savedParent = "";
 		_rotX = 0.0;
 		_rotY = 0.0;

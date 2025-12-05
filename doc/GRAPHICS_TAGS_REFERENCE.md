@@ -53,8 +53,8 @@ Wei's proposal was an independent parallel effort, not an implementation of VRML
 | Scale (`<SCALE>`) | ✅ Implemented |
 | Axis (`<AXIS>`) | ✅ Implemented |
 | Button (`<BUTTON>`) | ✅ Implemented (visual, click, HREF, colors) |
-| Hint (HINT attribute) | ✅ Shown in status bar on hover |
-| Interactive scripting (`<ACTION>`, `<SCRIPT>`) | ❌ Not implemented |
+| Hint (HINT attribute) | ✅ Shown in status bar on hover (all shapes) |
+| Interactive scripting (`<ACTION>`, `<SCRIPT>`) | ✅ Implemented for all shapes |
 | Multi-user sync (`SC` attribute) | ❌ Not implemented |
 
 ---
@@ -589,31 +589,47 @@ Tooltip text for a button, displayed in the status bar when the mouse hovers ove
 
 ---
 
-## Not Implemented
+## Interactive Scripting
 
-The following features from the original design are **not implemented**:
-
-### Interactive Scripting
-
-The `<ACTION>` and inline `<SCRIPT TYPE="viola">` tags are not implemented. The original design proposed scripted buttons:
+The `<ACTION>` and inline `<SCRIPT TYPE="viola">` tags are **now implemented** for all shapes. Any shape can have an ACTION child with a viola script that responds to click events:
 
 ```html
-<!-- NOT IMPLEMENTED: Scripted button -->
-<BUTTON ID="btn">
+<!-- Scripted rectangle that rotates when clicked -->
+<RECT ID="myRect" HINT="Click to rotate!">
   <ACTION>
     <SCRIPT TYPE="viola">
       switch (arg[0]) {
       case "buttonUp":
-        send("#sq1", "closer");
+        angle = angle + 15;
+        send("myRect", "setRotZ", angle);
+        send("myGfx", "expose");
       break;
       }
     </SCRIPT>
   </ACTION>
-  <LABEL>Click Me</LABEL>
-</BUTTON>
+  <POS X=50 Y=50></POS>
+  <SIZE X=100 Y=80></SIZE>
+  <FGCOLOR NAME="blue"></FGCOLOR>
+</RECT>
 ```
 
-**Note:** Basic `<BUTTON>` with `LABEL` and `HREF` attributes IS implemented — only the scripting part is missing.
+**Supported shapes with ACTION:**
+- RECT, SQUARE
+- CIRCLE, OVAL
+- LINE
+- POLYGON
+- TEXT
+- BUTTON
+
+The HINT attribute is also supported on all shapes to show tooltip text in the status bar on hover.
+
+**Example:** See `examples/test_action_shapes.html` for a comprehensive demo.
+
+---
+
+## Not Implemented
+
+The following features from the original design are **not implemented**:
 
 ### Multi-User Synchronization
 

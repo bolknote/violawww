@@ -1658,9 +1658,12 @@ int GLPaintTextTransformed(Window w, GC gc, int fontID, int x0, int y0,
     double sinR = sin(radians);
     double cx, cy;
     if (axisX != 0 || axisY != 0) {
-        /* Use axis relative to text position */
-        cx = axisX - x0 + pixSize / 2.0;
-        cy = axisY - y0 + pixSize / 2.0;
+        /* Convert screen axis to pixmap coordinates
+         * Text top-left in pixmap is at (pixSize/2 - textWidth/2, pixSize/2 - textHeight/2)
+         * Screen (x0, y0) maps to that point
+         */
+        cx = axisX - x0 + (pixSize / 2.0 - textWidth / 2.0);
+        cy = axisY - y0 + (pixSize / 2.0 - textHeight / 2.0);
     } else {
         /* Default: center of pixmap (center of text) */
         cx = pixSize / 2.0;
@@ -1693,9 +1696,12 @@ int GLPaintTextTransformed(Window w, GC gc, int fontID, int x0, int y0,
     /* Create destination picture */
     Picture dstPic = XRenderCreatePicture(display, w, rgbFormat, 0, NULL);
     
-    /* Composite rotated text to destination - center at x0, y0 */
-    int destX = x0 - pixSize / 2;
-    int destY = y0 - pixSize / 2;
+    /* Composite rotated text to destination
+     * Position matching GLPaintText: top-left at (x0, y0)
+     * So text center should be at (x0 + textWidth/2, y0 + textHeight/2)
+     */
+    int destX = x0 + textWidth / 2 - pixSize / 2;
+    int destY = y0 + textHeight / 2 - pixSize / 2;
     
     XRenderComposite(display, PictOpOver, srcPic, None, dstPic,
                      0, 0, 0, 0, destX, destY, pixSize, pixSize);

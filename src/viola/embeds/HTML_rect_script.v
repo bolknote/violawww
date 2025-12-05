@@ -28,6 +28,9 @@
 	case "getBD":
 		return bdColor;
 	break;
+	case "getHint":
+		return hintText;
+	break;
 	case "getRotX":
 		return _rotX;
 	break;
@@ -62,26 +65,15 @@
 	case "expose":
 		return;
 	break;
-	case "D":
-		/* Register with parent container */
-		/* If PARENT attribute was set, search for that object */
-		if (_parentID != "" && _parentID != "0") {
-			/* Look up GRAPHICS by class registry */
-			parentObj = send("HTML_graphics", "findGfx", _parentID);
-			if (parentObj != "" && parentObj != "0" && exist(parentObj) == 1) {
-				send(parentObj, "addChild", self());
-			}
-		} else {
-			/* Use saved parent from AA */
-			p = _savedParent;
-			/* If still no parent, try getCurrentGfx */
-			if (p == "" || p == "0" || p == "(NULL)") {
-				p = send("HTML_graphics", "getCurrentGfx");
-			}
-			if (p != "" && p != "0" && p != "(NULL)") {
-				send(p, "addChild", self());
-			}
+	case 8:
+		/* End of tag processing - register with parent now (for SGML_MIXED) */
+		if (_savedParent != "" && _savedParent != "0" && _savedParent != "(NULL)") {
+			send(_savedParent, "addChild", self());
 		}
+		return;
+	break;
+	case "D":
+		/* D handler - registration fallback */
 		return 1; /* Keep object alive */
 	break;
 	case "R":
@@ -127,6 +119,9 @@
 		break;
 		case "BDCOLOR":
 			bdColor = arg[2];
+		break;
+		case "HINT":
+			hintText = arg[2];
 		break;
 		}
 		return;
@@ -199,6 +194,23 @@
 		}
 		return;
 	break;
+	case "setHint":
+		hintText = arg[1];
+		return;
+	break;
+	case "setActionScript":
+		/* Receive action script from ACTION child */
+		_actionScript = arg[1];
+		return;
+	break;
+	case "buttonRelease":
+	case "buttonUp":
+		/* Execute action script if defined */
+		if (_actionScript != "" && _actionScript != "0") {
+			execScript(_actionScript);
+		}
+		return;
+	break;
 	case "config":
 		return;
 	break;
@@ -218,6 +230,8 @@
 		sizeY = 0;
 		fgColor = "black";
 		bdColor = "";
+		hintText = "";
+		_actionScript = "";
 		_rotX = 0.0;
 		_rotY = 0.0;
 		_rotZ = 0.0;

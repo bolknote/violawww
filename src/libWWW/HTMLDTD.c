@@ -128,7 +128,9 @@ static attr changed_attr[] = {{"ID"}, {"IDREF"}, {0}};
 
 static attr color_attr[] = {{"NAME"}, {"RGB"}, {0}};
 
-static attr circle_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr circle_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
+#undef HTML_CIRCLE_ATTRIBUTES
+#define HTML_CIRCLE_ATTRIBUTES 3
 
 static attr emph_attr[] = {{"B"}, {"I"}, {"INDEX"}, {"SUB"}, {"SUP"}, {"TT"}, {"TYPE"}, {0}};
 
@@ -167,7 +169,9 @@ static attr isindex_attr[] = {{"ACTION"}, {0}};
 
 static attr l_attr[] = {{"ALIGN"}, {"ID"}, {"INDEX"}, {"LANG"}, {0}};
 
-static attr line_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr line_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
+#undef HTML_LINE_ATTRIBUTES
+#define HTML_LINE_ATTRIBUTES 3
 
 static attr link_attr[] = {{"ARG"}, {"HREF"}, {"ID"}, {"REL"}, {"REV"}, {0}};
 
@@ -186,17 +190,23 @@ static attr nextid_attr[] = {
 static attr ol_attr[] = {{"COMPACT"},  {"FOLD"},  {"LABEL"}, {"MAXWIDTH"},
                          {"MINWIDTH"}, {"START"}, {0}};
 
-static attr oval_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr oval_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
+#undef HTML_OVAL_ATTRIBUTES
+#define HTML_OVAL_ATTRIBUTES 3
 
 static attr point_attr[] = {{"ID"}, {"X"}, {"Y"}, {0}};
 
-static attr polygon_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr polygon_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
+#undef HTML_POLYGON_ATTRIBUTES
+#define HTML_POLYGON_ATTRIBUTES 3
 
 static attr pos_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
 static attr option_attr[] = {{"CHECKED"}, {"DISABLED"}, {"NAME"}, {"SELECTED"}, {"VALUE"}, {0}};
 
-static attr rect_attr[] = {{"ID"}, {"NAME"}, {"PARENT"}, {"X"}, {"Y"}, {"W"}, {"H"}, {"FGCOLOR"}, {"BDCOLOR"}, {0}};
+static attr rect_attr[] = {{"BDCOLOR"}, {"FGCOLOR"}, {"H"}, {"HINT"}, {"ID"}, {"NAME"}, {"PARENT"}, {"W"}, {"X"}, {"Y"}, {0}};
+#undef HTML_RECT_ATTRIBUTES
+#define HTML_RECT_ATTRIBUTES 10
 
 static attr rot_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
@@ -204,11 +214,13 @@ static attr scale_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
 static attr size_attr[] = {{"SC"}, {"X"}, {"Y"}, {"Z"}, {0}};
 
-static attr square_attr[] = {{"ID"}, {"NAME"}, {0}};
+static attr square_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
+#undef HTML_SQUARE_ATTRIBUTES
+#define HTML_SQUARE_ATTRIBUTES 3
 
-static attr text_attr[] = {{"ID"}, {"LABEL"}, {"NAME"}, {0}};
+static attr text_attr[] = {{"HINT"}, {"ID"}, {"LABEL"}, {"NAME"}, {0}};
 #undef HTML_TEXT_ATTRIBUTES
-#define HTML_TEXT_ATTRIBUTES 3
+#define HTML_TEXT_ATTRIBUTES 4
 
 static attr select_attr[] = {{"CHECKED"}, {"DISABLED"}, {"ENVVAR"}, {"MAXWIDTH"}, {"MINWIDTH"},
                              {"NAME"},    {"SIZE"},     {"TYPE"},   {"VALUE"},    {0}};
@@ -469,7 +481,7 @@ static HTTag tags[] = {
     {"POS", pos_attr, HTML_POS_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"PRE", pre_attr, HTML_PRE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"QUOTE", no_attr, 0, SGML_MIXED, 0, 0},
-    {"RECT", rect_attr, HTML_RECT_ATTRIBUTES, SGML_EMPTY, 0, 0},
+    {"RECT", rect_attr, HTML_RECT_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"ROT", rot_attr, HTML_ROT_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SAMP", no_attr, 0, SGML_MIXED, 0, 0},
     {"SCALE", scale_attr, HTML_SCALE_ATTRIBUTES, SGML_EMPTY, 0, 0},

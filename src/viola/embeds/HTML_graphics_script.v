@@ -563,6 +563,7 @@
 									set("FGColor", "black");
 								}
 								if (hasTransform == 1) {
+									/* axis 0,0 = rotate around text center (default) */
 									drawTextTransformed(shapeX, shapeY, 1, textStr, rotZVal, sxVal, syVal, shapeAX, shapeAY);
 								} else {
 									drawText(shapeX, shapeY, 1, textStr);
@@ -644,70 +645,71 @@
 		gfxChildCount = 0;
 		_registeredAsCurrent = 0;
 		_pressedButton = "";
+		_pressedShape = "";
 		/* Use document colors */
 		SGMLBuildDoc_setColors();
 		return;
 	break;
 	case "buttonPress":
-		/* Find button under mouse and mark as pressed */
+		/* Find shape under mouse and mark as pressed */
 		mx = arg[1];
 		my = arg[2];
-		for (bi = 0; bi < gfxChildCount; bi++) {
+		/* Iterate backwards to find topmost shape first */
+		for (bi = gfxChildCount - 1; bi >= 0; bi--) {
 			btn = gfxChildArr[bi];
 			if (btn != "" && exist(btn) == 1) {
-				if (send(btn, "getShapeType") == "button") {
-					bx = send(btn, "getX");
-					by = send(btn, "getY");
-					bw = send(btn, "getW");
-					bh = send(btn, "getH");
-					if (mx >= bx && mx <= bx + bw && my >= by && my <= bh + by) {
+				bx = send(btn, "getX");
+				by = send(btn, "getY");
+				bw = send(btn, "getW");
+				bh = send(btn, "getH");
+				if (mx >= bx && mx <= bx + bw && my >= by && my <= by + bh) {
+					_pressedShape = btn;
+					if (send(btn, "getShapeType") == "button") {
 						_pressedButton = btn;
 						send(self(), "expose");
-						return;
 					}
+					return;
 				}
 			}
 		}
 		return;
 	break;
 	case "buttonRelease":
-		/* Release button and trigger action */
-		if (_pressedButton != "" && exist(_pressedButton) == 1) {
-			/* Notify button of click event - allows ACTION scripts to run */
-			send(_pressedButton, "buttonUp");
-			href = send(_pressedButton, "getHref");
-			_pressedButton = "";
-			send(self(), "expose");
-			if (href != "" && href != "0") {
-				/* Use www object to load URL */
-				send("www", "show", href);
+		/* Release shape and trigger action */
+		if (_pressedShape != "" && exist(_pressedShape) == 1) {
+			send(_pressedShape, "buttonUp");
+			if (send(_pressedShape, "getShapeType") == "button") {
+				href = send(_pressedShape, "getHref");
+				_pressedButton = "";
+				send(self(), "expose");
+				if (href != "" && href != "0") {
+					send("www", "show", href);
+				}
 			}
+			_pressedShape = "";
 		}
 		return;
 	break;
 	case "mouseMove":
-		/* Show hint for button under mouse */
+		/* Show hint for shape under mouse */
 		mx = arg[1];
 		my = arg[2];
-		for (bi = 0; bi < gfxChildCount; bi++) {
+		for (bi = gfxChildCount - 1; bi >= 0; bi--) {
 			btn = gfxChildArr[bi];
 			if (btn != "" && exist(btn) == 1) {
-				if (send(btn, "getShapeType") == "button") {
-					bx = send(btn, "getX");
-					by = send(btn, "getY");
-					bw = send(btn, "getW");
-					bh = send(btn, "getH");
-					if (mx >= bx && mx <= bx + bw && my >= by && my <= by + bh) {
-						hint = send(btn, "getHint");
-						if (hint != "" && hint != "0") {
-							send("www.mesg.tf", "show", hint);
-						}
-						return;
+				bx = send(btn, "getX");
+				by = send(btn, "getY");
+				bw = send(btn, "getW");
+				bh = send(btn, "getH");
+				if (mx >= bx && mx <= bx + bw && my >= by && my <= by + bh) {
+					hint = send(btn, "getHint");
+					if (hint != "" && hint != "0") {
+						send("www.mesg.tf", "show", hint);
 					}
+					return;
 				}
 			}
 		}
-		/* Clear hint when not over button */
 		send("www.mesg.tf", "show", "");
 		return;
 	break;

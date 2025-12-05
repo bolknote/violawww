@@ -10,6 +10,46 @@
 	case "getShapeType":
 		return "polygon";
 	break;
+	case "getX":
+		/* Return bounding box X (min X of all points) */
+		if (pointCount < 1) return 0;
+		minVal = pointsX[0];
+		for (i = 1; i < pointCount; i++) {
+			if (pointsX[i] < minVal) minVal = pointsX[i];
+		}
+		return minVal;
+	break;
+	case "getY":
+		/* Return bounding box Y (min Y of all points) */
+		if (pointCount < 1) return 0;
+		minVal = pointsY[0];
+		for (i = 1; i < pointCount; i++) {
+			if (pointsY[i] < minVal) minVal = pointsY[i];
+		}
+		return minVal;
+	break;
+	case "getW":
+		/* Return bounding box width (maxX - minX) */
+		if (pointCount < 1) return 0;
+		minVal = pointsX[0];
+		maxVal = pointsX[0];
+		for (i = 1; i < pointCount; i++) {
+			if (pointsX[i] < minVal) minVal = pointsX[i];
+			if (pointsX[i] > maxVal) maxVal = pointsX[i];
+		}
+		return maxVal - minVal;
+	break;
+	case "getH":
+		/* Return bounding box height (maxY - minY) */
+		if (pointCount < 1) return 0;
+		minVal = pointsY[0];
+		maxVal = pointsY[0];
+		for (i = 1; i < pointCount; i++) {
+			if (pointsY[i] < minVal) minVal = pointsY[i];
+			if (pointsY[i] > maxVal) maxVal = pointsY[i];
+		}
+		return maxVal - minVal;
+	break;
 	case "getPoints":
 		/* Return number of points */
 		return pointCount;
@@ -25,6 +65,9 @@
 	break;
 	case "getBD":
 		return bdColor;
+	break;
+	case "getHint":
+		return hintText;
 	break;
 	case "getRotX":
 		return _rotX;
@@ -85,6 +128,9 @@
 		case "NAME":
 			tagID = arg[2];
 			set("name", arg[2]);
+		break;
+		case "HINT":
+			hintText = arg[2];
 		break;
 		}
 		return;
@@ -148,6 +194,23 @@
 		}
 		return;
 	break;
+	case "setHint":
+		hintText = arg[1];
+		return;
+	break;
+	case "setActionScript":
+		/* Receive action script from ACTION child */
+		_actionScript = arg[1];
+		return;
+	break;
+	case "buttonRelease":
+	case "buttonUp":
+		/* Execute action script if defined */
+		if (_actionScript != "" && _actionScript != "0") {
+			execScript(_actionScript);
+		}
+		return;
+	break;
 	case "config":
 		return;
 	break;
@@ -162,6 +225,8 @@
 		pointCount = 0;
 		fgColor = "black";
 		bdColor = "";
+		hintText = "";
+		_actionScript = "";
 		_savedParent = "";
 		_rotX = 0.0;
 		_rotY = 0.0;

@@ -18,7 +18,17 @@
  */
 
 #include "discovery.h"
+#include "sync_multicast.h"
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+/* Viola includes for message dispatch */
+#include "obj.h"
+#include "packet.h"
+#include "cexec.h"
+#include "ident.h"
+#include "slotaccess.h"
 
 /*
  * Global state for discovery enable/disable
@@ -54,6 +64,94 @@ int discovery_is_enabled(void)
 }
 
 /* ============================================================================
+ * Remote message flag - platform independent
+ * ============================================================================
+ * Used to prevent echo when processing sync messages from peers.
+ */
+static int receiving_remote_flag = 0;
+
+void discovery_begin_remote(void)
+{
+    receiving_remote_flag = 1;
+}
+
+void discovery_end_remote(void)
+{
+    receiving_remote_flag = 0;
+}
+
+int discovery_is_remote(void)
+{
+    return receiving_remote_flag;
+}
+
+/*
+ * discovery_dispatch_sync - Dispatch a sync message to a Viola object
+ *
+ * Called from platform-specific code when a sync message is received.
+ * Sets the remote flag, sends the message, then clears the flag.
+ *
+ * Args format: "arg1|arg2|arg3" (pipe-separated)
+ */
+void discovery_dispatch_sync(const char* id, const char* func, const char* args)
+{
+    VObj* obj;
+    Packet argv[8];
+    int argc = 1;  /* First arg is the message name */
+    char args_buf[256];
+    char* p;
+    char* arg_start;
+    
+    if (!id || !func) return;
+    
+    /* Find the object */
+    obj = findObject(getIdent(id));
+    if (!obj) return;
+    
+    /* Build argument packets */
+    memset(argv, 0, sizeof(argv));
+    
+    /* argv[0] = message name */
+    argv[0].type = PKT_STR;
+    argv[0].info.s = (char*)func;
+    argv[0].canFree = 0;
+    
+    /* Parse additional args (pipe-separated) */
+    if (args && args[0]) {
+        strncpy(args_buf, args, sizeof(args_buf) - 1);
+        args_buf[sizeof(args_buf) - 1] = '\0';
+        
+        arg_start = args_buf;
+        for (p = args_buf; *p && argc < 7; p++) {
+            if (*p == '|') {
+                *p = '\0';
+                argv[argc].type = PKT_STR;
+                argv[argc].info.s = arg_start;
+                argv[argc].canFree = 0;
+                argc++;
+                arg_start = p + 1;
+            }
+        }
+        /* Last argument */
+        if (*arg_start && argc < 7) {
+            argv[argc].type = PKT_STR;
+            argv[argc].info.s = arg_start;
+            argv[argc].canFree = 0;
+            argc++;
+        }
+    }
+    
+    /* Set remote flag */
+    receiving_remote_flag = 1;
+    
+    /* Send the message */
+    sendMessagePackets(obj, argv, argc);
+    
+    /* Clear remote flag */
+    receiving_remote_flag = 0;
+}
+
+/* ============================================================================
  * macOS Implementation - Bonjour/DNS-SD
  * ============================================================================
  * Uses Apple's DNS Service Discovery framework which is built into macOS.
@@ -78,15 +176,20 @@ void discovery_set_page(const char* url) {
     if (!lazy_init_done) {
         fprintf(stderr, "[Discovery] Initializing (page has SC attributes)\n");
         discovery_bonjour_init();
+        sync_multicast_init();  /* Initialize UDP multicast for fast sync */
         lazy_init_done = 1;
     }
     
     fprintf(stderr, "[Discovery] Page: %s\n", url ? url : "(null)");
     discovery_bonjour_set_page(url);
+    
+    /* Set page hash for multicast filtering */
+    sync_multicast_set_page(discovery_bonjour_get_hash());
 }
 
 void discovery_process(void) {
     discovery_bonjour_process();
+    sync_multicast_process();  /* Process UDP multicast messages */
 }
 
 int discovery_get_fd(void) {
@@ -95,6 +198,7 @@ int discovery_get_fd(void) {
 
 void discovery_shutdown(void) {
     discovery_bonjour_shutdown();
+    sync_multicast_shutdown();
 }
 
 unsigned int discovery_get_hash(void) {
@@ -103,6 +207,16 @@ unsigned int discovery_get_hash(void) {
 
 int discovery_supported(void) {
     return 1;
+}
+
+void discovery_broadcast(const char* id, const char* func, const char* args) {
+    if (!discovery_enabled_flag) return;
+    /* Use UDP multicast for fast sync (DNS-SD TXT is too slow) */
+    sync_multicast_broadcast(id, func, args);
+}
+
+unsigned int discovery_get_seq(void) {
+    return discovery_bonjour_get_seq();
 }
 
 /* ============================================================================
@@ -146,6 +260,14 @@ int discovery_supported(void) {
     return 0;  /* Will return 1 when Avahi is implemented */
 }
 
+void discovery_broadcast(const char* id, const char* func, const char* args) {
+    (void)id; (void)func; (void)args;  /* Unused */
+}
+
+unsigned int discovery_get_seq(void) {
+    return 0;
+}
+
 /* ============================================================================
  * Unsupported Platform - Stub Implementation
  * ============================================================================
@@ -181,6 +303,14 @@ unsigned int discovery_get_hash(void) {
 
 int discovery_supported(void) {
     return 0;  /* Discovery not available */
+}
+
+void discovery_broadcast(const char* id, const char* func, const char* args) {
+    (void)id; (void)func; (void)args;  /* Unused */
+}
+
+unsigned int discovery_get_seq(void) {
+    return 0;
 }
 
 #endif /* Platform selection */

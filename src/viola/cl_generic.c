@@ -234,6 +234,8 @@ MethodInfo meths_generic[] = {
     {STR_discoverySetPage, meth_generic_discoverySetPage},
     {STR_discoveryEnable, meth_generic_discoveryEnable},
     {STR_discoveryReset, meth_generic_discoveryReset},
+    {STR_discoveryBroadcast, meth_generic_discoveryBroadcast},
+    {STR_discoveryIsRemote, meth_generic_discoveryIsRemote},
     {STR_char, meth_generic_char},
     {STR_charHeight, meth_generic_charHeight},
     {STR_clear, meth_generic_clear},
@@ -2037,6 +2039,44 @@ long meth_generic_discoveryEnable(VObj* self, Packet* result, int argc, Packet a
 long meth_generic_discoveryReset(VObj* self, Packet* result, int argc, Packet argv[]) {
     clearPacket(result);
     discovery_reset();
+    return 1;
+}
+
+/*
+ * discoveryBroadcast(id, func, arg1, arg2, ...)
+ * Broadcast a sync message to peers viewing the same page
+ */
+long meth_generic_discoveryBroadcast(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char args_buf[256] = "";
+    char* id;
+    char* func;
+    int i;
+    
+    clearPacket(result);
+    if (argc < 2) return 0;
+    
+    id = PkInfo2Str(&argv[0]);
+    func = PkInfo2Str(&argv[1]);
+    
+    /* Build pipe-separated args string */
+    for (i = 2; i < argc && i < 8; i++) {
+        if (i > 2) strcat(args_buf, "|");
+        strcat(args_buf, PkInfo2Str(&argv[i]));
+    }
+    
+    discovery_broadcast(id, func, args_buf);
+    return 1;
+}
+
+/*
+ * discoveryIsRemote()
+ * Returns 1 if currently processing a remote sync message, 0 otherwise
+ */
+long meth_generic_discoveryIsRemote(VObj* self, Packet* result, int argc, Packet argv[]) {
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->info.i = discovery_is_remote();
+    result->canFree = 0;
     return 1;
 }
 

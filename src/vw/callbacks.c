@@ -970,6 +970,22 @@ Boolean doViolaIdle(XtPointer clientData) {
     return False;  /* Continue calling this workproc */
 }
 
+/* Timer callback for sync polling - called every 50ms */
+static void syncTimerCallback(XtPointer clientData, XtIntervalId* id) {
+    (void)clientData;
+    (void)id;
+    discovery_process();  /* Process any pending sync messages */
+    /* Re-register timer */
+    XtAppAddTimeOut(appCon, 50, syncTimerCallback, NULL);  /* 50ms = 20 Hz */
+}
+
+/* Register sync socket - starts periodic polling timer */
+void registerSyncSocket(int fd) {
+    if (fd >= 0) {
+        XtAppAddTimeOut(appCon, 50, syncTimerCallback, NULL);
+    }
+}
+
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
     if (event->type == ConfigureNotify) {
         XConfigureEvent* xcep = (XConfigureEvent*)event;

@@ -45,7 +45,19 @@ static struct {
     char current_url[1024];
     BonjourPeer peers[MAX_PEERS];
     int peer_count;
+    /* Sync state */
+    unsigned int sync_seq;           /* Broadcast sequence number */
+    char sync_msg[256];              /* Current sync message: SEQ:N|id|func|args */
+    unsigned int last_seen_seq[MAX_PEERS];  /* Per-peer last seen seq */
+    /* Polling state */
+    int poll_counter;                /* Counter for periodic TXT re-resolve */
 } bonjour_state = {0};
+
+/* How often to re-resolve peers (in process() calls) - lower = faster sync */
+#define POLL_INTERVAL 3
+
+/* Forward declaration for Viola message dispatch */
+extern void discovery_dispatch_sync(const char* id, const char* func, const char* args);
 
 /*
  * djb2 hash function - simple and effective for strings
@@ -62,7 +74,7 @@ static unsigned int djb2_hash(const char* str)
 }
 
 /*
- * Build TXT record with current page hash
+ * Build TXT record with current page hash and sync message
  */
 static void build_txt_record(TXTRecordRef* txt)
 {
@@ -78,6 +90,12 @@ static void build_txt_record(TXTRecordRef* txt)
         int url_len = strlen(bonjour_state.current_url);
         if (url_len > 200) url_len = 200;
         TXTRecordSetValue(txt, "url", url_len, bonjour_state.current_url);
+    }
+    
+    /* Include sync message if present */
+    if (bonjour_state.sync_msg[0]) {
+        TXTRecordSetValue(txt, "sync", strlen(bonjour_state.sync_msg), 
+                          bonjour_state.sync_msg);
     }
 }
 
@@ -132,7 +150,7 @@ static void remove_peer(const char* name)
 }
 
 /*
- * Check if peer has same hash and notify
+ * Check if peer has same hash (for internal tracking)
  */
 static void check_peer_match(BonjourPeer* peer)
 {
@@ -141,14 +159,78 @@ static void check_peer_match(BonjourPeer* peer)
     /* Skip self */
     if (strcmp(peer->name, bonjour_state.instance_name) == 0) return;
     
-    if (peer->hash == bonjour_state.current_hash && bonjour_state.current_hash != 0) {
-        fprintf(stderr, "[Bonjour] *** PEER MATCH! %s is viewing the same page ***\n", 
-                peer->name);
-        fprintf(stderr, "[Bonjour]     URL hash: %08x\n", peer->hash);
-        if (bonjour_state.current_url[0]) {
-            fprintf(stderr, "[Bonjour]     URL: %s\n", bonjour_state.current_url);
+    /* Just update hash, no debug output */
+}
+
+/*
+ * Parse and dispatch incoming sync message
+ * Format: SEQ:N|id|func|args
+ */
+static void parse_sync_message(const char* sync_str, int peer_idx)
+{
+    char buf[256];
+    char* p;
+    unsigned int seq;
+    char* id;
+    char* func;
+    char* args;
+    
+    if (!sync_str || !sync_str[0]) return;
+    
+    /* Copy to mutable buffer */
+    strncpy(buf, sync_str, sizeof(buf) - 1);
+    buf[sizeof(buf) - 1] = '\0';
+    
+    /* Parse SEQ:N */
+    if (strncmp(buf, "SEQ:", 4) != 0) return;
+    p = buf + 4;
+    seq = (unsigned int)strtoul(p, &p, 10);
+    if (*p != '|') return;
+    p++;
+    
+    /* Check if we've already seen this seq from this peer */
+    if (peer_idx >= 0 && peer_idx < MAX_PEERS) {
+        if (seq <= bonjour_state.last_seen_seq[peer_idx]) {
+            return;  /* Already processed */
+        }
+        bonjour_state.last_seen_seq[peer_idx] = seq;
+    }
+    
+    /* Parse id */
+    id = p;
+    p = strchr(p, '|');
+    if (!p) return;
+    *p++ = '\0';
+    
+    /* Parse func */
+    func = p;
+    p = strchr(p, '|');
+    if (!p) {
+        /* No args */
+        args = "";
+    } else {
+        *p++ = '\0';
+        args = p;
+    }
+    
+    fprintf(stderr, "[Bonjour] Sync received: SEQ:%u %s.%s(%s)\n", seq, id, func, args);
+    
+    /* Dispatch to Viola */
+    discovery_dispatch_sync(id, func, args);
+}
+
+/*
+ * Get peer index by name
+ */
+static int get_peer_index(const char* name)
+{
+    for (int i = 0; i < MAX_PEERS; i++) {
+        if (bonjour_state.peers[i].active && 
+            strcmp(bonjour_state.peers[i].name, name) == 0) {
+            return i;
         }
     }
+    return -1;
 }
 
 /*
@@ -179,7 +261,15 @@ static void DNSSD_API resolve_callback(
         return;
     }
     
+    /* Skip self */
+    if (strcmp(peer->name, bonjour_state.instance_name) == 0) {
+        DNSServiceRefDeallocate(sdRef);
+        return;
+    }
+    
     strncpy(peer->host, hosttarget, sizeof(peer->host) - 1);
+    
+    int peer_idx = get_peer_index(peer->name);
     
     /* Parse TXT record for hash */
     uint8_t hash_len;
@@ -196,6 +286,20 @@ static void DNSSD_API resolve_callback(
         /* Check for match */
         if (peer->hash != old_hash) {
             check_peer_match(peer);
+        }
+    }
+    
+    /* Parse sync message if peer is on same page */
+    if (peer->hash == bonjour_state.current_hash && bonjour_state.current_hash != 0) {
+        uint8_t sync_len;
+        const char* sync_val = (const char*)TXTRecordGetValuePtr(txtLen, txtRecord, "sync", &sync_len);
+        
+        if (sync_val && sync_len > 0) {
+            char sync_str[256] = {0};
+            int copy_len = (sync_len < 255) ? sync_len : 255;
+            memcpy(sync_str, sync_val, copy_len);
+            
+            parse_sync_message(sync_str, peer_idx);
         }
     }
     
@@ -380,6 +484,46 @@ void discovery_bonjour_set_page(const char* url)
 /*
  * Process pending events
  */
+/*
+ * Re-resolve a peer's TXT record to check for sync updates
+ */
+static void resolve_peer_txt(BonjourPeer* peer)
+{
+    DNSServiceRef resolve_ref;
+    DNSServiceErrorType err;
+    
+    if (!peer || !peer->active) return;
+    if (strcmp(peer->name, bonjour_state.instance_name) == 0) return;  /* Skip self */
+    if (peer->hash != bonjour_state.current_hash) return;  /* Only peers on same page */
+    
+    err = DNSServiceResolve(
+        &resolve_ref,
+        0,
+        0,  /* All interfaces */
+        peer->name,
+        VIOLA_SERVICE_TYPE,
+        "local.",
+        resolve_callback,
+        peer);
+    
+    if (err == kDNSServiceErr_NoError) {
+        /* Process immediately and deallocate */
+        int fd = DNSServiceRefSockFD(resolve_ref);
+        if (fd >= 0) {
+            fd_set readfds;
+            struct timeval tv = {0, 100000}; /* 100ms timeout */
+            
+            FD_ZERO(&readfds);
+            FD_SET(fd, &readfds);
+            
+            if (select(fd + 1, &readfds, NULL, NULL, &tv) > 0) {
+                DNSServiceProcessResult(resolve_ref);
+            }
+        }
+        /* Note: resolve_callback deallocates resolve_ref */
+    }
+}
+
 void discovery_bonjour_process(void)
 {
     if (!bonjour_state.initialized) return;
@@ -412,6 +556,18 @@ void discovery_bonjour_process(void)
             
             if (select(fd + 1, &readfds, NULL, NULL, &tv) > 0) {
                 DNSServiceProcessResult(bonjour_state.register_ref);
+            }
+        }
+    }
+    
+    /* Periodically re-resolve peers to check for TXT updates */
+    bonjour_state.poll_counter++;
+    if (bonjour_state.poll_counter >= POLL_INTERVAL) {
+        bonjour_state.poll_counter = 0;
+        
+        for (int i = 0; i < MAX_PEERS; i++) {
+            if (bonjour_state.peers[i].active) {
+                resolve_peer_txt(&bonjour_state.peers[i]);
             }
         }
     }
@@ -454,6 +610,55 @@ void discovery_bonjour_shutdown(void)
 unsigned int discovery_bonjour_get_hash(void)
 {
     return bonjour_state.current_hash;
+}
+
+/*
+ * Broadcast a sync message to peers
+ */
+void discovery_bonjour_broadcast(const char* id, const char* func, const char* args)
+{
+    if (!bonjour_state.initialized) return;
+    if (!id || !func) return;
+    
+    /* Increment sequence number */
+    bonjour_state.sync_seq++;
+    
+    /* Build sync message: SEQ:N|id|func|args */
+    if (args && args[0]) {
+        snprintf(bonjour_state.sync_msg, sizeof(bonjour_state.sync_msg),
+                 "SEQ:%u|%s|%s|%s", bonjour_state.sync_seq, id, func, args);
+    } else {
+        snprintf(bonjour_state.sync_msg, sizeof(bonjour_state.sync_msg),
+                 "SEQ:%u|%s|%s", bonjour_state.sync_seq, id, func);
+    }
+    
+    fprintf(stderr, "[Bonjour] Broadcasting: %s\n", bonjour_state.sync_msg);
+    
+    /* Update TXT record */
+    TXTRecordRef txt;
+    build_txt_record(&txt);
+    
+    DNSServiceErrorType err = DNSServiceUpdateRecord(
+        bonjour_state.register_ref,
+        NULL,                       /* primary record */
+        0,                          /* flags */
+        TXTRecordGetLength(&txt),
+        TXTRecordGetBytesPtr(&txt),
+        0);                         /* TTL (default) */
+    
+    TXTRecordDeallocate(&txt);
+    
+    if (err != kDNSServiceErr_NoError) {
+        fprintf(stderr, "[Bonjour] Failed to broadcast: %d\n", err);
+    }
+}
+
+/*
+ * Get current sequence number
+ */
+unsigned int discovery_bonjour_get_seq(void)
+{
+    return bonjour_state.sync_seq;
 }
 
 #endif /* __DARWIN__ */

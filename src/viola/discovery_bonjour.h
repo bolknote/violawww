@@ -64,6 +64,17 @@ void discovery_bonjour_shutdown(void);
  */
 unsigned int discovery_bonjour_get_hash(void);
 
+/*
+ * Broadcast a sync message to peers via TXT record update.
+ * Format: sync=SEQ:N|id|func|args
+ */
+void discovery_bonjour_broadcast(const char* id, const char* func, const char* args);
+
+/*
+ * Get the current broadcast sequence number.
+ */
+unsigned int discovery_bonjour_get_seq(void);
+
 #endif /* __DARWIN__ */
 
 #endif /* DISCOVERY_BONJOUR_H */

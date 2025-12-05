@@ -106,11 +106,25 @@
 	case "setPos":
 		posX = int(arg[1]);
 		posY = int(arg[2]);
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_pos") != "") {
+				discoveryBroadcast(get("name"), "setPos", arg[1], arg[2]);
+			}
+		} else {
+			send(_savedParent, "expose");
+		}
 		return;
 	break;
 	case "setSize":
 		sizeX = int(arg[1]);
 		sizeY = int(arg[2]);
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_size") != "") {
+				discoveryBroadcast(get("name"), "setSize", arg[1], arg[2]);
+			}
+		} else {
+			send(_savedParent, "expose");
+		}
 		return;
 	break;
 	case "setFGColor":
@@ -123,14 +137,35 @@
 	break;
 	case "setRotX":
 		_rotX = float(arg[1]);
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_rot") != "") {
+				discoveryBroadcast(get("name"), "setRotX", arg[1]);
+			}
+		} else {
+			send(_savedParent, "expose");
+		}
 		return;
 	break;
 	case "setRotY":
 		_rotY = float(arg[1]);
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_rot") != "") {
+				discoveryBroadcast(get("name"), "setRotY", arg[1]);
+			}
+		} else {
+			send(_savedParent, "expose");
+		}
 		return;
 	break;
 	case "setRotZ":
 		_rotZ = float(arg[1]);
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_rot") != "") {
+				discoveryBroadcast(get("name"), "setRotZ", arg[1]);
+			}
+		} else {
+			send(_savedParent, "expose");
+		}
 		return;
 	break;
 	case "setRot":
@@ -150,6 +185,14 @@
 		_scaleY = float(arg[2]);
 		if (isBlank(arg[3]) == 0) {
 			_scaleZ = float(arg[3]);
+		}
+		if (discoveryIsRemote() == 0) {
+			if (getVariable("_sc_scale") != "") {
+				discoveryBroadcast(get("name"), "setScale", arg[1], arg[2], arg[3]);
+			}
+		} else {
+			/* Remote change - trigger redraw */
+			send(_savedParent, "expose");
 		}
 		return;
 	break;

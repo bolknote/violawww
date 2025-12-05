@@ -162,4 +162,59 @@ unsigned int discovery_get_hash(void);
  */
 int discovery_supported(void);
 
+/* ============================================================================
+ * Synchronization API - for broadcasting and receiving state changes
+ * ============================================================================
+ */
+
+/*
+ * discovery_broadcast - Broadcast a state change to peers
+ *
+ * Called when an SC-enabled property changes locally. Broadcasts the change
+ * to all peers viewing the same page via mDNS TXT record update.
+ *
+ * Parameters:
+ *   id   - Object ID (e.g., "myRect")
+ *   func - Function/message name (e.g., "setRotZ")
+ *   args - Arguments as pipe-separated string (e.g., "45.5" or "1.0|2.0")
+ *
+ * The broadcast format in TXT record is: "SEQ:N|id|func|args"
+ */
+void discovery_broadcast(const char* id, const char* func, const char* args);
+
+/*
+ * discovery_begin_remote - Mark start of remote message processing
+ *
+ * Called before dispatching a received sync message to an object.
+ * Sets a flag so that handlers know not to re-broadcast the change.
+ */
+void discovery_begin_remote(void);
+
+/*
+ * discovery_end_remote - Mark end of remote message processing
+ *
+ * Called after dispatching a received sync message.
+ * Clears the remote processing flag.
+ */
+void discovery_end_remote(void);
+
+/*
+ * discovery_is_remote - Check if currently processing a remote message
+ *
+ * Used by object handlers to determine if a property change originated
+ * from the network (remote) or from local user interaction.
+ *
+ * Returns: 1 if processing remote message, 0 if local
+ */
+int discovery_is_remote(void);
+
+/*
+ * discovery_get_seq - Get current sequence number
+ *
+ * Returns the current broadcast sequence number for debugging.
+ *
+ * Returns: Current sequence number
+ */
+unsigned int discovery_get_seq(void);
+
 #endif /* DISCOVERY_H */

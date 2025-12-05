@@ -171,6 +171,8 @@ enum {
     STR_discoverySetPage,
     STR_discoveryEnable,
     STR_discoveryReset,
+    STR_discoveryBroadcast,
+    STR_discoveryIsRemote,
     STR_border,
     STR_building_maxFontDescent,
     STR_building_maxFontHeight,

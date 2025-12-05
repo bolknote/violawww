@@ -30,6 +30,10 @@
 		}
 		if (p != "" && p != "0" && p != "(NULL)") {
 			send(p, "setScale", scaleX, scaleY, scaleZ);
+			/* Set SC flag on parent shape if SC attribute was present */
+			if (hasSC == 1) {
+				send(p, "setVariable", "_sc_scale", "1");
+			}
 		}
 		return 0;
 	break;
@@ -37,6 +41,7 @@
 		switch (arg[1]) {
 		case "SC":
 			/* SC attribute enables peer discovery for sync */
+			hasSC = 1;
 			discoveryEnable();
 		break;
 		case "X":
@@ -68,6 +73,7 @@
 		scaleX = 1;
 		scaleY = 1;
 		scaleZ = 1;
+		hasSC = 0;
 		return;
 	break;
 	}

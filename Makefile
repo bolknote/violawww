@@ -281,9 +281,9 @@ VIOLA_SRCS = $(VIOLA_DIR)/DefaultStyles.c $(VIOLA_DIR)/ast.c $(VIOLA_DIR)/attr.c
              $(VIOLA_DIR)/vw_stubs.c $(VIOLA_DIR)/discovery.c
 VIOLA_OBJS = $(VIOLA_SRCS:.c=.o)
 
-# macOS-specific: Objective-C sound library and Bonjour peer discovery
+# macOS-specific: Objective-C sound library, Bonjour discovery, and UDP multicast sync
 ifeq ($(UNAME_S),Darwin)
-VIOLA_OBJS += $(VIOLA_DIR)/slib_darwin.o $(VIOLA_DIR)/discovery_bonjour.o
+VIOLA_OBJS += $(VIOLA_DIR)/slib_darwin.o $(VIOLA_DIR)/discovery_bonjour.o $(VIOLA_DIR)/sync_multicast.o
 endif
 
 .PHONY: viola

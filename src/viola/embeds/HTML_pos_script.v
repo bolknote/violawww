@@ -34,6 +34,10 @@
 		}
 		if (p != "" && p != "0" && p != "(NULL)") {
 			send(p, "setPos", posX, posY);
+			/* Set SC flag on parent shape if SC attribute was present */
+			if (hasSC == 1) {
+				send(p, "setVariable", "_sc_pos", "1");
+			}
 		}
 		return 0;
 	break;
@@ -41,6 +45,7 @@
 		switch (arg[1]) {
 		case "SC":
 			/* SC attribute enables peer discovery for sync */
+			hasSC = 1;
 			discoveryEnable();
 		break;
 		case "X":
@@ -72,6 +77,7 @@
 		posX = 0;
 		posY = 0;
 		posZ = 0;
+		hasSC = 0;
 		return;
 	break;
 	}

@@ -190,3 +190,9 @@ int compareDocViewCloneID(void* vkey, void* vdata) {
     (void)vdata;
     return 0;
 }
+
+/* Stub for registerSyncSocket - no Xt in standalone viola */
+void registerSyncSocket(int fd) {
+    (void)fd;
+    /* In standalone viola, sync processing happens via polling in event loop */
+}

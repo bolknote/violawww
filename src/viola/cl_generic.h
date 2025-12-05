@@ -65,6 +65,8 @@ long meth_generic_bellVolume(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_discoverySetPage(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_discoveryEnable(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_discoveryReset(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_discoveryBroadcast(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_discoveryIsRemote(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_char(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_charHeight(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_childn(VObj* self, Packet* result, int argc, Packet argv[]);

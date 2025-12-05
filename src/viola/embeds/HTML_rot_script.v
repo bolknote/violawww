@@ -38,6 +38,10 @@
 			if (hasZ == 1) {
 				send(p, "setRotZ", myRotZ);
 			}
+			/* Set SC flag on parent shape if SC attribute was present */
+			if (hasSC == 1) {
+				send(p, "setVariable", "_sc_rot", "1");
+			}
 		}
 		return 0;
 	break;
@@ -45,6 +49,7 @@
 		switch (arg[1]) {
 		case "SC":
 			/* SC attribute enables peer discovery for sync */
+			hasSC = 1;
 			discoveryEnable();
 		break;
 		case "X":
@@ -82,6 +87,7 @@
 		hasX = 0;
 		hasY = 0;
 		hasZ = 0;
+		hasSC = 0;
 		return;
 	break;
 	}

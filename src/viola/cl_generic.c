@@ -2603,6 +2603,10 @@ long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]
         return 0;
     }
     
+    fprintf(stderr, "execScript called on %s, script len=%zu\n", 
+            GET_name(self), strlen(scriptCode));
+    fflush(stderr);
+    
     /* Execute the script in the context of self */
     return execScript(self, result, scriptCode) ? 1 : 0;
 }

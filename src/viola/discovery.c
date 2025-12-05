@@ -42,7 +42,7 @@ static int discovery_enabled_flag = 0;
 void discovery_enable(void)
 {
     if (!discovery_enabled_flag) {
-        fprintf(stderr, "[Discovery] Enabled by SC attribute\n");
+        /* Discovery enabled by SC attribute */
         discovery_enabled_flag = 1;
     }
 }

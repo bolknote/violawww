@@ -53,7 +53,7 @@ static struct {
     struct sockaddr_in bcast_addr;
     unsigned int page_hash;
     unsigned int send_seq;
-    unsigned int instance_id;    /* Unique ID for this browser instance */
+    unsigned long instance_id;    /* Unique ID for this browser instance */
 } sync_state = {0};
 
 /*
@@ -68,7 +68,7 @@ int sync_multicast_init(void)
     
     if (sync_state.initialized) return 1;
     
-    fprintf(stderr, "[Sync] Initializing UDP broadcast on port %d\n", SYNC_PORT);
+    /* Initializing UDP broadcast */
     
     /* Create UDP socket */
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -120,10 +120,18 @@ int sync_multicast_init(void)
     sync_state.initialized = 1;
     sync_state.send_seq = 0;
     
-    /* Generate unique instance ID from PID and time */
-    sync_state.instance_id = (unsigned int)getpid() ^ (unsigned int)time(NULL);
+    /* Generate unique instance ID from PID, time, and hostname */
+    {
+        char hostname[256];
+        unsigned long host_hash = 0;
+        if (gethostname(hostname, sizeof(hostname)) == 0) {
+            host_hash = djb2_hash(hostname);
+        }
+        sync_state.instance_id = ((unsigned long)getpid() << 32) 
+                               | ((unsigned long)time(NULL) ^ host_hash);
+    }
     
-    fprintf(stderr, "[Sync] Ready (instance %08x), fd=%d\n", sync_state.instance_id, sock);
+    /* Sync ready */
     
     /* Register with Xt for immediate notification when data arrives */
     registerSyncSocket(sock);
@@ -165,7 +173,7 @@ void sync_multicast_broadcast(const char* id, const char* func, const char* args
     sync_state.send_seq++;
     
     /* Format: VIOLA|hash|instance|seq|id|func|args */
-    len = snprintf(msg, sizeof(msg), "%s|%08x|%08x|%u|%s|%s|%s",
+    len = snprintf(msg, sizeof(msg), "%s|%08x|%016lx|%u|%s|%s|%s",
                    MSG_PREFIX,
                    sync_state.page_hash,
                    sync_state.instance_id,
@@ -218,7 +226,7 @@ void sync_multicast_process(void)
         if (msg_hash != sync_state.page_hash) continue;
         
         /* Skip our own messages */
-        unsigned int msg_inst = (unsigned int)strtoul(inst_str, NULL, 16);
+        unsigned long msg_inst = strtoul(inst_str, NULL, 16);
         if (msg_inst == sync_state.instance_id) continue;
         
         (void)seq_str;  /* Sequence number available if needed */

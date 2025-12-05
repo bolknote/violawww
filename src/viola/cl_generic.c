@@ -266,6 +266,7 @@ MethodInfo meths_generic[] = {
     {STR_depth, meth_generic_depth},
     {STR_destroyVariable, meth_generic_destroyVariable},
     {STR_environVar, meth_generic_environVar},
+    {STR_execScript, meth_generic_execScript},
     {
         STR_filter,
         meth_generic_filter,
@@ -2574,6 +2575,36 @@ long meth_generic_environVar(VObj* self, Packet* result, int argc, Packet argv[]
     result->info.s = "";
     result->canFree = 0;
     return 0;
+}
+
+/*
+ * execScript(scriptCode)
+ *
+ * Execute a Viola script from a string.
+ * Used for ACTION/SCRIPT tags in VRML-style graphics.
+ *
+ * Return: result of script execution
+ */
+long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* scriptCode;
+    
+    if (argc < 1) {
+        result->type = PKT_INT;
+        result->info.i = 0;
+        result->canFree = 0;
+        return 0;
+    }
+    
+    scriptCode = PkInfo2Str(&argv[0]);
+    if (!scriptCode || !*scriptCode) {
+        result->type = PKT_INT;
+        result->info.i = 0;
+        result->canFree = 0;
+        return 0;
+    }
+    
+    /* Execute the script in the context of self */
+    return execScript(self, result, scriptCode) ? 1 : 0;
 }
 
 /*

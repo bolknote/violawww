@@ -166,7 +166,7 @@ HINT		HTML_hint		0 0 0 1 0		0 0 0 0\n\
 ROT		HTML_rot		0 0 0 1 0		0 0 0 0\n\
 SCALE		HTML_scale		0 0 0 1 0		0 0 0 0\n\
 TEXT		HTML_text		0 0 0 1 0		0 0 0 0\n\
-ACTION		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-SCRIPT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
+ACTION		HTML_action		0 0 0 1 0		0 0 0 0\n\
+SCRIPT		HTML_violaScript	1 0 0 0 0		0 0 0 0\n\
 STYLE		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ";

@@ -221,6 +221,9 @@ static attr pre_attr[] = {{"WIDTH"}, {0}};
 static attr section_attr[] = {{"BORDER"},   {"FOLD"},     {"HREF"}, {"LABEL"},
                               {"MAXWIDTH"}, {"MINWIDTH"}, {"NAME"}, {0}};
 
+static attr script_attr[] = {{"TYPE"}, {0}};
+#define HTML_SCRIPT_ATTRIBUTES 1
+
 static attr security_attr[] = {{"LEVEL"}, {0}};
 
 static attr table_attr[] = {{"BORDER"}, {"COMPACT"},  {"FOLD"},     {"ID"}, {"INDEX"},
@@ -337,11 +340,11 @@ static HTMLElement th_validSubElements[] = {
 };
 
 /* Valid children for GRAPHICS container */
-#define graphics_validSubElementsCount 16
+#define graphics_validSubElementsCount 17
 static HTMLElement graphics_validSubElements[] = {
     HTML_RECT, HTML_SQUARE, HTML_CIRCLE, HTML_OVAL, HTML_LINE, HTML_POLYGON, HTML_POINT, HTML_TEXT,
     HTML_POS, HTML_SIZE, HTML_ROT, HTML_SCALE, HTML_AXIS,
-    HTML_FGCOLOR, HTML_BDCOLOR, HTML_BGCOLOR
+    HTML_FGCOLOR, HTML_BDCOLOR, HTML_BGCOLOR, HTML_ACTION
 };
 
 #define loose_validSubElementsCount 84
@@ -471,7 +474,7 @@ static HTTag tags[] = {
     {"SAMP", no_attr, 0, SGML_MIXED, 0, 0},
     {"SCALE", scale_attr, HTML_SCALE_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SCREEN", no_attr, 0, SGML_MIXED, 0, 0},
-    {"SCRIPT", no_attr, 0, SGML_CDATA, 0, 0},
+    {"SCRIPT", script_attr, HTML_SCRIPT_ATTRIBUTES, SGML_CDATA, 0, 0},
     {"SECTION", section_attr, HTML_SECTION_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SECURITY", security_attr, HTML_SECURITY_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SELECT", select_attr, HTML_SELECT_ATTRIBUTES, SGML_MIXED, 0, 0},

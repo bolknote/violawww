@@ -186,6 +186,21 @@
 		}
 		return;
 	break;
+	case "setActionScript":
+		/* Receive action script from ACTION child */
+		_actionScript = arg[1];
+		return;
+	break;
+	case "buttonRelease":
+	case "buttonUp":
+		/* Execute action script if defined */
+		if (_actionScript != "" && _actionScript != "0") {
+			execScript(_actionScript);
+		}
+		/* Fall through to usual handler for href, etc */
+		usual();
+		return;
+	break;
 	case "config":
 		return;
 	break;
@@ -217,6 +232,7 @@
 		_axisX = 0;
 		_axisY = 0;
 		_axisZ = 0;
+		_actionScript = "";
 		return;
 	break;
 	}

@@ -7094,6 +7094,34 @@ static SlotStruct objDesc_HTML_vr[] = {
     {"height", _slotValue_HTML_vr6}, {(char*)0, (char*)0},
 };
 
+static char _slotValue_HTML_violaScript0[] = "field";
+static char _slotValue_HTML_violaScript1[] = "HTML_violaScript";
+static char _slotValue_HTML_violaScript2[] = {
+#include "embeds/HTML_violaScript_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_violaScript[] = {
+    {"class", _slotValue_HTML_violaScript0},
+    {"name", _slotValue_HTML_violaScript1},
+    {"script", _slotValue_HTML_violaScript2},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_HTML_action0[] = "field";
+static char _slotValue_HTML_action1[] = "HTML_action";
+static char _slotValue_HTML_action2[] = {
+#include "embeds/HTML_action_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_action[] = {
+    {"class", _slotValue_HTML_action0},
+    {"name", _slotValue_HTML_action1},
+    {"script", _slotValue_HTML_action2},
+    {(char*)0, (char*)0},
+};
+
 static char _slotValue_HTML_vview0[] = "field";
 static char _slotValue_HTML_vview1[] = "HTML_vview";
 static char _slotValue_HTML_vview2[] = {
@@ -7688,6 +7716,10 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_vobjf,
                                "HTML_vr.v",
                                objDesc_HTML_vr,
+                               "HTML_violaScript.v",
+                               objDesc_HTML_violaScript,
+                               "HTML_action.v",
+                               objDesc_HTML_action,
                                "HTML_vview.v",
                                objDesc_HTML_vview,
                                "HTML_xbm.v",

@@ -661,6 +661,8 @@
 	case "buttonRelease":
 		/* Release button and trigger action */
 		if (_pressedButton != "" && exist(_pressedButton) == 1) {
+			/* Notify button of click event - allows ACTION scripts to run */
+			send(_pressedButton, "buttonUp");
 			href = send(_pressedButton, "getHref");
 			_pressedButton = "";
 			send(self(), "expose");

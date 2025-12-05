@@ -298,6 +298,7 @@ enum {
     STR_eventMask,
     STR_exist,
     STR_exit,
+    STR_execScript,
     STR_expose,
     STR_fd,
     STR_field,

@@ -91,6 +91,7 @@ long meth_generic_deleteSubStrQ(VObj* self, Packet* result, int argc, Packet arg
 long meth_generic_depth(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_destroyVariable(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_environVar(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_filter(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_findPattern(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_float(VObj* self, Packet* result, int argc, Packet argv[]);

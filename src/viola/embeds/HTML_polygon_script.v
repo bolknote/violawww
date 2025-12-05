@@ -103,8 +103,15 @@
 		return;
 	break;
 	case "D":
-		/* D not called for SGML_MIXED with children, registration happens in AA */
+		/* D not called for SGML_MIXED with children, registration happens in case 8 */
 		return 1; /* Keep object alive */
+	break;
+	case 8:
+		/* End of tag processing - register with parent now (for SGML_MIXED) */
+		if (_savedParent != "" && _savedParent != "0" && _savedParent != "(NULL)") {
+			send(_savedParent, "addChild", self());
+		}
+		return;
 	break;
 	case "R":
 		return 0;
@@ -112,15 +119,11 @@
 	case "AA":
 		/* Register self as current primitive for child tags */
 		send("HTML_polygon", "setCurrentPrimitive", self());
-		/* Save parent on first attribute and register */
+		/* Save parent on first attribute - registration happens in case 8 */
 		if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
 			_savedParent = parent();
 			if (_savedParent == "" || _savedParent == "0" || _savedParent == "(NULL)") {
 				_savedParent = send("HTML_graphics", "getCurrentGfx");
-			}
-			/* Register immediately with parent graphics */
-			if (_savedParent != "" && _savedParent != "0" && _savedParent != "(NULL)") {
-				send(_savedParent, "addChild", self());
 			}
 		}
 		switch (arg[1]) {

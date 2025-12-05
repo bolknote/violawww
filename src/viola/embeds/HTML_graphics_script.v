@@ -131,6 +131,11 @@
 								set("FGColor", shapeFG);
 							}
 							if (numPoints >= 3) {
+								/* Use bounding box center as axis if not specified */
+								if (shapeAX == 0 && shapeAY == 0 && hasTransform == 1) {
+									shapeAX = send(childName, "getX") + send(childName, "getW") / 2;
+									shapeAY = send(childName, "getY") + send(childName, "getH") / 2;
+								}
 								/* Get all points, optionally transform, and add to polygon buffer */
 								beginPolygon();
 								for (pi = 0; pi < numPoints; pi++) {

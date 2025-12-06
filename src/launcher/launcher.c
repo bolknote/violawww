@@ -121,6 +121,8 @@ static int get_executable_dir(char *buf, size_t size) {
 static int setup_environment(const char *viola_path, const char *plot_path, const char *resources_dir) {
     char gs_lib[MAX_PATH];
     char gs_resources[MAX_PATH];
+    char magick_home[MAX_PATH];
+    char magick_config[MAX_PATH * 2];
 
     /* Set basic environment variables */
     setenv("VIOLA_PATH", viola_path, 1);
@@ -138,6 +140,15 @@ static int setup_environment(const char *viola_path, const char *plot_path, cons
     }
     setenv("GS_LIB", gs_lib, 1);
     setenv("GS_FONTPATH", gs_resources, 1);
+
+    /* Set MAGICK_HOME for bundled ImageMagick (built with --disable-installed) */
+    snprintf(magick_home, sizeof(magick_home), "%s/ImageMagick", resources_dir);
+    setenv("MAGICK_HOME", magick_home, 1);
+    /* Also set config path for ImageMagick to find its delegates.xml etc */
+    snprintf(magick_config, sizeof(magick_config),
+             "%s/etc/ImageMagick-7:%s/share/ImageMagick-7",
+             magick_home, magick_home);
+    setenv("MAGICK_CONFIGURE_PATH", magick_config, 1);
 
     return 0;
 }
@@ -396,14 +407,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Failed to setup environment variables\n");
         return 1;
     }
-
-    /* Note: Custom-built ImageMagick (via scripts/build-imagemagick.sh) has
-     * hardcoded paths to /Applications/ViolaWWW.app/Contents/Resources/ImageMagick
-     * and does NOT need environment variables. In fact, setting MAGICK_* vars
-     * will break it by overriding the correct compiled paths.
-     *
-     * For system ImageMagick (brew install imagemagick), it will use its own paths.
-     */
 
     /* Add MacOS directory and common tool paths to PATH */
     if (setup_path(exe_dir) != 0) {

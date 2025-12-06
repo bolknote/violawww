@@ -285,24 +285,28 @@ ImageMagick is built automatically from source during `make app` if `build/image
 
 ### Why Custom Build?
 
-Homebrew's ImageMagick has hardcoded paths that don't work in app bundles. The custom build uses `--prefix` to embed correct paths.
+Homebrew's ImageMagick has hardcoded paths that don't work in app bundles. The custom build creates a relocatable ImageMagick that works from any location.
 
 ### Build Process (`scripts/build-imagemagick.sh`)
 
 ```bash
-# Configure with app bundle prefix
+# Configure with temporary prefix and relocatable options
 ./configure \
-    --prefix=/Applications/ViolaWWW.app/Contents/Resources/ImageMagick \
+    --prefix=/tmp/imagemagick-install \
+    --disable-installed \    # Use MAGICK_HOME at runtime
     --without-modules \      # Static coders (no .so loading)
     --disable-openmp \       # Avoid libomp conflicts
     --without-x \            # No X11 dependency
     ...
 
-# Build
+# Build and install
 make -j8
-
-# Install to local directory
 make DESTDIR=/tmp/install install
+
+# Fix library paths for relocatable build using @rpath
+install_name_tool -id "@rpath/libMagickCore-7.Q16HDRI.10.dylib" lib/...
+install_name_tool -add_rpath "@executable_path/../lib" bin/magick
+install_name_tool -add_rpath "@executable_path/../Frameworks" bin/magick
 
 # Copy to build/imagemagick
 cp -r /tmp/install/... build/imagemagick/
@@ -313,14 +317,15 @@ cp -r /tmp/install/... build/imagemagick/
 | Option | Purpose |
 |--------|---------|
 | `--without-modules` | Compile all coders into libMagickCore (no dynamic loading) |
+| `--disable-installed` | Use MAGICK_HOME environment variable at runtime |
 | `--disable-openmp` | Avoid conflicts with system OpenMP |
-| `--prefix=...` | Hardcode paths for final install location |
+| `@rpath` | Allow library lookup in both `lib/` (testing) and `Frameworks/` (bundle) |
 
 ### Result
 
 - 300 image formats built-in
 - No module loading at runtime
-- Works only when installed to `/Applications/ViolaWWW.app`
+- **Works from any location** (MAGICK_HOME set by launcher)
 
 ---
 
@@ -339,6 +344,22 @@ setenv("PATH", new_path, 1);
 ```
 
 When Viola scripts call `system("magick ...")`, the shell finds `Contents/MacOS/magick` first.
+
+### Environment Variables Set by Launcher
+
+The launcher sets these variables for bundled tools:
+
+```c
+// launcher.c setup_environment()
+
+// Ghostscript resources
+setenv("GS_LIB", ".../Resources/ghostscript/lib:...", 1);
+setenv("GS_FONTPATH", ".../Resources/ghostscript", 1);
+
+// ImageMagick (relocatable build with --disable-installed)
+setenv("MAGICK_HOME", ".../Resources/ImageMagick", 1);
+setenv("MAGICK_CONFIGURE_PATH", ".../etc/ImageMagick-7:...", 1);
+```
 
 ### How onsgmls and gs Are Found
 

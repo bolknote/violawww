@@ -18,8 +18,9 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 IM_VERSION="7.1.2-9"
 IM_URL="https://imagemagick.org/archive/ImageMagick-${IM_VERSION}.tar.gz"
 
-# Where to install (matches what we compile with --prefix)
-INSTALL_PREFIX="/Applications/ViolaWWW.app/Contents/Resources/ImageMagick"
+# Installation prefix - with --disable-installed, ImageMagick looks for configs
+# relative to the executable, so this prefix is only used during build
+INSTALL_PREFIX="/tmp/imagemagick-install"
 
 # Build directory
 BUILD_DIR="/tmp/imagemagick-build-$$"
@@ -88,42 +89,80 @@ echo "Copying to $INSTALL_DIR..."
 rm -rf "$INSTALL_DIR"
 cp -r "$BUILD_DIR/install$INSTALL_PREFIX" "$INSTALL_DIR"
 
+# Fix dylib paths to be relocatable using @loader_path
+echo "Fixing library paths for relocatable build..."
+
+# Fix library IDs (use @rpath for flexibility)
+for lib in "$INSTALL_DIR/lib/"*.dylib; do
+    [ -f "$lib" ] || continue
+    libname=$(basename "$lib")
+    install_name_tool -id "@rpath/$libname" "$lib" 2>/dev/null || true
+done
+
+# Fix references in libraries
+for lib in "$INSTALL_DIR/lib/"*.dylib; do
+    [ -f "$lib" ] || continue
+    otool -L "$lib" 2>/dev/null | grep "$INSTALL_PREFIX" | awk '{print $1}' | while read dep; do
+        depname=$(basename "$dep")
+        install_name_tool -change "$dep" "@rpath/$depname" "$lib" 2>/dev/null || true
+    done
+done
+
+# Fix references in binaries and add rpath
+for bin in "$INSTALL_DIR/bin/"*; do
+    [ -f "$bin" ] || continue
+    [ -x "$bin" ] || continue
+    # Add rpath for local lib/ (for testing) and Frameworks/ (for app bundle)
+    install_name_tool -add_rpath "@executable_path/../lib" "$bin" 2>/dev/null || true
+    install_name_tool -add_rpath "@executable_path/../Frameworks" "$bin" 2>/dev/null || true
+    # Fix library references
+    otool -L "$bin" 2>/dev/null | grep "$INSTALL_PREFIX" | awk '{print $1}' | while read dep; do
+        depname=$(basename "$dep")
+        install_name_tool -change "$dep" "@rpath/$depname" "$bin" 2>/dev/null || true
+    done
+    # Re-sign after modification
+    codesign --force --sign - "$bin" 2>/dev/null || true
+done
+
+# Re-sign libraries
+for lib in "$INSTALL_DIR/lib/"*.dylib; do
+    [ -f "$lib" ] || continue
+    codesign --force --sign - "$lib" 2>/dev/null || true
+done
+
 # Clean up build directory
 echo "Cleaning up..."
 rm -rf "$BUILD_DIR"
 
-# Verify build (create temporary symlink to test)
+# Verify build using MAGICK_HOME (relocatable mode)
 echo ""
 echo "=== Verification ==="
-# ImageMagick requires exact path /Applications/ViolaWWW.app/... to work
-# We temporarily create a symlink to verify the build
-sudo mkdir -p "$(dirname "$INSTALL_PREFIX")" 2>/dev/null || true
-if sudo ln -sf "$INSTALL_DIR" "$INSTALL_PREFIX" 2>/dev/null; then
-    FORMAT_COUNT=$("$INSTALL_PREFIX/bin/magick" -list format 2>/dev/null | wc -l | tr -d ' ')
-    sudo rm -f "$INSTALL_PREFIX" 2>/dev/null
-    # Also remove parent dirs if empty
-    sudo rmdir "$(dirname "$INSTALL_PREFIX")" 2>/dev/null || true
-    sudo rmdir "$(dirname "$(dirname "$INSTALL_PREFIX")")" 2>/dev/null || true
-    sudo rmdir "$(dirname "$(dirname "$(dirname "$INSTALL_PREFIX")")")" 2>/dev/null || true
-    echo "Registered formats: $FORMAT_COUNT"
-else
-    echo "Note: Cannot verify (need sudo for temp symlink). Assuming success."
-    FORMAT_COUNT=999
+# Test that binary runs
+if ! "$INSTALL_DIR/bin/magick" -version >/dev/null 2>&1; then
+    echo "ERROR: magick binary fails to run"
+    "$INSTALL_DIR/bin/magick" -version 2>&1 || true
+    exit 1
 fi
+echo "Binary runs OK"
+
+# With --disable-installed, ImageMagick uses MAGICK_HOME to find configs
+export MAGICK_HOME="$INSTALL_DIR"
+export MAGICK_CONFIGURE_PATH="$INSTALL_DIR/etc/ImageMagick-7:$INSTALL_DIR/share/ImageMagick-7"
+FORMAT_COUNT=$("$INSTALL_DIR/bin/magick" -list format 2>/dev/null | wc -l | tr -d ' ')
+echo "Registered formats: $FORMAT_COUNT"
 
 if [ "$FORMAT_COUNT" -gt 100 ]; then
     echo ""
     echo "=== SUCCESS ==="
-    echo "ImageMagick built successfully!"
+    echo "ImageMagick built successfully (relocatable mode)!"
     echo ""
     echo "Location: $INSTALL_DIR"
     echo "Size: $(du -sh "$INSTALL_DIR" | cut -f1)"
     echo ""
     echo "Next steps:"
     echo "  1. Run 'make app' to build ViolaWWW.app with bundled ImageMagick"
-    echo "  2. Install to /Applications: cp -r ViolaWWW.app /Applications/"
     echo ""
-    echo "Note: ImageMagick will only work when app is in /Applications/ViolaWWW.app"
+    echo "Note: App can be installed anywhere (MAGICK_HOME set by launcher)"
 else
     echo ""
     echo "=== WARNING ==="

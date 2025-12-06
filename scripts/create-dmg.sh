@@ -38,7 +38,8 @@ cp -r "$PROJECT_DIR/ViolaWWW.app" "$BUILD_DIR/"
 # Download XQuartz if not present
 if [ ! -f "$DMG_DIR/$XQUARTZ_PKG" ]; then
     echo "Downloading XQuartz ${XQUARTZ_VERSION}..."
-    curl -L -o "$DMG_DIR/$XQUARTZ_PKG" "$XQUARTZ_URL"
+    curl -L --progress-bar -o "$DMG_DIR/$XQUARTZ_PKG" "$XQUARTZ_URL"
+    echo ""
 fi
 cp "$DMG_DIR/$XQUARTZ_PKG" "$BUILD_DIR/"
 

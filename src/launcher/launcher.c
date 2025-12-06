@@ -42,9 +42,25 @@ static int get_executable_dir(char *buf, size_t size) {
 
 /* Check if X server is running by testing DISPLAY connection */
 static int is_x_server_running(void) {
-    /* Try to connect to X server using xset */
-    int ret = system("xset q >/dev/null 2>&1");
-    return (ret == 0);
+    /* Try to connect to X server using xset (use full path for Finder launch) */
+    const char *xset_paths[] = {
+        "/opt/X11/bin/xset",
+        "/usr/X11/bin/xset",
+        "/usr/local/bin/xset",
+        NULL
+    };
+    
+    struct stat st;
+    for (int i = 0; xset_paths[i] != NULL; i++) {
+        if (stat(xset_paths[i], &st) == 0) {
+            char cmd[256];
+            snprintf(cmd, sizeof(cmd), "%s q >/dev/null 2>&1", xset_paths[i]);
+            return (system(cmd) == 0);
+        }
+    }
+    
+    /* Fallback: check if XQuartz process is running */
+    return (system("pgrep -x Xquartz >/dev/null 2>&1") == 0);
 }
 
 /* Check if XQuartz is installed */
@@ -57,8 +73,8 @@ static int is_xquartz_installed(void) {
 static int launch_xquartz(void) {
     printf("Starting XQuartz...\n");
     
-    /* Launch XQuartz in background */
-    int ret = system("open -a XQuartz");
+    /* Launch XQuartz in background (use full path for Finder launch) */
+    int ret = system("/usr/bin/open -a XQuartz");
     if (ret != 0) {
         fprintf(stderr, "Failed to launch XQuartz\n");
         return -1;

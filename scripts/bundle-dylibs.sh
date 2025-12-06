@@ -113,22 +113,38 @@ if [ -n "$APP_RESOURCES" ] && [ -f "$VPLOT_PATH" ]; then
     done < "$ALL_PATHS_FILE"
 fi
 
-# Phase 4: Fix library IDs and cross-references in all bundled libraries
+# Phase 4: Fix library IDs and cross-references in all bundled libraries (parallel)
 echo "Fixing library IDs and cross-references..."
+
+# Build change arguments file (one call with all -change flags is much faster)
+CHANGE_ARGS_FILE=$(mktemp)
+while read dep; do
+    depname=$(basename "$dep")
+    echo "-change"
+    echo "$dep"
+    echo "@executable_path/../Frameworks/$depname"
+done < "$ALL_PATHS_FILE" > "$CHANGE_ARGS_FILE"
+
+# Process libraries in parallel using background jobs
+NPROC=$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
+RUNNING=0
 shopt -s nullglob
 for lib in "$APP_FRAMEWORKS"/*.dylib; do
     [ -f "$lib" ] || continue
-    libname=$(basename "$lib")
-    
-    # Set library ID
-    install_name_tool -id "@executable_path/../Frameworks/$libname" "$lib" 2>/dev/null || true
-    
-    # Fix all references to bundled libraries (using all encountered paths)
-    while read dep; do
-        depname=$(basename "$dep")
-        install_name_tool -change "$dep" "@executable_path/../Frameworks/$depname" "$lib" 2>/dev/null || true
-    done < "$ALL_PATHS_FILE"
+    (
+        libname=$(basename "$lib")
+        # Use xargs to build single install_name_tool call with all -change args
+        xargs install_name_tool -id "@executable_path/../Frameworks/$libname" < "$CHANGE_ARGS_FILE" "$lib" 2>/dev/null || true
+    ) &
+    RUNNING=$((RUNNING + 1))
+    if [ "$RUNNING" -ge "$NPROC" ]; then
+        wait -n 2>/dev/null || wait
+        RUNNING=$((RUNNING - 1))
+    fi
 done
+wait
+
+rm -f "$CHANGE_ARGS_FILE"
 
 count=$(ls -1 "$APP_FRAMEWORKS" 2>/dev/null | wc -l | tr -d ' ')
 echo "Bundled $count libraries"

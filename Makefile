@@ -91,6 +91,7 @@ LIBSTYLE_DIR = $(SRC_DIR)/libStyle
 VIOLA_DIR = $(SRC_DIR)/viola
 VW_DIR = $(SRC_DIR)/vw
 VPLOT_DIR = $(SRC_DIR)/vplot
+LAUNCHER_DIR = $(SRC_DIR)/launcher
 
 # Library targets
 LIBWWW = $(LIBWWW_DIR)/libwww.a
@@ -104,6 +105,7 @@ VIOLA = $(VIOLA_DIR)/viola
 VW = $(VW_DIR)/vw
 SGMLSA2B = $(VIOLA_DIR)/sgmlsA2B
 VPLOT = vplot_dir/vplot
+LAUNCHER = $(LAUNCHER_DIR)/launcher
 
 # Default target
 .PHONY: all
@@ -148,6 +150,12 @@ help:
 	@echo "  check-64bit - Check for 64-bit migration issues (long->int truncation)"
 	@echo "  check-help - Show code analysis tools (includes, libs, unused code)"
 	@echo "  help       - Show this help message"
+	@echo ""
+	@echo "macOS targets:"
+	@echo "  app        - Build ViolaWWW.app bundle"
+	@echo "  dmg        - Create ViolaWWW.dmg for distribution"
+	@echo "  dmg-custom - Create DMG with custom background"
+	@echo "  clean-app  - Remove app bundle and DMG"
 
 # ============================================================================
 # Library targets
@@ -371,6 +379,21 @@ $(VPLOT): $(VPLOT_DIR)/vplot.c
 	@mkdir -p vplot_dir
 	$(CC) $(CFLAGS) -I/opt/X11/include -L/opt/X11/lib -o $@ $< -lX11 -lm
 	@echo "=== vplot built successfully! ==="
+	@ls -lh $@
+	@echo ""
+
+# ============================================================================
+# Launcher (for app bundle)
+# ============================================================================
+
+.PHONY: launcher
+launcher: $(LAUNCHER)
+
+$(LAUNCHER): $(LAUNCHER_DIR)/launcher.c
+	@echo "=== Building launcher ==="
+	@mkdir -p $(LAUNCHER_DIR)
+	$(CC) $(ARCH_FLAGS) -O2 -o $@ $<
+	@echo "=== Launcher built successfully! ==="
 	@ls -lh $@
 	@echo ""
 
@@ -665,3 +688,133 @@ check-help:
 	@echo "  2. make check-unused           (checks for unused variables/functions)"
 	@echo "  3. brew install include-what-you-use && make check-includes"
 
+# ============================================================================
+# macOS App Bundle
+# ============================================================================
+
+APP_NAME = ViolaWWW
+APP_BUNDLE = $(APP_NAME).app
+APP_CONTENTS = $(APP_BUNDLE)/Contents
+APP_MACOS = $(APP_CONTENTS)/MacOS
+APP_FRAMEWORKS = $(APP_CONTENTS)/Frameworks
+APP_RESOURCES = $(APP_CONTENTS)/Resources
+
+# Script for bundling dylibs
+BUNDLE_SCRIPT = scripts/bundle-dylibs.sh
+
+.PHONY: app
+app: $(VW) $(LAUNCHER)
+	@echo "=== Building $(APP_NAME).app bundle ==="
+	@echo ""
+	@rm -rf $(APP_BUNDLE)
+	@mkdir -p $(APP_MACOS) $(APP_FRAMEWORKS) $(APP_RESOURCES)
+	@echo "Copying launcher..."
+	@cp $(LAUNCHER) $(APP_MACOS)/vw
+	@echo "Copying vw binary..."
+	@cp $(VW) $(APP_MACOS)/vw.bin
+	@if [ -f $(SGMLSA2B) ]; then \
+		echo "Copying sgmlsA2B..."; \
+		cp $(SGMLSA2B) $(APP_MACOS)/sgmlsA2B; \
+	fi
+	@echo "Copying resources..."
+	@cp -r res $(APP_RESOURCES)/
+	@cp LICENSE.md $(APP_RESOURCES)/ 2>/dev/null || true
+	@if [ -d vplot_dir ]; then \
+		echo "Copying vplot_dir..."; \
+		cp -r vplot_dir $(APP_RESOURCES)/; \
+	fi
+	@# Copy icon if exists, or generate it
+	@if [ -f resources/ViolaWWW.icns ]; then \
+		echo "Copying icon..."; \
+		cp resources/ViolaWWW.icns $(APP_RESOURCES)/; \
+	elif [ -x scripts/make-icon.sh ]; then \
+		echo "Generating icon..."; \
+		ICONSET_DIR=$(APP_RESOURCES)/ViolaWWW.iconset scripts/make-icon.sh; \
+		mv resources/ViolaWWW.icns $(APP_RESOURCES)/; \
+	fi
+	@echo "Creating Info.plist..."
+	@printf '%s\n' \
+		'<?xml version="1.0" encoding="UTF-8"?>' \
+		'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
+		'<plist version="1.0">' \
+		'<dict>' \
+		'    <key>CFBundleDevelopmentRegion</key>' \
+		'    <string>en</string>' \
+		'    <key>CFBundleExecutable</key>' \
+		'    <string>vw</string>' \
+		'    <key>CFBundleIdentifier</key>' \
+		'    <string>org.violawww.vw</string>' \
+		'    <key>CFBundleInfoDictionaryVersion</key>' \
+		'    <string>6.0</string>' \
+		'    <key>CFBundleName</key>' \
+		'    <string>ViolaWWW</string>' \
+		'    <key>CFBundleDisplayName</key>' \
+		'    <string>ViolaWWW</string>' \
+		'    <key>CFBundlePackageType</key>' \
+		'    <string>APPL</string>' \
+		'    <key>CFBundleIconFile</key>' \
+		'    <string>ViolaWWW</string>' \
+		'    <key>CFBundleShortVersionString</key>' \
+		'    <string>4.0</string>' \
+		'    <key>CFBundleVersion</key>' \
+		'    <string>1</string>' \
+		'    <key>LSMinimumSystemVersion</key>' \
+		'    <string>11.0</string>' \
+		'    <key>NSHighResolutionCapable</key>' \
+		'    <true/>' \
+		'    <key>NSHumanReadableCopyright</key>' \
+		'    <string>Copyright 1991-1994 Pei-Yuan Wei. 2025 Evgeny Stepanischev.</string>' \
+		'</dict>' \
+		'</plist>' > $(APP_CONTENTS)/Info.plist
+	@echo -n "APPL????" > $(APP_CONTENTS)/PkgInfo
+	@echo ""
+	@echo "Bundling dynamic libraries..."
+	@$(MAKE) --no-print-directory bundle-dylibs
+	@echo ""
+	@echo "=== $(APP_NAME).app built successfully! ==="
+	@du -sh $(APP_BUNDLE)
+	@echo ""
+	@echo "Note: XQuartz is required to run this application."
+	@echo "      Install from: https://www.xquartz.org/"
+
+.PHONY: bundle-dylibs
+bundle-dylibs:
+	@chmod +x $(BUNDLE_SCRIPT)
+	@$(BUNDLE_SCRIPT) "$(APP_MACOS)" "$(APP_FRAMEWORKS)" "$(APP_RESOURCES)"
+
+# Create a DMG for distribution
+.PHONY: dmg
+dmg: app
+	@echo "=== Stripping debug symbols ==="
+	@strip -x $(APP_MACOS)/vw 2>/dev/null || true
+	@strip -x $(APP_MACOS)/vw.bin 2>/dev/null || true
+	@strip -x $(APP_MACOS)/sgmlsA2B 2>/dev/null || true
+	@for lib in $(APP_FRAMEWORKS)/*.dylib; do \
+		strip -x "$$lib" 2>/dev/null || true; \
+	done
+	@if [ -f $(APP_RESOURCES)/vplot_dir/vplot ]; then \
+		strip -x $(APP_RESOURCES)/vplot_dir/vplot 2>/dev/null || true; \
+	fi
+	@echo "Stripped. New sizes:"
+	@du -sh $(APP_BUNDLE)
+	@echo ""
+	@echo "=== Creating $(APP_NAME).dmg (lzfse compression) ==="
+	@rm -f $(APP_NAME).dmg
+	@hdiutil create -volname "$(APP_NAME)" -srcfolder $(APP_BUNDLE) \
+		-ov -format ULFO $(APP_NAME).dmg
+	@echo ""
+	@echo "=== $(APP_NAME).dmg created! ==="
+	@ls -lh $(APP_NAME).dmg
+
+# Custom DMG with XQuartz and retro styling
+.PHONY: dmg-custom
+dmg-custom: app
+	@echo "=== Creating custom DMG with XQuartz ==="
+	@chmod +x scripts/create-dmg.sh
+	@scripts/create-dmg.sh
+
+# Clean app bundle
+.PHONY: clean-app
+clean-app:
+	@echo "=== Cleaning app bundle ==="
+	rm -rf $(APP_BUNDLE) $(APP_NAME).dmg dmg/build dmg/*.pkg

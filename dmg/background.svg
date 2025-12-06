@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="640" height="520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="topBevel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#c0c0c0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background - classic Motif gray -->
+  <rect width="640" height="520" fill="#c0c0c0"/>
+  
+  <!-- Subtle texture pattern -->
+  <pattern id="dots" width="4" height="4" patternUnits="userSpaceOnUse">
+    <rect width="4" height="4" fill="#c0c0c0"/>
+    <circle cx="2" cy="2" r="0.5" fill="#b8b8b8"/>
+  </pattern>
+  <rect width="640" height="520" fill="url(#dots)" opacity="0.3"/>
+  
+  <!-- Borders -->
+  <rect x="0" y="0" width="640" height="3" fill="#ffffff"/>
+  <rect x="0" y="0" width="3" height="520" fill="#ffffff"/>
+  <rect x="0" y="517" width="640" height="3" fill="#808080"/>
+  <rect x="637" y="0" width="3" height="520" fill="#808080"/>
+  
+  <!-- Header bar - Motif style -->
+  <rect x="10" y="10" width="620" height="60" fill="#a0a0a0"/>
+  <rect x="10" y="10" width="620" height="2" fill="#ffffff"/>
+  <rect x="10" y="10" width="2" height="60" fill="#ffffff"/>
+  <rect x="10" y="68" width="620" height="2" fill="#606060"/>
+  <rect x="628" y="10" width="2" height="60" fill="#606060"/>
+  
+  <!-- Title text -->
+  <text x="340" y="48" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#000000" text-anchor="middle">ViolaWWW Hypermedia Browser</text>
+  
+  <!-- Instructions panel - sunken Motif style -->
+  <rect x="30" y="360" width="580" height="145" fill="#b0b0b0"/>
+  <rect x="30" y="360" width="580" height="2" fill="#606060"/>
+  <rect x="30" y="360" width="2" height="145" fill="#606060"/>
+  <rect x="30" y="503" width="580" height="2" fill="#ffffff"/>
+  <rect x="608" y="360" width="2" height="145" fill="#ffffff"/>
+  
+  <!-- Inner panel -->
+  <rect x="35" y="365" width="570" height="135" fill="#c8c8c8"/>
+  
+  <!-- Installation instructions -->
+  <text x="50" y="395" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">Installation:</text>
+  
+  <text x="50" y="420" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">1. Double-click XQuartz.pkg to install X11 support (required)</text>
+  <text x="50" y="442" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">2. Drag ViolaWWW.app to your Applications folder</text>
+  <text x="50" y="464" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">3. Launch ViolaWWW - enjoy browsing like it's 1994!</text>
+  
+  <!-- Pei-Yuan Wei credit (photo 80x100 at 510,375) -->
+  <text x="550" y="478" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#505050" text-anchor="middle">Pei-Yuan Wei</text>
+  <text x="550" y="488" font-family="Helvetica, Arial, sans-serif" font-size="8" fill="#606060" text-anchor="middle">Author</text>
+  
+  <!-- Drop zone indicator for Applications -->
+  <rect x="440" y="120" width="140" height="140" fill="none" stroke="#808080" stroke-width="2" stroke-dasharray="8,4" rx="5"/>
+  <text x="510" y="280" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#606060" text-anchor="middle">Applications</text>
+  
+</svg>

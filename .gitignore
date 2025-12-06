@@ -32,3 +32,13 @@ examples/
 **/.DS_Store
 *.dSYM/
 *.log
+
+# App bundle and DMG
+ViolaWWW.app/
+ViolaWWW.dmg
+dmg/background.png
+dmg/build/
+dmg/XQuartz-*.pkg
+resources/ViolaWWW.icns
+resources/ViolaWWW.iconset/
+src/launcher/launcher

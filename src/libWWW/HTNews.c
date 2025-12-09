@@ -445,19 +445,22 @@ PRIVATE void read_article NOARGS {
                 } else if (line[0] < ' ') {
                     break; /* End of Header? */
                 } else if (match(line, "SUBJECT:")) {
+                    char *subj = line + 8;
+                    HTCharset_decode_mime(subj);
                     END(HTML_ADDRESS);
                     START(HTML_TITLE); /** Uuugh! @@@ */
-                    PUTS(line + 8);
+                    PUTS(subj);
                     END(HTML_TITLE);
                     START(HTML_ADDRESS);
                     (*targetClass.start_element)(target, HTML_H1, 0, 0,
                                                  &HTML_dtd.tags[HTML_H1] /*PYW*/);
-                    PUTS(line + 8);
+                    PUTS(subj);
                     (*targetClass.end_element)(target, HTML_H1);
                     (*targetClass.start_element)(target, HTML_ADDRESS, 0, 0,
                                                  &HTML_dtd.tags[HTML_ADDRESS] /*PYW*/);
                 } else if (match(line, "DATE:") || match(line, "FROM:") ||
                            match(line, "ORGANIZATION:")) {
+                    HTCharset_decode_mime(line);
                     strcat(line, "\n");
                     PUTS(strchr(line, ':') + 1);
                 } else if (match(line, "NEWSGROUPS:")) {

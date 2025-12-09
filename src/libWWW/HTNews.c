@@ -594,47 +594,32 @@ PRIVATE void read_article NOARGS {
                     int proto_len = is_url_protocol(p2 + 1);
                     
                     if (proto_len > 0) {
-                        /* URL with known protocol - copy to buffer, don't modify line */
-                        /* Static buffers to ensure pointer remains valid after start_anchor */
-                        static char url_buf[LINE_LENGTH];
-                        static char before_buf[LINE_LENGTH];
-                        int url_len = q - (p2 + 1);
-                        int before_len = p2 - l;
-                        
-                        if (url_len > 0 && url_len < LINE_LENGTH - 1) {
-                            /* Copy text before < */
-                            if (before_len > 0 && before_len < LINE_LENGTH - 1) {
-                                strncpy(before_buf, l, before_len);
-                                before_buf[before_len] = '\0';
-                                PUTS(before_buf);
-                            }
-                            
-                            /* Copy URL */
-                            strncpy(url_buf, p2 + 1, url_len);
-                            url_buf[url_len] = '\0';
-                            
-                            /* Create clickable link */
-                            start_anchor(url_buf);
-                            PUTS(url_buf);
-                            (*targetClass.end_element)(target, HTML_A);
-                            
-                            l = q + 1;
-                        } else {
-                            break;  /* URL too long */
-                        }
+                        /* URL with known protocol */
+                        char c = q[1];
+                        q[1] = 0;
+                        *p2 = 0;
+                        PUTS(l);
+                        *p2 = '<';
+                        *q = 0;
+                        start_anchor(p2 + 1);
+                        *q = '>';
+                        PUTS(p2);
+                        (*targetClass.end_element)(target, HTML_A);
+                        q[1] = c;
+                        l = q + 1;
                     } else if (at && at < q) {
                         /* Message-ID: <something@host> */
                         char c = q[1];
-                        q[1] = 0; /* chop up */
+                        q[1] = 0;
                         *p2 = 0;
                         PUTS(l);
-                        *p2 = '<'; /* restore */
+                        *p2 = '<';
                         *q = 0;
                         start_anchor(p2 + 1);
-                        *q = '>'; /* restore */
+                        *q = '>';
                         PUTS(p2);
                         (*targetClass.end_element)(target, HTML_A);
-                        q[1] = c; /* restore */
+                        q[1] = c;
                         l = q + 1;
                     } else {
                         break; /* Unknown content in <> */

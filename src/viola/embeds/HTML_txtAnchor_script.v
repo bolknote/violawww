@@ -14,12 +14,19 @@
 			if (url) {
 				/* Use \v( for visited links, \b( for unvisited */
 				visited = isURLVisited(url);
+				/* Don't encode URLs that already have a protocol (contain :// near start) */
+				protoPos = findPattern(url, "://");
+				if (protoPos > 0 && protoPos <= 10) {
+					encoded = url;
+				} else {
+					encoded = HTTPEncodeURL(url);
+				}
 			if (visited == 1) {
 				t = concat("\\v(", tt,
-					"\\v)\\e(", HTTPEncodeURL(url), ") ");
+					"\\v)\\e(", encoded, ") ");
 			} else {
 				t = concat("\\b(", tt,
-					"\\b)\\e(", HTTPEncodeURL(url), ") ");
+					"\\b)\\e(", encoded, ") ");
 			}
 				url = 0;
 				return t;

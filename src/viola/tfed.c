@@ -1893,22 +1893,37 @@ char* tfed_get_previousTag(TFStruct* tf)
 char* tfed_get_nextTag(TFStruct* tf)
 {
     TFChar* tfcp;
+    TFChar* start;
+    int maxSearch = 200; /* safety limit */
 
     if (tf->editableP)
         tfcp = theEditLN->linep + tf->current_col;
     else
         tfcp = tf->currentp->linep + tf->current_col;
-    /*
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-    dumpTFCArray(DUMP_CHAR|DUMP_FONT, tfcp, tf->currentp->tagInfo,
-                    tf->currentp->tagInfoCount);
-    printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-    */
-    /* search forward to find an tag */
-    for (; TFCChar(tfcp); tfcp++) {
+    
+    start = tfcp;
+    
+    /* search forward to find a tag */
+    for (; TFCChar(tfcp) && maxSearch > 0; tfcp++, maxSearch--) {
         if (TFCTagID(tfcp))
             return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
     }
+    
+    /* Also check the current position even if char is 0 (end of line marker) */
+    /* This handles the case where tagID is set on a position where char=0 */
+    if (TFCTagID(tfcp))
+        return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
+    
+    /* Search backward from start position */
+    tfcp = start;
+    maxSearch = 50;
+    while (tfcp > (tf->editableP ? theEditLN->linep : tf->currentp->linep) && maxSearch > 0) {
+        tfcp--;
+        maxSearch--;
+        if (TFCTagID(tfcp))
+            return (char*)tf->currentp->tagInfo[TFCTagID(tfcp)].info;
+    }
+    
     return 0;
 }
 
@@ -2910,15 +2925,6 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                 cp[length] = '\0';
                 if (buildInfo->tagID < TAGINFO_SIZE) {
                     ++(buildInfo->tagID);
-                    /*
-                                                if (TFCChar(tfcp) == '\0') {
-                                                      TFCTagID(tfcp - 1) = buildInfo->tagID;
-                                                      TFCFlags(tfcp - 1) = buildInfo->flags;
-                                                } else {
-                                                      TFCTagID(tfcp) = buildInfo->tagID;
-                                                      TFCFlags(tfcp) = buildInfo->flags;
-                                                }
-                    */
                     TFCTagID(tfcp) = buildInfo->tagID;
                     TFCFlags(tfcp) = buildInfo->flags;
 

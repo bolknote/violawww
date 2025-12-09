@@ -12,6 +12,7 @@
 #include "HTUtils.h"
 #include "tcp.h" /* Defines SHORT_NAMES if necessary */
 #include <unistd.h>
+#include <stdint.h>
 #ifdef SHORT_NAMES
 #define HTInetStatus HTInStat
 #define HTInetString HTInStri
@@ -291,8 +292,63 @@ PRIVATE void get_host_details()
             fprintf(stderr, "TCP: Can't find my own internet node address for `%s'!!\n", name);
         return; /* Fail! */
     }
+    /* Validate pointer alignment and structure integrity */
+    {
+        unsigned char *raw = (unsigned char*)phost;
+        uintptr_t ptr_val = (uintptr_t)phost;
+        
+        /* Check if pointer is misaligned for struct access */
+        if (ptr_val % sizeof(void*) != 0) {
+            if (TRACE)
+                fprintf(stderr, "TCP: Misaligned hostent pointer for `%s'!!\n", name);
+            return; /* Fail - pointer is misaligned */
+        }
+        /* If first bytes look like ASCII text, the pointer is likely corrupted */
+        if (raw[0] >= 0x20 && raw[0] < 0x7f && 
+            raw[1] >= 0x20 && raw[1] < 0x7f &&
+            raw[2] >= 0x20 && raw[2] < 0x7f) {
+            if (TRACE)
+                fprintf(stderr, "TCP: Corrupted hostent structure for `%s'!!\n", name);
+            return; /* Fail - structure looks like a string */
+        }
+    }
     StrAllocCopy(hostname, phost->h_name);
-    memcpy(&HTHostAddress, &phost->h_addr, phost->h_length);
+    /* 
+     * h_addr_list pointer may be misaligned (seen with ASan/UBSan).
+     * Use memcpy to safely read pointers from potentially misaligned addresses.
+     * Cast to void* to avoid UBSan complaints about typed pointer alignment.
+     */
+    {
+        void *addr_list_raw = (void*)phost->h_addr_list;
+        char *first_addr = NULL;
+        
+        if (!addr_list_raw) {
+            if (TRACE)
+                fprintf(stderr, "TCP: h_addr_list is NULL for `%s'\n", name);
+            memset(&HTHostAddress, 0, sizeof(HTHostAddress));
+            return; /* Fail */
+        }
+        
+        /* Safely read first_addr from potentially misaligned addr_list */
+        memcpy(&first_addr, addr_list_raw, sizeof(char*));
+        
+        if (!first_addr) {
+            if (TRACE)
+                fprintf(stderr, "TCP: No address returned for `%s'\n", name);
+            memset(&HTHostAddress, 0, sizeof(HTHostAddress));
+            return; /* Fail */
+        }
+        
+        if (phost->h_length > 0 && (size_t)phost->h_length <= sizeof(HTHostAddress)) {
+            memcpy(&HTHostAddress, first_addr, phost->h_length);
+        } else {
+            if (TRACE)
+                fprintf(stderr, "TCP: Invalid address length (%d) for `%s'\n",
+                        phost->h_length, name);
+            memset(&HTHostAddress, 0, sizeof(HTHostAddress));
+            return; /* Fail */
+        }
+    }
     if (TRACE)
         fprintf(stderr, "     Name server says that I am `%s' = %s\n", hostname,
                 HTInetString(&HTHostAddress));

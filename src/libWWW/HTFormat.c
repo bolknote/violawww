@@ -214,6 +214,11 @@ PUBLIC BOOL HTPushInputBuffer NOARGS {
 PUBLIC BOOL HTPopInputBuffer NOARGS {
     --input_buffer_stacki;
 
+    if (input_buffer_stacki < 0) {
+        fprintf(stderr, "HTFormat.c: File buffering stack underflow.\n");
+        input_buffer_stacki = 0;
+    }
+
     input_buffer = input_buffer_stack[input_buffer_stacki];
     input_file_number = input_file_number_stack[input_buffer_stacki];
     input_pointer = input_pointer_stack[input_buffer_stacki];
@@ -222,23 +227,24 @@ PUBLIC BOOL HTPopInputBuffer NOARGS {
     return YES;
 }
 
-PUBLIC char HTGetChararcter NOARGS {
-    char ch;
+/* Returns int to properly signal EOF (-1) with -funsigned-char */
+PUBLIC int HTGetChararcter NOARGS {
+    int ch;
     do {
         if (input_pointer >= input_limit) {
             int status = NETREAD(input_file_number, input_buffer, INPUT_BUFFER_SIZE);
             if (status <= 0) {
                 if (status == 0)
-                    return (char)EOF;
+                    return EOF;
                 if (TRACE)
                     fprintf(stderr, "HTFormat: File read error %d\n", status);
-                return (char)EOF; /* -1 is returned by UCX at end of HTTP link */
+                return EOF; /* -1 is returned by UCX at end of HTTP link */
             }
             input_pointer = input_buffer;
             input_limit = input_buffer + status;
         }
-        ch = *input_pointer++;
-    } while (ch == (char)13); /* Ignore ASCII carriage return */
+        ch = (unsigned char)*input_pointer++;
+    } while (ch == 13); /* Ignore ASCII carriage return */
 
     return FROMASCII(ch);
 }

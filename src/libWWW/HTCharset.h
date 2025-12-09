@@ -35,5 +35,13 @@ int HTCharset_utf8_to_ascii_buffer(char* str, int size);
 int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insize,
                                  char* outbuf, int outsize);
 
+/* Decode MIME encoded-word (RFC 2047) and transliterate to ASCII
+** Handles: =?charset?Q?quoted-printable?= and =?charset?B?base64?=
+** Example: =?UTF-8?Q?J=C3=B6rg_Lorenz?= -> "Jorg Lorenz"
+** str: Input/output buffer (modified in place)
+** Returns: pointer to str
+*/
+char* HTCharset_decode_mime(char* str);
+
 #endif /* HTCHARSET_H */
 

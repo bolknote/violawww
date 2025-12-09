@@ -216,6 +216,187 @@ int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insiz
     return result;
 }
 
+/* Decode one MIME encoded-word: =?charset?encoding?text?=
+** Returns decoded length, or -1 on error
+*/
+PRIVATE int decode_mime_word(const char* start, const char* end, 
+                              char* outbuf, int outsize) {
+    char charset[64];
+    char encoding;
+    const char *p, *text_start, *text_end;
+    char decoded[2048];
+    int decoded_len = 0;
+    int i;
+    
+    /* Parse: =?charset?encoding?text?= */
+    p = start + 2;  /* skip =? */
+    
+    /* Extract charset */
+    i = 0;
+    while (p < end && *p != '?' && i < sizeof(charset) - 1) {
+        charset[i++] = *p++;
+    }
+    charset[i] = '\0';
+    if (*p != '?') return -1;
+    p++;  /* skip ? */
+    
+    /* Get encoding (Q or B) */
+    encoding = *p++;
+    if (*p != '?') return -1;
+    p++;  /* skip ? */
+    
+    text_start = p;
+    
+    /* Find end of text */
+    text_end = end - 2;  /* before ?= */
+    
+    if (encoding == 'Q' || encoding == 'q') {
+        /* Quoted-Printable decoding */
+        while (p < text_end && decoded_len < sizeof(decoded) - 1) {
+            if (*p == '=') {
+                /* =XX hex escape */
+                if (p + 2 < text_end) {
+                    int hi = p[1];
+                    int lo = p[2];
+                    hi = (hi >= '0' && hi <= '9') ? hi - '0' : 
+                         (hi >= 'A' && hi <= 'F') ? hi - 'A' + 10 :
+                         (hi >= 'a' && hi <= 'f') ? hi - 'a' + 10 : -1;
+                    lo = (lo >= '0' && lo <= '9') ? lo - '0' : 
+                         (lo >= 'A' && lo <= 'F') ? lo - 'A' + 10 :
+                         (lo >= 'a' && lo <= 'f') ? lo - 'a' + 10 : -1;
+                    if (hi >= 0 && lo >= 0) {
+                        decoded[decoded_len++] = (hi << 4) | lo;
+                        p += 3;
+                        continue;
+                    }
+                }
+                decoded[decoded_len++] = *p++;
+            } else if (*p == '_') {
+                /* underscore = space in Q encoding */
+                decoded[decoded_len++] = ' ';
+                p++;
+            } else {
+                decoded[decoded_len++] = *p++;
+            }
+        }
+    } else if (encoding == 'B' || encoding == 'b') {
+        /* Base64 decoding */
+        static const signed char b64_table[256] = {
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,-1,-1,-1,63,
+            52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-1,-1,-1,
+            -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,
+            15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,
+            -1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,
+            41,42,43,44,45,46,47,48,49,50,51,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+        };
+        unsigned int accum = 0;
+        int bits = 0;
+        
+        while (p < text_end && decoded_len < sizeof(decoded) - 1) {
+            int v = b64_table[(unsigned char)*p++];
+            if (v < 0) continue;  /* skip invalid chars */
+            accum = (accum << 6) | v;
+            bits += 6;
+            if (bits >= 8) {
+                bits -= 8;
+                decoded[decoded_len++] = (accum >> bits) & 0xFF;
+            }
+        }
+    } else {
+        return -1;  /* Unknown encoding */
+    }
+    
+    decoded[decoded_len] = '\0';
+    
+    /* Convert to ASCII with transliteration */
+    return HTCharset_convert_to_ascii(charset, decoded, decoded_len, outbuf, outsize);
+}
+
+/* Decode MIME encoded-word (RFC 2047) and transliterate to ASCII
+** Handles multiple encoded-words in a string
+*/
+char* HTCharset_decode_mime(char* str) {
+    char result[4096];
+    
+    if (TRACE)
+        fprintf(stderr, "HTCharset_decode_mime: input='%s'\n", str ? str : "(null)");
+    char *src = str;
+    char *dst = result;
+    char *end = result + sizeof(result) - 1;
+    
+    if (!str) return str;
+    
+    while (*src && dst < end) {
+        /* Look for =? start of encoded-word */
+        if (src[0] == '=' && src[1] == '?') {
+            /* Find ?= end marker */
+            char *word_end = src + 2;
+            int q_count = 0;
+            
+            while (*word_end && q_count < 3) {
+                if (*word_end == '?') q_count++;
+                word_end++;
+            }
+            
+            /* After loop: word_end points to '=' in "?=" (after third '?') */
+            if (q_count == 3 && *word_end == '=') {
+                /* Valid encoded-word found, include the trailing '=' */
+                word_end++;  /* Now points past the "?=" */
+                
+                char decoded[1024];
+                int len;
+                
+                if (TRACE)
+                    fprintf(stderr, "HTCharset_decode_mime: Found encoded-word, q_count=%d\n", q_count);
+                
+                len = decode_mime_word(src, word_end, decoded, sizeof(decoded));
+                
+                if (TRACE)
+                    fprintf(stderr, "HTCharset_decode_mime: decode_mime_word returned %d, decoded='%s'\n", 
+                            len, len > 0 ? decoded : "(failed)");
+                
+                if (len > 0) {
+                    /* Copy decoded text */
+                    int i;
+                    for (i = 0; i < len && dst < end; i++) {
+                        *dst++ = decoded[i];
+                    }
+                    src = word_end;
+                    
+                    /* Skip whitespace between encoded-words */
+                    while (*src == ' ' || *src == '\t') {
+                        if (src[1] == '=' && src[2] == '?') {
+                            src++;  /* Skip space between encoded-words */
+                        } else {
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+        
+        /* Copy regular character */
+        *dst++ = *src++;
+    }
+    
+    *dst = '\0';
+    
+    /* Copy back to original buffer */
+    strcpy(str, result);
+    return str;
+}
+
 #else
 /* No ICU/iconv - pass through unchanged */
 char* HTCharset_utf8_to_ascii(const char* utf8_str) {
@@ -234,6 +415,10 @@ int HTCharset_convert_to_ascii(const char* charset, const char* inbuf, int insiz
     memcpy(outbuf, inbuf, insize);
     outbuf[insize] = '\0';
     return insize;
+}
+
+char* HTCharset_decode_mime(char* str) {
+    return str;  /* No decoding without ICU */
 }
 #endif
 

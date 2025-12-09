@@ -8,7 +8,11 @@
 /* Implements:
  */
 #include "HTNews.h"
+#include "HTCharset.h"
 #include <unistd.h>
+#include <stdint.h>
+#include <errno.h>
+#include <string.h>
 
 #define CR FROMASCII('\015') /* Must be converted to ^M for transmission */
 #define LF FROMASCII('\012') /* Must be converted to ^J for transmission */
@@ -138,7 +142,54 @@ PRIVATE BOOL initialize NOARGS {
             CTRACE(tfp, "HTNews: Can't find news host `%s'.\n", HTNewsHost);
             return NO; /* Fail */
         }
-        memcpy(&sin->sin_addr, phost->h_addr, phost->h_length);
+        
+        /* Validate pointer alignment (must be 8-byte aligned on 64-bit) */
+        {
+            uintptr_t ptr_val = (uintptr_t)phost;
+            unsigned char *raw = (unsigned char*)phost;
+            
+            if ((ptr_val & 0x7) != 0) {
+                CTRACE(tfp, "HTNews: Misaligned hostent pointer for `%s'.\n", HTNewsHost);
+                return NO; /* Fail - pointer is misaligned */
+            }
+            /* If first bytes look like ASCII text, the pointer is likely corrupted */
+            if (raw[0] >= 0x20 && raw[0] < 0x7f && 
+                raw[1] >= 0x20 && raw[1] < 0x7f &&
+                raw[2] >= 0x20 && raw[2] < 0x7f) {
+                CTRACE(tfp, "HTNews: Corrupted hostent structure for `%s'.\n", HTNewsHost);
+                return NO; /* Fail - structure looks like a string */
+            }
+        }
+        
+        /* 
+         * h_addr_list pointer may be misaligned (seen with ASan/UBSan).
+         * Use memcpy to safely read pointers from potentially misaligned addresses.
+         */
+        {
+            void *addr_list_raw = (void*)phost->h_addr_list;
+            char *first_addr = NULL;
+            
+            if (!addr_list_raw) {
+                CTRACE(tfp, "HTNews: No address list for news host `%s'.\n", HTNewsHost);
+                return NO; /* Fail */
+            }
+            
+            /* Safely read first_addr from potentially misaligned addr_list */
+            memcpy(&first_addr, addr_list_raw, sizeof(char*));
+            
+            if (!first_addr) {
+                CTRACE(tfp, "HTNews: No address for news host `%s'.\n", HTNewsHost);
+                return NO; /* Fail */
+            }
+            
+            if (phost->h_length > 0 && (size_t)phost->h_length <= sizeof(sin->sin_addr)) {
+                memcpy(&sin->sin_addr, first_addr, phost->h_length);
+            } else {
+                CTRACE(tfp, "HTNews: Invalid address length (%d) for `%s'.\n",
+                       phost->h_length, HTNewsHost);
+                return NO; /* Fail */
+            }
+        }
     }
 
     if (TRACE)
@@ -195,20 +246,22 @@ PRIVATE int response ARGS1(const char*, command) {
     } /* if command to be sent */
 
     for (;;) {
-        if (((*p++ = NEXT_CHAR) == LF) || (p == &response_text[LINE_LENGTH])) {
+        int ch = NEXT_CHAR;
+        /* Check for EOF - with -funsigned-char, EOF (-1) becomes 255 */
+        if (ch == (unsigned char)EOF || ch == EOF) {
+            if (TRACE)
+                fprintf(stderr, "HTNews: EOF on read, closing socket %d\n", s);
+            NETCLOSE(s);   /* End of file, close socket */
+            return s = -1; /* End of file on response */
+        }
+        *p++ = ch;
+        if ((ch == LF) || (p == &response_text[LINE_LENGTH])) {
             *p++ = 0; /* Terminate the string */
             if (TRACE)
                 fprintf(stderr, "NNTP Response: %s\n", response_text);
             sscanf(response_text, "%d", &result);
             return result;
         } /* if end of line */
-
-        if (*(p - 1) < 0) {
-            if (TRACE)
-                fprintf(stderr, "HTNews: EOF on read, closing socket %d\n", s);
-            NETCLOSE(s);   /* End of file, close socket */
-            return s = -1; /* End of file on response */
-        }
     } /* Loop over characters */
 }
 
@@ -372,11 +425,12 @@ PRIVATE void read_article NOARGS {
         (*targetClass.start_element)(target, HTML_ADDRESS, 0, 0,
                                      &HTML_dtd.tags[HTML_ADDRESS] /*PYW*/);
         while (!done) {
-            char ch = *p++ = NEXT_CHAR;
-            if (ch == (char)EOF) {
+            int ch = NEXT_CHAR;
+            if (ch == (unsigned char)EOF || ch == EOF) {
                 abort_socket(); /* End of file, close socket */
                 return;         /* End of file on response */
             }
+            *p++ = ch;
             if ((ch == LF) || (p == &line[LINE_LENGTH])) {
                 *--p = 0; /* Terminate the string */
                 if (TRACE)
@@ -450,11 +504,12 @@ PRIVATE void read_article NOARGS {
 
     p = line;
     while (!done) {
-        char ch = *p++ = NEXT_CHAR;
-        if (ch == (char)EOF) {
+        int ch = NEXT_CHAR;
+        if (ch == (unsigned char)EOF || ch == EOF) {
             abort_socket(); /* End of file, close socket */
             return;         /* End of file on response */
         }
+        *p++ = ch;
         if ((ch == LF) || (p == &line[LINE_LENGTH])) {
             *p++ = 0; /* Terminate the string */
             if (TRACE)
@@ -526,11 +581,12 @@ PRIVATE void read_list NOARGS {
     p = line;
     (*targetClass.start_element)(target, HTML_MENU, 0, 0, &HTML_dtd.tags[HTML_MENU] /*PYW*/);
     while (!done) {
-        char ch = *p++ = NEXT_CHAR;
-        if (ch == (char)EOF) {
+        int ch = NEXT_CHAR;
+        if (ch == (unsigned char)EOF || ch == EOF) {
             abort_socket(); /* End of file, close socket */
             return;         /* End of file on response */
         }
+        *p++ = ch;
         if ((ch == LF) || (p == &line[LINE_LENGTH])) {
             *p++ = 0; /* Terminate the string */
             if (TRACE)
@@ -650,11 +706,12 @@ PRIVATE void read_group ARGS3(const char*, groupName, int, first_required, int, 
 
             p = line;
             while (!done) {
-                char ch = *p++ = NEXT_CHAR;
-                if (ch == (char)EOF) {
+                int ch = NEXT_CHAR;
+                if (ch == (unsigned char)EOF || ch == EOF) {
                     abort_socket(); /* End of file, close socket */
                     return;         /* End of file on response */
                 }
+                *p++ = ch;
                 if ((ch == '\n') || (p == &line[LINE_LENGTH])) {
                     *p++ = 0; /* Terminate the string */
                     if (TRACE)
@@ -719,29 +776,48 @@ PRIVATE void read_group ARGS3(const char*, groupName, int, first_required, int, 
 
 #else  /* NOT OVERLAP */
             sprintf(buffer, "HEAD %d%c%c", art, CR, LF);
+            if (TRACE) fprintf(stderr, "HTNews: read_group sending HEAD %d\n", art);
             status = response(buffer);
+            if (TRACE) fprintf(stderr, "HTNews: read_group HEAD %d response=%d\n", art, status);
 #endif /* NOT OVERLAP */
 
+            /* Check for connection error/EOF */
+            if (status < 0) {
+                if (TRACE) fprintf(stderr, "HTNews: Connection lost, stopping article loop\n");
+                break;
+            }
+            
             if (status == 221) { /* Head follows - parse it:*/
-
+                int header_lines = 0;
+                
+                if (TRACE) fprintf(stderr, "HTNews: Reading headers for article %d...\n", art);
                 p = line; /* Write pointer */
                 done = NO;
                 while (!done) {
-                    char ch = *p++ = NEXT_CHAR;
-                    if (ch == (char)EOF) {
+                    int ch = NEXT_CHAR;
+                    if (ch == (unsigned char)EOF || ch == EOF) {
+                        if (TRACE) fprintf(stderr, "HTNews: EOF while reading headers!\n");
                         abort_socket(); /* End of file, close socket */
                         return;         /* End of file on response */
                     }
+                    *p++ = ch;
                     if ((ch == LF) || (p == &line[LINE_LENGTH])) {
 
                         *--p = 0; /* Terminate  & chop LF*/
                         p = line; /* Restart at beginning */
-                        if (TRACE)
-                            fprintf(stderr, "G %s\n", line);
+                        header_lines++;
+                        /* Debug: print first few chars of each header line */
+                        if (header_lines <= 5 || line[0] == '.') {
+                            if (TRACE) fprintf(stderr, "HTNews: Header[%d]: %.60s%s\n", 
+                                    header_lines, line, strlen(line) > 60 ? "..." : "");
+                        }
                         switch (line[0]) {
 
                         case '.':
                             done = (line[1] < ' '); /* End of article? */
+                            if (done) {
+                                if (TRACE) fprintf(stderr, "HTNews: End of headers (total %d lines)\n", header_lines);
+                            }
                             break;
 
                         case 'S':
@@ -774,6 +850,10 @@ PRIVATE void read_group ARGS3(const char*, groupName, int, first_required, int, 
                     } /* if end of line */
                 } /* Loop over characters */
 
+                /* Decode MIME encoded-words (RFC 2047) in subject and author */
+                HTCharset_decode_mime(subject);
+                HTCharset_decode_mime(author);
+                
                 START(HTML_LI);
                 sprintf(buffer, "\"%s\" - %s", subject, author);
                 if (reference) {
@@ -788,8 +868,11 @@ PRIVATE void read_group ARGS3(const char*, groupName, int, first_required, int, 
                 /*	 indicate progress!   @@@@@@
                  */
 
+            } else { /* status != 221 */
+                if (TRACE) fprintf(stderr, "HTNews: HEAD %d got non-221 response: %d\n", art, status);
             } /* If good response */
         } /* Loop over article */
+        if (TRACE) fprintf(stderr, "HTNews: Finished article loop\n");
     } /* If read headers */
     END(HTML_MENU);
     START(HTML_P);
@@ -901,30 +984,51 @@ PUBLIC int HTLoadNews ARGS4(const char*, arg, HTParentAnchor*, anAnchor, HTForma
 
     /*	Now, let's get a stream setup up from the NewsHost:
      */
+    if (TRACE) fprintf(stderr, "HTNews: Starting connection loop, command='%s'\n", 
+            command ? command : "(null)");
+    
     for (retries = 0; retries < 2; retries++) {
+        if (TRACE) fprintf(stderr, "HTNews: Retry %d, socket s=%d\n", retries, s);
 
         if (s < 0) {
             NEWS_PROGRESS("Connecting to NewsHost ...");
+            if (TRACE) fprintf(stderr, "HTNews: Creating socket...\n");
             s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+            if (TRACE) fprintf(stderr, "HTNews: socket() returned %d\n", s);
+            if (s < 0) {
+                if (TRACE) fprintf(stderr, "HTNews: socket() failed! errno=%d (%s)\n", errno, strerror(errno));
+                return HTLoadError(stream, 500, "Cannot create socket");
+            }
+            
+            if (TRACE) fprintf(stderr, "HTNews: Connecting to %d.%d.%d.%d:%d...\n",
+                    (int)*((unsigned char*)(&soc_address.sin_addr) + 0),
+                    (int)*((unsigned char*)(&soc_address.sin_addr) + 1),
+                    (int)*((unsigned char*)(&soc_address.sin_addr) + 2),
+                    (int)*((unsigned char*)(&soc_address.sin_addr) + 3),
+                    ntohs(soc_address.sin_port));
+            
             status = connect(s, (struct sockaddr*)&soc_address, sizeof(soc_address));
+            if (TRACE) fprintf(stderr, "HTNews: connect() returned %d (errno=%d)\n", status, errno);
+            
             if (status < 0) {
                 char message[256];
+                if (TRACE) fprintf(stderr, "HTNews: connect() failed! errno=%d (%s)\n", errno, strerror(errno));
                 NETCLOSE(s);
                 s = -1;
-                if (TRACE)
-                    fprintf(stderr, "HTNews: Unable to connect to news host.\n");
-                /*		if (retries<=1) continue;   WHY TRY AGAIN ? 	*/
                 sprintf(message,
                         "\nCould not access %s.\n\n (Check default WorldWideWeb NewsHost ?)\n",
                         HTNewsHost);
                 return HTLoadError(stream, 500, message);
             } else {
-                if (TRACE)
-                    fprintf(stderr, "HTNews: Connected to news host %s.\n", HTNewsHost);
+                if (TRACE) fprintf(stderr, "HTNews: Connected successfully!\n");
                 HTPushInputBuffer(); /*PYW*/
                 HTInitInput(s);      /* set up buffering */
-                if ((response(NULL) / 100) != 2) {
+                if (TRACE) fprintf(stderr, "HTNews: Reading server greeting...\n");
+                int greeting = response(NULL);
+                if (TRACE) fprintf(stderr, "HTNews: Server greeting response code: %d\n", greeting);
+                if ((greeting / 100) != 2) {
                     char message[BIG];
+                    if (TRACE) fprintf(stderr, "HTNews: Bad greeting! Closing.\n");
                     NETCLOSE(s);
                     s = -1;
                     sprintf(message, "Can't read news info. News host %.20s responded: %.200s",
@@ -932,22 +1036,24 @@ PUBLIC int HTLoadNews ARGS4(const char*, arg, HTParentAnchor*, anAnchor, HTForma
                     HTPopInputBuffer(); /*PYW*/
                     return HTLoadError(stream, 500, message);
                 }
+                if (TRACE) fprintf(stderr, "HTNews: Greeting OK!\n");
             }
         } /* If needed opening */
 
         /* @@@@@@@@@@@@@@Tell user something's happening */
 
+        if (TRACE) fprintf(stderr, "HTNews: Sending main command...\n");
         status = response(command);
-        if (status < 0)
+        if (TRACE) fprintf(stderr, "HTNews: Main command response: %d\n", status);
+        if (status < 0) {
+            if (TRACE) fprintf(stderr, "HTNews: Negative status, breaking loop\n");
             break;
+        }
         if ((status / 100) != 2) {
+            if (TRACE) fprintf(stderr, "HTNews: Non-2xx response, retrying...\n");
             HTProgress(response_text);
-            /*	    NXRunAlertPanel("News access", response_text,
-                            NULL,NULL,NULL);
-            */
             NETCLOSE(s);
             s = -1;
-            /* return HT; -- no:the message might be "Timeout-disconnected" left over */
             continue; /*	Try again */
         }
 
@@ -963,6 +1069,14 @@ PUBLIC int HTLoadNews ARGS4(const char*, arg, HTParentAnchor*, anAnchor, HTForma
 
         (*targetClass.end)(target);
         (*targetClass.free)(target);
+        
+        /* Clean up: close connection and pop buffer to avoid stale state */
+        if (s >= 0) {
+            NETCLOSE(s);
+            s = -1;
+        }
+        HTPopInputBuffer(); /*PYW*/
+        
         return HT_LOADED;
 
     } /* Retry loop */
@@ -972,6 +1086,13 @@ PUBLIC int HTLoadNews ARGS4(const char*, arg, HTParentAnchor*, anAnchor, HTForma
     /*    NXRunAlertPanel(NULL, "Sorry, could not load `%s'.",
                 NULL,NULL,NULL, arg);No -- message earlier wil have covered it */
 
+    /* Clean up on failure */
+    if (s >= 0) {
+        NETCLOSE(s);
+        s = -1;
+    }
+    HTPopInputBuffer(); /*PYW*/
+    
     return HT_LOADED;
 }
 

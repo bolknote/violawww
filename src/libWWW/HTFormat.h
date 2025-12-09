@@ -287,7 +287,7 @@ extern BOOL HTPopInputBuffer NOARGS;
 Get next character from buffer
 
  */
-extern char HTGetChararcter NOPARAMS;
+extern int HTGetChararcter NOPARAMS;  /* Returns int to properly signal EOF (-1) with -funsigned-char */
 
 /*
 

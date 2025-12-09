@@ -80,7 +80,7 @@ long stackBaseIdx = -1;
 
 union PCode pcode_buff[5000]; /* limit on maximum opcode size */
 
-#define ARG_STACK_SIZE 256
+#define ARG_STACK_SIZE 1024
 Attr argAttrStack[ARG_STACK_SIZE];
 int argCountStack[ARG_STACK_SIZE];
 int argAttrStackIdx = 0;
@@ -246,19 +246,38 @@ int makeArgList(VObj* self, int argc)
     }
     argPk = (Packet*)argAttr->val;
 
+    if (argc < 0)
+        argc = 0;
     if (argCountStackIdx >= ARG_STACK_SIZE) {
         fprintf(stderr, "internal error: argCountStack overflow. Error may occur.\n");
+        return 0;
+    }
+    if (argListSaveStackIdx >= ARG_STACK_SIZE) {
+        fprintf(stderr, "internal error: argListSaveStack overflow. Error may occur.\n");
+        return 0;
+    }
+    /* Clamp argc to available space to avoid overflow while keeping call semantics */
+    {
+        int available = ARG_STACK_SIZE - argAttrStackIdx;
+        if (available < 0)
+            available = 0;
+        if (argc > available) {
+            fprintf(stderr,
+                    "internal error: argAttrStack overflow (need %d, have %d). Truncating args to %d.\n",
+                    argAttrStackIdx + argc, ARG_STACK_SIZE, available);
+            argc = available;
+        }
     }
     argCountStack[argCountStackIdx++] = argc;
 
     /* this is necessary to allow for recursive messaging */
     argListSaveStack[argListSaveStackIdx++] = argPk->info.a;
 
-    argPk->info.a = &argAttrStack[argAttrStackIdx];
+    argPk->info.a = (argc > 0) ? &argAttrStack[argAttrStackIdx] : NULL;
 
     for (i = 0; i < argc; i++) {
         attrp = &argAttrStack[argAttrStackIdx++];
-        attrp->next = &argAttrStack[argAttrStackIdx];
+        attrp->next = (argAttrStackIdx < ARG_STACK_SIZE) ? &argAttrStack[argAttrStackIdx] : NULL;
         attrp->id = i;
         attrp->val = (long)(&(execStack[stackExecIdx - argc + 1 + i]));
         /*
@@ -270,7 +289,8 @@ int makeArgList(VObj* self, int argc)
                         printf("<<<\n");
         */
     }
-    attrp->next = NULL;
+    if (argc > 0)
+        attrp->next = NULL;
     /*
     printf("argAttr=0x%x\n", GET__argAttr(self));
     printf("argAttr=%d      should be: id=490, val!=0.\n", GET__argAttr(self));
@@ -288,18 +308,24 @@ void freeArgListForDestroyed() {
     int argAttrStackIdx_end = argAttrStackIdx;
     Packet *pk, *argPk;
 
+    if (argCountStackIdx <= 0) {
+        fprintf(stderr, "freeArgListForDestroyed: argCountStackIdx underflow\n");
+        return;
+    }
     argAttrStackIdx -= argCountStack[--argCountStackIdx];
-    while (argAttrStackIdx_end >= argAttrStackIdx) {
-        attrp = &argAttrStack[argAttrStackIdx];
+    if (argAttrStackIdx < 0) argAttrStackIdx = 0;
+    while (argAttrStackIdx_end > argAttrStackIdx) {
+        --argAttrStackIdx_end;
+        if (argAttrStackIdx_end < 0 || argAttrStackIdx_end >= ARG_STACK_SIZE) break;
+        attrp = &argAttrStack[argAttrStackIdx_end];
         pk = (Packet*)(attrp->val);
-        if (pk->canFree & PK_CANFREE_STR) {
+        if (pk && (pk->canFree & PK_CANFREE_STR)) {
             free(pk->info.s);
             pk->info.s = NULL;
             pk->canFree = 0;
         }
-        --argAttrStackIdx_end;
     }
-    --argListSaveStackIdx;
+    if (argListSaveStackIdx > 0) --argListSaveStackIdx;
 }
 
 void freeArgList(VObj* self) {
@@ -307,24 +333,33 @@ void freeArgList(VObj* self) {
     Attr *argAttr, *attrp;
     Packet *pk, *argPk;
 
+    if (argCountStackIdx <= 0) {
+        fprintf(stderr, "freeArgList: argCountStackIdx underflow\n");
+        return;
+    }
     argAttrStackIdx -= argCountStack[--argCountStackIdx];
-    while (argAttrStackIdx_end >= argAttrStackIdx) {
-        attrp = &argAttrStack[argAttrStackIdx];
+    if (argAttrStackIdx < 0) argAttrStackIdx = 0;
+    while (argAttrStackIdx_end > argAttrStackIdx) {
+        --argAttrStackIdx_end;
+        if (argAttrStackIdx_end < 0 || argAttrStackIdx_end >= ARG_STACK_SIZE) break;
+        attrp = &argAttrStack[argAttrStackIdx_end];
         pk = (Packet*)(attrp->val);
-        if (pk->canFree & PK_CANFREE_STR) {
+        if (pk && (pk->canFree & PK_CANFREE_STR)) {
             free(pk->info.s);
             pk->info.s = NULL;
             pk->canFree = 0;
         }
-        --argAttrStackIdx_end;
     }
-    --argListSaveStackIdx;
+    if (argListSaveStackIdx > 0) --argListSaveStackIdx;
 
     ASSERT(validObjectP(self), "freeArgList() invalid object\n");
 
     argAttr = GET__argAttr(self);
+    if (!argAttr) return;
     argPk = (Packet*)argAttr->val;
-    argPk->info.a = argListSaveStack[argListSaveStackIdx];
+    if (!argPk) return;
+    if (argListSaveStackIdx >= 0 && argListSaveStackIdx < ARG_STACK_SIZE)
+        argPk->info.a = argListSaveStack[argListSaveStackIdx];
 }
 
 void freeVarList(Attr* varlist)

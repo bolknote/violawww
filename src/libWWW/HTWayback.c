@@ -17,6 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdint.h>
 
 /* External UI function - defined in viola code */
 extern void showHelpMessageInMainWindow(char* message) __attribute__((weak));
@@ -184,8 +185,65 @@ PUBLIC char* HTWaybackCheck PARAMS((const char* url)) {
             free(url_encoded);
             return NULL;
         }
-        if (TRACE) fprintf(stderr, "Wayback: Resolved to IP\n");
-        memcpy(&sin->sin_addr, phost->h_addr, phost->h_length);
+        /* Validate pointer alignment and structure integrity */
+        {
+            unsigned char *raw = (unsigned char*)phost;
+            uintptr_t ptr_val = (uintptr_t)phost;
+            
+            /* Check if pointer is misaligned for struct access */
+            if (ptr_val % sizeof(void*) != 0) {
+                if (TRACE) fprintf(stderr, "Wayback: Misaligned hostent pointer\n");
+                safe_show_message("Web Archive: DNS resolution corrupted");
+                free(url_encoded);
+                return NULL;
+            }
+            /* If first bytes look like ASCII text, the pointer is likely corrupted */
+            if (raw[0] >= 0x20 && raw[0] < 0x7f && 
+                raw[1] >= 0x20 && raw[1] < 0x7f &&
+                raw[2] >= 0x20 && raw[2] < 0x7f) {
+                if (TRACE) fprintf(stderr, "Wayback: Corrupted hostent structure\n");
+                safe_show_message("Web Archive: DNS resolution corrupted");
+                free(url_encoded);
+                return NULL;
+            }
+        }
+        /* 
+         * h_addr_list pointer may be misaligned (seen with ASan/UBSan).
+         * Use memcpy to safely read pointers from potentially misaligned addresses.
+         * Cast to void* to avoid UBSan complaints about typed pointer alignment.
+         */
+        {
+            void *addr_list_raw = (void*)phost->h_addr_list;
+            char *first_addr = NULL;
+            
+            if (!addr_list_raw) {
+                if (TRACE) fprintf(stderr, "Wayback: h_addr_list is NULL\n");
+                safe_show_message("Web Archive: No address returned");
+                free(url_encoded);
+                return NULL;
+            }
+            
+            /* Safely read first_addr from potentially misaligned addr_list */
+            memcpy(&first_addr, addr_list_raw, sizeof(char*));
+            
+            if (!first_addr) {
+                if (TRACE) fprintf(stderr, "Wayback: h_addr_list[0] is NULL\n");
+                safe_show_message("Web Archive: No address returned");
+                free(url_encoded);
+                return NULL;
+            }
+            
+            if (TRACE) fprintf(stderr, "Wayback: Resolved to IP\n");
+            if (phost->h_length > 0 && (size_t)phost->h_length <= sizeof(sin->sin_addr)) {
+                memcpy(&sin->sin_addr, first_addr, phost->h_length);
+            } else {
+                if (TRACE) fprintf(stderr, "Wayback: Invalid address length (%d)\n", phost->h_length);
+                safe_show_message("Web Archive: Invalid address length");
+                memset(&sin->sin_addr, 0, sizeof(sin->sin_addr));
+                free(url_encoded);
+                return NULL;
+            }
+        }
     }
 
     /* Create socket - EXPLICITLY in blocking mode */

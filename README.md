@@ -115,6 +115,15 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Files**: `HTCharset.h`, `HTCharset.c`, `HTAnchor.h`, `HTAnchor.c`, `HTMIME.c`, `SGML.c`
 - **Test**: `test/test_htcharset.c` (German, Polish, Russian, Windows-1251, KOI8-R)
 
+#### NNTP News Protocol Improvements
+- RFC 2047 MIME encoded-word decoding in article headers (Subject, From, etc.)
+- Transliteration of non-ASCII characters in newsgroup listings and articles
+- Example: `=?UTF-8?Q?J=C3=B6rg?=` → "Jorg" (with ö→o transliteration)
+- Supports both Quoted-Printable (`?Q?`) and Base64 (`?B?`) encodings
+- Fixed EOF handling for `-funsigned-char` compiler flag
+- Proper connection cleanup after each request (prevents hangs)
+- **Files**: `HTNews.c`, `HTCharset.c`
+
 #### Mathematical Expression Rendering
 - Native rendering of mathematical HTML entities and expressions
 - Supported entities: `&pi;` (π), `&sigma;` (Σ), `&infin;` (∞), `&integral;` (∫)
@@ -671,6 +680,7 @@ Contributions are welcome! Areas of interest:
 - Internet Archive (Wayback Machine) integration
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII via iconv + ICU)
 - Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
+- NNTP news protocol improvements (MIME encoded-word decoding, transliteration, connection handling)
 - Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, SC sync, etc.)
 - TTY interface restoration for external process communication
 - VPLOT 3D surface plotter implementation

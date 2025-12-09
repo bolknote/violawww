@@ -570,8 +570,6 @@ PRIVATE void read_article NOARGS {
                 }
             }
             
-            if (TRACE)
-                fprintf(stderr, "B %s%s", line, flowed ? "" : "\n");
             if (line[0] == '.') {
                 if (len <= 1 || line[1] < ' ') { /* End of article? */
                     done = YES;
@@ -582,45 +580,65 @@ PRIVATE void read_article NOARGS {
                 }
             } else {
 
-                /*	Normal lines are scanned for buried references to other articles
-                **  and URLs with known protocols.
+                /*	Normal lines are scanned for:
+                **  1. URLs with known protocols: <http://...>, <https://...>, etc.
+                **  2. Message-IDs: <something@host> (links to other articles)
                 */
                 char* l = line;
                 char* p2;
                 while ((p2 = strchr(l, '<'))) {
                     char* q = strchr(p2, '>');
+                    if (!q) break;  /* No closing > */
+                    
                     char* at = strchr(p2, '@');
                     int proto_len = is_url_protocol(p2 + 1);
                     
-                    if (q && proto_len > 0) {
-                        /* URL with known protocol: <http://...>, <https://...>, etc. */
-                        char c = q[1];
-                        q[1] = 0; /* chop up */
-                        *p2 = 0;
-                        PUTS(l);  /* text before < */
-                        *q = 0;   /* terminate URL */
-                        start_anchor(p2 + 1);  /* URL as href */
-                        PUTS(p2 + 1);  /* URL as link text */
-                        (*targetClass.end_element)(target, HTML_A);
-                        *q = '>'; /* restore */
-                        q[1] = c; /* restore */
-                        l = q + 1;
-                    } else if (q && at && at < q) {
+                    if (proto_len > 0) {
+                        /* URL with known protocol - copy to buffer, don't modify line */
+                        /* Static buffers to ensure pointer remains valid after start_anchor */
+                        static char url_buf[LINE_LENGTH];
+                        static char before_buf[LINE_LENGTH];
+                        int url_len = q - (p2 + 1);
+                        int before_len = p2 - l;
+                        
+                        if (url_len > 0 && url_len < LINE_LENGTH - 1) {
+                            /* Copy text before < */
+                            if (before_len > 0 && before_len < LINE_LENGTH - 1) {
+                                strncpy(before_buf, l, before_len);
+                                before_buf[before_len] = '\0';
+                                PUTS(before_buf);
+                            }
+                            
+                            /* Copy URL */
+                            strncpy(url_buf, p2 + 1, url_len);
+                            url_buf[url_len] = '\0';
+                            
+                            /* Create clickable link */
+                            start_anchor(url_buf);
+                            PUTS(url_buf);
+                            (*targetClass.end_element)(target, HTML_A);
+                            
+                            l = q + 1;
+                        } else {
+                            break;  /* URL too long */
+                        }
+                    } else if (at && at < q) {
                         /* Message-ID: <something@host> */
                         char c = q[1];
                         q[1] = 0; /* chop up */
                         *p2 = 0;
                         PUTS(l);
-                        *p2 = '<'; /* again */
+                        *p2 = '<'; /* restore */
                         *q = 0;
                         start_anchor(p2 + 1);
-                        *q = '>'; /* again */
+                        *q = '>'; /* restore */
                         PUTS(p2);
                         (*targetClass.end_element)(target, HTML_A);
-                        q[1] = c; /* again */
+                        q[1] = c; /* restore */
                         l = q + 1;
-                    } else
-                        break; /* line has unmatched <> or unknown content */
+                    } else {
+                        break; /* Unknown content in <> */
+                    }
                 }
                 PUTS(l); /* Last bit of the line */
                 if (!flowed) PUTS("\n");

@@ -3858,8 +3858,12 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         }
         buildInfo->tagID = newTagID;
 
-#ifdef VERBOSE_SPLITLINE
+        /* CRITICAL: Clear the terminator after copied data.
+         * Without this, garbage from old buffer contents appears as extra chars.
+         */
         TFCClear(buildInfo->tbuff + n);
+
+#ifdef VERBOSE_SPLITLINE
         printf("$$$ TagID=%d>> ", buildInfo->tagID);
         dumpTFCArray(DUMP_CHAR | DUMP_WRAP | DUMP_NL, buildInfo->tbuff, buildInfo->buffTagInfo,
                      TAGINFO_SIZE);

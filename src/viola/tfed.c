@@ -3317,6 +3317,10 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                     }
                     tfcp = buildInfo->tbuff + buildInfo->tbuffi;
                 } else {
+                    /* Allow line breaking after '/' in URLs (links) */
+                    if (c == '/' && (flags & MASK_BUTTON)) {
+                        buildInfo->breaki = buildInfo->tbuffi;
+                    }
                     ++tfcp;
                 }
                 TFCTagID(tfcp) = 0;
@@ -3747,9 +3751,27 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         buildInfo->px = GET__TFStruct(buildInfo->self)->xUL;
 
         k = buildInfo->tbuffi;
-        for (n = 0, j = split; j < k; j++)
-            if (TFCChar(buildInfo->tbuff + j) != ' ')
-                break;
+        
+        /* Count leading spaces in original line for indentation preservation */
+        int orig_indent = 0;
+        while (orig_indent < split && TFCChar(buildInfo->tbuff + orig_indent) == ' ')
+            orig_indent++;
+        
+        j = split;
+        n = 0;
+        
+        /* Add original indentation to wrapped line */
+        if (orig_indent > 0 && j < k) {
+            int indent_i;
+            int spaceWidth = buildInfo->spaceWidth;
+            for (indent_i = 0; indent_i < orig_indent && n < TBUFFSIZE; indent_i++, n++) {
+                TFCChar(buildInfo->tbuff + n) = ' ';
+                TFCFontID(buildInfo->tbuff + n) = buildInfo->fontID;
+                TFCFlags(buildInfo->tbuff + n) = buildInfo->flags;
+                TFCTagID(buildInfo->tbuff + n) = 0;
+                buildInfo->px += spaceWidth;
+            }
+        }
 
         for (; j < k; n++, j++) {
             TFPic *picp, *pic = 0;

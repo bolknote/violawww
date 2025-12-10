@@ -14,7 +14,6 @@
 - [ ] Fix CHANGED tag (no yellow background)
 - [ ] Remove default hint message at bottom of vw
 - [ ] Fix URL bar in viola — address not displayed
-- [ ] Fix long link wrapping in news
 
 ### Styling
 - [ ] Make FOSI styles functional

@@ -273,4 +273,5 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 - [Main README](../README.md) - Project overview and build instructions
 - [TODO](../TODO.md) - Known issues and future enhancements
 - [LICENSE](../LICENSE.md) - Licensing information
+- [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md) - Biography of Pei-Yuan Wei and ViolaWWW history
 - [CHARSET_TRANSLITERATION.md](CHARSET_TRANSLITERATION.md) - Encoding/transliteration pipeline

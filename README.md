@@ -116,6 +116,9 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - **Test**: `test/test_htcharset.c` (German, Polish, Russian, Windows-1251, KOI8-R)
 
 #### NNTP News Protocol Improvements
+- **New URL schemes**: `nntp://host/group` and `news://host/group` for direct server access
+- No need to set `NNTPSERVER` environment variable when using URL with host
+- Article access by number: `nntp://host/group/article-number`
 - RFC 2047 MIME encoded-word decoding in article headers (Subject, From, etc.)
 - Transliteration of non-ASCII characters in newsgroup listings and articles
 - Example: `=?UTF-8?Q?J=C3=B6rg?=` → "Jörg" (Latin diacritics preserved in ISO-8859-1)
@@ -123,6 +126,7 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - Fixed EOF handling for `-funsigned-char` compiler flag
 - Proper connection cleanup after each request (prevents hangs)
 - **Files**: `HTNews.c`, `HTCharset.c`
+- **Documentation**: [PROTOCOLS_REFERENCE.md](doc/PROTOCOLS_REFERENCE.md)
 
 #### Mathematical Expression Rendering
 - Native rendering of mathematical HTML entities and expressions
@@ -681,7 +685,7 @@ Contributions are welcome! Areas of interest:
 - Internet Archive (Wayback Machine) integration
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII via iconv + ICU)
 - Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
-- NNTP news protocol improvements (MIME encoded-word decoding, transliteration, connection handling)
+- NNTP news protocol improvements (`nntp://` and `news://` URL schemes, MIME encoded-word decoding, transliteration)
 - Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, SC sync, etc.)
 - TTY interface restoration for external process communication
 - VPLOT 3D surface plotter implementation

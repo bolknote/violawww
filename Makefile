@@ -755,13 +755,27 @@ app: $(VW) $(LAUNCHER)
 	else \
 		echo "Note: telnet not found, telnet:// URLs will require: brew install telnet"; \
 	fi
-	@# Bundle rlogin if available (for telnet://user@host URLs, optional)
+	@# Bundle rlogin if available (for rlogin:// URLs, optional)
 	@RLOGIN_PATH=$$(brew --prefix inetutils 2>/dev/null)/bin/grlogin; \
 	if [ -x "$$RLOGIN_PATH" ]; then \
 		echo "Bundling rlogin..."; \
 		cp "$$RLOGIN_PATH" $(APP_MACOS)/rlogin; \
 	else \
 		echo "Note: rlogin not found (optional), install via: brew install inetutils"; \
+	fi
+	@# Bundle c3270 if available (for tn3270:// URLs - IBM mainframe terminal)
+	@C3270_PATH=$$(brew --prefix x3270 2>/dev/null)/bin/c3270; \
+	if [ -x "$$C3270_PATH" ]; then \
+		echo "Bundling c3270..."; \
+		cp "$$C3270_PATH" $(APP_MACOS)/c3270; \
+	elif [ -x /opt/homebrew/bin/c3270 ]; then \
+		echo "Bundling c3270..."; \
+		cp /opt/homebrew/bin/c3270 $(APP_MACOS)/c3270; \
+	elif [ -x /usr/local/bin/c3270 ]; then \
+		echo "Bundling c3270..."; \
+		cp /usr/local/bin/c3270 $(APP_MACOS)/c3270; \
+	else \
+		echo "Note: c3270 not found, tn3270:// URLs will require: brew install x3270"; \
 	fi
 	@# Build ImageMagick from source if not already built
 	@if [ ! -d build/imagemagick/bin ] || [ ! -x build/imagemagick/bin/magick ]; then \

@@ -49,6 +49,11 @@ PRIVATE int remote_session ARGS2(char*, access, char*, host) {
                        : strcmp(access, "tn3270") == 0 ? tn3270
                                                        : telnet;
 
+    /* Program name to execute (may differ from URL scheme) */
+    const char* program = access;
+    if (login_protocol == tn3270)
+        program = "c3270"; /* x3270 package provides c3270 for TN3270 */
+
     if (hostname) {
         *hostname++ = 0; /* Split */
     } else {
@@ -98,7 +103,7 @@ PRIVATE int remote_session ARGS2(char*, access, char*, host) {
 #endif
 
 #ifdef TELNET_MINUS_L
-    sprintf(command, "%s%s%s %s %s", access, user ? " -l " : "", user ? user : "", hostname,
+    sprintf(command, "%s%s%s %s %s", program, user ? " -l " : "", user ? user : "", hostname,
             port ? port : "");
 
     if (TRACE)
@@ -112,9 +117,9 @@ PRIVATE int remote_session ARGS2(char*, access, char*, host) {
 #ifdef unix
 #ifndef TELNET_DONE
     if (login_protocol != rlogin) {
-        sprintf(command, "%s %s %s", access, hostname, port ? port : "");
+        sprintf(command, "%s %s %s", program, hostname, port ? port : "");
     } else {
-        sprintf(command, "%s%s%s %s %s", access, user ? " -l " : "", user ? user : "", hostname,
+        sprintf(command, "%s%s%s %s %s", program, user ? " -l " : "", user ? user : "", hostname,
                 port ? port : "");
     }
     if (TRACE)
@@ -132,9 +137,9 @@ PRIVATE int remote_session ARGS2(char*, access, char*, host) {
 #define SIMPLE_TELNET
 #endif
 #ifdef SIMPLE_TELNET
-    if (login_protocol == telnet) {    /* telnet only */
-        sprintf(command, "TELNET  %s", /* @@ Bug: port ignored */
-                hostname);
+    if (login_protocol == telnet) {     /* telnet only */
+        sprintf(command, "%s  %s",      /* @@ Bug: port ignored */
+                program, hostname);
         if (TRACE)
             fprintf(stderr, "HTaccess: Command is: %s\n", command);
         system(command);

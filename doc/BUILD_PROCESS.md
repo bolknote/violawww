@@ -34,7 +34,8 @@ ViolaWWW.app/
 │   │   ├── gs                  # Ghostscript
 │   │   ├── magick              # ImageMagick
 │   │   ├── telnet              # Telnet client
-│   │   └── rlogin              # Remote login (optional)
+│   │   ├── rlogin              # Remote login (optional)
+│   │   └── c3270               # TN3270 client (IBM mainframe)
 │   ├── Frameworks/             # Dynamic libraries
 │   │   ├── libssl.3.dylib
 │   │   ├── libcrypto.3.dylib
@@ -114,6 +115,7 @@ Each tool is copied if available:
 | `magick` | `build/imagemagick/bin/magick` | If custom build exists |
 | `telnet` | Homebrew telnet | If installed |
 | `rlogin` | inetutils | If installed |
+| `c3270` | x3270 | If installed (for tn3270:// URLs) |
 
 #### 3.4 Bundle Resources
 

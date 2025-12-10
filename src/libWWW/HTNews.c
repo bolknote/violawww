@@ -430,6 +430,7 @@ PRIVATE void read_article NOARGS {
     char line[LINE_LENGTH + 1];
     char* references = NULL; /* Hrefs for other articles */
     char* newsgroups = NULL; /* Newsgroups list */
+    char* body_charset = NULL; /* Charset from Content-Type header */
     char* p = line;
     BOOL done = NO;
 
@@ -487,6 +488,27 @@ PRIVATE void read_article NOARGS {
                 } else if (match(line, "REFERENCES:")) {
                     StrAllocCopy(references, HTStrip(strchr(line, ':') + 1));
 
+                } else if (match(line, "CONTENT-TYPE:")) {
+                    /* Extract charset from Content-Type header
+                    ** e.g., "Content-Type: text/plain; charset=koi8-r"
+                    */
+                    char* cs = strcasestr(line, "charset=");
+                    if (cs) {
+                        cs += 8; /* skip "charset=" */
+                        if (*cs == '"') cs++; /* skip optional quote */
+                        char* end = cs;
+                        while (*end && *end != '"' && *end != ';' && *end != ' ' && *end != '\r' && *end != '\n')
+                            end++;
+                        if (end > cs) {
+                            int len = end - cs;
+                            if (body_charset) free(body_charset);
+                            body_charset = (char*)malloc(len + 1);
+                            if (body_charset) {
+                                strncpy(body_charset, cs, len);
+                                body_charset[len] = '\0';
+                            }
+                        }
+                    }
                 } /* end if match */
                 p = line; /* Restart at beginning */
             } /* if end of line */
@@ -547,6 +569,17 @@ PRIVATE void read_article NOARGS {
             /* Strip trailing CR (NNTP uses CRLF) */
             if (len > 0 && line[len-1] == CR) {
                 line[--len] = 0;
+            }
+            
+            /* Transliterate line if charset is specified */
+            if (body_charset && len > 0) {
+                char outbuf[LINE_LENGTH * 2];
+                int conv_len = HTCharset_convert_to_ascii(body_charset, line, len, outbuf, sizeof(outbuf));
+                if (conv_len > 0) {
+                    strncpy(line, outbuf, LINE_LENGTH);
+                    line[LINE_LENGTH] = '\0';
+                    len = strlen(line);
+                }
             }
             
             /* format=flowed (RFC 3676): line ending with space is a soft break
@@ -634,6 +667,8 @@ PRIVATE void read_article NOARGS {
 
     (*targetClass.end_element)(target, HTML_PRE);
     (*targetClass.end_element)(target, HTML_BODY);
+    
+    if (body_charset) free(body_charset);
 }
 
 /*	Read in a List of Newsgroups

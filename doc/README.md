@@ -232,6 +232,19 @@ Topics covered:
 
 ---
 
+## Character Encoding
+
+### [CHARSET_TRANSLITERATION.md](CHARSET_TRANSLITERATION.md)
+Technical overview of the modern iconv+ICU transliteration pipeline.
+
+Topics covered:
+- Why transliteration is needed with Latin-1 rendering
+- Three-pass flow (iconv → ICU chain → iconv //TRANSLIT)
+- Call sites (HTTP plain text, HTML parsing, NNTP MIME headers/bodies)
+- Dependencies, fallbacks, and growth/edge-case considerations
+
+---
+
 ## Historical Context
 
 ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered many features that were later standardized:

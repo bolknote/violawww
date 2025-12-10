@@ -23,7 +23,7 @@ Legacy ViolaWWW rendering still targets ISO-8859-1 fonts. Modern servers often s
 
 ## Why This Exists (not original code)
 - The 1990s code assumed Latin-1/X11 fonts. Modern content regularly arrives in other encodings; without conversion we would render gibberish or drop text.
-- This transliteration chain is a **2025 enhancement** (see main `README.md` “Modern Enhancements”) rather than part of the historic ViolaWWW sources.
+- This transliteration chain is a **2025 enhancement** (see main [README.md](../README.md), section “Modern Enhancements”) rather than part of the historic ViolaWWW sources.
 
 ## Change History (troubleshooting context)
 - **2025-10-25 cb8ad1f6** — Introduced `HTCharset.c/h`: iconv + ICU pipeline for UTF-8/Windows-1251/KOI8-R and other encodings after the repository reshuffle.

@@ -143,11 +143,12 @@ void compress(Image* image, unsigned int verbose)
     lfree((byte*)pixel_table);
     lfree((byte*)pixel_map);
 
-    if (badcount)
+    if (badcount) {
         if (verbose)
             printf("%d out-of-range pixels, ", badcount);
         else
             fprintf(stderr, "Warning: %d out-of-range pixels were seen\n", badcount);
+    }
     if (verbose) {
         if ((rgb.used == image->rgb.used) && !badcount)
             printf("no improvment\n");

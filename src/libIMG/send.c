@@ -277,7 +277,7 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
                 xcolor.red = *(image->rgb.red + a);
                 xcolor.green = *(image->rgb.green + a);
                 xcolor.blue = *(image->rgb.blue + a);
-                if (!XAllocColor(disp, ximageinfo->cmap, &xcolor))
+                if (!XAllocColor(disp, ximageinfo->cmap, &xcolor)) {
                     if ((visual->class == StaticColor) || (visual->class == StaticGray)) {
                         printf("imageToXImage: XAllocColor failed on a static visual\n");
                         return (NULL);
@@ -292,6 +292,7 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
                         newmap = 1;
                         break;
                     }
+                }
                 *(index + a) = xcolor.pixel;
             }
         } else {

@@ -1526,12 +1526,13 @@ void CB_HTML_etag(int element_number)
        GET_height(bstate->obj));
             }
     */
-    if (bstate->tmi)
+    if (bstate->tmi) {
         if (bstate->tmi->inlineP && bstate->obj /* && !GET__children(bstate->obj) */) {
             --dataBuffIdxStackIdx;
         } else {
             dataBuffIdx = dataBuffIdxStack[--dataBuffIdxStackIdx];
         }
+    }
 
     if (SBI.stacki > 0 && parent_bstate && parent_bstate->insert) {
         /*		fprintf(stderr, "####### Self: insert=%s, parent_h=%d h=%d\n",

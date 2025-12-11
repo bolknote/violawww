@@ -64,7 +64,7 @@ static void freePrevious(Display* dpy, Window w)
     /* look for existing resource allocation */
     if ((XGetWindowProperty(dpy, w, atom, 0, 1, 1 /*delete*/, AnyPropertyType, &actual_type,
                             &format, &nitems, &bytes_after, &pm) == Success) &&
-        nitems == 1)
+        nitems == 1) {
         if ((actual_type == XA_PIXMAP) && (format == 32) && (nitems == 1) && (bytes_after == 0)) {
             /* blast it away */
             XKillClient(dpy, *((Pixmap*)pm));
@@ -73,6 +73,7 @@ static void freePrevious(Display* dpy, Window w)
             fprintf(stderr, "%s: warning: invalid format encountered for property %s\n",
                     RETAIN_PROP_NAME, "xloadimage");
         }
+    }
 }
 
 /* this returns the root window for DECWindows servers.  this is right

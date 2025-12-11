@@ -4206,12 +4206,13 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                     break;
                 ++tfcp;
             }
-            if (headp)
+            if (headp) {
                 if (TFCFlags(tfcp) & MASK_NL)
                     *buffp++ = '\n';
                 else
                     *buffp++ =
                         ' '; /*?? without this, lines can be jointed together without a space*/
+            }
             headp = headp->next;
 #ifdef lakjlkjlkjkj
             if (headp) {

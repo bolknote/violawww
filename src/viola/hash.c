@@ -488,11 +488,12 @@ void dumpHashTable(HashTable* ht)
 
     for (int i = 0; i < ht->size; i++) {
         for (HashEntry* hp = &(ht->entries[i]); hp; hp = hp->next)
-            if (hp->label)
+            if (hp->label) {
                 if (ht->func_hash == hash_str) {
                     printf("%d\tlabel=\"%s\"\tval=%ld\n", i, (char*)hp->label, hp->val);
                 } else {
                     printf("%d\tlabel=%ld\tval=0x%lx\n", i, hp->label, hp->val);
                 }
+            }
     }
 }

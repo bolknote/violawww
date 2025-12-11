@@ -123,7 +123,7 @@ int GetNextPhrase(char* restrict str, int i, char* restrict destStr, char* restr
     extern int hush;
 
     while ((c = str[ci])) {
-        if (parenLevel == 0 && quoteToggle == 0)
+        if (parenLevel == 0 && quoteToggle == 0) {
             if (c == cutOffWord[cuti]) {
                 ++cuti;
                 if (cuti >= cutOffWordLen) {
@@ -133,6 +133,7 @@ int GetNextPhrase(char* restrict str, int i, char* restrict destStr, char* restr
             } else {
                 cuti = 0;
             }
+        }
         if (c == '\"') {
             if (quoteToggle)
                 quoteToggle = 0;

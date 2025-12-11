@@ -663,11 +663,12 @@ rle_pixel** buildmap(struct sv_globals* globals, int minmap, double gamma)
 static char* match(char* n, char* v) {
     for (; *n != '\0' && *n != '=' && *n == *v; n++, v++)
         ;
-    if (*n == '\0' || *n == '=')
+    if (*n == '\0' || *n == '=') {
         if (*v == '\0')
             return v;
         else if (*v == '=')
             return ++v;
+    }
 
     return NULL;
 }
@@ -1113,7 +1114,7 @@ int rle_getrow(struct sv_globals* globals, rle_pixel* scanline[])
 
             scanc += nc;
             scan_x += nc;
-            if (debug_f)
+            if (debug_f) {
                 if (SV_BIT(*globals, channel)) {
                     rle_pixel* cp = scanc - nc;
                     fprintf(stderr, "Pixel data %d (to %d):", nc, scan_x);
@@ -1122,6 +1123,7 @@ int rle_getrow(struct sv_globals* globals, rle_pixel* scanline[])
                     putc('\n', stderr);
                 } else
                     fprintf(stderr, "Pixel data %d (to %d)\n", nc, scan_x);
+            }
             break;
 
         case RRunDataOp:

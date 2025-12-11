@@ -729,13 +729,25 @@ Removes spaces from the beginning and end of a string (without copying).
 ---
 
 ### findPattern(text, pattern)
-Finds the position of the end of a pattern match.
+Finds the position of the last character of the first pattern match.
 
 **Parameters:**
 - `text` (string) - text to search
-- `pattern` (string) - pattern
+- `pattern` (string) - pattern to find
 
-**Returns:** (int) position of match end, -1 if not found
+**Returns:** (int) 0-based index of the **last character** of the matched pattern, -1 if not found
+
+**Example:**
+```c
+url = "https://web.archive.org/web/20040219022839/http://example.com";
+pos = findPattern(url, "/http");
+/* pos = 46 (index of 'p' in "/http") */
+/* To get "http://example.com", use nthChar(url, pos - 3, strlen(url) - 1) */
+/* pos - 4 = '/' (slash before http) */
+/* pos - 3 = 'h' (start of "http") */
+```
+
+**Note:** Unlike many string search functions that return the start position of a match, `findPattern` returns the position of the **last character** of the matched pattern. To get the start of the match, subtract `strlen(pattern) - 1` from the result.
 
 ---
 

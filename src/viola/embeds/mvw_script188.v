@@ -182,16 +182,30 @@
 			title = send(pageObj, "queryTitle");
 			if (isBlank(title)) title = pageObj;
 
+			/* Strip web.archive.org prefix for display */
+			displayURL = docURL;
+			prefix = "https://web.archive.org/web/";
+			prefixLen = strlen(prefix);
+			urlStart = nthChar(docURL, 0, prefixLen - 1);
+			if (urlStart == prefix) {
+				/* findPattern returns position of LAST char of pattern */
+				/* "/http" ends at position of "p", so "h" is at slashPos - 3 */
+				slashPos = findPattern(docURL, "/http");
+				if (slashPos > 0) {
+					displayURL = nthChar(docURL, slashPos - 3, strlen(docURL) - 1);
+				}
+			}
+
 			if (arg[0] == "show") {
 			  if (isBlank(title))
-				sendToInterface("newDocument", cookie, docURL);
+				sendToInterface("newDocument", cookie, displayURL);
 			  else
-				sendToInterface("newDocument", cookie, docURL, title);
+				sendToInterface("newDocument", cookie, displayURL, title);
 			} else { /* arg[0] == "showHistoryDoc" */
 			    if (isBlank(title))
-			    	sendToInterface("historyDocument", cookie, docURL);
+			    	sendToInterface("historyDocument", cookie, displayURL);
 			    else
-			    	sendToInterface("historyDocument", cookie, docURL, title);
+			    	sendToInterface("historyDocument", cookie, displayURL, title);
 			}
 			sendToInterface("sliderConfig", cookie, sliderPos, sliderSize);
 		

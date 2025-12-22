@@ -3436,8 +3436,8 @@ static char _slotValue_mvw36[] = "2";
 static char _slotValue_mvw38[] = "hpane";
 static char _slotValue_mvw39[] = "mvw.doc.tools.sys";
 static char _slotValue_mvw40[] = "mvwTools";
-static char _slotValue_mvw41[] = "mvw.doc.tools.sys.home mvw.doc.tools.sys.back mvw.doc.tools.sys.prev mvw.doc.tools.sys.next mvw.doc.tools.sys.reload";
-static char _slotValue_mvw42[] = "171";
+static char _slotValue_mvw41[] = "mvw.doc.tools.sys.home mvw.doc.tools.sys.back mvw.doc.tools.sys.prev mvw.doc.tools.sys.next mvw.doc.tools.sys.reload mvw.doc.tools.sys.clone";
+static char _slotValue_mvw42[] = "207";
 /* END OF OBJ */
 
 static char _slotValue_mvw44[] = "XPMButton";
@@ -3710,20 +3710,21 @@ static char _slotValue_mvw87[] = "2";
 /* END OF OBJ */
 
 static char _slotValue_mvw89[] = "XPMButton";
-static char _slotValue_mvw90[] = "mvw.doc.tools.ops.clone";
-static char _slotValue_mvw91[] = "mvw.doc.tools.ops";
+static char _slotValue_mvw90[] = "mvw.doc.tools.sys.clone";
+static char _slotValue_mvw91[] = "mvw.doc.tools.sys";
 static char _slotValue_mvw92[] = {
 #include "embeds/mvw_script92.v.h"
 };
 static char _slotValue_mvw93[] = "/* XPM */\n\
 static char * clone [] = {\n\
-\"32 32 5 1\",\n\
-\" 	s None	c None\",\n\
+\"32 32 6 1\",\n\
+\" 	c black\",\n\
 \".	c black\",\n\
 \"X	c white\",\n\
 \"o	c gray\",\n\
 \"O	c gray30\",\n\
-\"............................... \",\n\
+\"+	c gray50\",\n\
+\"..............................  \",\n\
 \".XXXXXXXXXXXXXXXXXXXXXXXXXXXXX. \",\n\
 \".XoooooooooooooooooooooooooooO. \",\n\
 \".Xooo..........ooooooooooooooO. \",\n\
@@ -3745,15 +3746,15 @@ static char * clone [] = {\n\
 \".Xoooooooooooo.XXXXXXXXXX.oooO. \",\n\
 \".Xoooooooooooo............oooO. \",\n\
 \".XoooooooooooooooooooooooooooO. \",\n\
-\".Xooooo..o.oo...o.Oo.o...ooooO. \",\n\
-\".Xoooo.Ooo.oo.o.o..o.o.ooooooO. \",\n\
+\".Xooooo..o.oo...o.+o.o...ooooO. \",\n\
+\".Xoooo.+oo.oo.o.o..o.o.ooooooO. \",\n\
 \".Xoooo.ooo.oo.o.o.o..o..oooooO. \",\n\
-\".Xoooo.ooo.oo.o.o.oO.o.ooooooO. \",\n\
-\".Xoooo.Ooo.oo.o.o.oo.o.ooooooO. \",\n\
+\".Xoooo.ooo.oo.o.o.o+.o.ooooooO. \",\n\
+\".Xoooo.+oo.oo.o.o.oo.o.ooooooO. \",\n\
 \".Xooooo..o..o...o.oo.o...ooooO. \",\n\
 \".XoooooooooooooooooooooooooooO. \",\n\
 \".XOOOOOOOOOOOOOOOOOOOOOOOOOOOO. \",\n\
-\"............................... \",\n\
+\"..............................  \",\n\
 \"                                \"};\n\
 ";
 static char _slotValue_mvw94[] = "32";
@@ -4000,7 +4001,7 @@ static SlotStruct objDesc_mvw[] = {
     {"parent", _slotValue_mvw82},
     {"script", _slotValue_mvw83},
     {"label", _slotValue_mvw84},
-    {"minWidth", _slotValue_mvw85},
+    {"maxWidth", _slotValue_mvw85},
     {"gapH", _slotValue_mvw86},
     {"gapV", _slotValue_mvw87},
     {(char*)0, (char*)1},
@@ -4009,7 +4010,7 @@ static SlotStruct objDesc_mvw[] = {
     {"parent", _slotValue_mvw91},
     {"script", _slotValue_mvw92},
     {"label", _slotValue_mvw93},
-    {"minWidth", _slotValue_mvw94},
+    {"maxWidth", _slotValue_mvw94},
     {"gapH", _slotValue_mvw95},
     {"gapV", _slotValue_mvw96},
     {(char*)0, (char*)1},

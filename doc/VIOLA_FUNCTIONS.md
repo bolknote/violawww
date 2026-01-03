@@ -81,6 +81,30 @@ result = interpret("return " + varName + ";");
 
 ---
 
+### execScript(scriptCode)
+Executes a Viola script from a string. Used primarily for ACTION/SCRIPT tags in VRML-style graphics.
+
+**Parameters:**
+- `scriptCode` (string) - Viola script code to execute
+
+**Returns:** (any) result of script execution
+
+**Example:**
+```c
+/* Execute a simple script */
+execScript("x = 10; print(x);");
+
+/* Execute script stored in attribute */
+actionCode = get("action");
+execScript(actionCode);
+```
+
+**Note:** Similar to `interpret()`, but specifically designed for executing action scripts in graphics objects.
+
+**Added in:** ViolaWWW 4.0
+
+---
+
 ### exit(code)
 Terminates the application with an exit code.
 
@@ -426,6 +450,8 @@ Updates the mathematical expression window.
 
 **Returns:** (int) 1
 
+**Added in:** ViolaWWW 4.0
+
 ---
 
 ### SGMLTileDoc(width, height)
@@ -534,6 +560,8 @@ Gets an STG tag attribute (extended version).
 - `attrName` (string) - attribute name
 
 **Returns:** (string) attribute value
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -1382,6 +1410,8 @@ textY = buttonY + ((buttonH - labelH) / 2);
 
 **See also:** `textWidth`
 
+**Added in:** ViolaWWW 4.0
+
 ---
 
 ### cursorShape([shape])
@@ -2039,6 +2069,8 @@ if (isURLVisited("http://www.example.com/page.html")) {
 
 **See also:** `addURLToHistory`, `traversedForegroundColor` in STG_REFERENCE.md
 
+**Added in:** ViolaWWW 4.0
+
 ---
 
 ### setLinkColor(colorname)
@@ -2057,6 +2089,8 @@ setLinkColor("red");  /* Unvisited links will be red */
 ```
 
 **See also:** `setLinkVisitedColor`, `resetLinkColors`, `FGColor` in STG_REFERENCE.md
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2077,6 +2111,8 @@ setLinkVisitedColor("purple");  /* Visited links will be purple */
 
 **See also:** `setLinkColor`, `resetLinkColors`, `traversedForegroundColor` in STG_REFERENCE.md
 
+**Added in:** ViolaWWW 4.0
+
 ---
 
 ### resetLinkColors()
@@ -2095,6 +2131,8 @@ setLinkColor("blue");  /* Now unvisited links are blue, visited remain black */
 ```
 
 **See also:** `setLinkColor`, `setLinkVisitedColor`
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2116,6 +2154,8 @@ addURLToHistory("http://www.example.com/page.html");
 **Note:** In standalone viola, URLs are stored in `~/.viola_history` (one URL per line, max 4096 entries). This enables `isURLVisited()` to detect previously visited links.
 
 **See also:** `isURLVisited`
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2314,6 +2354,8 @@ Enables sync for the current page. Called automatically when an `SC` attribute i
 
 **Note:** This function sets an internal flag that allows `discoverySetPage()` to activate the sync service. Without this flag being set, sync remains dormant.
 
+**Added in:** ViolaWWW 4.0
+
 ---
 
 ### discoveryReset()
@@ -2324,6 +2366,8 @@ Resets the sync enabled flag. Called automatically at the start of loading a new
 **Returns:** (int) 1
 
 **Note:** This ensures that sync is only active for pages that explicitly contain `SC` attributes.
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2347,6 +2391,8 @@ break;
 /* In mvw_script188.v after document is parsed */
 discoverySetPage(normURL);
 ```
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2373,6 +2419,8 @@ discoveryBroadcast(get("name"), "setScale", arg[1], arg[2], arg[3]);
 /* Broadcast color change */
 discoveryBroadcast(get("name"), "setFGColor", "red");
 ```
+
+**Added in:** ViolaWWW 4.0
 
 ---
 
@@ -2403,6 +2451,8 @@ break;
 ```
 
 **See also:** [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md) for `SC` attribute documentation
+
+**Added in:** ViolaWWW 4.0
 
 ---
 

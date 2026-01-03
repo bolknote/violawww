@@ -4,6 +4,7 @@
 		return 1;
 	break;
 	case 'i':
+		/* Return literal content to parser - it will pass to parent */
 		return get("label");
 	break;
 	case "gotoAnchor":

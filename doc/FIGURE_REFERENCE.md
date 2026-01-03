@@ -22,6 +22,7 @@ Specifies the image format type.
 **Supported values for inline data (with FIGDATA):**
 - `xbm` or `image/xbm` - X BitMap format (monochrome)
 - `xpm` or `image/xpm` - X PixMap format (color)
+- `ps` or `application/postscript` - PostScript format (converted to GIF via ImageMagick)
 
 **Supported values for external files (with SRC):**
 - `xbm` or `image/xbm` - X BitMap format
@@ -98,15 +99,15 @@ Legacy attributes with limited or no implementation.
 ## Nested Elements
 
 ### FIGDATA
-Contains inline image data for text-based formats (XBM, XPM).
+Contains inline image data for text-based formats (XBM, XPM, PS).
 
 **Supported formats:**
 - **XBM** - X BitMap C code
 - **XPM** - X PixMap C code
+- **PS** - PostScript code (converted to GIF via ImageMagick)
 
 **NOT supported:**
-- GIF (binary format)
-- PS (typically too large)
+- GIF (binary format, requires base64 encoding which is not supported)
 
 **Example - XBM:**
 ```html
@@ -141,10 +142,30 @@ static char * arrow [] = {
 </FIGURE>
 ```
 
+**Example - PostScript:**
+```html
+<FIGURE TYPE="ps" WIDTH="200" HEIGHT="150">
+<FIGDATA>
+%!PS-Adobe-2.0
+%%Title: Simple Drawing
+%%Pages: 1
+%%EndComments
+%%Page: 1 1
+newpath
+0 0 moveto 100 0 lineto 100 150 lineto 0 150 lineto closepath
+0.9 0.3 0.3 setrgbcolor fill
+showpage
+%%EOF
+</FIGDATA>
+  <FIGA HREF="http://example.com/red" AREA="0 0 100 150"></FIGA>
+</FIGURE>
+```
+
 **Important notes:**
 - FIGDATA content is treated as literal text (SGML_LITTERAL mode)
 - Leading and trailing whitespace is automatically trimmed
-- The format must be valid C code that XBM/XPM libraries can parse
+- XBM/XPM: format must be valid C code that libraries can parse
+- PS: WIDTH and HEIGHT attributes are used to set BoundingBox for correct sizing
 
 ### FIGA
 Defines a clickable region (hotspot) within the figure (client-side image map).
@@ -184,7 +205,7 @@ Provides a caption for the figure.
 | XBM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Monochrome, text-based C code |
 | XPM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Color, text-based C code |
 | GIF    | ❌ No            | ✅ Yes         | ✅ Yes        | Binary format, no inline support |
-| PS     | ❌ No            | ✅ Yes         | ✅ Yes        | Converted to GIF via ImageMagick |
+| PS     | ✅ Yes           | ✅ Yes         | ✅ Yes        | Converted to GIF via ImageMagick |
 
 ## Implementation Details
 
@@ -194,11 +215,12 @@ Provides a caption for the figure.
 1. HTML parser collects FIGDATA content
 2. Content is stored in the figure's `label` attribute
 3. Parser calls case "D" which triggers case "make"
-4. Appropriate handler (HTML_xbm or HTML_xpm) is cloned
+4. Appropriate handler (HTML_xbm, HTML_xpm, or HTML_ps) is cloned
 5. Handler's `make` method processes the data:
    - Whitespace is trimmed from label
    - For XBM: `GLMakeXBMFromASCII()` parses C code
    - For XPM: `GLMakeXPMFromASCII()` parses C code
+   - For PS: BoundingBox header is prepended, saved to temp file, converted via ImageMagick
 6. Bitmap is created and rendered
 
 **For external files (with SRC):**
@@ -216,6 +238,7 @@ Provides a caption for the figure.
 **For inline data:**
 - `HTML_xbm` → class `XBM` → inherits from `field`
 - `HTML_xpm` → class `XPM` → inherits from `field`
+- `HTML_ps` → class `GIF` → PS converted to GIF via ImageMagick
 
 **For external files:**
 - `HTML_xbmf` → class `XBM` (uses file loading)
@@ -233,11 +256,12 @@ The following Viola scripts handle FIGURE elements:
 - `HTML_figa_actual_script.v` - FIGA hotspot interaction (hover, click)
 - `HTML_xbm_script.v` - XBM inline handler (with FIGA support)
 - `HTML_xpm_script.v` - XPM inline handler (with FIGA support)
+- `HTML_ps_script.v` - PostScript inline handler (with FIGA support)
 - `HTML_xbmf_script.v` - XBM external file handler (with FIGA support)
 - `HTML_xpmf_script.v` - XPM external file handler (with FIGA support)
 - `HTML_gif_script.v` - GIF handler for IMG tag (no FIGA support)
 - `HTML_giff_script.v` - GIF external file handler for FIGURE (with FIGA support)
-- `HTML_psf_script.v` - PostScript file handler (with FIGA support)
+- `HTML_psf_script.v` - PostScript external file handler (with FIGA support)
 
 ## Common Usage Examples
 
@@ -252,6 +276,28 @@ static char icon_bits[] = {
    /* ... */
 };
 </FIGDATA>
+</FIGURE>
+```
+
+### Inline PostScript Image
+```html
+<FIGURE TYPE="ps" WIDTH="200" HEIGHT="150">
+<FIGDATA>
+%!PS-Adobe-2.0
+%%Title: Color Boxes
+%%Pages: 1
+%%EndComments
+%%Page: 1 1
+newpath 0 0 moveto 100 0 lineto 100 150 lineto 0 150 lineto closepath
+0.9 0.3 0.3 setrgbcolor fill
+newpath 100 0 moveto 200 0 lineto 200 150 lineto 100 150 lineto closepath
+0.3 0.3 0.9 setrgbcolor fill
+showpage
+%%EOF
+</FIGDATA>
+  <FIGA HREF="/left.html" AREA="0 0 100 150"></FIGA>
+  <FIGA HREF="/right.html" AREA="100 0 100 150"></FIGA>
+  <FIGCAP>Click left (red) or right (blue)</FIGCAP>
 </FIGURE>
 ```
 
@@ -286,7 +332,7 @@ static char icon_bits[] = {
 
 3. **File cleanup timing**: Some handlers (like `HTML_gif_script.v`) had bugs where temporary files were deleted before rendering completed. External file handlers (with 'f' suffix) handle this correctly.
 
-4. **PostScript conversion**: PostScript images are converted to GIF via ImageMagick before display. This requires the `magick` command to be available in PATH.
+4. **PostScript conversion**: PostScript images (both inline and external) are converted to GIF via ImageMagick before display. This requires the `magick` command to be available in PATH. For inline PS, the WIDTH and HEIGHT attributes are used to set the BoundingBox.
 
 5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` lines 75-78 attempts to use `HTML_gif` for inline data, but this is incorrect as `HTML_gif` lacks a "make" handler and cannot process inline data. This code path will fail silently.
 

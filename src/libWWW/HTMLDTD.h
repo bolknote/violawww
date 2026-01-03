@@ -57,10 +57,10 @@ typedef enum _HTMLElement {
     HTML_ENTRY,
     HTML_EXAMPLE,
     HTML_FGCOLOR, /*vr exp*/
+    HTML_FIG,
     HTML_FIGA,
     HTML_FIGCAP,
     HTML_FIGDATA,
-    HTML_FIG,
     HTML_FIGURE,
     HTML_FOOTNOTE,
     HTML_FORM,

@@ -106,11 +106,10 @@
 			case "image/xpm":
 				figTemplate = "HTML_xpm";
 			break;
-/*			case "ps":
+			case "ps":
 			case "application/postscript":
 				figTemplate = "HTML_ps";
 			break;
-*/
 			default:
 		print("HTML_figure.v: don't know what FIGURE TYPE is.\n");
 			break;
@@ -121,8 +120,10 @@
 				return 0;
 			} else {
 				bitmapObj = send(figTemplate, "clone");
-				w = width() - 10;
-				h += send(bitmapObj, "make", self(), w, h,
+				/* Use WIDTH/HEIGHT attributes if specified */
+				w = delayWidth;
+				if (w <= 0) w = width() - 10;
+				h += send(bitmapObj, "make", self(), w, delayHeight,
 					 get("label"), ismap);
 				objectListPrepend("children", bitmapObj);
 

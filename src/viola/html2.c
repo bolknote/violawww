@@ -1394,9 +1394,18 @@ void CB_HTML_etag(int element_number)
             dataBuffIdxStack[dataBuffIdxStackIdx] = src_starti;
 
             cp = PkInfo2Str(&evalResult);
-            if (cp)
+            if (cp) {
+                /* Set parent's label directly with the returned inline data */
+                if (parent_bstate && parent_bstate->obj) {
+                    char* parent_label = GET_label(parent_bstate->obj);
+                    if (parent_label)
+                        free(parent_label);
+                    SET_label(parent_bstate->obj, saveString(cp));
+                }
+                /* Also copy to dataBuff for compatibility */
                 for (; *cp; cp++)
                     dataBuff[dataBuffIdx++] = *cp;
+            }
             clearPacket(&evalResult);
             /*
             printf("INLINE1 obj=%s lidx=%d idx=%d DATA {%s}\n",
@@ -1436,9 +1445,16 @@ void CB_HTML_etag(int element_number)
                 }
                 strncpy(cp, &dataBuff[src_starti], size);
                 cp[size] = '\0';
-                if (GET_label(bstate->obj))
-                    free(GET_label(bstate->obj));
-                SET_label(bstate->obj, cp);
+                /* Don't overwrite label if it was already set by inline child (e.g. FIGDATA) */
+                char* existing_label = GET_label(bstate->obj);
+                if (existing_label && strlen(existing_label) > (size_t)size) {
+                    /* Keep existing label - it has more data (from inline child) */
+                    free(cp);
+                } else {
+                    if (existing_label)
+                        free(existing_label);
+                    SET_label(bstate->obj, cp);
+                }
                 /*
                 printf("etag: obj=%s lidx=%d idx=%d DATA size=%d cp={%s} dataBuffIdxStackIdx=%d\n",
                 GET_name(bstate->obj), bstate->dataBuffIdx_localStart,

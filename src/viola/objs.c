@@ -6533,6 +6533,21 @@ static SlotStruct objDesc_HTML_psep[] = {
     {"height", _slotValue_HTML_psep4}, {(char*)0, (char*)0},
 };
 
+static char _slotValue_HTML_ps0[] = "GIF";
+static char _slotValue_HTML_ps1[] = "HTML_ps";
+static char _slotValue_HTML_ps2[] = {
+#include "embeds/HTML_ps_script.v.h"
+};
+static char _slotValue_HTML_ps3[] = "100";
+static char _slotValue_HTML_ps4[] = "30";
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_ps[] = {
+    {"class", _slotValue_HTML_ps0},  {"name", _slotValue_HTML_ps1},
+    {"script", _slotValue_HTML_ps2}, {"width", _slotValue_HTML_ps3},
+    {"height", _slotValue_HTML_ps4}, {(char*)0, (char*)0},
+};
+
 static char _slotValue_HTML_psf0[] = "GIF";
 static char _slotValue_HTML_psf1[] = "HTML_psf";
 static char _slotValue_HTML_psf2[] = {
@@ -7651,6 +7666,8 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_preTxt,
                                "HTML_psep.v",
                                objDesc_HTML_psep,
+                               "HTML_ps.v",
+                               objDesc_HTML_ps,
                                "HTML_psf.v",
                                objDesc_HTML_psf,
                                "HTML_quote.v",

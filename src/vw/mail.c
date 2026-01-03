@@ -247,13 +247,6 @@ void showMailEditor(Widget widget, XtPointer clientData, XtPointer callData)
 
     XtPopup(shell, XtGrabNone);
     
-    /* Set shell window background to match Motif theme color */
-    {
-        Pixel bg;
-        XtVaGetValues(form, XmNbackground, &bg, NULL);
-        XSetWindowBackground(XtDisplay(shell), XtWindow(shell), bg);
-    }
-    
     /* Set backing_store for all windows to prevent black artifacts during resize */
     setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
     

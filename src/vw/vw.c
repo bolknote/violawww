@@ -616,21 +616,6 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
 
     XtRealizeWidget(shell);
 
-    /* Set shell window background to match Motif theme color.
-     * This prevents black areas when window is resized.
-     */
-    {
-        Pixel bg;
-        XtVaGetValues(form, XmNbackground, &bg, NULL);
-        XSetWindowBackground(XtDisplay(shell), XtWindow(shell), bg);
-        /* Also set X11 background for toolBarForm to prevent black gaps */
-        XSetWindowBackground(XtDisplay(toolBarForm), XtWindow(toolBarForm), bg);
-        /* And for other key widgets */
-        XSetWindowBackground(XtDisplay(form), XtWindow(form), bg);
-        XSetWindowBackground(XtDisplay(topForm), XtWindow(topForm), bg);
-        XSetWindowBackground(XtDisplay(canvasForm), XtWindow(canvasForm), bg);
-    }
-
     /* Set backing_store = Always for all Motif widgets to preserve
      * window contents during resize. This prevents black artifacts.
      */
@@ -650,8 +635,6 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
         Pixel bg;
         XtVaGetValues(frame, XmNtopShadowColor, &bg, NULL);
         XtVaSetValues(violaCanvas, XmNbackground, bg, NULL);
-        /* Also set X11 background to prevent black gaps during resize */
-        XSetWindowBackground(XtDisplay(violaCanvas), XtWindow(violaCanvas), bg);
     }
 
     /* Make the icon. */

@@ -270,13 +270,6 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     /* Realize the shell and set WM_PROTOCOLS */
     XtRealizeWidget(shell);
     
-    /* Set X11 background for violaCanvas to prevent black gaps during resize */
-    {
-        Pixel canvasBg;
-        XtVaGetValues(violaCanvas, XmNbackground, &canvasBg, NULL);
-        XSetWindowBackground(XtDisplay(violaCanvas), XtWindow(violaCanvas), canvasBg);
-    }
-    
     /* Set backing_store = Always to prevent black artifacts during resize */
     setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
     

@@ -1,4 +1,25 @@
-
+/*
+ * HTML_psf_script.v - External PostScript image handler
+ *
+ * Handles PostScript images loaded from external URLs (via SRC attribute).
+ * The "f" suffix indicates "file" - external file loading.
+ *
+ * Features:
+ *   - Downloads PS from URL via HTTPGet()
+ *   - Converts PS to GIF using ImageMagick (magick command)
+ *   - Supports delayed loading (MAYDELAY attribute)
+ *   - Supports custom WIDTH/HEIGHT for scaling
+ *   - Server-side image maps (ISMAP attribute)
+ *   - Client-side image maps (FIGA hotspots)
+ *
+ * FIGA support messages:
+ *   addFigA   - Creates an HTML_figa_actual child for each hotspot
+ *   invertBox - Inverts a rectangular region (for hover effect)
+ *   hintOn/Off - Shows/hides URL hint in status bar
+ *   findTop   - Finds the top-level document for navigation
+ *
+ * Used when: <FIGURE TYPE="ps" SRC="document.ps">
+ */
 	switch (arg[0]) {
 	case "D":
 		return -1;
@@ -78,6 +99,26 @@
 	break;
 	case "config":
 		return;
+	break;
+	case "addFigA":
+		new = send("HTML_figa_actual", "clone");
+		send(new, "make", self(), 
+			arg[1], arg[2], arg[3], arg[4], arg[5]);
+		objectListAppend("children", new);
+		return;
+	break;
+	case "hintOn":
+		return send(parent(), "hintOn", arg[1]);
+	break;
+	case "hintOff":
+		return send(parent(), "hintOff");
+	break;
+	case "invertBox":
+		invertRect(arg[1], arg[2], arg[3], arg[4]);
+		return;
+	break;
+	case "findTop":
+		return send(parent(), "findTop");
 	break;
 	case "gotoAnchor":
 		return "";

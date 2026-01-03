@@ -184,7 +184,7 @@ Provides a caption for the figure.
 | XBM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Monochrome, text-based C code |
 | XPM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Color, text-based C code |
 | GIF    | ❌ No            | ✅ Yes         | ✅ Yes        | Binary format, no inline support |
-| PS     | ❌ No            | ✅ Yes         | ❌ No         | PostScript, no FIGA support |
+| PS     | ❌ No            | ✅ Yes         | ✅ Yes        | Converted to GIF via ImageMagick |
 
 ## Implementation Details
 

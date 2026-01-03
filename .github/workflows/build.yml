@@ -1,0 +1,65 @@
+name: Build ViolaWWW
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-15
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: 1
+      run: brew install byacc openmotif libxp
+
+    - name: Build
+      run: make -j4
+
+    - name: Verify binaries
+      run: |
+        test -x src/viola/viola
+        test -x src/vw/vw
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ViolaWWW-macOS
+        path: |
+          src/viola/viola
+          src/vw/vw
+        retention-days: 1
+
+  build-linux:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y byacc libmotif-dev libxmu-dev libxext-dev libicu-dev libssl-dev
+
+    - name: Build
+      run: make -j4
+
+    - name: Verify binaries
+      run: |
+        test -x src/viola/viola
+        test -x src/vw/vw
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ViolaWWW-Linux
+        path: |
+          src/viola/viola
+          src/vw/vw
+        retention-days: 1

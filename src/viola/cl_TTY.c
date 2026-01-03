@@ -417,7 +417,11 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
 
 #ifdef SYSV
     struct termio b;
-#elif !defined(__DARWIN__)
+#elif defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
+    /* Skip BSD-style terminal I/O on macOS and Linux */
+    int lb;
+    int l;
+#else
     struct sgttyb b;
     struct tchars tc;
     struct ltchars lc;
@@ -465,7 +469,10 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
                 b.c_cc[VTIME] = 0;
                 b.c_lflag &= ~(ICANON | ECHO);
                 ioctl(fd_client, TCSETA, (char*)&b);
-#elif !defined(__DARWIN__)
+#elif defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
+                /* Skip BSD-style terminal I/O on macOS and Linux */
+                /* Terminal setup handled by forkpty()/openpty() */
+#else
                 ioctl(0, TIOCGETP, (char*)&b);
                 b.sg_flags |= RAW;
                 b.sg_flags &= ~ECHO;

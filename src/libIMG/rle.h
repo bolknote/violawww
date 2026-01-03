@@ -43,11 +43,12 @@ enum sv_dispatch { RUN_DISPATCH };
 #define SWAB(val) (val = (__typeof__(val))memToValLSB((byte*)&val, sizeof(val)))
 
 /* fix up some bezerklysims */
-#if !defined(bzero) && !defined(__APPLE__)
+/* bzero/bcopy are provided by <strings.h> on Linux and macOS */
+#if !defined(bzero) && !defined(__APPLE__) && !defined(VIOLA_LINUX)
 #define bzero(xx, yy) memset((char*)(xx), 0, (int)(yy))
 #endif
 
-#if !defined(bcopy) && !defined(__APPLE__)
+#if !defined(bcopy) && !defined(__APPLE__) && !defined(VIOLA_LINUX)
 #define bcopy(xx, yy, zz) memcpy((char*)(yy), (char*)(xx), (int)(zz))
 #endif
 

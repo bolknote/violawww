@@ -64,7 +64,18 @@ long handle_MotionNotify(XEvent* ep, VObj** dragObjp, int tool, int* resize_corn
 long handle_ResizeRequest(XResizeRequestEvent* ep);
 long handle_ConfigureNotify(XConfigureEvent* ep);
 
-static int signal_fatal[] = {SIGBUS, SIGFPE, SIGEMT, SIGILL, SIGSEGV, SIGSYS, 0};
+/* SIGEMT is BSD-specific, not available on Linux */
+#ifdef SIGEMT
+#define HAVE_SIGEMT 1
+#else
+#define HAVE_SIGEMT 0
+#endif
+
+static int signal_fatal[] = {SIGBUS, SIGFPE,
+#if HAVE_SIGEMT
+    SIGEMT,
+#endif
+    SIGILL, SIGSEGV, SIGSYS, 0};
 static int signal_nonfatal[] = {SIGHUP, SIGINT, SIGPIPE, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2, 0};
 
 typedef struct TimeInfo {
@@ -173,7 +184,9 @@ void signalHandler(int sig)
     /* fatal signals */
     case SIGBUS:
     case SIGFPE:
+#if HAVE_SIGEMT
     case SIGEMT:
+#endif
     case SIGILL:
     case SIGSEGV:
     case SIGSYS:

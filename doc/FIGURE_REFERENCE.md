@@ -163,7 +163,7 @@ Defines a clickable region (hotspot) within the figure (client-side image map).
 
 **Behavior:**
 - Multiple FIGA elements can be used in one FIGURE
-- Hovering over a hotspot inverts the region and shows a hint
+- Hovering over a hotspot draws an inverted rectangle outline around the region
 - Clicking navigates to the specified HREF
 - Coordinates are relative to the top-left corner of the figure
 
@@ -221,7 +221,7 @@ Provides a caption for the figure.
 - `HTML_xbmf` → class `XBM` (uses file loading)
 - `HTML_xpmf` → class `XPM` (uses file loading)
 - `HTML_giff` → class `GIF` (uses file loading)
-- `HTML_psf` → class `PS` (uses file loading)
+- `HTML_psf` → class `GIF` (PS converted to GIF via ImageMagick)
 
 ### Scripts
 
@@ -237,7 +237,7 @@ The following Viola scripts handle FIGURE elements:
 - `HTML_xpmf_script.v` - XPM external file handler (with FIGA support)
 - `HTML_gif_script.v` - GIF handler for IMG tag (no FIGA support)
 - `HTML_giff_script.v` - GIF external file handler for FIGURE (with FIGA support)
-- `HTML_psf_script.v` - PostScript file handler (no FIGA support)
+- `HTML_psf_script.v` - PostScript file handler (with FIGA support)
 
 ## Common Usage Examples
 
@@ -286,7 +286,7 @@ static char icon_bits[] = {
 
 3. **File cleanup timing**: Some handlers (like `HTML_gif_script.v`) had bugs where temporary files were deleted before rendering completed. External file handlers (with 'f' suffix) handle this correctly.
 
-4. **PostScript FIGA limitation**: `HTML_psf_script.v` does not support FIGA hotspots. Client-side image maps only work with GIF, XBM, and XPM formats.
+4. **PostScript conversion**: PostScript images are converted to GIF via ImageMagick before display. This requires the `magick` command to be available in PATH.
 
 5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` lines 75-78 attempts to use `HTML_gif` for inline data, but this is incorrect as `HTML_gif` lacks a "make" handler and cannot process inline data. This code path will fail silently.
 

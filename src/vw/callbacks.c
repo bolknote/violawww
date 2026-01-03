@@ -270,9 +270,6 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     /* Realize the shell and set WM_PROTOCOLS */
     XtRealizeWidget(shell);
     
-    /* Set backing_store = Always to prevent black artifacts during resize */
-    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
-    
     /* Register resize handler to clear windows on resize */
     XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
     
@@ -1037,39 +1034,6 @@ static void clearWindowTree(Display* dpy, Window win) {
     if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
         for (i = 0; i < nchildren; i++) {
             clearWindowTree(dpy, children[i]);
-        }
-        if (children) {
-            XFree(children);
-        }
-    }
-}
-
-/*
- * Set backing_store = Always for a window and all its children.
- * This helps prevent black artifacts during resize.
- */
-void setBackingStoreTree(Display* dpy, Window win) {
-    Window root, parent;
-    Window* children = NULL;
-    unsigned int nchildren = 0;
-    unsigned int i;
-    XSetWindowAttributes attrs;
-    XWindowAttributes wattrs;
-    
-    /* Get current window attributes to check if it's InputOutput */
-    if (XGetWindowAttributes(dpy, win, &wattrs)) {
-        if (wattrs.class == InputOutput) {
-            /* Set backing_store and bit_gravity */
-            attrs.backing_store = Always;
-            attrs.bit_gravity = NorthWestGravity;
-            XChangeWindowAttributes(dpy, win, CWBackingStore | CWBitGravity, &attrs);
-        }
-    }
-    
-    /* Recursively set for all children */
-    if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
-        for (i = 0; i < nchildren; i++) {
-            setBackingStoreTree(dpy, children[i]);
         }
         if (children) {
             XFree(children);

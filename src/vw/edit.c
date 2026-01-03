@@ -388,9 +388,6 @@ void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
 
     XtPopup(shell, XtGrabNone);
     
-    /* Set backing_store for all windows to prevent black artifacts during resize */
-    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
-    
     /* Register resize handler to clear windows on resize */
     XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
 }

@@ -616,11 +616,6 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
 
     XtRealizeWidget(shell);
 
-    /* Set backing_store = Always for all Motif widgets to preserve
-     * window contents during resize. This prevents black artifacts.
-     */
-    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
-
     /* Register handler to clear all windows on resize to force redraw.
      */
     XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);

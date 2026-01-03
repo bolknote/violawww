@@ -73,7 +73,6 @@ void doViolaEvent(Widget widget, XtPointer clientData, XEvent* event, Boolean* c
 Boolean doViolaIdle(XtPointer clientData);
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch);
 void resizeShell(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch);
-void setBackingStoreTree(Display* dpy, Window win);  /* Set backing_store=Always for window tree */
 void registerSyncSocket(int fd);  /* Register sync socket for immediate notification */
 void wakeUpEventLoop(void);       /* Send wake-up event to main loop */
 

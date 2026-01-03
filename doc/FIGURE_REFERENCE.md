@@ -93,8 +93,35 @@ Makes the image an interactive image map (server-side).
 <FIGURE TYPE="xbm" SRC="map.xbm" ISMAP>
 ```
 
-### FOLD and LABEL (legacy)
-Legacy attributes with limited or no implementation.
+### FOLD (not implemented for FIGURE)
+Collapsible/expandable section attribute.
+
+**How it works in other elements (UL, OL, etc.):**
+- When present, a folder icon (📂/📁) appears next to the element
+- Clicking the icon toggles visibility of the content
+- `FOLD="yes"` - initially collapsed
+- `FOLD` (without value) - initially expanded
+
+**Example (works in lists, not in FIGURE):**
+```html
+<UL FOLD="yes">
+  <LI>This content is initially hidden</LI>
+  <LI>Click folder icon to expand</LI>
+</UL>
+```
+
+This is similar to HTML5 `<details>/<summary>` elements, but implemented in 1993.
+
+**Status in FIGURE:** Declared in DTD but handler not implemented.
+
+### LABEL (not implemented for FIGURE)
+Element identifier for anchors and references.
+
+**How it works in other elements:**
+- Assigns an identifier to the element
+- Can be used as anchor target for navigation
+
+**Status in FIGURE:** Declared in DTD but handler not implemented.
 
 ## Nested Elements
 
@@ -334,7 +361,11 @@ showpage
 
 4. **PostScript conversion**: PostScript images (both inline and external) are converted to GIF via ImageMagick before display. This requires the `magick` command to be available in PATH. For inline PS, the WIDTH and HEIGHT attributes are used to set the BoundingBox.
 
-5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` lines 75-78 attempts to use `HTML_gif` for inline data, but this is incorrect as `HTML_gif` lacks a "make" handler and cannot process inline data. This code path will fail silently.
+5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` attempts to use `HTML_gif` for inline data, but `HTML_gif` lacks a "make" handler and cannot process inline data. This is dead code — the feature was planned but never implemented.
+
+6. **Base64 infrastructure exists but unused**: The codebase includes `HTUU_encode()`/`HTUU_decode()` functions (in `src/libWWW/HTUU.c`, added August 1993) for Base64 encoding/decoding. These are used for HTTP Basic Authentication but were never connected to FIGDATA for binary formats like GIF.
+
+7. **FOLD/LABEL not implemented for FIGURE**: These attributes are declared in the DTD but have no handler in `HTML_figure_script.v`. They work in other elements like `UL`, `OL`, `HTML_fld`.
 
 ## Historical Context
 

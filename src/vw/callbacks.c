@@ -1102,22 +1102,8 @@ void resizeShell(Widget widget, XtPointer clientData, XEvent* event, Boolean* co
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
     if (event->type == ConfigureNotify) {
         XConfigureEvent* xcep = (XConfigureEvent*)event;
-        Display* dpy = XtDisplay(widget);
-        Window win = (Window)clientData;
-        VObj* obj;
 
-        XResizeWindow(dpy, win, (unsigned int)xcep->width, (unsigned int)xcep->height);
-        
-        /* Clear immediately after resize to avoid black pixels */
-        XClearArea(dpy, win, 0, 0, 0, 0, True);
-        
-        /* Find the Viola object for this window and send config message
-         * to trigger proper relayout of the content.
-         */
-        obj = findWindowObject(win);
-        if (obj) {
-            sendMessage1N4int(obj, "config", -1, -1, xcep->width, xcep->height);
-        }
+        XResizeWindow(XtDisplay(widget), (Window)clientData, (unsigned int)xcep->width, (unsigned int)xcep->height);
     }
 }
 

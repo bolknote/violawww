@@ -61,6 +61,17 @@ Topics covered:
 - **FIGCAP** — figure captions
 - Format support: XBM, XPM, GIF, PostScript
 
+### [CHANGED_TAG_REFERENCE.md](CHANGED_TAG_REFERENCE.md)
+**CHANGED** element for document revision tracking (HTML+ specification).
+
+Topics covered:
+- HTML+ change bars specification (Dave Raggett, 1993)
+- Paired markers with ID/IDREF attributes
+- Current implementation status in ViolaWWW
+- Full implementation plan for visual change bars
+- Related tags: `<REMOVED>`, `<ADDED>`
+- External references to W3C HTML+ documents
+
 ### [MATH_REFERENCE.md](MATH_REFERENCE.md)
 Mathematical notation and formula rendering.
 
@@ -261,6 +272,7 @@ ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered m
 | 3D Graphics tags | VRML, WebGL |
 | TTY (external processes) | Web Workers, WebAssembly |
 | VPLOT (3D visualization) | WebGL, Three.js |
+| CHANGED (revision tracking) | Track Changes (Word), Git diff |
 
 Modern enhancements (TLS, transliteration, Wayback, etc.) are documented in the main [README.md](../README.md) under “Modern Enhancements.”
 

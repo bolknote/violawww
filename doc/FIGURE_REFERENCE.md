@@ -348,4 +348,12 @@ The FIGURE element was part of early HTML extensions proposed for ViolaWWW befor
 
 Many of these features were later incorporated into HTML standards (IMG tag, AREA/MAP elements for image maps, etc.).
 
+## Original Documentation
+
+The FIGURE element was originally proposed by Pei Y. Wei in May 1993 on the www-talk mailing list:
+
+**[Re: Keeping HTML Simple & Format negotiation between Browser & Server](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html)**
+
+This email describes the original design rationale for FIGURE, FIGDATA, FIGA, FIGCAP, and ISMAP, including examples that remain valid today.
+
 

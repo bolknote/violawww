@@ -22,6 +22,7 @@ Specifies the image format type.
 **Supported values for inline data (with FIGDATA):**
 - `xbm` or `image/xbm` - X BitMap format (monochrome)
 - `xpm` or `image/xpm` - X PixMap format (color)
+- `gif` or `image/gif` - GIF format (Base64 encoded)
 - `ps` or `application/postscript` - PostScript format (converted to GIF via ImageMagick)
 
 **Supported values for external files (with SRC):**
@@ -30,7 +31,7 @@ Specifies the image format type.
 - `gif` or `image/gif` or `image/GIF` - GIF format
 - `ps` or `application/postscript` - PostScript format
 
-**Note:** GIF format does NOT support inline data (FIGDATA) because it is a binary format and HTML at the time had no mechanism for embedding binary data (like base64 encoding).
+**Note:** GIF format requires Base64 encoding for inline data because it is a binary format. The browser decodes using the built-in `Base64DecodeToFile()` function.
 
 ### SRC (optional)
 Specifies the URL of an external image file.
@@ -126,15 +127,13 @@ Element identifier for anchors and references.
 ## Nested Elements
 
 ### FIGDATA
-Contains inline image data for text-based formats (XBM, XPM, PS).
+Contains inline image data.
 
 **Supported formats:**
-- **XBM** - X BitMap C code
-- **XPM** - X PixMap C code
+- **XBM** - X BitMap C code (text)
+- **XPM** - X PixMap C code (text)
+- **GIF** - Base64 encoded binary data
 - **PS** - PostScript code (converted to GIF via ImageMagick)
-
-**NOT supported:**
-- GIF (binary format, requires base64 encoding which is not supported)
 
 **Example - XBM:**
 ```html
@@ -169,6 +168,16 @@ static char * arrow [] = {
 </FIGURE>
 ```
 
+**Example - GIF (Base64 encoded):**
+```html
+<FIGURE TYPE="gif">
+<FIGDATA>
+R0lGODlhCAAIAIAAAP8AAAAAACH5BAAAAAAALAAAAAAIAAgAAAIKhI+py+0Po5yUFQA7
+</FIGDATA>
+<FIGCAP>8x8 red square GIF</FIGCAP>
+</FIGURE>
+```
+
 **Example - PostScript:**
 ```html
 <FIGURE TYPE="ps" WIDTH="200" HEIGHT="150">
@@ -192,6 +201,7 @@ showpage
 - FIGDATA content is treated as literal text (SGML_LITTERAL mode)
 - Leading and trailing whitespace is automatically trimmed
 - XBM/XPM: format must be valid C code that libraries can parse
+- GIF: must be Base64 encoded (use `base64 < image.gif` to encode)
 - PS: WIDTH and HEIGHT attributes are used to set BoundingBox for correct sizing
 
 ### FIGA
@@ -231,7 +241,7 @@ Provides a caption for the figure.
 |--------|------------------|----------------|---------------|-------|
 | XBM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Monochrome, text-based C code |
 | XPM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Color, text-based C code |
-| GIF    | ❌ No            | ✅ Yes         | ✅ Yes        | Binary format, no inline support |
+| GIF    | ✅ Yes (Base64)  | ✅ Yes         | ✅ Yes        | Binary format, requires Base64 encoding |
 | PS     | ✅ Yes           | ✅ Yes         | ✅ Yes        | Converted to GIF via ImageMagick |
 
 ## Implementation Details
@@ -265,6 +275,7 @@ Provides a caption for the figure.
 **For inline data:**
 - `HTML_xbm` → class `XBM` → inherits from `field`
 - `HTML_xpm` → class `XPM` → inherits from `field`
+- `HTML_gif_inline` → class `GIF` → Base64 decoded to GIF file via `Base64DecodeToFile()`
 - `HTML_ps` → class `GIF` → PS converted to GIF via ImageMagick
 
 **For external files:**
@@ -283,6 +294,7 @@ The following Viola scripts handle FIGURE elements:
 - `HTML_figa_actual_script.v` - FIGA hotspot interaction (hover, click)
 - `HTML_xbm_script.v` - XBM inline handler (with FIGA support)
 - `HTML_xpm_script.v` - XPM inline handler (with FIGA support)
+- `HTML_gif_inline_script.v` - GIF inline handler with Base64 decoding (with FIGA support)
 - `HTML_ps_script.v` - PostScript inline handler (with FIGA support)
 - `HTML_xbmf_script.v` - XBM external file handler (with FIGA support)
 - `HTML_xpmf_script.v` - XPM external file handler (with FIGA support)
@@ -303,6 +315,20 @@ static char icon_bits[] = {
    /* ... */
 };
 </FIGDATA>
+</FIGURE>
+```
+
+### Inline GIF Image (Base64)
+```html
+<FIGURE TYPE="gif">
+<FIGDATA>
+R0lGODlhIAAgAIAAAAAAAP///yH5BAAAAAAALAAAAAAgACAAAAJBhI+py+0P
+o5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfM
+pvMJjUqn1Kr1is1qtwIAOw==
+</FIGDATA>
+  <FIGA HREF="/left.html" AREA="0 0 16 32"></FIGA>
+  <FIGA HREF="/right.html" AREA="16 0 16 32"></FIGA>
+  <FIGCAP>32x32 GIF with hotspots</FIGCAP>
 </FIGURE>
 ```
 
@@ -353,7 +379,7 @@ showpage
 
 ## Limitations and Known Issues
 
-1. **No GIF inline support**: GIF is a binary format and cannot be embedded inline without encoding schemes like base64, which ViolaWWW does not support.
+1. **GIF inline requires Base64**: GIF is a binary format and must be Base64 encoded for inline embedding. The browser uses the built-in `Base64DecodeToFile()` function for decoding.
 
 2. **Whitespace sensitivity**: Early versions had issues with whitespace in FIGDATA. Current implementation automatically trims leading/trailing whitespace.
 
@@ -361,9 +387,7 @@ showpage
 
 4. **PostScript conversion**: PostScript images (both inline and external) are converted to GIF via ImageMagick before display. This requires the `magick` command to be available in PATH. For inline PS, the WIDTH and HEIGHT attributes are used to set the BoundingBox.
 
-5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` attempts to use `HTML_gif` for inline data, but `HTML_gif` lacks a "make" handler and cannot process inline data. This is dead code — the feature was planned but never implemented.
-
-6. **Base64 infrastructure exists but unused**: The codebase includes `HTUU_encode()`/`HTUU_decode()` functions (in `src/libWWW/HTUU.c`, added August 1993) for Base64 encoding/decoding. These are used for HTTP Basic Authentication but were never connected to FIGDATA for binary formats like GIF.
+5. **Base64 decoding is built-in**: Inline GIF decoding uses the built-in `Base64DecodeToFile()` function which wraps `HTUU_decode()` from `src/libWWW/HTUU.c`. No external commands are required.
 
 7. **FOLD/LABEL not implemented for FIGURE**: These attributes are declared in the DTD but have no handler in `HTML_figure_script.v`. They work in other elements like `UL`, `OL`, `HTML_fld`.
 

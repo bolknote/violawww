@@ -193,6 +193,7 @@ long meth_generic_HTTPCurrentDocAddrParsed(VObj* self, Packet* result, int argc,
 long meth_generic_HTTPCurrentDocAddrSet(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_HTTPDecodeURL(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_HTTPGet(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_HTTPGetNParse(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_HTTPPost(VObj* self, Packet* result, int argc, Packet argv[]);

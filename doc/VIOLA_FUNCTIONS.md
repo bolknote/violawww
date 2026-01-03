@@ -193,6 +193,29 @@ Encodes a URL.
 
 ---
 
+### Base64DecodeToFile(base64_data, filename)
+Decodes Base64-encoded data and saves it to a file. Handles binary data correctly (including null bytes).
+
+**Parameters:**
+- `base64_data` (string) - Base64 encoded string
+- `filename` (string) - path to output file
+
+**Returns:** (int) 1 on success, 0 on error
+
+**Example:**
+```c
+/* Decode inline GIF image */
+localFile = concat("/tmp/image_", random(), ".gif");
+Base64DecodeToFile(base64Data, localFile);
+set("label", localFile);
+```
+
+**Note:** This function wraps `HTUU_decode()` from `src/libWWW/HTUU.c` and writes binary data using `fwrite()`, correctly handling null bytes that would truncate regular string operations.
+
+**Added in:** ViolaWWW 4.0
+
+---
+
 ### HTTPGet(url)
 Loads a document from URL and saves it to a temporary file.
 

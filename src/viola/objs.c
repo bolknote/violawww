@@ -5165,6 +5165,21 @@ static SlotStruct objDesc_HTML_gif[] = {
     {"height", _slotValue_HTML_gif4}, {(char*)0, (char*)0},
 };
 
+static char _slotValue_HTML_gif_inline0[] = "GIF";
+static char _slotValue_HTML_gif_inline1[] = "HTML_gif_inline";
+static char _slotValue_HTML_gif_inline2[] = {
+#include "embeds/HTML_gif_inline_script.v.h"
+};
+static char _slotValue_HTML_gif_inline3[] = "100";
+static char _slotValue_HTML_gif_inline4[] = "30";
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_gif_inline[] = {
+    {"class", _slotValue_HTML_gif_inline0},  {"name", _slotValue_HTML_gif_inline1},
+    {"script", _slotValue_HTML_gif_inline2}, {"width", _slotValue_HTML_gif_inline3},
+    {"height", _slotValue_HTML_gif_inline4}, {(char*)0, (char*)0},
+};
+
 static char _slotValue_HTML_giff0[] = "GIF";
 static char _slotValue_HTML_giff1[] = "HTML_giff";
 static char _slotValue_HTML_giff2[] = {
@@ -7518,6 +7533,8 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_form,
                                "HTML_gif.v",
                                objDesc_HTML_gif,
+                               "HTML_gif_inline.v",
+                               objDesc_HTML_gif_inline,
                                "HTML_giff.v",
                                objDesc_HTML_giff,
                                "HTML_graphics.v",

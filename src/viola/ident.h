@@ -56,6 +56,7 @@ enum {
     STR_HTTPCurrentDocAddrSet,
     STR_HTTPDecodeURL,
     STR_HTTPEncodeURL,
+    STR_Base64DecodeToFile,
     STR_HTTPGet,
     STR_HTTPGet_test,
     STR_HTTPGetNParse,

@@ -59,6 +59,7 @@
 
 #include "../libWWW/HTParse.h"
 #include "../libWWW/HTTP.h"
+#include "../libWWW/HTUU.h"
 #include "stgcall.h"
 
 #ifdef hpux
@@ -211,6 +212,7 @@ MethodInfo meths_generic[] = {
     },
     {STR_HTTPDecodeURL, meth_generic_HTTPDecodeURL},
     {STR_HTTPEncodeURL, meth_generic_HTTPEncodeURL},
+    {STR_Base64DecodeToFile, meth_generic_Base64DecodeToFile},
     {STR_HTTPGet, meth_generic_HTTPGet},
     {STR_HTTPGetNParse, meth_generic_HTTPGetNParse},
     {STR_HTTPPost, meth_generic_HTTPPost},
@@ -1260,6 +1262,80 @@ long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet arg
     result->info.s = encodeURL(PkInfo2Str(&argv[0]));
     result->canFree = PK_CANFREE_STR;
     result->type = PKT_STR;
+    return 1;
+}
+
+/*
+ * Base64DecodeToFile(base64_string, filename)
+ *
+ * Decodes Base64 encoded data and saves it to a file.
+ * Handles binary data correctly (with null bytes).
+ *
+ * Result: 1 on success, 0 on error
+ */
+long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* base64_data;
+    char* filename;
+    unsigned char* decoded_data;
+    int decoded_len;
+    size_t input_len;
+    FILE* fp;
+
+    clearPacket(result);
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = 0;
+
+    if (argc < 2) {
+        return 0;
+    }
+
+    base64_data = PkInfo2Str(&argv[0]);
+    filename = PkInfo2Str(&argv[1]);
+
+    if (!base64_data || !filename) {
+        return 0;
+    }
+
+    /* Skip leading whitespace (including newlines) */
+    while (*base64_data && (*base64_data == ' ' || *base64_data == '\t' || 
+           *base64_data == '\n' || *base64_data == '\r')) {
+        base64_data++;
+    }
+
+    input_len = strlen(base64_data);
+
+    /* Allocate buffer for decoded data (decoded is always smaller than encoded) */
+    decoded_data = (unsigned char*)malloc(input_len + 1);
+    if (!decoded_data) {
+        return 0;
+    }
+
+    /* Decode Base64 */
+    decoded_len = HTUU_decode(base64_data, decoded_data, input_len);
+
+    if (decoded_len <= 0) {
+        free(decoded_data);
+        return 0;
+    }
+
+    /* Write binary data to file */
+    fp = fopen(filename, "wb");
+    if (!fp) {
+        free(decoded_data);
+        return 0;
+    }
+
+    if (fwrite(decoded_data, 1, decoded_len, fp) != (size_t)decoded_len) {
+        fclose(fp);
+        free(decoded_data);
+        return 0;
+    }
+
+    fclose(fp);
+    free(decoded_data);
+
+    result->info.i = 1;
     return 1;
 }
 

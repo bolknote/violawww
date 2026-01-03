@@ -96,7 +96,7 @@
 			case "gif":
 			case "image/gif":
 			case "image/GIF":
-				figTemplate = "HTML_gif";
+				figTemplate = "HTML_gif_inline";
 			break;
 			case "xbm":
 			case "image/xbm":

@@ -285,6 +285,12 @@
 			 * that document (pageObj) until it is ready
 			 * (when viewP == 1).
 			 */
+			/* Clear our window FIRST to prevent black stripes,
+			 * since HTML__doc doesn't have its own window.
+			 */
+			clearWindow();
+			render();
+			
 			/* ask page object to do the calculation */
 			send(pageObj, "resize", get("width"), get("height"));
 			pageYPos = send(pageObj, "yP");

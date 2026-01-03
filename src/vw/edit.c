@@ -235,9 +235,9 @@ void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
     else
         xms = makeXMSTitle(parentDVI->docName, parentDVI->URL);
     title = XtVaCreateManagedWidget("editorTitle", xmLabelWidgetClass, titleFrame, XmNlabelString,
-                                    xms, XmNborderWidth, 4, XmNfontList, titleFontList, NULL);
-    XtVaGetValues(title, XmNbackground, &bg, NULL);
-    XtVaSetValues(title, XmNborderColor, bg, NULL);
+                                    /* Avoid X border during resize (causes artifacts on XQuartz). */
+                                    xms, XmNborderWidth, 0, XmNmarginWidth, 4, XmNmarginHeight, 4,
+                                    XmNfontList, titleFontList, NULL);
     XmStringFree(xms);
 
     /* URL selection mechanism. */
@@ -387,6 +387,12 @@ void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
     XtAddCallback(shell, XmNrealizeCallback, setupWMProtocolsCB, NULL);
 
     XtPopup(shell, XtGrabNone);
+    
+    /* Set backing_store for all windows to prevent black artifacts during resize */
+    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
+    
+    /* Register resize handler to clear windows on resize */
+    XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
 }
 
 void editorValueChangedCB(Widget textEditor, XtPointer clientData, XtPointer callData)

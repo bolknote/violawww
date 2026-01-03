@@ -37,6 +37,7 @@
 #include "../viola/attr.h"
 #include "../viola/discovery.h"
 #include "../viola/cexec.h"
+#include "../viola/glib.h"
 #include "../viola/hash.h"
 #include "../viola/ident.h"
 #include "../viola/method.h"
@@ -192,9 +193,8 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     else
         xms = makeXMSTitle(parentDocViewInfo->docName, parentDocViewInfo->URL);
     title = XtVaCreateManagedWidget("cloneTitle", xmLabelWidgetClass, titleFrame, XmNlabelString,
-                                    xms, XmNmarginHeight, 4, XmNmarginWidth, 4, XmNborderWidth, 4, NULL);
-    XtVaGetValues(title, XmNbackground, &bg, NULL);
-    XtVaSetValues(title, XmNborderColor, bg, NULL);
+                                    /* Avoid X border during resize (causes artifacts on XQuartz). */
+                                    xms, XmNmarginHeight, 4, XmNmarginWidth, 4, XmNborderWidth, 0, NULL);
     XmStringFree(xms);
 
     /* URL selection mechanism. */
@@ -269,6 +269,20 @@ void clonePage(DocViewInfo* parentDocViewInfo) {
     
     /* Realize the shell and set WM_PROTOCOLS */
     XtRealizeWidget(shell);
+    
+    /* Set X11 background for violaCanvas to prevent black gaps during resize */
+    {
+        Pixel canvasBg;
+        XtVaGetValues(violaCanvas, XmNbackground, &canvasBg, NULL);
+        XSetWindowBackground(XtDisplay(violaCanvas), XtWindow(violaCanvas), canvasBg);
+    }
+    
+    /* Set backing_store = Always to prevent black artifacts during resize */
+    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
+    
+    /* Register resize handler to clear windows on resize */
+    XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
+    
     Atom wm_protocols = XInternAtom(XtDisplay(shell), "WM_PROTOCOLS", False);
     Atom wm_delete_window = XInternAtom(XtDisplay(shell), "WM_DELETE_WINDOW", False);
     if (wm_protocols != None && wm_delete_window != None) {
@@ -1017,11 +1031,100 @@ void registerSyncSocket(int fd) {
     }
 }
 
+static void clearWindowTree(Display* dpy, Window win) {
+    Window root, parent;
+    Window* children = NULL;
+    unsigned int nchildren = 0;
+    unsigned int i;
+    
+    /* Clear this window - generates Expose event */
+    XClearArea(dpy, win, 0, 0, 0, 0, True);
+    
+    /* Recursively clear all children */
+    if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
+        for (i = 0; i < nchildren; i++) {
+            clearWindowTree(dpy, children[i]);
+        }
+        if (children) {
+            XFree(children);
+        }
+    }
+}
+
+/*
+ * Set backing_store = Always for a window and all its children.
+ * This helps prevent black artifacts during resize.
+ */
+void setBackingStoreTree(Display* dpy, Window win) {
+    Window root, parent;
+    Window* children = NULL;
+    unsigned int nchildren = 0;
+    unsigned int i;
+    XSetWindowAttributes attrs;
+    XWindowAttributes wattrs;
+    
+    /* Get current window attributes to check if it's InputOutput */
+    if (XGetWindowAttributes(dpy, win, &wattrs)) {
+        if (wattrs.class == InputOutput) {
+            /* Set backing_store and bit_gravity */
+            attrs.backing_store = Always;
+            attrs.bit_gravity = NorthWestGravity;
+            XChangeWindowAttributes(dpy, win, CWBackingStore | CWBitGravity, &attrs);
+        }
+    }
+    
+    /* Recursively set for all children */
+    if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
+        for (i = 0; i < nchildren; i++) {
+            setBackingStoreTree(dpy, children[i]);
+        }
+        if (children) {
+            XFree(children);
+        }
+    }
+}
+
+/*
+ * resizeShell - handler for shell (main window) resize
+ */
+void resizeShell(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
+    if (event->type == ConfigureNotify) {
+        Display* dpy = XtDisplay(widget);
+        Window win = XtWindow(widget);
+        XEvent exposeEvent;
+        
+        if (win) {
+            /* Clear all windows to force redraw */
+            clearWindowTree(dpy, win);
+            XSync(dpy, False);
+            
+            /* Process pending Expose events immediately */
+            while (XCheckWindowEvent(dpy, win, ExposureMask, &exposeEvent)) {
+                XtDispatchEvent(&exposeEvent);
+            }
+        }
+    }
+}
+
 void resizeViola(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
     if (event->type == ConfigureNotify) {
         XConfigureEvent* xcep = (XConfigureEvent*)event;
+        Display* dpy = XtDisplay(widget);
+        Window win = (Window)clientData;
+        VObj* obj;
 
-        XResizeWindow(XtDisplay(widget), (Window)clientData, (unsigned int)xcep->width, (unsigned int)xcep->height);
+        XResizeWindow(dpy, win, (unsigned int)xcep->width, (unsigned int)xcep->height);
+        
+        /* Clear immediately after resize to avoid black pixels */
+        XClearArea(dpy, win, 0, 0, 0, 0, True);
+        
+        /* Find the Viola object for this window and send config message
+         * to trigger proper relayout of the content.
+         */
+        obj = findWindowObject(win);
+        if (obj) {
+            sendMessage1N4int(obj, "config", -1, -1, xcep->width, xcep->height);
+        }
     }
 }
 

@@ -618,7 +618,7 @@ XImageInfo* imageInWindow(Display* disp,
     return ximageinfo; /*XXX*/
 
     swa_view.background_pixel = WhitePixel(disp, scrn);
-    swa_view.backing_store = NotUseful;
+    swa_view.backing_store = Always;  /* Preserve window contents during resize */
     swa_view.cursor = XCreateFontCursor(disp, XC_watch);
     swa_view.event_mask = ButtonPressMask | Button1MotionMask | KeyPressMask | StructureNotifyMask |
                           EnterWindowMask | LeaveWindowMask;
@@ -706,7 +706,7 @@ XImageInfo* imageInWindow(Display* disp,
         wa_mask_img |= CWBackPixmap;
         swa_img.event_mask = 0; /* no exposures please */
         wa_mask_img |= CWEventMask;
-        swa_img.backing_store = NotUseful;
+        swa_img.backing_store = Always;  /* Preserve window contents during resize */
         wa_mask_img |= CWBackingStore;
     }
     XChangeWindowAttributes(disp, ImageWindow, wa_mask_img, &swa_img);

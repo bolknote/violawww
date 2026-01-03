@@ -998,10 +998,11 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
         } else {
             attrs.background_pixel = BGPixel;
         }
-        attrs.border_pixel = BDPixel;
+        /* Use background color for border to avoid black lines during resize */
+        attrs.border_pixel = BGPixel;
         attrs.event_mask = GET__eventMask(self);
         attrs.bit_gravity = StaticGravity;
-        attrs.backing_store = NotUseful;
+        attrs.backing_store = Always;  /* Preserve window contents during resize */
         attrs.cursor = 0;
         /* X11 border is drawn OUTSIDE the window, so reduce window size to fit */
         w = XCreateWindow(display, parentWindow, x, y, 
@@ -1009,7 +1010,7 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
                           height - (borderThickness * 2), 
                           borderThickness,
                           CopyFromParent, CopyFromParent, CopyFromParent,
-                          CWBorderPixel | CWEventMask | CWBackPixel | CWBitGravity | CWCursor,
+                          CWBorderPixel | CWEventMask | CWBackPixel | CWBitGravity | CWCursor | CWBackingStore,
                           &attrs);
     }
     if (!w)
@@ -1030,15 +1031,13 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
         sizeHints.y = y;
         sizeHints.width = width;
         sizeHints.height = height;
-        /* Make window fixed size */
-        sizeHints.min_width = sizeHints.max_width = width;
-        sizeHints.min_height = sizeHints.max_height = height;
 #else /* X11R4 or later */
         sizeHints.flags = USPosition | USSize | PMinSize | PMaxSize;
-        /* Make window fixed size */
-        sizeHints.min_width = sizeHints.max_width = width;
-        sizeHints.min_height = sizeHints.max_height = height;
 #endif
+        sizeHints.min_width = GET_minWidth(self);
+        sizeHints.min_height = GET_minHeight(self);
+        sizeHints.max_width = GET_maxWidth(self);
+        sizeHints.max_height = GET_maxHeight(self);
 
         if (!AllBlank(GET_label(self)))
             window_name = GET_label(self);
@@ -1049,30 +1048,6 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
         /* set Properties for window manager (always before mapping) */
         XSetStandardProperties(display, w, window_name, icon_name, violaPixmap, &argv, argc,
                                &sizeHints);
-        
-        /* Set MWM hints to disable resize and maximize */
-        {
-            Atom mwm_hints_atom = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-            if (mwm_hints_atom != None) {
-                struct {
-                    unsigned long flags;
-                    unsigned long functions;
-                    unsigned long decorations;
-                    long input_mode;
-                    unsigned long status;
-                } mwm_hints;
-                
-                mwm_hints.flags = 1L << 1 | 1L << 2; /* MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS */
-                mwm_hints.functions = 0x0F & ~(1L << 1) & ~(1L << 2); /* MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE */
-                mwm_hints.decorations = 0x3F & ~(1L << 1); /* MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH */
-                mwm_hints.input_mode = 0;
-                mwm_hints.status = 0;
-                
-                XChangeProperty(display, w, mwm_hints_atom, mwm_hints_atom,
-                                32, PropModeReplace,
-                                (unsigned char *)&mwm_hints, 5);
-            }
-        }
 #else /* X11R4 or later */
         {
             /* format of the window name and icon name
@@ -1108,36 +1083,13 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
             sizeHints.y = y;
             sizeHints.width = width;
             sizeHints.height = height;
-            /* Make window fixed size */
-            sizeHints.min_width = sizeHints.max_width = width;
-            sizeHints.min_height = sizeHints.max_height = height;
+            sizeHints.min_width = GET_minWidth(self);
+            sizeHints.min_height = GET_minHeight(self);
+            sizeHints.max_width = GET_maxWidth(self);
+            sizeHints.max_height = GET_maxHeight(self);
             sizeHints.flags = USPosition | USSize | PMinSize | PMaxSize;
 
             XSetWMNormalHints(display, w, &sizeHints);
-            
-            /* Set MWM hints to disable resize and maximize */
-            {
-                Atom mwm_hints_atom = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-                if (mwm_hints_atom != None) {
-                    struct {
-                        unsigned long flags;
-                        unsigned long functions;
-                        unsigned long decorations;
-                        long input_mode;
-                        unsigned long status;
-                    } mwm_hints;
-                    
-                    mwm_hints.flags = 1L << 1 | 1L << 2; /* MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS */
-                    mwm_hints.functions = 0x0F & ~(1L << 1) & ~(1L << 2); /* MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE */
-                    mwm_hints.decorations = 0x3F & ~(1L << 1); /* MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH */
-                    mwm_hints.input_mode = 0;
-                    mwm_hints.status = 0;
-                    
-                    XChangeProperty(display, w, mwm_hints_atom, mwm_hints_atom,
-                                    32, PropModeReplace,
-                                    (unsigned char *)&mwm_hints, 5);
-                }
-            }
         }
 #endif
     }

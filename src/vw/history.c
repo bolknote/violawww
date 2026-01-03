@@ -320,6 +320,9 @@ Widget createHistoryDialog(DocViewInfo* dvi) {
     XtManageChild(list);
 
     XtManageChild(form);
+    
+    /* Add resize handler for shell */
+    XtAddEventHandler(XtParent(form), StructureNotifyMask, FALSE, resizeShell, NULL);
 
     if (dvi->nHistoryItems)
         XmListSelectPos(dvi->historyListWidget, dvi->currentHistoryItem + 1, FALSE);

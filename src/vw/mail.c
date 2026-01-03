@@ -15,6 +15,7 @@
  * This software is provided ``as is'' without express or implied warranty.
  */
 
+#include <X11/Xlib.h>
 #include <Xm/Form.h>
 #include <Xm/Frame.h>
 #include <Xm/Label.h>
@@ -88,9 +89,9 @@ void showMailEditor(Widget widget, XtPointer clientData, XtPointer callData)
 
     xms = makeXMSTitle("Send Comments to the Developers", "(at O'Reilly & Associates)");
     title = XtVaCreateManagedWidget("mailTitle", xmLabelWidgetClass, titleFrame, XmNlabelString,
-                                    xms, XmNborderWidth, 4, XmNfontList, titleFontList, NULL);
-    XtVaGetValues(title, XmNbackground, &bg, NULL);
-    XtVaSetValues(title, XmNborderColor, bg, NULL);
+                                    /* Avoid X border during resize (causes artifacts on XQuartz). */
+                                    xms, XmNborderWidth, 0, XmNmarginWidth, 4, XmNmarginHeight, 4,
+                                    XmNfontList, titleFontList, NULL);
     XmStringFree(xms);
 
     commandFrame = XtVaCreateManagedWidget(
@@ -245,6 +246,19 @@ void showMailEditor(Widget widget, XtPointer clientData, XtPointer callData)
     localDocViewInfo->historyListWidget = (Widget)0;
 
     XtPopup(shell, XtGrabNone);
+    
+    /* Set shell window background to match Motif theme color */
+    {
+        Pixel bg;
+        XtVaGetValues(form, XmNbackground, &bg, NULL);
+        XSetWindowBackground(XtDisplay(shell), XtWindow(shell), bg);
+    }
+    
+    /* Set backing_store for all windows to prevent black artifacts during resize */
+    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
+    
+    /* Register resize handler to clear windows on resize */
+    XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
 }
 
 void mailValueChangedCB(Widget textEditor, XtPointer clientData, XtPointer callData)

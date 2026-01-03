@@ -184,7 +184,11 @@ static String fallback_resources[] = {
     "*XmScrollBar*width: 19",
     "*foreground: black",
     "*background: antiqueWhite4",
-    "*borderColor: yellow",
+    "*borderColor: antiqueWhite4",
+    "*borderWidth: 0",
+    "*topShadowColor: #d4c9b8",
+    "*bottomShadowColor: #6e6358",
+    "*troughColor: #8b8378",
     "*XmText.translations: #override\n\
                            None<Key>KDelete: delete-previous-character()",
     "*XmTextField.translations: #override\n\
@@ -510,10 +514,12 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     titleFontList = loadFonts(XtDisplay(shell));
     xms = makeXMSTitle("Viola World Wide Web Browser", "Alpha Release");
     title = XtVaCreateManagedWidget("title", xmLabelWidgetClass, titleFrame, XmNlabelString, xms,
-                                    XmNborderWidth, 4, XmNrecomputeSize, FALSE, XmNfontList,
+                                    /* Avoid X border during resize (causes artifacts on XQuartz).
+                                     * Use label margins for padding instead.
+                                     */
+                                    XmNborderWidth, 0, XmNmarginWidth, 4, XmNmarginHeight, 4,
+                                    XmNrecomputeSize, FALSE, XmNfontList,
                                     titleFontList, NULL);
-    XtVaGetValues(title, XmNbackground, &bg, NULL);
-    XtVaSetValues(title, XmNborderColor, bg, NULL);
     XmStringFree(xms);
 
     /* URL selection mechanism. */
@@ -614,33 +620,29 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
 
     XtRealizeWidget(shell);
 
-    /* Make window fixed size */
+    /* Set shell window background to match Motif theme color.
+     * This prevents black areas when window is resized.
+     */
     {
-        Display *dpy = XtDisplay(shell);
-        Window win = XtWindow(shell);
-        XSizeHints hints;
-        Dimension width, height;
-        
-        /* Get current window size */
-        XtVaGetValues(shell, XmNwidth, &width, XmNheight, &height, NULL);
-        
-        /* Set min and max to current size to prevent resizing */
-        (&hints, 0, sizeof(XSizeHints));
-        hints.flags = PMinSize | PMaxSize;
-        hints.min_width = hints.max_width = (int)width;
-        hints.min_height = hints.max_height = (int)height;
-        XSetWMNormalHints(dpy, win, &hints);
-        
-        /* Disable resize and maximize via MWM hints */
-        {
-            int funcs  = MWM_FUNC_ALL & ~MWM_FUNC_RESIZE & ~MWM_FUNC_MAXIMIZE;
-            int decors = MWM_DECOR_ALL & ~MWM_DECOR_RESIZEH;
-            XtVaSetValues(shell,
-                          XmNmwmFunctions,   funcs,
-                          XmNmwmDecorations, decors,
-                          NULL);
-        }
+        Pixel bg;
+        XtVaGetValues(form, XmNbackground, &bg, NULL);
+        XSetWindowBackground(XtDisplay(shell), XtWindow(shell), bg);
+        /* Also set X11 background for toolBarForm to prevent black gaps */
+        XSetWindowBackground(XtDisplay(toolBarForm), XtWindow(toolBarForm), bg);
+        /* And for other key widgets */
+        XSetWindowBackground(XtDisplay(form), XtWindow(form), bg);
+        XSetWindowBackground(XtDisplay(topForm), XtWindow(topForm), bg);
+        XSetWindowBackground(XtDisplay(canvasForm), XtWindow(canvasForm), bg);
     }
+
+    /* Set backing_store = Always for all Motif widgets to preserve
+     * window contents during resize. This prevents black artifacts.
+     */
+    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
+
+    /* Register handler to clear all windows on resize to force redraw.
+     */
+    XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
 
     /* Set color of main scrollbar to be palattable. */
     if (XDefaultDepthOfScreen(XtScreen(shell)) == 1) {
@@ -652,6 +654,8 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
         Pixel bg;
         XtVaGetValues(frame, XmNtopShadowColor, &bg, NULL);
         XtVaSetValues(violaCanvas, XmNbackground, bg, NULL);
+        /* Also set X11 background to prevent black gaps during resize */
+        XSetWindowBackground(XtDisplay(violaCanvas), XtWindow(violaCanvas), bg);
     }
 
     /* Make the icon. */

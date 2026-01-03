@@ -213,7 +213,7 @@ Widget createHotlistDialog(DocViewInfo* dvi) {
 
     form = XmCreateFormDialog(dvi->shell, "Hotlist Manager", args, (Cardinal)n);
     XtVaSetValues(form, XmNhorizontalSpacing, 6, XmNverticalSpacing, 6, NULL);
-    XtVaSetValues(XtParent(form), XmNtitle, "Hot List", XmNnoResize, TRUE, NULL);
+    XtVaSetValues(XtParent(form), XmNtitle, "Hot List", NULL);
 
     actionForm = XtVaCreateManagedWidget(
         "actionForm", xmFormWidgetClass, form, XmNtopAttachment, XmATTACH_FORM, XmNleftAttachment,
@@ -294,6 +294,9 @@ Widget createHotlistDialog(DocViewInfo* dvi) {
     XtManageChild(list);
 
     XtManageChild(form);
+    
+    /* Add resize handler for shell */
+    XtAddEventHandler(XtParent(form), StructureNotifyMask, FALSE, resizeShell, NULL);
 
     if (dvi->nHotlistItems)
         XmListSelectPos(dvi->hotlistListWidget, dvi->nHotlistItems + 1, FALSE);

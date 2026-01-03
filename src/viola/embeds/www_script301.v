@@ -288,6 +288,7 @@
 		return;
 	break;
 	case "config":
+		print("www_script config: width=", get("width"), " height=", get("height"), " pageObj=", pageObj, "\n");
 		usual();
 		if (send(pageObj, "viewP") == 1) {
 			/* when switching from a sidebar'ed document to
@@ -298,6 +299,7 @@
 			 * (when viewP == 1).
 			 */
 			/* ask page object to do the calculation */
+			print("www_script: sending resize to pageObj\n");
 			send(pageObj, "resize", get("width"), get("height"));
 			pageYPos = send(pageObj, "yP");
 			pageHeight = send(pageObj, "vspan");
@@ -306,6 +308,8 @@
 				send(pageObj, "y", pageYPos);
 			}
 			send(self(), "configShare");
+		} else {
+			print("www_script: viewP != 1, not sending resize\n");
 		}
 		/* this call should not be necessary... what was it for? */
 		/*objectListSend("shownDepend", "kludgeRender");*/

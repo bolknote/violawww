@@ -2060,6 +2060,12 @@ void showCatalog(char* catalogFile, DocViewInfo* parentDVI) {
 
     /* Realize the shell first */
     XtRealizeWidget(shell);
+    
+    /* Set backing_store = Always to prevent black artifacts during resize */
+    setBackingStoreTree(XtDisplay(shell), XtWindow(shell));
+    
+    /* Register resize handler to clear windows on resize */
+    XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
 
     /* Register WM_DELETE_WINDOW protocol */
     {

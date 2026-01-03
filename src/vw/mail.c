@@ -46,6 +46,10 @@ typedef struct mailCBStruct {
     Widget letterText;
 } MailCBStruct;
 
+/* Forward declarations */
+static void mailEditorDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont);
+static void closeMailEditorDirect(MailCBStruct* ms);
+
 /*
  * Pops up a text editor with the given string data in it.
  */
@@ -245,7 +249,21 @@ void showMailEditor(Widget widget, XtPointer clientData, XtPointer callData)
     localDocViewInfo->nHistoryItems = 0;
     localDocViewInfo->historyListWidget = (Widget)0;
 
+    /* Set up WM_DELETE_WINDOW protocol handler so clicking the X button
+     * closes only the mail editor, not the entire application */
+    XtVaSetValues(shell, XmNdeleteResponse, XmDO_NOTHING, NULL);
+    XtAddEventHandler(shell, 0L, TRUE, mailEditorDeleteWindowEH, (XtPointer)ms);
+
     XtPopup(shell, XtGrabNone);
+    
+    /* Register WM_DELETE_WINDOW protocol */
+    {
+        Atom wm_protocols = XInternAtom(XtDisplay(shell), "WM_PROTOCOLS", False);
+        Atom wm_delete_window = XInternAtom(XtDisplay(shell), "WM_DELETE_WINDOW", False);
+        if (wm_protocols != None && wm_delete_window != None) {
+            XSetWMProtocols(XtDisplay(shell), XtWindow(shell), &wm_delete_window, 1);
+        }
+    }
     
     /* Register resize handler to clear windows on resize */
     XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);
@@ -285,6 +303,57 @@ void closeMailEditorCB(Widget button, XtPointer clientData, XtPointer callData)
     free(ms);
     XtDestroyWidget(dvi->shell);
     freeDocViewInfo(dvi);
+}
+
+/*
+ * Close mail editor directly (used by WM_DELETE_WINDOW handler).
+ * Same logic as closeMailEditorCB but takes MailCBStruct* directly.
+ */
+static void closeMailEditorDirect(MailCBStruct* ms)
+{
+    char* answer;
+    DocViewInfo* dvi = (DocViewInfo*)ms->dvi;
+
+    if (dvi->editorDataChanged) {
+        answer = questionDialog(dvi, "There are unsaved changes.", "Cancel", "Save Changes...",
+                                "Don't Save Changes", "Cancel");
+        if (!strcmp(answer, "Save Changes...")) {
+            if (vwSaveAs("Saving letter to a file...\n\nEnter the full path name:", dvi) ==
+                CANCELED) {
+                return;
+            } else if (dvi->editorDataChanged) {
+                dvi->editorDataChanged = 0;
+                XtAddCallback(dvi->textEditor, XmNvalueChangedCallback, mailValueChangedCB,
+                              (XtPointer)dvi);
+            }
+        } else if (!strcmp(answer, "Cancel")) {
+            return;
+        }
+    }
+
+    free(ms);
+    XtDestroyWidget(dvi->shell);
+    freeDocViewInfo(dvi);
+}
+
+/*
+ * Event handler for WM_DELETE_WINDOW protocol message on mail editor window.
+ * Called when user clicks the window close button (X).
+ */
+static void mailEditorDeleteWindowEH(Widget w, XtPointer clientData, XEvent* event, Boolean* cont)
+{
+    if (event->type == ClientMessage) {
+        XClientMessageEvent* cm = (XClientMessageEvent*)event;
+        Atom wm_delete_window = XInternAtom(XtDisplay(w), "WM_DELETE_WINDOW", False);
+        
+        if (cm->message_type == XInternAtom(XtDisplay(w), "WM_PROTOCOLS", False) &&
+            (Atom)cm->data.l[0] == wm_delete_window) {
+            /* User clicked the window close button */
+            MailCBStruct* ms = (MailCBStruct*)clientData;
+            closeMailEditorDirect(ms);
+            *cont = False; /* Don't continue processing */
+        }
+    }
 }
 
 void mailSaveAsCB(Widget button, XtPointer clientData, XtPointer callData)

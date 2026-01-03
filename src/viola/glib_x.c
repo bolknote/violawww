@@ -998,11 +998,10 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
         } else {
             attrs.background_pixel = BGPixel;
         }
-        /* Use background color for border to avoid black lines during resize */
-        attrs.border_pixel = BGPixel;
+        attrs.border_pixel = BDPixel;
         attrs.event_mask = GET__eventMask(self);
         attrs.bit_gravity = StaticGravity;
-        attrs.backing_store = Always;  /* Preserve window contents during resize */
+        attrs.backing_store = NotUseful;
         attrs.cursor = 0;
         /* X11 border is drawn OUTSIDE the window, so reduce window size to fit */
         w = XCreateWindow(display, parentWindow, x, y, 
@@ -1010,7 +1009,7 @@ Window GLOpenWindow(VObj* self, int x, int y, int width, int height, int isGlass
                           height - (borderThickness * 2), 
                           borderThickness,
                           CopyFromParent, CopyFromParent, CopyFromParent,
-                          CWBorderPixel | CWEventMask | CWBackPixel | CWBitGravity | CWCursor | CWBackingStore,
+                          CWBorderPixel | CWEventMask | CWBackPixel | CWBitGravity | CWCursor,
                           &attrs);
     }
     if (!w)

@@ -14,6 +14,27 @@ The `<FIGURE>` element in ViolaWWW is used to embed and display images and graph
 </FIGURE>
 ```
 
+**Note:** `<FIG>` can be used as a shorthand for `<FIGURE>`. Both forms are equivalent and support the same attributes.
+
+## Attributes Summary
+
+| Element | Attribute | Status | Description |
+|---------|-----------|--------|-------------|
+| FIGURE/FIG | TYPE | ✅ Required | Image format type |
+| FIGURE/FIG | SRC | ✅ Optional | URL to external image file |
+| FIGURE/FIG | WIDTH | ✅ Optional | Width in pixels |
+| FIGURE/FIG | HEIGHT | ✅ Optional | Height in pixels |
+| FIGURE/FIG | MAXWIDTH | ✅ Optional | Maximum width constraint |
+| FIGURE/FIG | MINWIDTH | ✅ Optional | Minimum width constraint |
+| FIGURE/FIG | MAYDELAY | ✅ Optional | Delayed loading in ms |
+| FIGURE/FIG | ISMAP | ✅ Optional | Server-side image map |
+| FIGURE/FIG | FOLD | ❌ DTD only | Not implemented |
+| FIGURE/FIG | LABEL | ❌ DTD only | Not implemented |
+| FIGA | HREF | ✅ Required | Target URL for hotspot |
+| FIGA | AREA | ✅ Required | Region coordinates "x y w h" |
+| FIGDATA | — | — | No attributes |
+| FIGCAP | — | — | No attributes |
+
 ## Attributes
 
 ### TYPE (required)
@@ -22,13 +43,13 @@ Specifies the image format type.
 **Supported values for inline data (with FIGDATA):**
 - `xbm` or `image/xbm` - X BitMap format (monochrome)
 - `xpm` or `image/xpm` - X PixMap format (color)
-- `gif` or `image/gif` - GIF format (Base64 encoded)
+- `gif` or `image/gif` or `image/GIF` - GIF format (Base64 encoded)
 - `ps` or `application/postscript` - PostScript format (converted to GIF via ImageMagick)
 
 **Supported values for external files (with SRC):**
 - `xbm` or `image/xbm` - X BitMap format
 - `xpm` or `image/xpm` - X PixMap format  
-- `gif` or `image/gif` or `image/GIF` - GIF format
+- `gif` or `image/gif` - GIF format
 - `ps` or `application/postscript` - PostScript format
 
 **Note:** GIF format requires Base64 encoding for inline data because it is a binary format. The browser decodes using the built-in `Base64DecodeToFile()` function.
@@ -39,7 +60,7 @@ Specifies the URL of an external image file.
 **Behavior:**
 - If `SRC` is present, the image is loaded from the specified URL
 - If `SRC` is absent, inline data from `<FIGDATA>` is used
-- For GIF images, `SRC` is **required**
+- For GIF images, either `SRC` (external file) or Base64-encoded `FIGDATA` (inline) can be used
 
 **Example:**
 ```html
@@ -129,6 +150,8 @@ Element identifier for anchors and references.
 ### FIGDATA
 Contains inline image data.
 
+**Attributes:** None. FIGDATA has no attributes.
+
 **Supported formats:**
 - **XBM** - X BitMap C code (text)
 - **XPM** - X PixMap C code (text)
@@ -207,6 +230,8 @@ showpage
 ### FIGA
 Defines a clickable region (hotspot) within the figure (client-side image map).
 
+FIGA is an SGML empty element - the closing tag `</FIGA>` is optional.
+
 **Attributes:**
 - `HREF` - URL to navigate to when region is clicked
 - `AREA` - Region coordinates: "x y width height"
@@ -227,6 +252,8 @@ Defines a clickable region (hotspot) within the figure (client-side image map).
 
 ### FIGCAP
 Provides a caption for the figure.
+
+**Attributes:** None. FIGCAP has no attributes.
 
 **Example:**
 ```html
@@ -375,6 +402,13 @@ showpage
 <FIGURE TYPE="xbm" SRC="map.xbm" ISMAP>
   <FIGCAP>Click anywhere on the map</FIGCAP>
 </FIGURE>
+```
+
+### Using FIG Shorthand
+```html
+<FIG TYPE="xbm" SRC="icon.xbm" WIDTH="32" HEIGHT="32">
+  <FIGCAP>Using FIG instead of FIGURE</FIGCAP>
+</FIG>
 ```
 
 ## Limitations and Known Issues

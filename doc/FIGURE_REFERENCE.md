@@ -156,8 +156,8 @@ Defines a clickable region (hotspot) within the figure (client-side image map).
 **Example:**
 ```html
 <FIGURE TYPE="xbm" SRC="worldmap.xbm">
-  <FIGA HREF="http://example.com/americas" AREA="0 0 10 10"></FIGA>
-  <FIGA HREF="http://example.com/europe" AREA="20 0 10 10"></FIGA>
+  <FIGA HREF="http://example.com/americas" AREA="0 0 16 32"></FIGA>
+  <FIGA HREF="http://example.com/europe" AREA="16 0 16 32"></FIGA>
 </FIGURE>
 ```
 
@@ -179,12 +179,12 @@ Provides a caption for the figure.
 
 ## Format Support Matrix
 
-| Format | Inline (FIGDATA) | External (SRC) | Notes |
-|--------|------------------|----------------|-------|
-| XBM    | ✅ Yes           | ✅ Yes         | Monochrome, text-based C code |
-| XPM    | ✅ Yes           | ✅ Yes         | Color, text-based C code |
-| GIF    | ❌ No            | ✅ Yes         | Binary format, no inline support |
-| PS     | ❌ No            | ✅ Yes         | PostScript, typically external only |
+| Format | Inline (FIGDATA) | External (SRC) | FIGA Hotspots | Notes |
+|--------|------------------|----------------|---------------|-------|
+| XBM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Monochrome, text-based C code |
+| XPM    | ✅ Yes           | ✅ Yes         | ✅ Yes        | Color, text-based C code |
+| GIF    | ❌ No            | ✅ Yes         | ✅ Yes        | Binary format, no inline support |
+| PS     | ❌ No            | ✅ Yes         | ❌ No         | PostScript, no FIGA support |
 
 ## Implementation Details
 
@@ -229,14 +229,15 @@ The following Viola scripts handle FIGURE elements:
 
 - `HTML_figure_script.v` - Main FIGURE element handler
 - `HTML_figdata_script.v` - FIGDATA sub-element handler
-- `HTML_figa_script.v` - FIGA sub-element handler
-- `HTML_figa_actual_script.v` - FIGA hotspot implementation
-- `HTML_xbm_script.v` - XBM inline handler
-- `HTML_xpm_script.v` - XPM inline handler
-- `HTML_xbmf_script.v` - XBM file handler
-- `HTML_xpmf_script.v` - XPM file handler
-- `HTML_giff_script.v` - GIF file handler
-- `HTML_psf_script.v` - PostScript file handler
+- `HTML_figa_script.v` - FIGA sub-element attribute parser
+- `HTML_figa_actual_script.v` - FIGA hotspot interaction (hover, click)
+- `HTML_xbm_script.v` - XBM inline handler (with FIGA support)
+- `HTML_xpm_script.v` - XPM inline handler (with FIGA support)
+- `HTML_xbmf_script.v` - XBM external file handler (with FIGA support)
+- `HTML_xpmf_script.v` - XPM external file handler (with FIGA support)
+- `HTML_gif_script.v` - GIF handler for IMG tag (no FIGA support)
+- `HTML_giff_script.v` - GIF external file handler for FIGURE (with FIGA support)
+- `HTML_psf_script.v` - PostScript file handler (no FIGA support)
 
 ## Common Usage Examples
 
@@ -285,7 +286,7 @@ static char icon_bits[] = {
 
 3. **File cleanup timing**: Some handlers (like `HTML_gif_script.v`) had bugs where temporary files were deleted before rendering completed. External file handlers (with 'f' suffix) handle this correctly.
 
-4. **PostScript support**: PS support is experimental and may have limitations.
+4. **PostScript FIGA limitation**: `HTML_psf_script.v` does not support FIGA hotspots. Client-side image maps only work with GIF, XBM, and XPM formats.
 
 5. **Case "gif" in inline branch**: The code in `HTML_figure_script.v` lines 75-78 attempts to use `HTML_gif` for inline data, but this is incorrect as `HTML_gif` lacks a "make" handler and cannot process inline data. This code path will fail silently.
 

@@ -184,11 +184,7 @@ static String fallback_resources[] = {
     "*XmScrollBar*width: 19",
     "*foreground: black",
     "*background: antiqueWhite4",
-    "*borderColor: antiqueWhite4",
-    "*borderWidth: 0",
-    "*topShadowColor: #d4c9b8",
-    "*bottomShadowColor: #6e6358",
-    "*troughColor: #8b8378",
+    "*borderColor: yellow",
     "*XmText.translations: #override\n\
                            None<Key>KDelete: delete-previous-character()",
     "*XmTextField.translations: #override\n\

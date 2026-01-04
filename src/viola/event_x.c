@@ -1359,11 +1359,36 @@ long handle_ResizeRequest(XResizeRequestEvent* ep)
     return 0;
 }
 
+/* Recursively clear all child windows to force redraw on resize */
+static void clearWindowTreeViola(Display* dpy, Window win) {
+    Window root, parent;
+    Window* children = NULL;
+    unsigned int nchildren = 0;
+    unsigned int i;
+    
+    /* Clear this window - generates Expose event */
+    XClearArea(dpy, win, 0, 0, 0, 0, True);
+    
+    /* Recursively clear all children */
+    if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
+        for (i = 0; i < nchildren; i++) {
+            clearWindowTreeViola(dpy, children[i]);
+        }
+        if (children) {
+            XFree(children);
+        }
+    }
+}
+
 long handle_ConfigureNotify(XConfigureEvent* ep)
 {
     VObj* obj = findWindowObject(ep->window);
 
     if (obj) {
+        /* Clear all child windows to prevent black artifacts during resize */
+        clearWindowTreeViola(display, ep->window);
+        XSync(display, False);
+        
         if (ep->above != 0) {
             intBuff[0] = ep->x;
             intBuff[1] = ep->y;

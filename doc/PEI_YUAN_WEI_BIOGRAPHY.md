@@ -7,7 +7,7 @@
 
 <img width="174" height="217" alt="Pei-Yuan Wei" align=right src="https://github.com/user-attachments/assets/604a54f3-5ef0-4100-9230-9f04de3830c2" />
 
-Pei-Yuan Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanese-American computer specialist, creator of ViolaWWW, one of the first popular graphical web browsers.[^1][^2]
+Pei-Yuan "Perry" Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanese-American computer specialist, creator of ViolaWWW, one of the first popular graphical web browsers.[^1][^2][^3]
 
 ### Birth and Education
 - Born in Taiwan, Pingtung County.[^1]
@@ -37,7 +37,9 @@ Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep wor
 
 #### Later Life
 - In the 1990s, worked on developing Viola, collaborated with O'Reilly Media, and founded Global Network Navigator (GNN) — one of the first Internet businesses with advertising.[^1]
+- In the late 1990s, worked at the **Internet Archive** (Brewster Kahle's organization).[^3]
 - After 2008, lived between Taiwan and the USA, devoting time to caring for an ill family member.[^1]
+- Wei donated his Viola design notebooks, software, and video materials to the Computer History Museum.[^3]
 
 ### Correspondence with Tim Berners-Lee (1991)
 
@@ -109,7 +111,7 @@ Despite its technical advantages, ViolaWWW had a critical flaw: it was hard to g
 ### Why Valuable for Tech Enthusiasts
 ViolaWWW is a bridge between the textual era of the web (Line Mode Browser) and the graphical (Mosaic). It showed how a browser could be a platform for code execution, not just a viewer. Without it, there would be no modern web applications.
 
-For further study: source code is stored in the Computer History Museum, CERN archives.[^2] ViolaWWW is a key artifact in the history of computing and the web.
+For further study: source code, design notebooks, and video materials are stored in the Computer History Museum; code is also available in CERN archives.[^2][^3] ViolaWWW is a key artifact in the history of computing and the web.
 
 ## Sources
 [^1]: [Wikipedia: Pei-Yuan Wei (English)](https://en.wikipedia.org/wiki/Pei-Yuan_Wei)

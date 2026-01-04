@@ -1,5 +1,11 @@
 # Image Format Support in ViolaWWW
 
+> **ViolaWWW 4.0 Additions:**  
+> - Inline GIF with Base64 encoding (`<FIGDATA>`)
+> - Inline PostScript support (`<FIGDATA>`)
+> - FIGA hotspots for XBM, XPM, and PostScript images
+> - ImageMagick-based PostScript rendering (replaces Ghostscript)
+
 This document describes all graphics formats supported by ViolaWWW and the HTML tags used to embed them.
 
 ## Overview
@@ -22,7 +28,7 @@ ViolaWWW supports image formats through two separate subsystems:
 | **GIF** | `image/gif` | `.gif` | GIF87a and GIF89a (no animation, no transparency) |
 | **XBM** | `image/xbm` | `.xbm` | X BitMap — monochrome, text-based C code |
 | **XPM** | `image/xpm` | `.xpm` | X PixMap — color, text-based C code |
-| **PostScript** | `application/postscript` | `.ps`, `.eps` | Converted to GIF via ImageMagick |
+| **PostScript** | `application/postscript` | `.ps`, `.eps` | Converted to GIF via ImageMagick (v4.0) |
 
 ### Additional Formats (via libIMG/xloadimage)
 
@@ -110,7 +116,7 @@ Extended image container with support for client-side image maps, captions, and 
 **Child elements:**
 
 - `<FIGDATA>` — Contains inline image data
-- `<FIGA>` — Client-side image map hotspot (with `HREF` and `AREA` attributes)
+- `<FIGA>` — Client-side image map hotspot (with `HREF` and `AREA` attributes); works with XBM/XPM/PS since v4.0
 - `<FIGCAP>` — Figure caption
 
 **Examples:**
@@ -138,7 +144,7 @@ static char icon_bits[] = {
 </FIGURE>
 ```
 
-Inline GIF (Base64 encoded):
+Inline GIF (Base64 encoded) — **Added in v4.0:**
 
 ```html
 <FIGURE TYPE="gif">
@@ -148,7 +154,7 @@ R0lGODlhCAAIAIAAAP8AAAAAACH5BAAAAAAALAAAAAAIAAgAAAIKhI+py+0Po5yUFQA7
 </FIGURE>
 ```
 
-Inline PostScript:
+Inline PostScript — **Added in v4.0:**
 
 ```html
 <FIGURE TYPE="ps" WIDTH="200" HEIGHT="150">
@@ -242,10 +248,10 @@ static char * icon [] = {
 
 ### PostScript
 
-- **Conversion:** Rendered to GIF via ImageMagick `magick` command
+- **Conversion:** Rendered to GIF via ImageMagick `magick` command (v4.0; originally used Ghostscript)
 - **Density:** 72-80 DPI
 - **BoundingBox:** Automatically prepended from WIDTH/HEIGHT attributes
-- **Inline:** Native text format in `<FIGDATA>`
+- **Inline:** Native text format in `<FIGDATA>` — **Added in v4.0**
 
 ### PBM/PGM/PPM (NetPBM)
 
@@ -318,12 +324,12 @@ ViolaWWW uses different handler classes for different image contexts:
 
 ### For `<FIGURE>` tag with inline data
 
-| Class | Format |
-|-------|--------|
-| `HTML_gif_inline` | GIF (Base64 encoded) |
-| `HTML_xbm` | XBM (C source) |
-| `HTML_xpm` | XPM (C source) |
-| `HTML_ps` | PostScript |
+| Class | Format | Notes |
+|-------|--------|-------|
+| `HTML_gif_inline` | GIF (Base64 encoded) | **Added in v4.0** |
+| `HTML_xbm` | XBM (C source) | |
+| `HTML_xpm` | XPM (C source) | |
+| `HTML_ps` | PostScript | **Added in v4.0** |
 
 ### Base classes
 

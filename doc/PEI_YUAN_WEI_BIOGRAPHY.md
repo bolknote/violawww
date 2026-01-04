@@ -22,6 +22,20 @@ Pei-Yuan Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanese-Americ
 - In the 1990s, worked on developing Viola, collaborated with O'Reilly Media, and founded Global Network Navigator (GNN) — one of the first Internet businesses with advertising.[^1]
 - After 2008, lived between Taiwan and the USA, devoting time to caring for an ill family member.[^1]
 
+### Correspondence with Tim Berners-Lee (1991)
+
+On December 9, 1991, Tim Berners-Lee (the inventor of the World Wide Web) welcomed Pei Wei to the www-talk mailing list. In this historic email, Pei Wei expressed his interest in the WWW project:[^6]
+
+> *"I'm now browsing through parts of the WWW distribution, and I'm seeing lots of potential in it. It seems that the only browser is for the NeXT, a platform most people don't have access to, which is a shame."*
+>
+> *"I'm now seriously considering writing an X11 browser for HTML files by extending a program I've been working on (called VIOLA, a program somewhat like HyperCard)..."*
+
+Tim Berners-Lee responded enthusiastically:
+
+> *"Ok.. sounds like a good idea. [...] Anyone who makes a good X11 W3 browser will be very popular."*
+
+This correspondence marks the beginning of ViolaWWW development as a web browser and demonstrates the collaborative spirit of the early web community. Tim Berners-Lee offered to share CERN's alpha-test code, including the HTML SGML parser, to help with the project.
+
 ### Death
 - Died in 2023 at the age of 54.[^2]
 - The Computer History Museum noted his contribution as a pioneer of the web.[^2]
@@ -53,3 +67,4 @@ For further study: source code is stored in the Computer History Museum, CERN ar
 [^3]: [Computer History Museum LinkedIn Post](https://www.linkedin.com/posts/computer-history-museum_we-are-very-sorry-to-hear-that-pei-yuan-activity-7057391732425920512-PIA-)
 [^4]: [Wikipedia: ViolaWWW (English)](https://en.wikipedia.org/wiki/ViolaWWW)
 [^5]: [Wikipedia: ViolaWWW (Chinese)](https://zh.wikipedia.org/wiki/ViolaWWW)
+[^6]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (1991)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1991.messages/26.html)

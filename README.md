@@ -22,6 +22,7 @@ ViolaWWW is an extensible World Wide Web hypermedia browser, originally created 
 - HTTP redirect handling (301, 302, 303, 307, 308)
 - Internet Archive (Wayback Machine) integration
 - Proto-VRML graphics tags implementation (GRAPHICS, ROT, SCALE, etc.)
+- HTML+ CHANGED tag for document revision tracking (yellow background highlighting)
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII)
 - Socket timeouts and improved error handling
 - Modern build system with parallel compilation
@@ -139,6 +140,15 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - Automatic scaling of symbols in superscript/subscript contexts
 - **Files**: `htmath.h`, `htmath.c`, `embeds/HTML_math_script.v`
 - **HTML Tag**: `<MATH>` element support
+
+#### HTML+ CHANGED Tag (Document Revision Tracking)
+- Implementation of HTML+ (1993) `<CHANGED>` element for marking document revisions
+- Paired marker syntax: `<changed id=X>text<changed idref=X>` (not a container tag)
+- Visual highlighting with LemonChiffon1 (pale yellow) background
+- Spans across structural boundaries (paragraphs, lists, headers)
+- Preserves original text color (compatible with stylesheets)
+- **Files**: `html2.c`, `sgml.c`, `tfed.c`, `glib_x.c`
+- **Documentation**: [CHANGED_TAG_REFERENCE.md](doc/CHANGED_TAG_REFERENCE.md)
 
 #### Proto-VRML Graphics Tags (Full Implementation)
 - Implementation of Pei-Yuan Wei's 1994 experimental 3D graphics proposal
@@ -687,6 +697,7 @@ Contributions are welcome! Areas of interest:
 - Character encoding detection from HTTP headers (x-archive-guessed-charset, Content-Type)
 - NNTP news protocol improvements (`nntp://` and `news://` URL schemes, MIME encoded-word decoding, transliteration)
 - Proto-VRML graphics tags implementation (GRAPHICS, RECT, CIRCLE, POLYGON, ROT, SCALE, SC sync, etc.)
+- HTML+ CHANGED tag implementation (document revision highlighting with LemonChiffon1 background)
 - TTY interface restoration for external process communication
 - VPLOT 3D surface plotter implementation
 - macOS app bundle with native launcher and DMG distribution

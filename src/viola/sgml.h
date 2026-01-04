@@ -34,6 +34,7 @@ typedef struct SGMLDocMappingInfo {
 
 extern SGMLDocMappingInfo SGMLForms[];
 extern int SGMLBuildDoc_span;
+extern int SGMLBuildDoc_inChanged;  /* depth counter for CHANGED regions */
 
 #define DATABUFF_SIZE 100000 /* icky ick */
 
@@ -49,6 +50,8 @@ VObj* SGMLBuildDoc(char*, char*, VObj*, char*, int, char*);
 VObj* SGMLBuildDoc_B(char*, char*, VObj*, char*, int, char*);
 int SGMLBuildDoc_setBuff(VObj*, int);
 void SGMLBuildDoc_flush(void);
+void SGMLBuildDoc_enterChanged(void);
+void SGMLBuildDoc_leaveChanged(void);
 int SGMLTileDoc(VObj*, int, int);
 int SGMLFindAnchorOffset(VObj*, char*);
 void SGMLBuildDoc_insertObj(VObj*, int);

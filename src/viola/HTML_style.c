@@ -145,7 +145,7 @@ BOX		HTML_box		0 0 0 1 0		0 0 0 0\n\
 LABEL		HTML_label		0 0 0 0 0		0 0 0 0\n\
 BYLINE		HTML_byline		0 0 0 0 0		0 0 0 0\n\
 BASE		HTML_base		0 0 0 0 0		0 0 0 0\n\
-CHANGED		HTML_changed		0 0 0 0 0		0 0 0 0\n\
+CHANGED		HTML_changed		1 0 0 0 0		0 0 0 0\n\
 #proto-vrml graphics\n\
 GRAPHICS	HTML_graphics		0 0 0 1 0		5 5 5 5\n\
 RECT		HTML_rect		0 0 0 1 0		0 0 0 0\n\

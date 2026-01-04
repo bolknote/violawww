@@ -76,6 +76,8 @@ enum {
     STR_SGMLBuildDoc,
     STR_SGMLBuildDocB,
     STR_SGMLBuildDoc_flush,
+    STR_SGMLBuildDoc_enterChanged,
+    STR_SGMLBuildDoc_leaveChanged,
     STR_SGMLBuildDoc_insertObj,
     STR_SGMLBuildDoc_setBuff,
     STR_SGMLBuildDoc_setColors,

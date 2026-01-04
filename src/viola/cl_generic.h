@@ -35,6 +35,8 @@ long meth_generic_GB_setCopy(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_SGMLBuildDoc(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_SGMLBuildDocB(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_SGMLBuildDoc_flush(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_SGMLBuildDoc_enterChanged(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_SGMLBuildDoc_leaveChanged(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_SGMLBuildDoc_insertObj(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_SGMLBuildDoc_setBuff(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_SGMLBuildDoc_setColors(VObj* self, Packet* result, int argc, Packet argv[]);

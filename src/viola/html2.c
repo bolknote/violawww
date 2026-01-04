@@ -73,6 +73,7 @@ extern VObj* insert_obj; /* from sgml.c */
 extern int insert_width;
 extern Packet scrapPk;
 extern SGMLDocMappingInfo SGMLForms[];
+/* SGMLBuildDoc_inChanged is declared in sgml.h */
 
 /* Explicit prototype to fix 64-bit pointer truncation issue */
 extern long findMeth(VObj* self, long funcid);
@@ -555,6 +556,13 @@ void CB_HTML_data(char* str, int size)
             size = converted_size;
         }
         
+        /* If inside CHANGED region, prepend \m( */
+        if (SGMLBuildDoc_inChanged > 0) {
+            dataBuff[dataBuffIdx++] = '\\';
+            dataBuff[dataBuffIdx++] = 'm';
+            dataBuff[dataBuffIdx++] = '(';
+        }
+        
         strncpy(&dataBuff[dataBuffIdx], str, size);
 
         dataBuff[dataBuffIdx + size] = '\0';
@@ -566,6 +574,13 @@ void CB_HTML_data(char* str, int size)
         dataBuffIdx, &dataBuff[dataBuffIdx]);
         }*/
         dataBuffIdx += size;
+        
+        /* If inside CHANGED region, append \m) */
+        if (SGMLBuildDoc_inChanged > 0) {
+            dataBuff[dataBuffIdx++] = '\\';
+            dataBuff[dataBuffIdx++] = 'm';
+            dataBuff[dataBuffIdx++] = ')';
+        }
     }
     /*	else {
                     fprintf(stderr,
@@ -679,6 +694,20 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
 
     /* map HTML parser's tag ID (element_number) to stylesheet element */
     if (!SBI.dmi || element_number < 0 || element_number >= HTML_dtd.number_of_tags) {
+        SBI.stacki--;
+        return;
+    }
+
+    /* Handle CHANGED tag for highlighting - must be before styleIndex check */
+    if (element_number == HTML_CHANGED) {
+        if (present && present[HTML_CHANGED_ID] && value && value[HTML_CHANGED_ID]) {
+            /* Start marker - enter CHANGED region */
+            SGMLBuildDoc_inChanged++;
+        } else if (present && present[HTML_CHANGED_IDREF] && value && value[HTML_CHANGED_IDREF]) {
+            /* End marker - leave CHANGED region */
+            if (SGMLBuildDoc_inChanged > 0) SGMLBuildDoc_inChanged--;
+        }
+        /* CHANGED is SGML_EMPTY, so we still return after processing */
         SBI.stacki--;
         return;
     }

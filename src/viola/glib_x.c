@@ -196,6 +196,7 @@ GC gc_dash;
 GC gc_mesh;
 GC gc_link;         /* color for unvisited links */
 GC gc_link_visited; /* color for visited links */
+GC gc_mark;         /* background color for CHANGED tag (LemonChiffon1) */
 GC gc_subWindow;
 
 /****************************************************************************
@@ -708,6 +709,20 @@ int GLInit(Display* dpy, Screen* scrn)
     gcvalues.foreground = FGPixel;
     gcvalues.background = BGPixel;
     gc_link_visited = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
+
+    /* gc_mark - LemonChiffon1 background for CHANGED tag */
+    {
+        XColor markColor;
+        if (XParseColor(display, colormap, "LemonChiffon1", &markColor) &&
+            XAllocColor(display, colormap, &markColor)) {
+            gcvalues.foreground = markColor.pixel;
+        } else {
+            /* Fallback to light yellow if LemonChiffon1 not available */
+            gcvalues.foreground = BGPixel;
+        }
+        gcvalues.background = BGPixel;
+        gc_mark = XCreateGC(display, rootWindow, GCForeground | GCBackground, &gcvalues);
+    }
 
     /* subwindow */
     gcvalues.function = GXinvert;

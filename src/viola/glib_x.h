@@ -117,6 +117,7 @@ extern GC gc_dash;
 extern GC gc_mesh;
 extern GC gc_link;         /* color for unvisited links */
 extern GC gc_link_visited; /* color for visited links */
+extern GC gc_mark;         /* background color for CHANGED tag (LemonChiffon1) */
 extern GC gc_subWindow;
 
 /* Link color management for STG stylesheet */

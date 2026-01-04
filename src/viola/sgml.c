@@ -100,6 +100,7 @@ int dataBuffIdxStack[100]; /* used to roll back to the local idx place */
 int dataBuffIdxStackIdx = -1;
 
 int SGMLBuildDoc_span = 0;
+int SGMLBuildDoc_inChanged = 0;  /* depth counter for CHANGED regions */
 
 #define ATTR_STACK_SIZE 512
 char* attrsStack[ATTR_STACK_SIZE];
@@ -173,6 +174,18 @@ int SGMLBuildDoc_setBuff(VObj* obj, int offset)
 void SGMLBuildDoc_flush() {
     dataBuffIdx = 0;
     dataBuffIdxStackIdx = -1;
+    SGMLBuildDoc_inChanged = 0;
+}
+
+/* Enter a CHANGED region (increment depth counter) */
+void SGMLBuildDoc_enterChanged() {
+    SGMLBuildDoc_inChanged++;
+}
+
+/* Leave a CHANGED region (decrement depth counter) */
+void SGMLBuildDoc_leaveChanged() {
+    if (SGMLBuildDoc_inChanged > 0)
+        SGMLBuildDoc_inChanged--;
 }
 
 /***BINARY VERSION
@@ -579,16 +592,23 @@ VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, cha
 
         switch (token) {
         case '-': {
+            /* If inside CHANGED region, prepend \m( */
+            if (SGMLBuildDoc_inChanged > 0) {
+                dataBuff[dataBuffIdx++] = '\\';
+                dataBuff[dataBuffIdx++] = 'm';
+                dataBuff[dataBuffIdx++] = '(';
+            }
 
             size = INPUT_LINE_filtered(&dataBuff[dataBuffIdx]);
             dataBuff[dataBuffIdx + size] = '\0';
-            /*
-            printf("DATA size===%d\n", size);
-            printf("...obj=%s lidx=%d idx=%d DATA {%s}\n",
-            GET_name(obj), dataBuffIdxStack[dataBuffIdxStackIdx],
-            dataBuffIdx, &dataBuff[dataBuffIdx]);
-            */
             dataBuffIdx += size;
+
+            /* If inside CHANGED region, append \m) */
+            if (SGMLBuildDoc_inChanged > 0) {
+                dataBuff[dataBuffIdx++] = '\\';
+                dataBuff[dataBuffIdx++] = 'm';
+                dataBuff[dataBuffIdx++] = ')';
+            }
         } break;
         case 'A': { /* Attribute */
             char* cp;
@@ -635,6 +655,15 @@ VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, cha
                 /*				fprintf(stdout,
                                                         "Attr NOT IMPLIED: value={%s}\n", cp);
                 */
+                /* Check for CHANGED tag ID/IDREF - must set flag BEFORE data is processed */
+                if (tmi && strcmp(tmi->tag, "CHANGED") == 0) {
+                    if (strcmp(attrName, "ID") == 0) {
+                        SGMLBuildDoc_inChanged++;
+                    } else if (strcmp(attrName, "IDREF") == 0) {
+                        if (SGMLBuildDoc_inChanged > 0) SGMLBuildDoc_inChanged--;
+                    }
+                }
+
                 elemAttrStack_name[elemAttrStackCount] = attrName;
                 elemAttrStack_val[elemAttrStackCount] = cp;
                 ++elemAttrStackCount;

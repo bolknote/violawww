@@ -239,6 +239,14 @@ MethodInfo meths_generic[] = {
         meth_generic_SGMLBuildDoc_flush,
     },
     {
+        STR_SGMLBuildDoc_enterChanged,
+        meth_generic_SGMLBuildDoc_enterChanged,
+    },
+    {
+        STR_SGMLBuildDoc_leaveChanged,
+        meth_generic_SGMLBuildDoc_leaveChanged,
+    },
+    {
         STR_SGMLBuildDoc_insertObj,
         meth_generic_SGMLBuildDoc_insertObj,
     },
@@ -1723,6 +1731,18 @@ long meth_generic_SGMLBuildDoc_span(VObj* self, Packet* result, int argc, Packet
 
 long meth_generic_SGMLBuildDoc_flush(VObj* self, Packet* result, int argc, Packet argv[]) {
     SGMLBuildDoc_flush();
+    clearPacket(result);
+    return 1;
+}
+
+long meth_generic_SGMLBuildDoc_enterChanged(VObj* self, Packet* result, int argc, Packet argv[]) {
+    SGMLBuildDoc_enterChanged();
+    clearPacket(result);
+    return 1;
+}
+
+long meth_generic_SGMLBuildDoc_leaveChanged(VObj* self, Packet* result, int argc, Packet argv[]) {
+    SGMLBuildDoc_leaveChanged();
     clearPacket(result);
     return 1;
 }

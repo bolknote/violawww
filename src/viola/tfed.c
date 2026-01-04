@@ -3185,6 +3185,22 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
             }
             break;
 
+        /*
+         * Marked text (CHANGED tag) - yellow background
+         */
+        case 'm':
+            c = *(++(buildInfo->str));
+            if (c == STAG_OPEN) {
+                buildInfo->flags |= MASK_MARKED;
+                ++(buildInfo->str);
+            } else if (c == STAG_CLOSE) {
+                buildInfo->flags &= ~MASK_MARKED;
+                ++(buildInfo->str);
+            } else {
+                goto foobar;
+            }
+            break;
+
             /*
              * xrule
              */
@@ -4976,13 +4992,13 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
 
             prevFontID = TFCFontID(tfcp);
             prevVideo =
-                TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON | MASK_PIC | MASK_OBJ);
+                TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON | MASK_PIC | MASK_OBJ | MASK_MARKED);
 
             buffp = buff;
             for (;;) {
                 if (prevFontID == TFCFontID(tfcp) &&
                     prevVideo == (TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON |
-                                                    MASK_PIC | MASK_OBJ))) {
+                                                    MASK_PIC | MASK_OBJ | MASK_MARKED))) {
 
                     flags = TFCFlags(tfcp);
                     flags &= ~MASK_WRAP;
@@ -5059,6 +5075,11 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                             XFillRectangle(display, w, gc_fg, segpx, localYOffset, segendpx - segpx,
                                            currentp->maxFontHeight);
                             usegc = gc_invert;
+                        } else if (flags & MASK_MARKED) {
+                            /* CHANGED tag - draw LemonChiffon1 background, keep text color */
+                            XFillRectangle(display, w, gc_mark, segpx, localYOffset, segendpx - segpx,
+                                           currentp->maxFontHeight);
+                            usegc = gc_fg;
                         } else if (flags & MASK_BUTTON) {
                             /* Check if link is visited at render time */
                             TFChar* search_tfcp = segheadtfcp;
@@ -5270,13 +5291,13 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
 
             prevFontID = TFCFontID(tfcp);
             prevVideo =
-                TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON | MASK_PIC | MASK_OBJ);
+                TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON | MASK_PIC | MASK_OBJ | MASK_MARKED);
 
             buffp = buff;
             for (;;) {
                 if (prevFontID == TFCFontID(tfcp) &&
                     prevVideo == (TFCFlags(tfcp) & (MASK_REVERSE | MASK_RELIEF | MASK_BUTTON |
-                                                    MASK_PIC | MASK_OBJ))) {
+                                                    MASK_PIC | MASK_OBJ | MASK_MARKED))) {
 
                     flags = TFCFlags(tfcp);
                     flags &= ~MASK_WRAP;

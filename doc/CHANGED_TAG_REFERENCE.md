@@ -1,13 +1,13 @@
 # CHANGED Tag Reference
 
 > **Added in: ViolaWWW 4.0**  
-> This documentation was created in 2025 to describe the HTML+ CHANGED element. The tag is parsed but **not rendered** — visual change bars are not implemented.
+> This documentation describes the HTML+ CHANGED element. The tag renders changed text with a **LemonChiffon1 background** to highlight modifications.
 
 ## Overview
 
 The `<CHANGED>` element is part of the **HTML+ specification** (1993-1994) designed by Dave Raggett. It provides a mechanism for marking document revisions with visual "change bars" — vertical lines in the margin indicating modified content.
 
-ViolaWWW includes partial support for this tag (parsing only), but the visual change bars are not yet implemented.
+ViolaWWW implements this tag with yellow background highlighting (LemonChiffon1 color) instead of margin change bars.
 
 ---
 
@@ -109,12 +109,12 @@ static attr changed_attr[] = {{"ID"}, {"IDREF"}, {0}};
 **File:** `src/viola/HTML_style.c`
 
 ```
-CHANGED		HTML_changed		0 0 0 0 0		0 0 0 0
+CHANGED		HTML_changed		1 0 0 0 0		0 0 0 0
 ```
 
 | Field | Value | Meaning |
 |-------|-------|---------|
-| inline | 0 | Block element (causes line break) |
+| inline | 1 | Inline element (flows with text) |
 | margins | 0 0 0 0 | No margins |
 
 ### Object Definition
@@ -132,201 +132,111 @@ static SlotStruct objDesc_HTML_changed[] = {
 };
 ```
 
-### Script Handler
+### Tag Processing
 
-**File:** `src/viola/embeds/HTML_changed_script.v`
+**File:** `src/viola/html2.c` (primary path for HTML documents)
 
-```viola
-case "AA":  // Add Attribute
-    switch (arg[1]) {
-    case "ID":
-    case "IDREF":
-    break;  // Attributes are parsed but not used
+```c
+/* Handle CHANGED tag for highlighting */
+if (element_number == HTML_CHANGED) {
+    if (present && present[HTML_CHANGED_ID]) {
+        /* Start marker - enter CHANGED region */
+        SGMLBuildDoc_inChanged++;
+    } else if (present && present[HTML_CHANGED_IDREF]) {
+        /* End marker - leave CHANGED region */
+        if (SGMLBuildDoc_inChanged > 0) SGMLBuildDoc_inChanged--;
     }
     return;
-break;
+}
 ```
+
+The `SGMLBuildDoc_inChanged` counter is managed directly in C code. When this counter is > 0, all text data is automatically wrapped in `\m(...\m)` escape sequences for rendering.
 
 ### Current Behavior
 
-1. **Tag is parsed** — no parsing errors
-2. **Object is created** — 1×1 pixel, LemonChiffon1 color
-3. **Attributes are ignored** — ID/IDREF not connected
-4. **Text is "swallowed"** — block mode breaks text flow
-5. **No change bars rendered** — visual feedback missing
+1. **Tag is parsed** — SGML_EMPTY mode with ID/IDREF attributes
+2. **Inline markers** — `<changed id=X>` inserts `\m(`, `<changed idref=X>` inserts `\m)`
+3. **Yellow background** — LemonChiffon1 highlight applied to text between markers
+4. **Text color preserved** — original foreground color (from STG) is kept
+5. **Paired markers** — ID opens region, IDREF closes it (as per HTML+ spec)
 
 ---
 
-## Implementation Plan
-
-### Goal
-
-Full implementation of change bars as specified in HTML+.
+## Implementation Details
 
 ### Architecture
 
-#### 1. Global Change Region Registry
+The implementation uses a global counter to track CHANGED regions across structural boundaries:
 
-**New file:** `src/viola/changeregions.c` / `.h`
+1. **`SGMLBuildDoc_inChanged`** — global depth counter for nested CHANGED regions
+2. **Direct C handling** — counter incremented/decremented in `html2.c` when parsing `<changed id=X>` / `<changed idref=X>`
+3. **Automatic wrapping** — when counter > 0, all text data is wrapped in `\m(...\m)` escape sequences
+4. **MASK_MARKED flag** — stored per-character, triggers LemonChiffon1 background rendering
 
-```c
-typedef struct _ChangeRegion {
-    char *id;              // Region ID (e.g., "c1")
-    VObj *startMarker;     // <changed id=c1> object
-    VObj *endMarker;       // <changed idref=c1> object
-    int startY;            // Y-coordinate of start (pixels)
-    int endY;              // Y-coordinate of end
-    int isOpen;            // 1 = not yet closed
-    struct _ChangeRegion *next;
-} ChangeRegion;
+### Key Files Modified
 
-// API
-void changeRegion_registerStart(char *id, VObj *marker);
-void changeRegion_registerEnd(char *idref, VObj *marker);
-ChangeRegion *changeRegion_findById(char *id);
-void changeRegion_updatePositions(VObj *docRoot);
-void changeRegion_render(Display *dpy, Window win, GC gc, int marginX);
-void changeRegion_clear(void);
-```
+| File | Change |
+|------|--------|
+| `src/viola/html2.c` | Handles CHANGED tag in `CB_HTML_stag()`; wraps text in `\m(...\m)` in `CB_HTML_data()` |
+| `src/viola/sgml.c` | Added `SGMLBuildDoc_inChanged` counter; handles CHANGED for binary ESIS parser |
+| `src/viola/sgml.h` | Added `extern int SGMLBuildDoc_inChanged` declaration |
+| `src/viola/tfed.h` | Added `MASK_MARKED (1 << 9)` flag for marked text |
+| `src/viola/tfed.c` | Added `\m(` / `\m)` escape code parsing and rendering with `gc_mark` |
+| `src/viola/glib_x.c` | Added `gc_mark` graphics context with LemonChiffon1 color |
+| `src/viola/glib_x.h` | Added `extern GC gc_mark` declaration |
 
-#### 2. Lifecycle
+### Rendering Flow
 
 ```
-HTML Parsing
-     │
-     ▼
-┌─────────────────────────────────────────────────────────┐
-│ <changed id=c1>  →  changeRegion_registerStart("c1")    │
-│                      creates ChangeRegion, isOpen=1     │
-│                                                         │
-│ ... text, paragraphs, lists ...                         │
-│                                                         │
-│ <changed idref=c1> → changeRegion_registerEnd("c1")     │
-│                      finds region, sets isOpen=0        │
-│                      links startMarker ↔ endMarker      │
-└─────────────────────────────────────────────────────────┘
-     │
-     ▼
-Layout Pass
-     │
-     ▼
-┌─────────────────────────────────────────────────────────┐
-│ changeRegion_updatePositions()                          │
-│   - For each region, calculate startY and endY          │
-│   - startY = startMarker->y                             │
-│   - endY = endMarker->y + endMarker->height             │
-└─────────────────────────────────────────────────────────┘
-     │
-     ▼
-Rendering
-     │
-     ▼
-┌─────────────────────────────────────────────────────────┐
-│ changeRegion_render()                                   │
-│   - For each closed region:                             │
-│     XFillRectangle(dpy, win, gc,                        │
-│                    marginX - 6, startY,                 │
-│                    3, endY - startY);                   │
-└─────────────────────────────────────────────────────────┘
+<changed id=c1>
+        │
+        ▼
+  html2.c CB_HTML_stag(): SGMLBuildDoc_inChanged++
+  (SGMLBuildDoc_inChanged = 1)
+        │
+        ▼
+  <p>text in paragraph 1</p>
+        │
+        ▼
+  html2.c CB_HTML_data(): wraps as "\m(text in paragraph 1\m)"
+        │
+        ▼
+  <p>text in paragraph 2</p>
+        │
+        ▼
+  html2.c CB_HTML_data(): wraps as "\m(text in paragraph 2\m)"
+        │
+        ▼
+<changed idref=c1>
+        │
+        ▼
+  html2.c CB_HTML_stag(): SGMLBuildDoc_inChanged--
+  (SGMLBuildDoc_inChanged = 0)
+        │
+        ▼
+  <p>normal text</p> — not wrapped
+        │
+        ▼
+  tfed.c: parses \m( and \m), sets MASK_MARKED flag
+        │
+        ▼
+  tfed.c: renders text with gc_mark (LemonChiffon1 background)
 ```
 
-### Required Changes
+### Usage
 
-#### Step 1: Fix Stylesheet (Immediate)
+The original HTML+ paired-marker syntax is now supported:
 
-**File:** `src/viola/HTML_style.c`
-
-```c
-// Change from block to inline:
-CHANGED		HTML_changed		1 0 0 0 0		0 0 0 0
-//                              ^ inline=1
+```html
+<p>Normal text. <changed id=c1>This paragraph has changes.
+The changes can span across multiple paragraphs.
+<changed idref=c1> Back to normal text.</p>
 ```
 
-This stops the tag from breaking text flow.
+### Limitations
 
-#### Step 2: Make Marker Invisible
-
-**File:** `src/viola/objs.c`
-
-```c
-static SlotStruct objDesc_HTML_changed[] = {
-    {"class", "field"},
-    {"name", "HTML_changed"},
-    {"script", ...},
-    {"width", "0"},
-    {"height", "0"},
-    {"visible", "0"},
-    {(char*)0, (char*)0},
-};
-```
-
-#### Step 3: Implement Region Registry
-
-Create `src/viola/changeregions.c` with:
-- Hash table for ID → ChangeRegion mapping
-- Registration functions for start/end markers
-- Position calculation after layout
-- Rendering function for change bars
-
-#### Step 4: Update Script Handler
-
-**File:** `src/viola/embeds/HTML_changed_script.v`
-
-```viola
-case "AA":
-    switch (arg[1]) {
-    case "ID":
-        registerChangeStart(arg[2], self());
-    break;
-    case "IDREF":
-        registerChangeEnd(arg[2], self());
-    break;
-    }
-    return;
-break;
-```
-
-#### Step 5: Integrate with Rendering
-
-Modify document rendering to call `changeRegion_render()` after content is drawn.
-
-#### Step 6: Handle Document Navigation
-
-Clear change regions when loading a new document.
-
-### Edge Cases
-
-| Scenario | Handling |
-|----------|----------|
-| Unclosed `<changed id=X>` | Ignore during rendering (isOpen=1) |
-| Multiple `<changed idref=X>` with same ID | Use first match |
-| Scroll/resize | Recalculate Y positions |
-| Nested frames | Scope to current document |
-
-### Configuration
-
-Add X11 resource for change bar color:
-
-```
-Viola.changeBarColor: LemonChiffon1
-```
-
-Or for a more traditional "revision mark" appearance:
-
-```
-Viola.changeBarColor: red
-```
-
-### Effort Estimate
-
-| Task | Time |
-|------|------|
-| Create `changeregions.c/.h` | 2-3 hours |
-| Integrate with parser (script) | 1 hour |
-| Integrate with rendering | 2-3 hours |
-| Handle scroll and resize | 1-2 hours |
-| Testing and debugging | 2-3 hours |
-| **Total** | **8-12 hours** |
+- Multiple overlapping regions with different IDs are not tracked separately
+- Change bars on margin are not implemented (background highlight only)
 
 ---
 

@@ -82,6 +82,7 @@ typedef struct TagInfo {
 #define MASK_NL (1 << 5)         /* really a newline	*/
 #define MASK_PIC (1 << 6)        /* picture be here	*/
 #define MASK_ITALIC (1 << 7)     /* be italic		*/
+#define MASK_MARKED (1 << 9)     /* marked/highlighted background */
 
 typedef struct TFLineNode {
     TFChar* linep;

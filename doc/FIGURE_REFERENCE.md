@@ -4,6 +4,12 @@
 
 The `<FIGURE>` element in ViolaWWW is used to embed and display images and graphics within HTML documents. It supports multiple image formats and provides advanced features like clickable regions (image maps) and delayed loading.
 
+> **ViolaWWW 4.0 Additions:**  
+> - FIGA hotspot support for XBM, XPM, GIF, and PostScript images
+> - Inline GIF support with Base64 encoding (`<FIGDATA>`)
+> - Inline PostScript support (`<FIGDATA>` with `TYPE="ps"`)
+> - ImageMagick-based PostScript-to-GIF conversion
+
 ## Syntax
 
 ```html

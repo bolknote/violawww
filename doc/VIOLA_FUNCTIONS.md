@@ -1,5 +1,8 @@
 # Viola Functions Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes functions from the original Viola language (1992-1995). Functions marked with "Added in: ViolaWWW 4.0" are new additions in 2025.
+
 This document describes functions available in the Viola language. All functions are defined in the `generic` class and are available from any Viola object.
 
 ## Contents

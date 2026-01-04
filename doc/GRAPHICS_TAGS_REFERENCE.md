@@ -1,5 +1,8 @@
 # ViolaWWW Experimental 3D Graphics Tags
 
+> **Added in: ViolaWWW 4.0**  
+> The graphics tags were *defined* in the original ViolaWWW (1994) but not implemented. The full working implementation was completed in version 4.0 (2025).
+
 This document describes the experimental 3D graphics tags implemented in ViolaWWW based on Pei-Yuan Wei's 1994 proto-VRML proposal.
 
 ---

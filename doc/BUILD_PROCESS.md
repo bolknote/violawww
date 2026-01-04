@@ -1,5 +1,8 @@
 # macOS Build Process Reference
 
+> **Added in: ViolaWWW 4.0**  
+> macOS app bundle and DMG distribution support was added in 2025.
+
 This document describes the internal build process for creating `ViolaWWW.app` bundle and `ViolaWWW.dmg` installer.
 
 ---

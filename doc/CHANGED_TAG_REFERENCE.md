@@ -1,5 +1,8 @@
 # CHANGED Tag Reference
 
+> **Added in: ViolaWWW 4.0**  
+> This documentation was created in 2025 to describe the HTML+ CHANGED element. The tag is parsed but **not rendered** — visual change bars are not implemented.
+
 ## Overview
 
 The `<CHANGED>` element is part of the **HTML+ specification** (1993-1994) designed by Dave Raggett. It provides a mechanism for marking document revisions with visual "change bars" — vertical lines in the margin indicating modified content.

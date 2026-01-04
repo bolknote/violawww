@@ -1,5 +1,7 @@
 # ViolaWWW Documentation
 
+> **Note:** All documentation in this directory was created or compiled in ViolaWWW 4.0 (2025). Documents marked with "Added in: ViolaWWW 4.0" describe features that were implemented or significantly enhanced in version 4.0. Documents without this marker describe features that existed in the original ViolaWWW (v3.x, 1992-1995).
+
 This directory contains technical documentation for ViolaWWW.
 
 ---

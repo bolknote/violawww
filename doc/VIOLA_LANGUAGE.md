@@ -1,5 +1,8 @@
 # Viola Language Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the original Viola language from ViolaWWW v3.x (1992-1995).
+
 Viola is a **two-level language** system consisting of an object file format for GUI declarations and a C-like scripting language for behavior.
 
 ---

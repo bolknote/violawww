@@ -1,5 +1,8 @@
 # ViolaWWW Stylesheet (STG) Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the original STG stylesheet system from ViolaWWW v3.x (1992-1995). Minor selectors and `traversedForegroundColor` support were restored/enhanced in v4.0.
+
 ## Introduction
 
 ViolaWWW uses a hierarchical stylesheet system called **STG** (Stylesheet) that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.

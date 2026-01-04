@@ -1,5 +1,8 @@
 # Biography of Pei-Yuan Wei and the ViolaWWW Browser
 
+> **Added in: ViolaWWW 4.0**  
+> This biographical documentation was compiled in 2025.
+
 ## Brief Biography of Pei-Yuan Wei
 
 <img width="174" height="217" alt="Pei-Yuan Wei" align=right src="https://github.com/user-attachments/assets/604a54f3-5ef0-4100-9230-9f04de3830c2" />

@@ -1,5 +1,8 @@
 # FOSI_REFERENCE.md
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the original FOSI support from ViolaWWW v3.x (1992-1995).
+
 **FOSI** (Formatting Output Specification Instance) — SGML-based stylesheet system for document formatting.
 
 **Status:** Partially implemented parser infrastructure exists, but stylesheet functionality is not fully operational. This was intended as ViolaWWW's predecessor to CSS.

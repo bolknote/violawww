@@ -1,5 +1,8 @@
 # Character Encoding Transliteration
 
+> **Added in: ViolaWWW 4.0**  
+> The entire transliteration pipeline (iconv + ICU) is a 2025 enhancement.
+
 Legacy ViolaWWW rendering still targets ISO-8859-1 fonts. Modern servers often send UTF-8, Windows-1251, KOI8-R, etc. Instead of showing mojibake, we transliterate everything that is not plain Latin-1 into a readable ASCII/Latin-1 approximation.
 
 ## Pipeline (HTCharset.c)

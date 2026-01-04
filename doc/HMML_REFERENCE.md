@@ -1,5 +1,8 @@
 # HMML Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the original HMML format from ViolaWWW v3.x (1992-1995).
+
 **HMML** (HyperMedia Markup Language) was an experimental markup language developed by Pei-Yuan Wei for ViolaWWW in the early 1990s, parallel to and extending HTML.
 
 ## Historical Context

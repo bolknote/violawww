@@ -1,5 +1,8 @@
 # Color Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the original X11 color system from ViolaWWW v3.x (1992-1995).
+
 Complete guide to color specification in ViolaWWW.
 
 ---

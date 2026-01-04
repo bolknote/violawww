@@ -1,10 +1,13 @@
 # VPlot Reference
 
+> **Added in: ViolaWWW 4.0**  
+> VPlot is a reverse-engineered reimplementation created in 2025.
+
 **VPlot** is a 3D surface plotter and wireframe model viewer for ViolaWWW. It renders interactive 3D graphics in an embedded X11 window, controlled via the TTY class.
 
 ## Historical Context
 
-VPlot is a reverse-engineered reimplementation of the original V-Plot utility written by Scott Silvey in the early 1990s. The original V-Plot was an external X11 program that ViolaWWW communicated with via pseudo-terminal (TTY class) to render 3D graphics in an embedded window.
+VPlot is a reverse-engineered reimplementation of the original V-Plot utility written by Scott Silvey in the early 1990s. The original V-Plot was an external X11 program that ViolaWWW communicated with via pseudo-terminal (TTY class) to render 3D graphics in an embedded window. The original binary was lost; this reimplementation was created for ViolaWWW 4.0 based on analysis of the Viola scripts and available documentation.
 
 <img width="636" height="853" src="https://github.com/user-attachments/assets/ec039340-ec27-4a14-96a1-37bd4ee0116d" />
 

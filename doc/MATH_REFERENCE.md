@@ -1,5 +1,8 @@
 # ViolaWWW Mathematical Notation Reference
 
+> **Added in: ViolaWWW 4.0**  
+> The `<math>` tag infrastructure existed in the original ViolaWWW, but the actual rendering of mathematical symbols (`&pi;`, `&sigma;`, `&integral;`, `&infin;`), subscripts, superscripts, and extensible parentheses/brackets was implemented in version 4.0 (2025).
+
 ## HTML Tags for Mathematics
 
 ### 1. `<math>...</math>` - Mathematical Expression Container

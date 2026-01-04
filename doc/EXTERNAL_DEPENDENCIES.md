@@ -1,5 +1,12 @@
 # External Dependencies Reference
 
+> **ViolaWWW 4.0 Additions:**  
+> - ImageMagick for PostScript-to-GIF conversion
+> - `c3270` for `tn3270://` URL support
+> - `telnet` bundling in app package
+> - Custom program search in app bundle (`Contents/MacOS/`)
+> - `MAGICK_HOME` and related environment variables
+
 This document describes the external programs and environment variables used by ViolaWWW.
 
 ---

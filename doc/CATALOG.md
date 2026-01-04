@@ -1,5 +1,8 @@
 # Personal URL Catalog
 
+> **Added in: ViolaWWW 4.0**  
+> The Catalog feature existed as incomplete stubs in the original code. The full implementation was completed in 2024/2025.
+
 The Personal URL Catalog is a hierarchical bookmark organizer for ViolaWWW, allowing users to save, organize, and access their favorite web pages.
 
 ## Opening the Catalog

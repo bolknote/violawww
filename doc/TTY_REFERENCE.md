@@ -1,5 +1,8 @@
 # How to Run External Programs from Viola
 
+> **Added in: ViolaWWW 4.0**  
+> The TTY class existed in the original ViolaWWW but was non-functional. It was restored to working condition in version 4.0 (2025).
+
 This guide shows how to write a Viola application that launches an external program and communicates with it via a pseudo-terminal.
 
 ## What We'll Build

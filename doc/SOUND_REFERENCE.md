@@ -1,5 +1,9 @@
 # Sound Reference
 
+> **ViolaWWW 4.0 Additions:**  
+> - macOS `NSSound` implementation for `bell()` function
+> - Audio file playback using `afplay` on macOS
+
 This document describes sound capabilities in ViolaWWW.
 
 ## Contents

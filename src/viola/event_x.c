@@ -1385,9 +1385,11 @@ long handle_ConfigureNotify(XConfigureEvent* ep)
     VObj* obj = findWindowObject(ep->window);
 
     if (obj) {
-        /* Clear all child windows to prevent black artifacts during resize */
-        clearWindowTreeViola(display, ep->window);
-        XSync(display, False);
+        /* Clear all child windows only if size actually changed (not just position) */
+        if (ep->width != GET_width(obj) || ep->height != GET_height(obj)) {
+            clearWindowTreeViola(display, ep->window);
+            XSync(display, False);
+        }
         
         if (ep->above != 0) {
             intBuff[0] = ep->x;

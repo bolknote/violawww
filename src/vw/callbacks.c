@@ -1046,18 +1046,28 @@ static void clearWindowTree(Display* dpy, Window win) {
  */
 void resizeShell(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
     if (event->type == ConfigureNotify) {
-        Display* dpy = XtDisplay(widget);
-        Window win = XtWindow(widget);
-        XEvent exposeEvent;
+        XConfigureEvent* xce = (XConfigureEvent*)event;
+        static int lastWidth = 0;
+        static int lastHeight = 0;
         
-        if (win) {
-            /* Clear all windows to force redraw */
-            clearWindowTree(dpy, win);
-            XSync(dpy, False);
+        /* Only redraw if size actually changed (not just position) */
+        if (xce->width != lastWidth || xce->height != lastHeight) {
+            Display* dpy = XtDisplay(widget);
+            Window win = XtWindow(widget);
+            XEvent exposeEvent;
             
-            /* Process pending Expose events immediately */
-            while (XCheckWindowEvent(dpy, win, ExposureMask, &exposeEvent)) {
-                XtDispatchEvent(&exposeEvent);
+            lastWidth = xce->width;
+            lastHeight = xce->height;
+            
+            if (win) {
+                /* Clear all windows to force redraw */
+                clearWindowTree(dpy, win);
+                XSync(dpy, False);
+                
+                /* Process pending Expose events immediately */
+                while (XCheckWindowEvent(dpy, win, ExposureMask, &exposeEvent)) {
+                    XtDispatchEvent(&exposeEvent);
+                }
             }
         }
     }

@@ -6,6 +6,20 @@ This directory contains technical documentation for ViolaWWW.
 
 ---
 
+## About the Creator
+
+### [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md)
+Biography of Pei-Yuan Wei (魏培源, 1969–2023) and the history of ViolaWWW.
+
+Topics covered:
+- Early life and education (Taiwan, Berkeley High School, UC Berkeley)
+- Creation of Viola language (1990) and ViolaWWW browser (1991–1992)
+- Historic correspondence with Tim Berners-Lee (1991)
+- Technical innovations that pioneered modern web standards
+- ViolaWWW's role in the Eolas vs. Microsoft patent case
+
+---
+
 ## Network Protocols
 
 ### [PROTOCOLS_REFERENCE.md](PROTOCOLS_REFERENCE.md)

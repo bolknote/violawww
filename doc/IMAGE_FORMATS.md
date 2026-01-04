@@ -345,7 +345,7 @@ ViolaWWW uses different handler classes for different image contexts:
 
 ### FIGURE vs IMG
 
-The `<FIGURE>` element was proposed by Pei-Yuan Wei in May 1993, predating the standardization of the `<IMG>` tag. It provided features later adopted in HTML standards:
+The `<FIGURE>` element was [proposed by Pei-Yuan Wei in May 1993](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html) on the www-talk mailing list, predating the standardization of the `<IMG>` tag. It provided features later adopted in HTML standards:
 
 - Client-side image maps (`<FIGA>`) → HTML `<MAP>` + `<AREA>`
 - Captions (`<FIGCAP>`) → HTML5 `<figcaption>`

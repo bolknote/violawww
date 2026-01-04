@@ -707,7 +707,7 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
             /* End marker - leave CHANGED region */
             if (SGMLBuildDoc_inChanged > 0) SGMLBuildDoc_inChanged--;
         }
-        /* CHANGED is SGML_EMPTY, so we still return after processing */
+        /* CHANGED is SGML_EMPTY - we incremented stacki above, decrement it back */
         SBI.stacki--;
         return;
     }
@@ -1238,6 +1238,11 @@ void CB_HTML_etag(int element_number)
 
     /* Ignore tags entirely while inside Wayback Toolbar comments */
     if (inside_wayback_comment) {
+        return;
+    }
+
+    /* CHANGED is handled entirely in CB_HTML_stag - ignore etag */
+    if (element_number == HTML_CHANGED) {
         return;
     }
 

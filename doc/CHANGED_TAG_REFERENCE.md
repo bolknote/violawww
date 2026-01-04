@@ -7,7 +7,7 @@
 
 The `<CHANGED>` element is part of the **HTML+ specification** (1993-1994) designed by Dave Raggett. It provides a mechanism for marking document revisions with visual "change bars" — vertical lines in the margin indicating modified content.
 
-ViolaWWW implements this tag with yellow background highlighting (LemonChiffon1 color) instead of margin change bars.
+ViolaWWW implements this tag with yellow background highlighting (LemonChiffon1 color) instead of margin change bars. This approach was originally started by the browser's author Pei-Yuan Wei, but was left incomplete — ViolaWWW 4.0 finishes the implementation.
 
 ---
 
@@ -137,7 +137,7 @@ static SlotStruct objDesc_HTML_changed[] = {
 **File:** `src/viola/html2.c` (primary path for HTML documents)
 
 ```c
-/* Handle CHANGED tag for highlighting */
+/* In CB_HTML_stag(): Handle CHANGED tag for highlighting */
 if (element_number == HTML_CHANGED) {
     if (present && present[HTML_CHANGED_ID]) {
         /* Start marker - enter CHANGED region */
@@ -146,11 +146,19 @@ if (element_number == HTML_CHANGED) {
         /* End marker - leave CHANGED region */
         if (SGMLBuildDoc_inChanged > 0) SGMLBuildDoc_inChanged--;
     }
+    SBI.stacki--;  /* Undo stack push - CHANGED doesn't need stack entry */
+    return;
+}
+
+/* In CB_HTML_etag(): Ignore CHANGED - fully handled in stag */
+if (element_number == HTML_CHANGED) {
     return;
 }
 ```
 
 The `SGMLBuildDoc_inChanged` counter is managed directly in C code. When this counter is > 0, all text data is automatically wrapped in `\m(...\m)` escape sequences for rendering.
+
+**Note:** CHANGED is an SGML_EMPTY element, so the parser calls both `CB_HTML_stag` and `CB_HTML_etag`. We handle everything in `stag` and ignore `etag` to avoid double stack decrement.
 
 ### Current Behavior
 
@@ -177,7 +185,7 @@ The implementation uses a global counter to track CHANGED regions across structu
 
 | File | Change |
 |------|--------|
-| `src/viola/html2.c` | Handles CHANGED tag in `CB_HTML_stag()`; wraps text in `\m(...\m)` in `CB_HTML_data()` |
+| `src/viola/html2.c` | Handles CHANGED in `CB_HTML_stag()`, ignores in `CB_HTML_etag()`; wraps text in `\m(...\m)` in `CB_HTML_data()` |
 | `src/viola/sgml.c` | Added `SGMLBuildDoc_inChanged` counter; handles CHANGED for binary ESIS parser |
 | `src/viola/sgml.h` | Added `extern int SGMLBuildDoc_inChanged` declaration |
 | `src/viola/tfed.h` | Added `MASK_MARKED (1 << 9)` flag for marked text |

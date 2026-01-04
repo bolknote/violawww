@@ -121,4 +121,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^5]: [Wikipedia: ViolaWWW (Chinese)](https://zh.wikipedia.org/wiki/ViolaWWW)
 [^6]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (1991)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1991.messages/26.html)
 [^7]: [Brian Kardell: A Brief(ish) History of the Web Universe - Part III: The Early Web (2016)](https://bkardell.com/blog/Brief-ish-History-of-The-Web-Part-3.html)
-[^8]: Tim Berners-Lee, "Weaving the Web: The Original Design and Ultimate Destiny of the World Wide Web" (1999), Chapter "Viola" and related sections
+[^8]: Robert Cailliau & James Gillies, "How the Web Was Born: The Story of the World Wide Web" (2000), Chapter "Viola" and related sections

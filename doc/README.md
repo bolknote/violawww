@@ -53,6 +53,16 @@ Topics covered:
 - Binary format (.hmmlb) specification
 - Processing pipeline (onsgmls → sgmlsA2B → .hmmlb)
 
+### [IMAGE_FORMATS.md](IMAGE_FORMATS.md)
+Complete reference for all supported image formats.
+
+Topics covered:
+- **Primary formats:** GIF, XBM, XPM, PostScript
+- **Additional formats (via libIMG):** PBM/PGM/PPM, Sun Rasterfile, Utah RLE, FBM, PCX, GEM, MacPaint, G3 FAX, McIDAS, CMU WM, XWD
+- **HTML tags:** `<IMG>`, `<FIGURE>`, `<FIGDATA>`, `<FIGA>`, `<XBM>`, `<XPM>`
+- Image processing capabilities (dithering, zoom, rotation, etc.)
+- Handler classes hierarchy
+
 ### [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md)
 Advanced image embedding for HTML documents.
 

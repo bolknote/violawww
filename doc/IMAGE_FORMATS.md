@@ -19,7 +19,7 @@ ViolaWWW supports image formats through two separate subsystems:
 
 | Format | MIME Type | Extension | Notes |
 |--------|-----------|-----------|-------|
-| **GIF** | `image/gif` | `.gif` | GIF87a and GIF89a (no animation) |
+| **GIF** | `image/gif` | `.gif` | GIF87a and GIF89a (no animation, no transparency) |
 | **XBM** | `image/xbm` | `.xbm` | X BitMap — monochrome, text-based C code |
 | **XPM** | `image/xpm` | `.xpm` | X PixMap — color, text-based C code |
 | **PostScript** | `application/postscript` | `.ps`, `.eps` | Converted to GIF via ImageMagick |
@@ -201,9 +201,12 @@ static char icon_bits[] = { 0xff, 0xff, ... };
 
 - **Versions:** GIF87a and GIF89a signatures recognized
 - **Animation:** Not supported (only first frame displayed)
-- **Transparency:** Supported in GIF89a
+- **Transparency:** Not supported (extension blocks are skipped)
+- **Comments:** Not supported (extension blocks are skipped)
 - **Interlacing:** Supported
 - **Inline:** Requires Base64 encoding in `<FIGDATA>`
+
+**Note:** While the GIF89a signature is recognized, its extension blocks (transparency, animation, comments) are simply skipped during parsing. Only the basic image data is processed.
 
 ### XBM (X BitMap)
 

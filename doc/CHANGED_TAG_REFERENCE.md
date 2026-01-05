@@ -9,6 +9,9 @@ The `<CHANGED>` element is part of the **HTML+ specification** (1993-1994) desig
 
 ViolaWWW implements this tag with yellow background highlighting (LemonChiffon1 color) instead of margin change bars. This approach was originally started by the browser's author Pei-Yuan Wei, but was left incomplete — ViolaWWW 4.0 finishes the implementation.
 
+
+<img width="636" height="849" src="https://github.com/user-attachments/assets/37f258c2-9829-49ad-b4c3-4d926d0d672d" />
+
 ---
 
 ## HTML+ Specification

@@ -48,10 +48,10 @@ extern int errno;
 #ifndef VM
 #ifndef NeXT
 #ifndef THINK_C
-#ifndef __DARWIN__
+#if !defined(VIOLA_DARWIN) && !defined(VIOLA_LINUX)
 extern char* sys_errlist[]; /* see man perror on cernvax */
 extern int sys_nerr;
-#endif /* __DARWIN__ */
+#endif /* VIOLA_DARWIN || VIOLA_LINUX */
 #endif /* think c */
 #endif /* NeXT */
 #endif /* VM */
@@ -78,6 +78,10 @@ PUBLIC int HTInetStatus(char* where)
 #define ER_NO_TRANS_DONE
 #endif
 #ifdef THINK_C
+            strerror(errno));
+#define ER_NO_TRANS_DONE
+#endif
+#if defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
             strerror(errno));
 #define ER_NO_TRANS_DONE
 #endif

@@ -678,7 +678,8 @@ void parseCommandLine(int argc, char* argv[], char* startObj[],
 #include <pwd.h>
 
 extern int errno;
-#ifndef __DARWIN__
+/* sys_errlist/sys_nerr are deprecated, use strerror() instead */
+#if !defined(VIOLA_DARWIN) && !defined(VIOLA_LINUX)
 extern char* sys_errlist[];
 extern int sys_nerr;
 #endif
@@ -713,10 +714,14 @@ void initUserWWW(char* www)
     if (mkdir(path, 0x755)) {
         Errno = errno;
         if (verbose) {
+#if defined(VIOLA_LINUX) || defined(VIOLA_DARWIN)
+            (void)printf("mkdir(%s), error %d: %s\n", path, Errno, strerror(Errno));
+#else
             if (Errno < sys_nerr)
                 (void)printf("mkdir(%s), error %d: %s\n", path, Errno, sys_errlist[Errno]);
             else
                 (void)printf("mkdir(%s), error %d\n", path, Errno);
+#endif
         }
     } else if (verbose) {
         (void)printf("created %s\n", path);

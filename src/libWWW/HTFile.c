@@ -656,7 +656,7 @@ PUBLIC int HTLoadFile(const char* addr, HTParentAnchor* anchor, HTFormat format_
                     continue;
                 /* if the entry is not being used, skip it */
 
-                if (dirbuf->d_namlen > baselen && /* Match? */
+                if (strlen(dirbuf->d_name) > baselen && /* Match? */
                     !strncmp(dirbuf->d_name, base, baselen)) {
                     HTFormat rep = HTFileFormat(dirbuf->d_name, &encoding);
                     float value = HTStackValue(rep, format_out, HTFileValue(dirbuf->d_name),

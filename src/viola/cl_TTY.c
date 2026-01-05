@@ -419,8 +419,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     struct termio b;
 #elif defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
     /* Skip BSD-style terminal I/O on macOS and Linux */
-    int lb;
-    int l;
+    /* Terminal setup handled by forkpty()/openpty() - no extra variables needed */
 #else
     struct sgttyb b;
     struct tchars tc;

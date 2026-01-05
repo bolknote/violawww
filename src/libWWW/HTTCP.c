@@ -71,22 +71,9 @@ PUBLIC int HTInetStatus(char* where)
 
 #ifdef VM
            "(Error number not translated)"); /* What Is the VM equiv? */
-#define ER_NO_TRANS_DONE
-#endif
-#ifdef NeXT
+#elif defined(NeXT) || defined(THINK_C) || defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
             strerror(errno));
-#define ER_NO_TRANS_DONE
-#endif
-#ifdef THINK_C
-            strerror(errno));
-#define ER_NO_TRANS_DONE
-#endif
-#if defined(VIOLA_DARWIN) || defined(VIOLA_LINUX)
-            strerror(errno));
-#define ER_NO_TRANS_DONE
-#endif
-
-#ifndef ER_NO_TRANS_DONE
+#else
             errno < sys_nerr ? sys_errlist[errno] : "Unknown error" );
 #endif
 

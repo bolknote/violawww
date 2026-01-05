@@ -252,9 +252,9 @@ The changes can span across multiple paragraphs.
 
 ### W3C HTML+ Documents
 
-- [HTML+ DTD (November 1993)](https://www.w3.org/MarkUp/HTMLPlus/htmlplusdtd.txt) — Original DTD with CHANGED element definition
+- [HTML+ DTD](https://www.w3.org/MarkUp/HTMLPlus/htmlplusdtd.txt) — Original DTD with CHANGED element definition
 - [HTML+ Discussion Document, Section 5.10](https://www.w3.org/MarkUp/HTMLPlus/htmlplus_22.html) — Change Bars and Document Amendments
-- [HTML+ DTD (April 1994)](https://www.w3.org/MarkUp/htmlplus_paper/htmlplus.dtd) — Updated DTD with "more meaningful attribute names"
+- [HTML+ DTD (1994 revision)](https://www.w3.org/MarkUp/htmlplus_paper/htmlplus.dtd) — Updated DTD with "more meaningful attribute names"
 
 ### Historical Context
 

@@ -698,6 +698,7 @@ For educational/research purposes only:
 
 ### Original Documentation by Pei Yuan Wei
 
+- [violaIntro.ps.gz (Dec 1994)](https://web.archive.org/web/20051230034936if_/http://www.xcf.berkeley.edu:80/~wei/viola/book/violaIntro.ps.gz) - Technical paper describing security model: *"the interpreter will disallow untrusted object from invoking file system and other potentially sensitive methods or sub interpreters"*
 - [Chapter 1 - An Overview of Viola](https://web.archive.org/web/20040417144305/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html) - Security rationale: imported objects marked "untrusted" to protect user's system
 - [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
 - [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)

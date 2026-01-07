@@ -39,14 +39,125 @@
 #include "method.h"
 #include "viola.h"
 
+/*
+ * Security dialog callback - registered by VW frontend.
+ * Returns 1 if user allows, 0 if user denies.
+ */
+static SecurityDialogCallback g_securityDialogCallback = NULL;
+
+/* Trusted documents list - URLs that user has approved */
+#define MAX_TRUSTED_DOCS 64
+static char* trustedDocs[MAX_TRUSTED_DOCS];
+static int trustedDocsCount = 0;
+
+static int isDocumentTrusted(const char* url)
+{
+    int i;
+    if (!url) return 0;
+    for (i = 0; i < trustedDocsCount; i++) {
+        if (trustedDocs[i] && strcmp(trustedDocs[i], url) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+static void addTrustedDocument(const char* url)
+{
+    if (!url || trustedDocsCount >= MAX_TRUSTED_DOCS) return;
+    if (isDocumentTrusted(url)) return;  /* already trusted */
+    trustedDocs[trustedDocsCount++] = strdup(url);
+    fprintf(stderr, "[SEC DEBUG] Added trusted document: %s\n", url);
+}
+
+void ViolaRegisterSecurityCallback(SecurityDialogCallback callback)
+{
+    g_securityDialogCallback = callback;
+}
+
+/*
+ * notSecure() - check if object has restricted security level.
+ * Returns 1 if untrusted (operation should be blocked), 0 if trusted.
+ * Does NOT prompt user - use notSecureWithPrompt() for that.
+ */
 int notSecure(VObj* self)
 {
+    /* NULL object is treated as untrusted */
+    if (self == NULL) return 1;
+    
     if (GET_security(self) > 0) {
-        fprintf(stderr, "loadFile(): execution denied to object '%s' (security=%d)\n",
-                GET_name(self), GET_security(self));
         return 1;
     }
     return 0;
+}
+
+/*
+ * notSecureWithPrompt() - check security with user confirmation dialog.
+ * If object is untrusted and callback is registered, asks user for permission.
+ * Returns 1 if operation should be blocked, 0 if allowed.
+ */
+int notSecureWithPrompt(VObj* self, const char* operation)
+{
+    extern char* current_addr;  /* from html.c */
+    const char* objName;
+    int userAllowed;
+    int secLevel;
+    
+    /* Check if document is already trusted */
+    if (current_addr && isDocumentTrusted(current_addr)) {
+        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: document already trusted\n");
+        return 0;  /* Document trusted - allow */
+    }
+    
+    /* NULL object is treated as untrusted */
+    if (self == NULL) {
+        objName = "(null)";
+        secLevel = 1;
+        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: self=NULL, op='%s'\n",
+                operation ? operation : "(null)");
+    } else {
+        secLevel = GET_security(self);
+        objName = GET_name(self);
+        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: obj='%s', security=%d, op='%s'\n",
+                objName ? objName : "(null)", secLevel, operation ? operation : "(null)");
+        
+        if (secLevel == 0) {
+            fprintf(stderr, "[SEC DEBUG] -> ALLOWED (trusted)\n");
+            return 0;  /* Trusted - allow */
+        }
+    }
+    
+    /* Object is untrusted - ask user if callback is registered */
+    fprintf(stderr, "[SEC DEBUG] Object untrusted, callback=%p\n", (void*)g_securityDialogCallback);
+    
+    if (g_securityDialogCallback) {
+        fprintf(stderr, "[SEC DEBUG] Calling security dialog...\n");
+        userAllowed = g_securityDialogCallback(
+            "Privilege Elevation Request",
+            NULL,  /* message built in dialog.c */
+            operation,
+            objName);
+        fprintf(stderr, "[SEC DEBUG] Dialog returned: %d\n", userAllowed);
+        
+        if (userAllowed) {
+            /* Trust the entire document, not just this object */
+            if (current_addr) {
+                addTrustedDocument(current_addr);
+            }
+            /* Also elevate privileges for this object */
+            if (self) {
+                SET_security(self, 0);
+                fprintf(stderr, "[SEC DEBUG] Elevated privileges for '%s'\n", objName);
+            }
+            return 0;  /* User allowed - don't block */
+        }
+    } else {
+        fprintf(stderr, "[SEC DEBUG] No callback registered!\n");
+    }
+    
+    /* No callback or user denied - block */
+    fprintf(stderr, "Security: '%s' denied for object '%s'\n",
+            operation ? operation : "operation", objName ? objName : "(null)");
+    return 1;
 }
 
 SlotInfo cl_cosmic_NCSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"cosmic"},
@@ -560,10 +671,8 @@ long meth_cosmic_interpret(VObj* self, Packet* result, int argc, Packet argv[]) 
     char* cp;
 
     clearPacket(result);
-
-    if (notSecure(self))
-        return 0;
-
+    /* interpret is needed for objects to function.
+     * Security is enforced at individual dangerous method level (system, pipe, etc). */
     for (i = 0; i < argc; i++) {
         cp = SaveString(PkInfo2Str(&argv[i]));
         if (cp)
@@ -580,18 +689,34 @@ long meth_cosmic_interpret(VObj* self, Packet* result, int argc, Packet argv[]) 
 /* return new object count
  */
 long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]) {
+    extern char* current_addr;  /* from html.c */
     char* path;
     char* fname = NULL;
+    int securityLevel = 1;  /* Default: untrusted */
+
+    /* Determine trust level based on document source */
+    fprintf(stderr, "[SEC DEBUG] loadObjFile: current_addr='%s'\n", 
+            current_addr ? current_addr : "(null)");
+    
+    if (current_addr) {
+        /* Local files are trusted */
+        if (current_addr[0] == '/' || 
+            strncmp(current_addr, "file://", 7) == 0) {
+            securityLevel = 0;  /* Trusted */
+            fprintf(stderr, "[SEC DEBUG] loadObjFile: local file, securityLevel=0\n");
+        }
+    }
 
     if (argc > 0) {
         path = PkInfo2Str(&argv[0]);
         if (argc > 1)
             fname = PkInfo2Str(&argv[1]);
 
-        if (path && fname)
-            result->info.i = load_object(fname, path);
-        else
+        if (path && fname) {
+            result->info.i = load_object_with_security(fname, path, securityLevel);
+        } else {
             result->info.i = 0;
+        }
     } else {
         result->info.i = 0;
     }

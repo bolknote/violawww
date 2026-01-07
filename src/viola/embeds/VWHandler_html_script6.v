@@ -197,7 +197,7 @@
 			concat("Printing command: ", lprCmd));
 		system(concat("www -n ", get("HTMLAddress"), " > ", tmp));
 		system(concat(lprCmd, " ", tmp));
-		system(concat("rm -f ", tmp));
+		send("wwwSecurity", "rmTmpFile", tmp);
 		return;
  	break;
 	case "output2File":

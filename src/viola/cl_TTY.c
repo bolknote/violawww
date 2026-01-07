@@ -25,6 +25,7 @@
 /*
  * macOS: Use openpty()/forkpty() for pseudo-terminal support.
  */
+#include "cl_cosmic.h"
 #include "slotaccess.h"
 #include "class.h"
 #include "classlist.h"
@@ -163,6 +164,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     char* args[16];
     int n;
     char *path;
+    char msgbuf[256];
 
     result->type = PKT_INT;
     result->canFree = 0;
@@ -172,6 +174,13 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     
     if (!path || !*path) {
         MERROR(self, "startClient: 'path' attribute not set");
+        result->info.i = -1;
+        return 0;
+    }
+
+    /* Security: executing subprocess requires user permission */
+    snprintf(msgbuf, sizeof(msgbuf), "execute subprocess: %s", path);
+    if (notSecureWithPrompt(self, msgbuf)) {
         result->info.i = -1;
         return 0;
     }
@@ -252,6 +261,7 @@ long meth_TTY_set(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 #else
+#include "cl_cosmic.h"
 #include "class.h"
 #include "classlist.h"
 #include "error.h"
@@ -414,6 +424,8 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     int fd, fd_client, pid, n;
     char* args[16];
     char *cp, *ptymajorp, *ptyminorp, *ttymajorp, *ttyminorp;
+    char msgbuf[256];
+    char* path;
 
 #ifdef SYSV
     struct termio b;
@@ -434,13 +446,21 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     struct winsize win;
 #endif
 
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    /* Security: executing subprocess requires user permission */
+    path = GET_path(self);
+    snprintf(msgbuf, sizeof(msgbuf), "execute subprocess: %s", path ? path : "(unknown)");
+    if (notSecureWithPrompt(self, msgbuf)) {
+        result->info.i = -1;
+        return 0;
+    }
+
     ptymajorp = index(pty, 'X');
     ptyminorp = index(pty, 'Y');
     ttymajorp = index(tty, 'X');
     ttyminorp = index(tty, 'Y');
-
-    result->type = PKT_INT;
-    result->canFree = 0;
 
     if (ptymajorp == NULL) {
         MERROR(self, "startClient: Out of pty's.\n");

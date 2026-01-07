@@ -10,7 +10,7 @@
 		set("height", 0);
 
 		set("label", localFile, url);
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 
 		return get("height");
 	break;

@@ -193,7 +193,7 @@ for (i=0; i<arg[]; i++) print("arg", i, " = ", arg[i], "\n");print("...end\n");
 		cmd = concat(lprCmd, tmp);
 		system(cmd);
 		www.mesg.tf("flash", concat("Printing command: ", cmd));
-		system(concat("rm -f ", tmp));
+		send("wwwSecurity", "rmTmpFile", tmp);
 		return;
  	break;
 	case "torn":

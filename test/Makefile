@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation
 
 .PHONY: all test clean $(TESTS)
 
@@ -50,6 +50,9 @@ test:
 	-@$(MAKE) test-mystrings >$(BUILD_DIR)/test-mystrings.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-mystrings: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-mystrings: FAIL")
 	-@$(MAKE) test-pkinfo-concat >$(BUILD_DIR)/test-pkinfo-concat.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-pkinfo-concat: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-pkinfo-concat: FAIL")
 	-@$(MAKE) test-sgmls-a2b >$(BUILD_DIR)/test-sgmls-a2b.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-sgmls-a2b: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-sgmls-a2b: FAIL")
+	-@$(MAKE) test-notsecure >$(BUILD_DIR)/test-notsecure.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-notsecure: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-notsecure: FAIL")
+	-@$(MAKE) test-security-escalation >$(BUILD_DIR)/test-security-escalation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-security-escalation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-security-escalation: FAIL")
+	-@$(MAKE) test-path-validation >$(BUILD_DIR)/test-path-validation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-path-validation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-path-validation: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -160,6 +163,28 @@ test-sgmls-a2b: test_sgmls_a2b.c $(PROJECT_ROOT)/src/viola/mystrings.o
 		$(PROJECT_ROOT)/src/viola/mystrings.o
 	@./$(BUILD_DIR)/test_sgmls_a2b
 
+# Security tests
+test-notsecure: test_notsecure.c
+	@echo ""
+	@echo "Building notSecure() NULL handling tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_notsecure test_notsecure.c
+	@./$(BUILD_DIR)/test_notsecure
+
+test-security-escalation: test_security_escalation.c
+	@echo ""
+	@echo "Building security escalation prevention tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_security_escalation test_security_escalation.c
+	@./$(BUILD_DIR)/test_security_escalation
+
+test-path-validation: test_path_validation.c
+	@echo ""
+	@echo "Building path validation security tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_path_validation test_path_validation.c
+	@./$(BUILD_DIR)/test_path_validation
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -189,4 +214,7 @@ help:
 	@echo "  test-hash-memory     - Hash table memory leak tests"
 	@echo "  test-mystrings       - String functions tests"
 	@echo "  test-sgmls-a2b       - SGMLS ASCII to Binary converter tests"
+	@echo "  test-notsecure       - notSecure() NULL handling tests"
+	@echo "  test-security-escalation - Security escalation prevention tests"
+	@echo "  test-path-validation - Path validation security tests"
 

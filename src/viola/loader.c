@@ -115,7 +115,11 @@ int setViolaPath(char* newPathStr)
  * 		-1 if failed to open object file
  *		use VIOLA_PATH if path is not given (NULL)
  */
-int load_object(char* filename, char* pathname)
+/*
+ * load_object_with_security() - load objects from .v file with specified security level.
+ * securityLevel: 0 = trusted, 1 = untrusted
+ */
+int load_object_with_security(char* filename, char* pathname, int securityLevel)
 {
     FILE* fp;
     long slotv[100][2];
@@ -193,10 +197,27 @@ int load_object(char* filename, char* pathname)
         /*XXX later, put class mg size in class public space */
         /*	SET__memoryGroup(newObj[i], newMemoryGroup(1024));
          */
+        
+        /* Security: set security level for loaded objects */
+        if (securityLevel > 0) {
+            SET_security(newObj[i], securityLevel);
+            fprintf(stderr, "[SEC DEBUG] load_object: set security=%d for '%s'\n",
+                    securityLevel, GET_name(newObj[i]) ? GET_name(newObj[i]) : "(null)");
+        }
+        
         sendMessage1(newObj[i], "init");
     }
 
     return newObjCount;
+}
+
+/*
+ * load_object() - load objects from .v file (trusted by default).
+ * For backwards compatibility with existing code.
+ */
+int load_object(char* filename, char* pathname)
+{
+    return load_object_with_security(filename, pathname, 0);
 }
 
 #define SLOT_LABEL_SIZE 64

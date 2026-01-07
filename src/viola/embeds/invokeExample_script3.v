@@ -48,7 +48,7 @@
 			raise();
 			send(nthChild(1), "show", tmp);
 			send(nthChild(0), "show", stmt);
-			system(concat("rm -f ", tmp));
+			send("wwwSecurity", "rmTmpFile", tmp);
 		break;
 		case "telnet":
 			/* can't handle this, pop up a shell */
@@ -114,7 +114,7 @@
 		tmp = makeTempFile();
 		system(concat("finger nasanews@space.mit.edu > ", tmp));
 		send(nthChild(1), "show", tmp);
-		system(concat("rm -f ", tmp));
+		send("wwwSecurity", "rmTmpFile", tmp);
 		return;
 	break;
 	case "dismiss":

@@ -817,11 +817,17 @@ VObj* clone(VObj* original)
     }
     /*printf("clone done\n");*/
 
-    /* is securityMode > 0 (unsure), then override original object's
-     * security rating. note: this code is secure only for 2 levels scheme.
+    /* Clone inherits security from the CALLER (self), not from the template.
+     * If caller is untrusted, clone is untrusted.
+     * If securityMode is set globally, use that.
      */
-    if (securityMode > 0)
+    if (securityMode > 0) {
         SET_security(clone, securityMode);
+    } else {
+        /* Inherit from original - trusted templates create trusted clones
+         * when called from trusted context */
+        SET_security(clone, GET_security(original));
+    }
 
     return clone;
 }

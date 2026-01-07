@@ -54,7 +54,7 @@
 
 		localFile = HTTPGet(docURL);
 		data = loadFile(localFile);
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 
 		if (isBlank(data) == 1) {
 			www.mesg.tf("show", 
@@ -119,7 +119,7 @@
 		system(concatenate(VWHANDLER_XBM_EDITOR, " ", tmp));
 		set("label", loadFile(tmp));
 		render();
-		system(concat("rm -f ", tmp));
+		send("wwwSecurity", "rmTmpFile", tmp);
 		return;
 	break;
 	case "outlineSrc":

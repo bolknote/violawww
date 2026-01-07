@@ -62,4 +62,17 @@ void openURLInSelectionBuffer(Widget widget, XtPointer clientData, XtPointer cal
 
 char* openSimpleLineEntryDialog(DocViewInfo* dvi, char* title, char* defaultData, void (*okCB)());
 
+/*
+ * Security dialog - modal dialog asking user for permission.
+ * Returns 1 if user allows, 0 if user denies.
+ */
+int securityQuestionDialog(const char* title, const char* message,
+                           const char* operation, const char* objectName);
+
+/* 
+ * Initialize security dialog callback in viola engine.
+ * Call this once during VW initialization.
+ */
+void initSecurityDialogCallback(void);
+
 #endif /* _DIALOG_H_ */

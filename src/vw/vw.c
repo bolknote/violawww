@@ -344,6 +344,9 @@ int main(int argc, char* argv[])
     initCursors(XtDisplay(topWidget));
     dvip = makeBrowserInterface(topWidget, appName, NULL, argc, argv);
 
+    /* Initialize security dialog callback for viola engine */
+    initSecurityDialogCallback();
+
     for (i = 1; i < argc; i++) {
         if (argv[i][0] != '-') {
             char* absolutePath = makeAbsolutePath(argv[i]);

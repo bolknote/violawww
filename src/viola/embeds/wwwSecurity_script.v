@@ -1,57 +1,73 @@
 
-	/* this security wall is terribly lay back now */
+	/* Security wall for file operations */
 
 	switch (arg[0]) {
 	case "rmTmpFile":
-		/* need to check that the file is indeed a temporary
-		 * file created by viola...
+		/* Safely delete a temporary file
+		 * Security: validates path is in temp directory and contains no traversal
 		 */
-		if (nthChar(arg[1], 0, 4) == "/tmp/" || nthChar(arg[1], 0, 8) == "/var/tmp/") {
-			deleteFile(arg[1]);
+		path = arg[1];
+		
+		/* Check for blank */
+		if (isBlank(path) == 1) return 0;
+		
+		/* Check for path traversal */
+		if (findPattern(path, "..") != -1) {
+			print("Security: path traversal blocked\n");
+			return 0;
+		}
+		
+		/* Check for shell metacharacters */
+		if (findPattern(path, ";") != -1) return 0;
+		if (findPattern(path, "|") != -1) return 0;
+		if (findPattern(path, "&") != -1) return 0;
+		if (findPattern(path, "`") != -1) return 0;
+		if (findPattern(path, "$") != -1) return 0;
+		if (findPattern(path, "(") != -1) return 0;
+		if (findPattern(path, ")") != -1) return 0;
+		if (findPattern(path, "<") != -1) return 0;
+		if (findPattern(path, ">") != -1) return 0;
+		
+		/* Must start with /tmp/ or /var/tmp/ */
+		if (nthChar(path, 0, 4) == "/tmp/") {
+			deleteFile(path);
 			return 1;
 		}
-
+		if (nthChar(path, 0, 8) == "/var/tmp/") {
+			deleteFile(path);
+			return 1;
+		}
+		
+		/* Check TMPDIR */
 		tmpDir = environVar("TMPDIR");
 		if (isBlank(tmpDir) == 1) return 0;
 		
 		if (nthChar(tmpDir, strlen(tmpDir) - 1) != '/') {
 			tmpDir = concat(tmpDir, "/");
 		}
-
-		pos = findPattern(arg[1], tmpDir);
-		last = strlen(tmpDir) - 1;
-
-		if (pos != -1 && pos == last) {
-			deleteFile(arg[1]);
+		
+		if (nthChar(path, 0, strlen(tmpDir) - 1) == tmpDir) {
+			deleteFile(path);
 			return 1;
 		}
+		
 		return 0;
 	break;
+	
 	case "getDocAndMoveItToSpecifiedPlace":
-		/* this is call by HTML__doc. Need a way to autheticate
-		 * that it's indeed HTML__doc that's calling ...
+		/* Download document and save to specified location
+		 * DISABLED: shell injection risk, needs C implementation
 		 */
-		/* arg[1]	docURL
-		 * arg[2]	destination
-		 */
-		if (access(arg[2])) {
-			/* should query to confirm */
-			print("Warning: overwriting ", arg[2], "...\n");
-		}
-		dumpFile = HTTPGet(arg[1]);
-		system(concat("mv ", dumpFile, " ", arg[2]));
-		return 1;
+		print("Security: getDocAndMoveItToSpecifiedPlace is disabled\n");
+		return 0;
 	break;
+	
 	case "mailFileContentTo,rmFile":
-		/* arg[1]	email address
-		 * arg[2]	subject line
-		 * arg[3]	tmpFileName
+		/* Send file contents via email and delete the file
+		 * DISABLED: shell injection risk, needs C implementation
 		 */
-		cmd = concat("mail -s \"", arg[2],
-				"\" ", arg[1], " < ", arg[3]);
-		/*print("CMD >>", cmd, "<<\n");*/
-		system(cmd);
-		deleteFile(tmpFile);
+		print("Security: mailFileContentTo,rmFile is disabled\n");
+		return 0;
 	break;
 	}
 	usual();

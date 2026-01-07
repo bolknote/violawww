@@ -9,6 +9,7 @@ typedef struct ClassInfo ClassInfo;
 ClassInfo* getClassInfo(void);
 int init_loader(char* path);
 int load_object(char* filename, char* pathname);
+int load_object_with_security(char* filename, char* pathname, int securityLevel);
 int load_objects_slots(FILE* fp, long (*slotv)[100][2], int* slotc);
 int setStackPath();
 int setViolaPath(char* newPathStr);

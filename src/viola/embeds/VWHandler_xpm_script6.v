@@ -42,7 +42,7 @@
 
 		localFile = HTTPGet(docURL);
 		data = loadFile(localFile);
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 
 		if (isBlank(data) == 1) {
 			www.mesg.tf("show", 
@@ -115,7 +115,7 @@
 		system(concat(VWHANDLER_XPM_EDITOR, " -filename ", tmp, 
 						" >& /dev/null"));
 		set("label", loadFile(tmp));
-		system(concat("rm -f ", tmp));
+		send("wwwSecurity", "rmTmpFile", tmp);
 		render();
 		clearWindow();
 		return;

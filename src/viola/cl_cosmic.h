@@ -41,3 +41,15 @@ long meth_cosmic_usual(VObj *, Packet *, int, Packet *);
 long meth_cosmic_modalExit(VObj *, Packet *, int, Packet *);
 
 void sendInitToChildren(VObj*);
+
+/*
+ * Security callback mechanism.
+ * VW registers a callback that shows a modal dialog asking user for permission.
+ * Returns: 1 = user allowed, 0 = user denied
+ */
+typedef int (*SecurityDialogCallback)(const char* title, const char* message,
+                                       const char* operation, const char* objectName);
+
+void ViolaRegisterSecurityCallback(SecurityDialogCallback callback);
+int notSecure(VObj* self);
+int notSecureWithPrompt(VObj* self, const char* operation);

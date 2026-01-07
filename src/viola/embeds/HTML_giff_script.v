@@ -55,7 +55,7 @@
 		set("height", 0);
 
 		set("label", imgURL, imgURL);
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 
 		return get("height");
 	break;

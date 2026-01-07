@@ -43,7 +43,7 @@
 		send(docObj, "nameAndURL", docName, arg[1]);
 		tweak(docObj, concat("set(\"name\", \"", docName, "\");"));
 
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 		return docName;
 	break;
 	case "out":

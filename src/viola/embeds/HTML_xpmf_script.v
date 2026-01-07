@@ -71,7 +71,7 @@
 	break;
 	case "loadData":
 		set("label", localFile);
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 		return;
 	break;
 	case "config":

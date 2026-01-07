@@ -13,7 +13,7 @@
 		cursorShape("busy");
 		localFile = HTTPGet(arg[1]);
 		set("content", loadFile(localFile));
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 		cursorShape("idle");
 		return;
 	break;

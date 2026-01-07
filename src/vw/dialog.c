@@ -33,10 +33,15 @@
 
 #include "../viola/attr.h"
 #include "../viola/cexec.h"
+#include "../viola/cl_cosmic.h"
 #include "../viola/packet.h"
+#include "../libWWW/HTAnchor.h"
 #include "callbacks.h"
 #include "dialog.h"
 #include "vw.h"
+
+extern HTParentAnchor* HTMainAnchor;
+extern char* current_addr;  /* from html.c - current document address */
 
 void dialogOK(Widget button, XtPointer clientData, XtPointer callData)
 {
@@ -265,6 +270,46 @@ void questionCancel(Widget button, XtPointer clientData, XtPointer callData)
     *(ps->done) = 1;
 }
 
+/* Clear window tree to fix XQuartz resize artifacts */
+static void dialogClearWindowTree(Display* dpy, Window win) {
+    Window root, parent;
+    Window* children = NULL;
+    unsigned int nchildren = 0;
+    unsigned int i;
+    
+    XClearArea(dpy, win, 0, 0, 0, 0, True);
+    
+    if (XQueryTree(dpy, win, &root, &parent, &children, &nchildren)) {
+        for (i = 0; i < nchildren; i++) {
+            dialogClearWindowTree(dpy, children[i]);
+        }
+        if (children) {
+            XFree(children);
+        }
+    }
+}
+
+static void dialogResizeHandler(Widget widget, XtPointer clientData, XEvent* event, Boolean* continueDispatch) {
+    if (event->type == ConfigureNotify) {
+        XConfigureEvent* xce = (XConfigureEvent*)event;
+        static int lastWidth = 0;
+        static int lastHeight = 0;
+        
+        if (xce->width != lastWidth || xce->height != lastHeight) {
+            Display* dpy = XtDisplay(widget);
+            Window win = XtWindow(widget);
+            
+            lastWidth = xce->width;
+            lastHeight = xce->height;
+            
+            if (win) {
+                dialogClearWindowTree(dpy, win);
+                XSync(dpy, False);
+            }
+        }
+    }
+}
+
 char* questionDialog(DocViewInfo* dvip, char *question, char *defaultChoice, char *yesLabel, char *noLabel, char *cancelLabel) {
     Widget dlog, button;
     Arg args[16];
@@ -360,7 +405,11 @@ char* questionDialog(DocViewInfo* dvip, char *question, char *defaultChoice, cha
     n++;
     XtSetArg(args[n], XmNautoUnmanage, FALSE);
     n++;
-    dlog = XmCreateQuestionDialog(dvip->shell, "Question", args, (Cardinal)n);
+    
+    dlog = XmCreateQuestionDialog(dvip->shell, "securityDialog", args, (Cardinal)n);
+    
+    /* Set dialog title explicitly (without _popup suffix) */
+    XtVaSetValues(XtParent(dlog), XmNtitle, "Privilege Elevation Request", NULL);
 
     XmStringFree(question_xms);
     XmStringFree(yesLabel_xms);
@@ -380,12 +429,18 @@ char* questionDialog(DocViewInfo* dvip, char *question, char *defaultChoice, cha
     ps.done = &done;
 
     XtManageChild(dlog);
+    
+    /* Add resize handler to fix XQuartz artifacts */
+    XtAddEventHandler(XtParent(dlog), StructureNotifyMask, FALSE, 
+                      dialogResizeHandler, NULL);
 
     while (!done) {
         XtAppNextEvent(appCon, &event);
         XtDispatchEvent(&event);
     }
 
+    XtRemoveEventHandler(XtParent(dlog), StructureNotifyMask, FALSE,
+                         dialogResizeHandler, NULL);
     XtUnmanageChild(dlog);
     XtDestroyWidget(dlog);
 
@@ -1298,4 +1353,90 @@ char* openSimpleLineEntryDialog(DocViewInfo* dvi, char *dialogLabel, char *defau
     XtAddEventHandler(XtParent(form), StructureNotifyMask, FALSE, resizeShell, NULL);
     XtPopup(XtParent(form), XtGrabNone);
     return NULL;
+}
+
+/*
+ * securityQuestionDialog() - modal security confirmation dialog.
+ * Used by viola engine to ask user for permission before dangerous operations.
+ * Returns 1 if user allows, 0 if user denies.
+ */
+int securityQuestionDialog(const char* title, const char* message,
+                           const char* operation, const char* objectName)
+{
+    DocViewInfo* dvip;
+    char* result;
+    char fullMessage[2048];
+    const char* docURL;
+    
+    /* Get main DocViewInfo - use first registered shell */
+    dvip = mainViewInfo();
+    if (!dvip) {
+        fprintf(stderr, "Security: no DocViewInfo available for dialog\n");
+        return 0;  /* Deny if no UI available */
+    }
+    
+    /* Get document URL - try multiple sources */
+    docURL = NULL;
+    if (HTMainAnchor) {
+        docURL = HTAnchor_address((HTAnchor*)HTMainAnchor);
+    }
+    if (!docURL || !*docURL) {
+        docURL = current_addr;  /* Global current address from html.c */
+    }
+    if (!docURL || !*docURL) {
+        docURL = dvip->URL;
+    }
+    if (!docURL || !*docURL) {
+        docURL = "(unknown)";
+    }
+    
+    /* Truncate long URLs to fit dialog (max ~60 chars) */
+    char shortURL[128];
+    size_t urlLen = strlen(docURL);
+    if (urlLen > 60) {
+        /* Show first 30 + "..." + last 25 chars */
+        snprintf(shortURL, sizeof(shortURL), "%.30s...%s", 
+                 docURL, docURL + urlLen - 25);
+        docURL = shortURL;
+    }
+    
+    /* Build message */
+    snprintf(fullMessage, sizeof(fullMessage),
+        "Document:\n"
+        "  %s\n\n"
+        "is requesting full system access.\n\n"
+        "Reason:\n"
+        "  %s\n\n"
+        "WARNING: Trusted documents can:\n"
+        "  - read and write files\n"
+        "  - execute system commands\n"
+        "  - load and execute code\n\n"
+        "Do you trust this document?",
+        docURL,
+        operation ? operation : "perform restricted operation");
+    
+    /* Show modal question dialog with Trust/Don't Trust buttons */
+    result = questionDialog(dvip, 
+                           fullMessage,
+                           "Don't Trust",  /* defaultChoice - safer default */
+                           "Trust",        /* yesLabel */
+                           "Don't Trust",  /* noLabel */
+                           NULL);          /* cancelLabel */
+    
+    if (result && strcmp(result, "Trust") == 0) {
+        return 1;  /* User trusted */
+    }
+    
+    return 0;  /* User denied or closed dialog */
+}
+
+/*
+ * initSecurityDialogCallback() - register security dialog with viola engine.
+ * Call this once during VW initialization.
+ */
+void initSecurityDialogCallback(void)
+{
+    fprintf(stderr, "[SEC DEBUG] initSecurityDialogCallback: registering callback\n");
+    ViolaRegisterSecurityCallback(securityQuestionDialog);
+    fprintf(stderr, "[SEC DEBUG] initSecurityDialogCallback: done\n");
 }

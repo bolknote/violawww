@@ -36,7 +36,7 @@
 
 		stat = loadObjFile(path, objFileName);
 
-		system(concat("rm -f ", localFile));
+		send("wwwSecurity", "rmTmpFile", localFile);
 
 		if (stat <= 0) {
 			print("failed to load obj file {", objFileName,

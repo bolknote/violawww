@@ -17,6 +17,7 @@
 #include "cl_generic.h"
 #include "ast.h"
 #include "attr.h"
+#include "cl_cosmic.h"
 #include "discovery.h"
 #include "cexec.h"
 #include "cgen.h"
@@ -1375,13 +1376,10 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
  *
  */
 long meth_generic_HTTPGet(VObj* self, Packet* result, int argc, Packet argv[]) {
-    /* now... is this a leak? this method can be called by
-     * imgNodeRefInc.. only for images, so ... probably quite safe.
+    /* HTTPGet is the core of browser functionality - must be allowed for all objects.
+     * Security is enforced on what the loaded content can DO (system, pipe, etc),
+     * not on loading content itself.
      */
-    if (self)
-        if (notSecure(self))
-            return 0;
-
     char* src = PkInfo2Str(&argv[0]);
 
     /* Safety check: validate src */
@@ -1467,8 +1465,7 @@ long int helper_buildingHTML(Packet* result, VObj* obj, char* url, long width, i
  *
  */
 long meth_generic_HTTPGetNParse(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
-        return 0;
+    /* Core browser functionality - allowed for all objects */
     return helper_buildingHTML(result, PkInfo2Obj(&argv[1]), PkInfo2Str(&argv[0]),
                                PkInfo2Int(&argv[2]), HTTP_METHOD_GET, NULL);
 }
@@ -1477,8 +1474,7 @@ long meth_generic_HTTPGetNParse(VObj* self, Packet* result, int argc, Packet arg
  * HTTPPost(url, parentForBuiltObjs, width, post-data)
  */
 long meth_generic_HTTPPost(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
-        return 0;
+    /* Core browser functionality - allowed for all objects */
     return helper_buildingHTML(result, PkInfo2Obj(&argv[1]), PkInfo2Str(&argv[0]),
                                PkInfo2Int(&argv[2]), HTTP_METHOD_POST, PkInfo2Str(&argv[3]));
 }
@@ -1488,8 +1484,7 @@ long meth_generic_HTTPPost(VObj* self, Packet* result, int argc, Packet argv[]) 
  * HTTPPost(url, parentForBuiltObjs, width, post-data)
  */
 long meth_generic_HTTPSubmit(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
-        return 0;
+    /* Core browser functionality - allowed for all objects */
     return helper_buildingHTML(result, PkInfo2Obj(&argv[1]), PkInfo2Str(&argv[0]),
                                PkInfo2Int(&argv[2]), HTTP_METHOD_SUBMIT, PkInfo2Str(&argv[3]));
 }
@@ -2140,6 +2135,8 @@ long meth_generic_discoveryBroadcast(VObj* self, Packet* result, int argc, Packe
     int i;
     
     clearPacket(result);
+    /* Discovery broadcast is internal ViolaWWW sync - not dangerous */
+    
     if (argc < 2) return 0;
     
     id = PkInfo2Str(&argv[0]);
@@ -2655,6 +2652,7 @@ long meth_generic_deepObjectListSend(VObj* self, Packet* result, int argc, Packe
  * defineNewFont(font#, fontName, XFontName)
  */
 long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet argv[]) {
+    /* Font definitions are needed for rendering - not dangerous */
     clearPacket(result);
     result->info.i =
         GLDefineNewFont(fontInfo, PkInfo2Int(&argv[0]), PkInfo2Str(&argv[1]), PkInfo2Str(&argv[2]));
@@ -2675,11 +2673,30 @@ long meth_generic_delay(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_generic_deleteFile(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
-        return 0;
+    char* path = PkInfo2Str(&argv[0]);
+    
     clearPacket(result);
     result->type = PKT_INT;
-    result->info.i = unlink(PkInfo2Str(&argv[0]));
+    
+    /* Allow deletion of temp files without prompt */
+    if (path && (strncmp(path, "/tmp/", 5) == 0 || 
+                 strncmp(path, "/var/tmp/", 9) == 0 ||
+                 strncmp(path, "/var/folders/", 13) == 0)) {
+        /* Block path traversal in temp paths */
+        if (strstr(path, "..") != NULL) {
+            fprintf(stderr, "Security: path traversal blocked in deleteFile\n");
+            result->info.i = -1;
+            return 0;
+        }
+        result->info.i = unlink(path);
+        return 1;
+    }
+    
+    /* Non-temp files require user confirmation */
+    if (notSecureWithPrompt(self, path ? path : "delete file"))
+        return 0;
+    
+    result->info.i = unlink(path);
     return 1;
 }
 
@@ -2766,7 +2783,8 @@ long meth_generic_environVar(VObj* self, Packet* result, int argc, Packet argv[]
  */
 long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* scriptCode;
-    
+    /* execScript is needed for objects to function.
+     * Security is enforced at individual dangerous method level (system, pipe, etc). */
     if (argc < 1) {
         result->type = PKT_INT;
         result->info.i = 0;
@@ -3092,6 +3110,7 @@ long meth_generic_get(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_generic_getResource(VObj* self, Packet* result, int argc, Packet argv[]) {
+    /* X11 resources are needed for fonts/colors - not dangerous */
     clearPacket(result);
     result->info.s = GLGetResource(PkInfo2Str(&argv[0]));
     result->canFree = 0;
@@ -3540,12 +3559,20 @@ long meth_generic_objectPosition(VObj* self, Packet* result, int argc, Packet ar
  */
 long meth_generic_loadFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char *cp, *retStrp, *path;
-
-    if (notSecure(self))
-        return 0;
-
+    char reasonBuf[1024];
+    
     result->type = PKT_STR;
     cp = PkInfo2Str(&argv[0]);
+    
+    /* Security check - reading local files can leak sensitive data */
+    if (cp) {
+        snprintf(reasonBuf, sizeof(reasonBuf), "read file: %s", cp);
+        if (notSecureWithPrompt(self, reasonBuf)) {
+            result->info.s = "";
+            result->canFree = 0;
+            return 0;
+        }
+    }
     if (!cp) {
         result->info.s = "";
         result->canFree = 0;
@@ -3865,8 +3892,15 @@ long meth_generic_pipe(VObj* self, Packet* result, int argc, Packet argv[]) {
     int c;
     FILE* fp;
     char* buffp;
+    char reasonBuf[512];
+    char* cmd = (argc > 0) ? PkInfo2Str(&argv[0]) : "(no command)";
 
     clearPacket(result);
+
+    /* Security: untrusted objects cannot execute shell commands via pipe */
+    snprintf(reasonBuf, sizeof(reasonBuf), "pipe(\"%s\")", cmd);
+    if (notSecureWithPrompt(self, reasonBuf))
+        return 0;
 
     fp = popen(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]));
     if (!fp) {
@@ -4118,8 +4152,11 @@ long meth_generic_replaceStrQ(VObj* self, Packet* result, int argc, Packet argv[
  */
 long meth_generic_saveFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* cp;
-
-    if (notSecure(self))
+    char reasonBuf[512];
+    char* path = PkInfo2Str(&argv[0]);
+    
+    snprintf(reasonBuf, sizeof(reasonBuf), "saveFile(\"%s\")", path ? path : "(unknown)");
+    if (notSecureWithPrompt(self, reasonBuf))
         return 0;
 
     result->type = PKT_INT;
@@ -4332,12 +4369,26 @@ long helper_generic_set(VObj* self, Packet* result, int argc, Packet argv[], lon
         }
     }
 
-    case STR_security:
-        result->info.i = PkInfo2Int(&argv[1]);
-        helper_setSecurity(self, result->info.i);
+    case STR_security: {
+        long newLevel = PkInfo2Int(&argv[1]);
+        long currentLevel = GET_security(self);
+        
+        /* Security: block privilege escalation from untrusted (1) to trusted (0) */
+        if (currentLevel > 0 && newLevel == 0) {
+            fprintf(stderr, "Security: privilege escalation denied for '%s'\n",
+                GET_name(self));
+            result->info.i = currentLevel;
+            result->type = PKT_INT;
+            result->canFree = 0;
+            return 0;
+        }
+        
+        result->info.i = newLevel;
+        helper_setSecurity(self, newLevel);
         result->type = PKT_INT;
         result->canFree = 0;
         return 1;
+    }
 
     case STR_script: {
         union PCode* pcode = GET__script(self);
@@ -4383,7 +4434,10 @@ long meth_generic_set(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_generic_sendToInterface(VObj* self, Packet* result, int argc, Packet argv[]) {
     int i;
-    char** arg = (char**)malloc(argc * sizeof(char*));
+    char** arg;
+    /* UI messages are needed for normal operation - not dangerous */
+    
+    arg = (char**)malloc(argc * sizeof(char*));
 
     for (i = 0; i < argc; i++)
         arg[i] = saveString(PkInfo2Str(&argv[i]));
@@ -4732,8 +4786,18 @@ long meth_generic_strlen(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_generic_system(VObj* self, Packet* result, int argc, Packet argv[]) {
     int i;
+    char reasonBuf[1024];
+    int pos = 0;
 
-    if (notSecure(self))
+    pos = snprintf(reasonBuf, sizeof(reasonBuf), "system(");
+    for (i = 0; i < argc && pos < sizeof(reasonBuf) - 10; i++) {
+        char* cmd = PkInfo2Str(&argv[i]);
+        if (i > 0) pos += snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, ", ");
+        pos += snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, "\"%s\"", cmd ? cmd : "");
+    }
+    snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, ")");
+    
+    if (notSecureWithPrompt(self, reasonBuf))
         return 0;
 
     clearPacket(result);
@@ -4903,6 +4967,9 @@ long meth_generic_violaPath(VObj* self, Packet* result, int argc, Packet argv[])
         result->info.s = SaveString(buff);
         result->canFree = PK_CANFREE_STR;
     } else if (argc == 1) {
+        /* Security: untrusted objects cannot modify object search path */
+        if (notSecureWithPrompt(self, "modify object search path"))
+            return 0;
         result->type = PKT_INT;
         result->canFree = 0;
         if ((result->info.i = setViolaPath(PkInfo2Str(&argv[0]))) > 0)
@@ -4989,6 +5056,9 @@ long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet ar
     int picID;
     TFPic *pics, *pic;
     char* fname = PkInfo2Str(&argv[1]);
+    char msgbuf[256];
+
+    /* Loading images is core browser functionality - not dangerous */
 
     pics = (TFPic*)GET__content(obj);
     pic = tfed_addPicFromFile(&pics, fname /*should be URL*/, fname);

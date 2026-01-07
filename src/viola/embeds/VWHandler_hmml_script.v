@@ -69,7 +69,7 @@
 
 		tweak(docObj, concat("set(\"name\", \"", docName, "\");"));
 
-		system(concat("rm -f ", tmpFile));
+		send("wwwSecurity", "rmTmpFile", tmpFile);
 
 		return docName;
 	break;

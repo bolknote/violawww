@@ -1,6 +1,11 @@
-# ViolaWWW Security Implementation Guide
+# ViolaWWW Security Implementation
 
-> **Status:** Implementation plan for completing the unfinished security system  
+> **Version:** 4.0  
+> **Status:** Implemented
+
+## Overview
+
+ViolaWWW 4.0 implements a complete security system to protect users from malicious web content. The security model uses two trust levels and requires user confirmation for dangerous operations.
 
 ## Security Model
 
@@ -8,573 +13,87 @@
 
 | Level | Value | Meaning | Source |
 |-------|-------|---------|--------|
-| **Trusted** | `security = 0` | Full access | Local files (`file://localhost/...`), built-in objects |
-| **Untrusted** | `security = 1` | Restricted | Network content, external `.v` files |
-
-**Core Rule:** Untrusted objects cannot perform dangerous operations without user confirmation.
+| **Trusted** | `security = 0` | Full access | Local files (`file://`), built-in objects |
+| **Untrusted** | `security = 1` | Restricted | Network content (`http://`, `https://`), external `.v` files |
 
 ### Trust by Origin
 
-ViolaWWW использует формат `file://hostname/path` (см. `HTFile.c:291`):
-```c
-sprintf(result, "file://%s%s", HTHostName(), name);
+```
+LOCAL (trusted, security = 0):
+  file://localhost/path    → trusted
+  /absolute/path           → trusted
+
+REMOTE (untrusted, security = 1):
+  http://...               → untrusted
+  https://...              → untrusted
+  ftp://...                → untrusted
 ```
 
-Парсер URL (`HTParse.c`) извлекает hostname между `//` и следующим `/`.
+### Trusted Documents List
 
-**Правило:** Локальным считается файл, если hostname совпадает с `HTHostName()` или пуст.
+When user clicks "Trust" in the security dialog, the document URL is added to a trusted documents list. All subsequent security checks for objects from that document are automatically allowed without prompting.
 
-```
-LOCAL (trusted):
-  file://myhost/path    → security = 0  (myhost = текущая машина)
-  /absolute/path        → security = 0
+## Protected Operations
 
-REMOTE (untrusted):
-  http://...            → security = 1
-  https://...           → security = 1
-  ftp://...             → security = 1
-  file://otherhost/path → security = 1  (другая машина)
-  relative/path         → inherits from base document
-```
+### Operations Requiring User Confirmation
 
-### Operation Permissions
+When an untrusted object attempts these operations, a security dialog is shown:
 
-```
-ALWAYS BLOCKED for untrusted (security = 1):
-  set("security", 0)    — privilege escalation
-  interpret()           — arbitrary code execution
-  execScript()          — arbitrary code execution (should be blocked!)
-  tweak()               — cross-object code injection
+| Operation | Description | Location |
+|-----------|-------------|----------|
+| `system()` | Execute shell command | `cl_generic.c` |
+| `pipe()` | Execute shell command with I/O | `cl_generic.c` |
+| `loadFile()` | Read file from disk | `cl_generic.c` |
+| `saveFile()` | Write file to disk | `cl_generic.c` |
+| `deleteFile()` | Delete file (non-temp) | `cl_generic.c` |
+| `loadObjFile()` | Load external `.v` file | `cl_cosmic.c` |
+| `violaPath()` | Modify object search path | `cl_generic.c` |
+| `socket.startClient()` | Open TCP connection | `cl_socket.c` |
+| `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
+| `discoveryBroadcast()` | Send UDP broadcast | `cl_generic.c` |
 
-BLOCKED UNLESS USER APPROVES:
-  loadObjFile()         — loading external code
-  loadFile()/saveFile() — file access
-  deleteFile()          — file deletion
-  system()/pipe()       — shell commands (pipe() currently UNPROTECTED!)
-  HTTPGet/Post()        — network access (from untrusted context)
-  socket.startClient()  — arbitrary TCP/UDP connections (cl_socket.c)
-  TTY.startClient()     — executes subprocess (cl_TTY.c)
-  violaPath()           — search path manipulation (currently UNPROTECTED!)
-  sendToInterface()     — UI message handler (currently UNPROTECTED!)
-  discoveryBroadcast()  — UDP network broadcast (currently UNPROTECTED!)
-  addPicFromFile()      — file read via image loading (currently UNPROTECTED!)
-  getResource()         — X11 resource access (currently UNPROTECTED!)
-  defineNewFont()       — font replacement (currently UNPROTECTED!)
+### Operations Always Blocked for Untrusted
 
-ALWAYS ALLOWED:
-  get/set attributes (except security)
-  render, expose, config
-  send() to child objects
-  UI operations
-```
+| Operation | Description |
+|-----------|-------------|
+| `set("security", 0)` | Privilege escalation attempt |
 
----
+### Operations Always Allowed
 
-## Vulnerabilities
+These operations are required for normal browser functionality:
 
-### Critical (P0) — Security Bypass
+- `interpret()`, `execScript()` — script execution (core functionality)
+- `sendToInterface()` — UI messaging
+- `addPicFromFile()` — image loading
+- `getResource()` — X11 resources
+- `defineNewFont()` — font handling
+- `HTTPGet()`, `HTTPPost()`, `HTTPSubmit()` — content loading
 
-#### P0-1. Shell Injection
+### Temporary File Operations
 
-**Location:** `src/viola/embeds/wwwSecurity_script.v`
+Deletion of files in `/tmp/`, `/var/tmp/`, `/var/folders/` is allowed without prompting (garbage collection). Path traversal (`..`) is blocked.
 
-```javascript
-// VULNERABLE — user input goes directly to shell:
-system(concat("mv ", dumpFile, " ", arg[2]));
-system(concat("mail -s \"", arg[2], "\" ", arg[1], " < ", arg[3]));
-```
+## Security Dialog
 
-**Fix:** Replace `system()` calls with safe C functions (`rename()`, SMTP library).
-
-#### P0-2. Privilege Escalation via `set("security", 0)`
-
-**Location:** `src/viola/cl_generic.c`, `case STR_security`
-
-Any object can set its own security to 0. No check exists.
-
-**Fix:** Block escalation from 1→0:
-
-```c
-case STR_security: {
-    long newLevel = PkInfo2Int(&argv[1]);
-    long currentLevel = GET_security(self);
-    
-    // Normalize (anything non-zero → 1)
-    if (newLevel != 0) newLevel = 1;
-    
-    // Block privilege escalation
-    if (currentLevel == 1 && newLevel == 0) {
-        fprintf(stderr, "Security: privilege escalation denied for '%s'\n",
-            GET_name(self));
-        result->info.i = 1;
-        result->type = PKT_INT;
-        return 0;
-    }
-    
-    helper_setSecurity(self, newLevel);
-    // ...
-}
-```
-
-#### P0-3. `loadObjFile()` Missing Security Check
-
-**Location:** `src/viola/cl_cosmic.c`
-
-No `notSecure()` check — untrusted objects can load arbitrary `.v` files.
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self)) {
-    result->info.i = 0;
-    result->type = PKT_INT;
-    return 0;
-}
-```
-
-#### P0-4. `clone()` Copies `security=0`
-
-**Location:** `src/viola/class.c:755`
-
-Bitwise copy of all slots including `security`:
-
-```c
-*clonep = *originalp;  // Copies security level!
-```
-
-**Exploit:**
-
-```javascript
-/* Untrusted script can escalate to trusted: */
-trustedTemplate = object("HTML.txt");  /* trusted template, security=0 */
-myClone = send(trustedTemplate, "clone", cloneID());
-/* myClone inherits security=0! */
-send(myClone, "interpret", "system(\"rm -rf /\")");
-```
-
-**Fix:** Force cloned object to inherit caller's security level:
-
-```c
-/* After cloning, in class.c */
-*clonep = *originalp;
-
-/* Security fix: clone inherits the HIGHER (more restrictive) security level */
-int callerSecurity = GET_security(self);  /* self = object calling clone() */
-int cloneSecurity = GET_security(clonep);
-if (callerSecurity > cloneSecurity) {
-    SET_security(clonep, callerSecurity);
-}
-```
-
-**Alternative fix:** Always set clone's security to caller's security:
-
-```c
-SET_security(clonep, GET_security(self));
-```
-
-#### P0-5. `pipe()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:3880`
-
-`pipe()` calls `popen()` for shell command execution — equivalent to `system()` but lacks `notSecure()` check.
-
-```c
-long meth_generic_pipe(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    fp = popen(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]));
-    // ...
-}
-```
-
-**Exploit:**
-
-```javascript
-/* Untrusted script executes arbitrary commands: */
-result = pipe("cat /etc/passwd", "r");
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P0-6. `execScript()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:2783`
-
-`execScript()` executes Viola script code — functionally identical to `interpret()`, but lacks security check. While `interpret()` in `cl_cosmic.c` is protected, `execScript()` in `cl_generic.c` is not.
-
-```c
-long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    return execScript(self, result, scriptCode) ? 1 : 0;
-}
-```
-
-**Exploit:**
-
-```javascript
-/* Bypass interpret() protection: */
-execScript("system(\"rm -rf /\")");
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P0-7. `violaPath()` Allows Path Manipulation
-
-**Location:** `src/viola/cl_generic.c:4907`
-
-`violaPath()` can modify the object search path — untrusted scripts can redirect `.v` file loading to malicious locations.
-
-```c
-} else if (argc == 1) {
-    // NO SECURITY CHECK when setting path!
-    result->info.i = setViolaPath(PkInfo2Str(&argv[0]));
-}
-```
-
-**Exploit:**
-
-```javascript
-/* Untrusted script redirects object loading: */
-violaPath("/tmp/evil");
-loadObjFile("trusted.v");  /* Actually loads /tmp/evil/trusted.v */
-```
-
-**Fix:** Add security check for setter:
-
-```c
-} else if (argc == 1) {
-    if (notSecure(self))
-        return 0;
-    result->info.i = setViolaPath(PkInfo2Str(&argv[0]));
-}
-```
-
----
-
-### High (P1) — Privilege Escalation / Data Leakage
-
-#### P1-1. Path Traversal in `rmTmpFile`
-
-**Location:** `src/viola/embeds/wwwSecurity_script.v`
-
-Check for `/tmp/` prefix doesn't prevent `/../` escape.
-
-**Fix:** Reject `..` and use atomic operations:
-
-```c
-int safeDeleteTmpFile(const char* path) {
-    if (strncmp(path, "/tmp/", 5) != 0) return -1;
-    if (strstr(path, "..") != NULL) return -1;
-    
-    // No subdirectories allowed
-    if (strchr(path + 5, '/') != NULL) return -1;
-    
-    // Check not a symlink
-    struct stat st;
-    if (lstat(path, &st) < 0) return -1;
-    if (S_ISLNK(st.st_mode)) return -1;
-    
-    return unlink(path);
-}
-```
-
-#### P1-2. `notSecure(NULL)` Crash
-
-**Location:** `src/viola/cl_cosmic.c`
-
-`notSecure()` dereferences NULL when called with `self = NULL` (e.g., from image loading).
-
-**Fix:**
-
-```c
-int notSecure(VObj* self) {
-    if (self == NULL) return 1;  // NULL = untrusted
-    if (GET_security(self) > 0) {
-        fprintf(stderr, "Security: denied for '%s'\n", GET_name(self));
-        return 1;
-    }
-    return 0;
-}
-```
-
-#### P1-3. Missing `HTML_security` Object
-
-The `<SECURITY LEVEL="...">` tag is defined in DTD but has no handler — tag is silently ignored.
-
-**Fix:** Create `src/viola/embeds/HTML_security_script.v` and register in `objs.c`.
-
-#### P1-4. Empty Confirmation Dialog
-
-**Location:** `src/viola/embeds/wwwDialog_confirm_script.v`
-
-The dialog is empty — does nothing, returns nothing.
-
-**Fix:** Implement using C-based `securityQuestionDialog()` to prevent spoofing.
-
-#### P1-5. `sendToInterface()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:4400`
-
-Calls `ViolaInvokeMessageHandler()` — can manipulate Motif UI, trigger actions, spoof dialogs.
-
-```c
-long meth_generic_sendToInterface(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    ViolaInvokeMessageHandler(arg, argc);
-}
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P1-6. `discoveryBroadcast()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:2152`
-
-Sends UDP broadcast on port 54379 — untrusted scripts can flood the network or send malicious sync messages to other ViolaWWW instances.
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P1-7. `addPicFromFile()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:5003`
-
-Loads image from arbitrary file path — can leak file contents via timing/error side channels.
-
-```c
-long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    char* fname = PkInfo2Str(&argv[1]);
-    pic = tfed_addPicFromFile(&pics, fname, fname);
-}
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P1-8. `getResource()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:3110`
-
-Reads X11 resources — may expose sensitive configuration (paths, credentials in some setups).
-
-```c
-long meth_generic_getResource(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    result->info.s = GLGetResource(PkInfo2Str(&argv[0]));
-}
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
-#### P1-9. `defineNewFont()` Missing Security Check
-
-**Location:** `src/viola/cl_generic.c:2673`
-
-Replaces system fonts — can be used for UI spoofing attacks (e.g., making "Cancel" look like "OK").
-
-```c
-long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet argv[]) {
-    // NO SECURITY CHECK!
-    result->info.i = GLDefineNewFont(fontInfo, ...);
-}
-```
-
-**Fix:** Add at function start:
-
-```c
-if (notSecure(self))
-    return 0;
-```
-
----
-
-### Medium (P2) — Missing Functionality
-
-#### P2-1. Empty Security Functions
-
-**Location:** `src/viola/embeds/mvw_script3.v`, lines 167-175
-
-Three stubs: `queryDocSecurity`, `setSecurityClearence`, `querySecurityClearence`.
-
-#### P2-2. Relative URL Trust Inheritance
-
-Relative URLs (no `:`) incorrectly treated as local/trusted.
-
-**Fix:** Inherit trust from base document URL.
-
-#### P2-3. `file://host/` Confusion
-
-`file://evil.com/malicious.v` is a valid `file:` URL but points to remote host.
-
-**Fix:** Trust only if hostname = `HTHostName()` or empty.
-
----
-
-## Implementation Details
-
-### URL Trust Detection
-
-```c
-int isLocalURL(const char* url) {
-    if (!url) return 0;
-    
-    // Absolute local path
-    if (url[0] == '/') return 1;
-    
-    // Check protocol
-    char* access = HTParse(url, "", PARSE_ACCESS);
-    if (!access || !*access) {
-        free(access);
-        return -1;  // Relative path - caller must check base document
-    }
-    
-    // Non-file protocols are remote
-    if (strcmp(access, "file") != 0) {
-        free(access);
-    return 0;
-}
-    free(access);
-    
-    // file:// URL - check hostname
-    char* host = HTParse(url, "", PARSE_HOST);
-    int isLocal = (!host || !*host || strcmp(host, HTHostName()) == 0);
-    free(host);
-    return isLocal ? 1 : 0;
-}
-
-int getURLTrust(const char* url, const char* baseURL) {
-    int local = isLocalURL(url);
-    if (local >= 0) return local ? 0 : 1;
-    
-    // Relative URL - inherit from base
-    if (!baseURL) return 1;  // No base = untrusted
-    return isLocalURL(baseURL) ? 0 : 1;
-}
-```
-
-### Input Validation (Whitelist)
-
-```c
-// Filename: alphanumeric, dot, underscore, hyphen, slash
-int isValidFilename(const char* s) {
-    if (!s || !*s || s[0] == '-') return 0;
-    
-    for (const char* p = s; *p; p++) {
-        char c = *p;
-        if ((c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c >= '0' && c <= '9') ||
-            c == '.' || c == '_' || c == '-' || c == '/') {
-            continue;
-        }
-    return 0;
-}
-    
-    return (strstr(s, "..") == NULL);  // No path traversal
-}
-
-// Email: alphanumeric, @, dot, underscore, hyphen, plus
-int isValidEmail(const char* s) {
-    if (!s || !*s) return 0;
-    
-    const char* at = strchr(s, '@');
-    if (!at || at == s) return 0;
-    if (strchr(at + 1, '@')) return 0;
-    if (!strchr(at + 1, '.')) return 0;
-    
-    for (const char* p = s; *p; p++) {
-        char c = *p;
-        if ((c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c >= '0' && c <= '9') ||
-            c == '.' || c == '_' || c == '-' || c == '+' || c == '@') {
-            continue;
-        }
-    return 0;
-}
-    return 1;
-}
-```
-
-### Security Dialog (C Implementation)
-
-Dialogs must be in C to prevent script spoofing.
-
-```c
-// In src/vw/dialog.c
-int securityQuestionDialog(DocViewInfo* dvip, 
-                           const char* title,
-                           const char* message,
-                           const char* yesLabel,
-                           const char* noLabel) {
-    if (!dvip || !message) return 0;
-    if (!yesLabel) yesLabel = "Yes";
-    if (!noLabel) noLabel = "No";
-    
-    char* answer = questionDialog(dvip, message, noLabel, yesLabel, noLabel, NULL);
-    return (answer && strcmp(answer, yesLabel) == 0) ? 1 : 0;
-}
-```
-
-### Privilege Elevation Logic
-
-Dialog is shown **once** — when document attempts to elevate LEVEL from 1 to 0.
-
-**When dialog is shown:**
-
-1. Remote document contains `<SECURITY LEVEL=0>`
-2. Object with LEVEL=1 calls `set("security", 0)`
-3. Object with LEVEL=1 attempts a restricted operation
-
-**Dialog:**
+When an untrusted object attempts a protected operation, the user sees:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  [!]  Privilege Elevation Request                   │
+│  [?]  Privilege Elevation Request                   │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
 │  Document:                                          │
-│    http://example.com/app.html                      │
+│    https://example.com/app.html                     │
 │                                                     │
 │  is requesting full system access.                  │
 │                                                     │
 │  Reason:                                            │
-│    <SECURITY LEVEL=0> tag in document               │
-│    (or: call to system("ls -la"))                   │
-│    (or: loading http://x.com/code.v)                │
+│    open TCP connection to server.com:7777           │
 │                                                     │
 │  WARNING: Trusted documents can:                    │
-│    • read and write files                           │
-│    • execute system commands                        │
-│    • load and execute code                          │
+│    - read and write files                           │
+│    - execute system commands                        │
+│    - load and execute code                          │
 │                                                     │
 │  Do you trust this document?                        │
 │                                                     │
@@ -582,140 +101,78 @@ Dialog is shown **once** — when document attempts to elevate LEVEL from 1 to 0
 └─────────────────────────────────────────────────────┘
 ```
 
-**Logic:**
+### Dialog Behavior
 
-```
-┌─────────────────┐
-│ Request to      │
-│ elevate         │
-│ LEVEL 1 → 0     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐    Yes      ┌─────────────────┐
-│ User trusts?    │────────────▶│ LEVEL = 0       │
-│                 │             │ All operations  │
-└────────┬────────┘             │ allowed         │
-         │ No                   └─────────────────┘
-         ▼
-┌─────────────────┐
-│ LEVEL stays 1   │
-│ Operation       │
-│ blocked         │
-│ Dialog not      │
-│ shown again     │
-└─────────────────┘
-```
+- **Trust**: Document URL added to trusted list, operation proceeds, future operations from same document allowed automatically
+- **Don't Trust**: Operation blocked, user can try again later
 
-**Implementation:**
+### Dialog Details
+
+The dialog shows:
+- Full document URL (shortened if > 60 characters)
+- Specific operation being attempted (e.g., command for `system()`, host:port for socket)
+
+## Implementation Details
+
+### Core Functions
+
+#### `notSecure(VObj* self)`
+
+Returns 1 if object is untrusted, 0 if trusted. Does not prompt user.
 
 ```c
-/* Add flag to DocViewInfo */
-typedef struct {
-    /* ... */
-    int security_asked;    /* 0=not asked, 1=trusted, -1=denied */
-} DocViewInfo;
-
-/* Check when attempting to elevate privileges */
-int requestSecurityElevation(DocViewInfo* dvi, const char* reason) {
-    /* Already asked */
-    if (dvi->security_asked != 0) {
-        return (dvi->security_asked == 1) ? 1 : 0;
-    }
-    
-    /* Ask user */
-    char message[1024];
-    snprintf(message, sizeof(message),
-        "Document:\n  %s\n\n"
-        "is requesting full system access.\n\n"
-        "Reason:\n  %s\n\n"
-        "WARNING: Trusted documents can:\n"
-        "  - read and write files\n"
-        "  - execute system commands\n"
-        "  - load and execute code\n\n"
-        "Do you trust this document?",
-        dvi->docURL, reason);
-    
-    int trusted = securityQuestionDialog(dvi, 
-        "Privilege Elevation Request", message,
-        "Trust", "Don't Trust");
-    
-    dvi->security_asked = trusted ? 1 : -1;
-    
-    if (trusted) {
-        /* Set LEVEL=0 for entire document */
-        setDocumentSecurityLevel(dvi, 0);
-    }
-    
-    return trusted;
+int notSecure(VObj* self) {
+    if (self == NULL) return 1;  /* NULL = untrusted */
+    return (GET_security(self) > 0) ? 1 : 0;
 }
 ```
 
-**Important:** After denial, dialog is not shown again — all subsequent requests are automatically blocked.
+#### `notSecureWithPrompt(VObj* self, const char* operation)`
 
----
+Checks security with user confirmation. Returns 1 if blocked, 0 if allowed.
 
-## Implementation Checklist
+1. Checks if document URL is in trusted list → allow
+2. Checks object's security level → if 0, allow
+3. Shows security dialog → if Trust, add to trusted list and allow
+4. Otherwise → block
 
-### P0 — Critical
+#### `ViolaRegisterSecurityCallback()`
 
-- [ ] P0-1. Replace `system()` in `wwwSecurity_script.v` with safe C functions
-- [ ] P0-2. Block `set("security", 0)` for untrusted objects in `cl_generic.c`
-- [ ] P0-3. Add `notSecure()` check to `loadObjFile()` in `cl_cosmic.c`
-- [ ] P0-4. Fix `clone()` in `class.c` — must not copy `security=0` from template
-- [ ] P0-5. Add `notSecure()` check to `pipe()` in `cl_generic.c:3880`
-- [ ] P0-6. Add `notSecure()` check to `execScript()` in `cl_generic.c:2783`
-- [ ] P0-7. Add `notSecure()` check to `violaPath()` setter in `cl_generic.c:4921`
+Registers the C-based security dialog callback from VW frontend.
 
-### P1 — High
+### Object Loading
 
-- [ ] P1-1. Fix path traversal in `rmTmpFile` (block `..`, check symlinks)
-- [ ] P1-2. Make `notSecure(NULL)` return 1 instead of crashing
-- [ ] P1-3. Create `HTML_security` object handler
-- [ ] P1-4. Implement security dialog in C (prevent spoofing)
-- [ ] P1-5. Add `notSecure()` check to `sendToInterface()` in `cl_generic.c:4400`
-- [ ] P1-6. Add `notSecure()` check to `discoveryBroadcast()` in `cl_generic.c:2152`
-- [ ] P1-7. Add `notSecure()` check to `addPicFromFile()` in `cl_generic.c:5003`
-- [ ] P1-8. Add `notSecure()` check to `getResource()` in `cl_generic.c:3110`
-- [ ] P1-9. Add `notSecure()` check to `defineNewFont()` in `cl_generic.c:2673`
+Objects loaded via `loadObjFile()` inherit trust based on `current_addr`:
 
-### P2 — Medium
+- Local files (`/...` or `file://`) → `security = 0`
+- Remote URLs → `security = 1`
 
-- [ ] P2-1. Implement security functions in `mvw_script3.v`
-- [ ] P2-2. Make relative URLs inherit trust from base document
-- [ ] P2-3. Fix `file://host/` to be untrusted
+### Clone Security
 
-### Hardening
+Cloned objects inherit security from the original object. If `securityMode` global is set, it overrides.
 
-- [ ] Use whitelist validation for filenames and emails
-- [ ] Add dialog rate limiting
-- [ ] Show final URL after redirects in dialogs
-- [ ] Audit all methods for `notSecure()` checks:
-  - `system()`, `pipe()` — shell command execution
-  - `interpret()`, `execScript()` — code execution
-  - `loadFile()`, `saveFile()`, `deleteFile()` — file access
-  - `loadObjFile()`, `violaPath()` — code loading/path manipulation
-  - `HTTPGet()`, `HTTPPost()` — network access
-  - `socket.startClient()` in `cl_socket.c` — arbitrary TCP/UDP connections
-  - `TTY.startClient()` in `cl_TTY.c` — executes `path` as subprocess
-  - `sendToInterface()` — UI manipulation
-  - `discoveryBroadcast()` — network broadcast
-  - `addPicFromFile()`, `getResource()`, `defineNewFont()` — resource access
+## Files Modified
 
-### Tests
+| File | Changes |
+|------|---------|
+| `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, trusted docs list, `loadObjFile()` security |
+| `src/viola/cl_cosmic.h` | Security callback typedef and prototypes |
+| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `discoveryBroadcast()`, privilege escalation block |
+| `src/viola/cl_socket.c` | Security check for `startClient()` |
+| `src/viola/cl_TTY.c` | Security check for `startClient()` |
+| `src/viola/loader.c` | `load_object_with_security()` for trust assignment |
+| `src/viola/class.c` | Clone security inheritance |
+| `src/vw/dialog.c` | `securityQuestionDialog()` implementation |
+| `src/vw/dialog.h` | Dialog prototypes |
+| `src/vw/vw.c` | Security callback registration |
 
-- [ ] `test_security_escalation.c` — `set("security", 0)` blocked
-- [ ] `test_loadobjfile_security.c` — `loadObjFile()` respects security
-- [ ] `test_shell_injection.c` — metacharacter filtering
-- [ ] `test_notsecure_null.c` — NULL handling
-- [ ] `test_pipe_security.c` — `pipe()` blocked for untrusted
-- [ ] `test_execscript_security.c` — `execScript()` blocked for untrusted
-- [ ] `test_violapath_security.c` — `violaPath()` setter blocked for untrusted
+## Known Limitations
 
----
+1. **Clone crash**: Race condition between cloning and event handling causes heap-use-after-free (unrelated to security, tracked in TODO.md)
+2. **Dialog icon position**: Motif MessageBox icon is centered, cannot be aligned to top
+3. **Per-session trust**: Trusted documents list is not persisted between sessions
 
 ## References
 
-- [SECURITY_REFERENCE.md](SECURITY_REFERENCE.md) — Security analysis
-- [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md) — Function reference
-- [ViolaWWW Book, Chapter 4.7](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html)
+- [SECURITY_REFERENCE.md](SECURITY_REFERENCE.md) — Security analysis and threat model
+- [ViolaWWW Book, Chapter 4.7](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) — Original security design

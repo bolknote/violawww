@@ -244,8 +244,18 @@ Topics covered:
 
 ## Security
 
+### [SECURITY_IMPLEMENTATION.md](SECURITY_IMPLEMENTATION.md)
+**Complete security system implementation (v4.0).**
+
+Topics covered:
+- Two trust levels (trusted/untrusted)
+- Protected operations requiring user confirmation
+- Security dialog implementation
+- Trusted documents list
+- Files modified for security
+
 ### [SECURITY_REFERENCE.md](SECURITY_REFERENCE.md)
-Complete analysis of ViolaWWW's security architecture and identified vulnerabilities.
+Analysis of ViolaWWW's original security architecture and identified vulnerabilities (v3.x).
 
 Topics covered:
 - Security levels and privilege checking (`notSecure()`)

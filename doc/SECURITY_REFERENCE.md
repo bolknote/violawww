@@ -1,7 +1,7 @@
 # ViolaWWW Security Architecture Reference
 
 > **Documentation created in: ViolaWWW 4.0**  
-> This document describes the original security architecture from ViolaWWW v3.x (1992-1995). The security system is **incomplete and not fully functional** — see "Implementation Status" section.
+> This document describes the original security architecture from ViolaWWW v3.x (1992-1995). The security system was **incomplete and not fully functional** until v4.0 — see [SECURITY_IMPLEMENTATION.md](SECURITY_IMPLEMENTATION.md) for the completed implementation.
 
 This document provides a comprehensive analysis of ViolaWWW's security architecture, including design flaws and vulnerabilities. For detailed function signatures and parameters, see [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md).
 

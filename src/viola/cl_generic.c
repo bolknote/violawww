@@ -2094,10 +2094,13 @@ long meth_generic_bellVolume(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_discoverySetPage(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* url;
     
+    fprintf(stderr, "[DEBUG] meth_generic_discoverySetPage called, argc=%d\n", argc);
+    
     clearPacket(result);
     if (argc < 1) return 0;
     
     url = PkInfo2Str(&argv[0]);
+    fprintf(stderr, "[DEBUG] url=%s\n", url ? url : "(null)");
     if (url && *url) {
         discovery_set_page(url);
     }
@@ -4373,14 +4376,14 @@ long helper_generic_set(VObj* self, Packet* result, int argc, Packet argv[], lon
         long newLevel = PkInfo2Int(&argv[1]);
         long currentLevel = GET_security(self);
         
-        /* Security: block privilege escalation from untrusted (1) to trusted (0) */
+        /* Security: privilege escalation from untrusted (1) to trusted (0) requires user approval */
         if (currentLevel > 0 && newLevel == 0) {
-            fprintf(stderr, "Security: privilege escalation denied for '%s'\n",
-                GET_name(self));
-            result->info.i = currentLevel;
-            result->type = PKT_INT;
-            result->canFree = 0;
-            return 0;
+            if (notSecureWithPrompt(self, "elevate to trusted status")) {
+                result->info.i = currentLevel;
+                result->type = PKT_INT;
+                result->canFree = 0;
+                return 0;
+            }
         }
         
         result->info.i = newLevel;

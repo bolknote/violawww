@@ -49,6 +49,7 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `violaPath(path)` | Modify object search path | `cl_generic.c` |
 | `socket.startClient()` | Open TCP connection | `cl_socket.c` |
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
+| `set("security", 0)` | Elevate to trusted status | `cl_generic.c` |
 
 Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
 
@@ -71,12 +72,6 @@ These operations fail silently for untrusted objects without user prompt:
 | `unhash()` | Get symbol name | `cl_generic.c` |
 | `HTTPHotList*()` | Hotlist operations (Add, Delete, Get, Change, Load, Save) | `cl_generic.c` |
 | `SGML*()` | Document building (BuildDoc, BuildDocB, ReBuildDoc, setBuff) | `cl_generic.c` |
-
-### Privilege Escalation Block
-
-| Operation | Description |
-|-----------|-------------|
-| `set("security", 0)` | Direct privilege escalation — always blocked |
 
 ### Trust Inheritance
 

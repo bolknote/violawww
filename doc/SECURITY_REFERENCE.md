@@ -104,7 +104,11 @@ From [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xc
 >
 > *"Can affect operation of `interpret()` and `tweak()`."*
 
-This confirms the one-way trap was **intentional design**, not a bug. The author explicitly documented that `securityMode` can only be changed when it equals zero — once elevated, it's permanent for the session.
+**Interpretation**: "mode" here refers to the CURRENT `securityMode` value, not the argument. This means:
+- When `securityMode == 0` (unrestricted): you CAN change it to any value
+- When `securityMode > 0` (restricted): you CANNOT change it at all
+
+**The code matches the documentation exactly**. This one-way restriction is **correct security design** — it prevents untrusted code from lowering the security level. The flaw is elsewhere: the `set("security", 0)` bypass makes this protection meaningless.
 
 ### Object Creation Security
 
@@ -135,12 +139,12 @@ HTML content is processed through the SGML parser, creating objects based on tag
 <vobjf href="object.v">Load external object</vobjf>
 ```
 
-The loading process temporarily adjusts security:
+The loading process adjusts security:
 
 ```javascript
 securityMode(1);  // Make loaded objects untrusted
 send(objName, "init"); // Create objects
-securityMode(0);  // Restore safe mode
+// Note: securityMode(0) would NOT work here - once set to 1, it cannot be reset
 ```
 
 ## Identified Vulnerabilities
@@ -172,7 +176,7 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
 
 **Impact**: Untrusted objects can load arbitrary `.v` files containing malicious scripts.
 
-#### 3. Irreversible Security Mode (Intentional Design Flaw)
+#### 3. Irreversible Security Mode (Correct Design, But Ineffective)
 
 Once `securityMode` becomes non-zero, it cannot be reset:
 
@@ -183,7 +187,7 @@ if (securityMode == 0)  // One-way door
 
 The author documented this as intentional: *"Can alter securityMode value only if mode == 0"*
 
-**Impact**: A single compromised page can permanently compromise the browser for the entire session. This was meant to be a security feature (preventing untrusted code from lowering security), but combined with other vulnerabilities it becomes a denial-of-service vector.
+**This is actually correct security design** — preventing untrusted code from lowering security. However, it's rendered meaningless by the `set("security", 0)` bypass: an attacker doesn't need to change `securityMode` when they can directly set their object's `security` attribute to 0.
 
 ### Attack Scenarios
 
@@ -193,11 +197,14 @@ The author documented this as intentional: *"Can alter securityMode value only i
 2. `malicious.v` contains an object with script: `set("security", 0)`
 3. Attacker gains full privileges
 
-#### Persistent Compromise
+#### Denial of Service via securityMode
 
 1. Malicious content sets `securityMode(1)`
-2. All future objects created with `security = 1`
-3. Security mode cannot be reset to safe state
+2. All future objects created with `security = 1` (untrusted)
+3. Security mode cannot be reset — legitimate trusted operations become impossible
+4. Browser session is effectively broken until restart
+
+**Note**: This is a DoS attack, not privilege escalation. The attacker restricts the system, not gains access.
 
 ### Proof of Concept Attack Chain
 
@@ -499,7 +506,7 @@ The security system is **fundamentally incomplete**:
 |-----------|--------|
 | `notSecure()` function | ✅ Works |
 | Protected operations list | ⚠️ Incomplete (missing checks) |
-| `securityMode()` | ⚠️ One-way trap |
+| `securityMode()` | ✅ One-way restriction (correct design) |
 | `wwwSecurity` object | ⚠️ "Terribly lay back" |
 
 ### Not Implemented
@@ -586,16 +593,15 @@ When loading images (via `<IMG>` tag), the code calls `HTTPGet()` with `NULL` in
 
 **Impact**: Any `<IMG SRC="file:///etc/passwd">` would work regardless of security level.
 
-### Methods Documented as Non-Functional
+### Security Methods Documented as Non-Functional
 
-The author's documentation explicitly marks these methods as broken:
+The author's documentation marks `HTTPSubmit()` as broken:
 
 | Method | Documentation Status |
 |--------|---------------------|
-| `loadSTG()` | "Not operational" |
-| `STG()`, `STGInfo()` | "Not functional" |
-| `modalExit()` | "NOT FUNCTIONAL" |
 | `HTTPSubmit()` | "XXX NOT YET WORKING" (comment in code) |
+
+This method is in the protected operations list but was never completed.
 
 ### Missing Features
 - Sandboxing for loaded content
@@ -689,7 +695,7 @@ For educational/research purposes only:
 
 - [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
 - [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)
-- [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE) - Method documentation with security warnings ("USE WITH EXTREME CAUTION", "NOT FUNCTIONAL")
+- [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE) - Method documentation including `securityMode()` behavior and `addPicFromFile()` warning
 
 ### WWW-TALK Mailing List Archives (1994)
 
@@ -737,7 +743,7 @@ The original documentation reveals an ambitious security system design:
 Only a skeleton was implemented:
 - Basic `security` attribute on objects
 - `notSecure()` check function (but not universally applied)
-- `securityMode` global (with one-way trap bug)
+- `securityMode` global (one-way restriction works correctly)
 - Empty stubs for security functions
 - Comments describing intended functionality
 

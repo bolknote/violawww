@@ -57,7 +57,6 @@ long meth_generic_STG_attr(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_accessible(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_activeHelp(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_after(VObj* self, Packet* result, int argc, Packet argv[]);
-long meth_generic_alarm(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_append(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_argument(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_ascii(VObj* self, Packet* result, int argc, Packet argv[]);

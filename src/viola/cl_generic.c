@@ -291,7 +291,6 @@ MethodInfo meths_generic[] = {
     {STR_activeHelp, meth_generic_activeHelp},
     {STR_addPicFromFile, meth_generic_addPicFromFile},
     {STR_after, meth_generic_after},
-    {STR_alarm, meth_generic_alarm},
     {STR_append, meth_generic_append},
     {STR_argument, meth_generic_argument},
     {STR_ascii, meth_generic_ascii},
@@ -1987,21 +1986,6 @@ long meth_generic_after(VObj* self, Packet* result, int argc, Packet argv[]) {
         return 1;
     }
     result->info.i = 1;
-    return 0;
-}
-
-/*
- * alarm(?time, object, message)
- *
- * Result: unaffected
- * Return: 1 if successful, 0 if error occured
- */
-long meth_generic_alarm(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    if (argv[0].type == PKT_INT) {
-        sys_alarm((unsigned)(PkInfo2Int(&argv[0])));
-        return 1;
-    }
     return 0;
 }
 

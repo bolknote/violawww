@@ -165,6 +165,92 @@ if (callerSecurity > cloneSecurity) {
 SET_security(clonep, GET_security(self));
 ```
 
+#### P0-5. `pipe()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:3880`
+
+`pipe()` calls `popen()` for shell command execution — equivalent to `system()` but lacks `notSecure()` check.
+
+```c
+long meth_generic_pipe(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    fp = popen(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]));
+    // ...
+}
+```
+
+**Exploit:**
+
+```javascript
+/* Untrusted script executes arbitrary commands: */
+result = pipe("cat /etc/passwd", "r");
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P0-6. `execScript()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:2783`
+
+`execScript()` executes Viola script code — functionally identical to `interpret()`, but lacks security check. While `interpret()` in `cl_cosmic.c` is protected, `execScript()` in `cl_generic.c` is not.
+
+```c
+long meth_generic_execScript(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    return execScript(self, result, scriptCode) ? 1 : 0;
+}
+```
+
+**Exploit:**
+
+```javascript
+/* Bypass interpret() protection: */
+execScript("system(\"rm -rf /\")");
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P0-7. `violaPath()` Allows Path Manipulation
+
+**Location:** `src/viola/cl_generic.c:4907`
+
+`violaPath()` can modify the object search path — untrusted scripts can redirect `.v` file loading to malicious locations.
+
+```c
+} else if (argc == 1) {
+    // NO SECURITY CHECK when setting path!
+    result->info.i = setViolaPath(PkInfo2Str(&argv[0]));
+}
+```
+
+**Exploit:**
+
+```javascript
+/* Untrusted script redirects object loading: */
+violaPath("/tmp/evil");
+loadObjFile("trusted.v");  /* Actually loads /tmp/evil/trusted.v */
+```
+
+**Fix:** Add security check for setter:
+
+```c
+} else if (argc == 1) {
+    if (notSecure(self))
+        return 0;
+    result->info.i = setViolaPath(PkInfo2Str(&argv[0]));
+}
+```
+
 ---
 
 ### High (P1) — Privilege Escalation / Data Leakage
@@ -226,6 +312,100 @@ The `<SECURITY LEVEL="...">` tag is defined in DTD but has no handler — tag is
 The dialog is empty — does nothing, returns nothing.
 
 **Fix:** Implement using C-based `securityQuestionDialog()` to prevent spoofing.
+
+#### P1-5. `sendToInterface()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:4400`
+
+Calls `ViolaInvokeMessageHandler()` — can manipulate Motif UI, trigger actions, spoof dialogs.
+
+```c
+long meth_generic_sendToInterface(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    ViolaInvokeMessageHandler(arg, argc);
+}
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P1-6. `discoveryBroadcast()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:2152`
+
+Sends UDP broadcast on port 54379 — untrusted scripts can flood the network or send malicious sync messages to other ViolaWWW instances.
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P1-7. `addPicFromFile()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:5003`
+
+Loads image from arbitrary file path — can leak file contents via timing/error side channels.
+
+```c
+long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    char* fname = PkInfo2Str(&argv[1]);
+    pic = tfed_addPicFromFile(&pics, fname, fname);
+}
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P1-8. `getResource()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:3110`
+
+Reads X11 resources — may expose sensitive configuration (paths, credentials in some setups).
+
+```c
+long meth_generic_getResource(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    result->info.s = GLGetResource(PkInfo2Str(&argv[0]));
+}
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
+
+#### P1-9. `defineNewFont()` Missing Security Check
+
+**Location:** `src/viola/cl_generic.c:2673`
+
+Replaces system fonts — can be used for UI spoofing attacks (e.g., making "Cancel" look like "OK").
+
+```c
+long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet argv[]) {
+    // NO SECURITY CHECK!
+    result->info.i = GLDefineNewFont(fontInfo, ...);
+}
+```
+
+**Fix:** Add at function start:
+
+```c
+if (notSecure(self))
+    return 0;
+```
 
 ---
 
@@ -476,6 +656,9 @@ int requestSecurityElevation(DocViewInfo* dvi, const char* reason) {
 - [ ] P0-2. Block `set("security", 0)` for untrusted objects in `cl_generic.c`
 - [ ] P0-3. Add `notSecure()` check to `loadObjFile()` in `cl_cosmic.c`
 - [ ] P0-4. Fix `clone()` in `class.c` — must not copy `security=0` from template
+- [ ] P0-5. Add `notSecure()` check to `pipe()` in `cl_generic.c:3880`
+- [ ] P0-6. Add `notSecure()` check to `execScript()` in `cl_generic.c:2783`
+- [ ] P0-7. Add `notSecure()` check to `violaPath()` setter in `cl_generic.c:4921`
 
 ### P1 — High
 
@@ -483,6 +666,11 @@ int requestSecurityElevation(DocViewInfo* dvi, const char* reason) {
 - [ ] P1-2. Make `notSecure(NULL)` return 1 instead of crashing
 - [ ] P1-3. Create `HTML_security` object handler
 - [ ] P1-4. Implement security dialog in C (prevent spoofing)
+- [ ] P1-5. Add `notSecure()` check to `sendToInterface()` in `cl_generic.c:4400`
+- [ ] P1-6. Add `notSecure()` check to `discoveryBroadcast()` in `cl_generic.c:2152`
+- [ ] P1-7. Add `notSecure()` check to `addPicFromFile()` in `cl_generic.c:5003`
+- [ ] P1-8. Add `notSecure()` check to `getResource()` in `cl_generic.c:3110`
+- [ ] P1-9. Add `notSecure()` check to `defineNewFont()` in `cl_generic.c:2673`
 
 ### P2 — Medium
 
@@ -496,11 +684,16 @@ int requestSecurityElevation(DocViewInfo* dvi, const char* reason) {
 - [ ] Add dialog rate limiting
 - [ ] Show final URL after redirects in dialogs
 - [ ] Audit all methods for `notSecure()` checks:
-  - `system()`, `exec()`, `fork()`, `pipe()`
-  - `loadFile()`, `saveFile()`, `deleteFile()`, `createFile()`
-  - `HTTPPost()`
-  - `socket._startClient()` in `cl_socket.c` — arbitrary TCP/UDP connections
+  - `system()`, `pipe()` — shell command execution
+  - `interpret()`, `execScript()` — code execution
+  - `loadFile()`, `saveFile()`, `deleteFile()` — file access
+  - `loadObjFile()`, `violaPath()` — code loading/path manipulation
+  - `HTTPGet()`, `HTTPPost()` — network access
+  - `socket.startClient()` in `cl_socket.c` — arbitrary TCP/UDP connections
   - `TTY.startClient()` in `cl_TTY.c` — executes `path` as subprocess
+  - `sendToInterface()` — UI manipulation
+  - `discoveryBroadcast()` — network broadcast
+  - `addPicFromFile()`, `getResource()`, `defineNewFont()` — resource access
 
 ### Tests
 
@@ -508,6 +701,9 @@ int requestSecurityElevation(DocViewInfo* dvi, const char* reason) {
 - [ ] `test_loadobjfile_security.c` — `loadObjFile()` respects security
 - [ ] `test_shell_injection.c` — metacharacter filtering
 - [ ] `test_notsecure_null.c` — NULL handling
+- [ ] `test_pipe_security.c` — `pipe()` blocked for untrusted
+- [ ] `test_execscript_security.c` — `execScript()` blocked for untrusted
+- [ ] `test_violapath_security.c` — `violaPath()` setter blocked for untrusted
 
 ---
 

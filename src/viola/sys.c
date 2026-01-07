@@ -38,25 +38,6 @@ char* sys_make_temp_file(const char* suffix) {
     return saveString(template);
 }
 
-/* return 1 on success */
-int sys_alarm(int sec)
-{
-    /*
-            alarm((unsigned)sec);
-    */
-    return 0;
-}
-
-int sys_date(int * year, int * month, int * day)
-{
-    return 0;
-}
-
-int sys_time(int * hour, int * minute, int * sec)
-{
-    return 0;
-}
-
 /*
 do mem hack on:
 

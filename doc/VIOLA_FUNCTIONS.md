@@ -1332,12 +1332,8 @@ Delays execution for the specified number of seconds.
 ---
 
 ### alarm([seconds])
-Sets an alarm.
 
-**Parameters:**
-- `seconds` (int, optional) - number of seconds
-
-**Returns:** (int) 1
+> **Removed in ViolaWWW 4.0:** This function was a stub that always returned 0 (failure). The underlying POSIX `alarm()` call was commented out and no signal handler for `SIGALRM` was configured. Use `after()` instead for timed events.
 
 ---
 

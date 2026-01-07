@@ -151,7 +151,6 @@ enum {
     STR_address,
     STR_addPicFromFile,
     STR_after,
-    STR_alarm,
     STR_anyCard,
     STR_append,
     STR_appendStr,

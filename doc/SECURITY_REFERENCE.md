@@ -228,6 +228,49 @@ Tags that create interactive objects:
 - `<FORM>`, `<INPUT>` - Form elements with event handling
 - `<A>` - Links with navigation scripts
 
+## Original Author's Documentation
+
+Pei Yuan Wei wrote official documentation describing the security system. These archived pages reveal the **intended** design vs actual implementation:
+
+**Source**: [ViolaWWW Book, Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html)
+
+### Documented Security Behavior
+
+> *"For certain applications the tweak() method can pose a security problem, so all objects have a 'security' attribute. The intention is to restrict the priviledges of objects deem untrusted. Such object might be the ones coming from document servers over the network."*
+
+> *"If the 'security' attribute of an object is non zero, then the object can not execute the tweak() method **nor can it alter its own security status**."*
+
+### Official List of Protected Methods
+
+The documentation lists methods that should be blocked for untrusted objects:
+
+> `accessible()`, `cli()`, `deleteFile()`, `destroy()`, `environVar()`, `exit()`, `interpret()`, `modalExit()`, `quit()`, `save()`, `saveAs()`, `HTTPGet()`, `HTTPGetNParse()`, `HTTPPost()`, `HTTPSubmit()`, `HTTPHotListAdd()`, `HTTPHotListDelete()`, `HTTPHotListGet()`, `HTTPHotListChange()`, `HTTPHotListLoad()`, `HTTPHotListSave()`, `loadFile()`, `loadSTG()`, `saveFile()`, `system()`, `tweak()`
+
+### Documentation vs Implementation Gap
+
+| Documented Behavior | Actual Implementation |
+|--------------------|-----------------------|
+| Object cannot alter its own security status | ❌ **No check** — `set("security", 0)` works |
+| `loadObjFile()` protected | ❌ **Not in list** and no `notSecure()` check |
+| `tweak()` blocked for untrusted | ✅ Has `notSecure()` check |
+| Other listed methods blocked | ✅ Most have `notSecure()` checks |
+
+### Critical Finding
+
+The documentation explicitly states:
+
+> *"nor can it alter its own security status"*
+
+But the implementation in `cl_generic.c` has **no such check**:
+
+```c
+case STR_security:
+    result->info.i = PkInfo2Int(&argv[1]);
+    helper_setSecurity(self, result->info.i);  // No notSecure() check!
+```
+
+**Conclusion**: The documentation describes the **intended** security model, but the implementation is **incomplete**. This is the most critical vulnerability — the one feature that would have prevented privilege escalation was never implemented.
+
 ## Author's Own Acknowledgments
 
 The original developer left explicit comments acknowledging the incomplete state of the security system:
@@ -516,6 +559,15 @@ For educational/research purposes only:
 3. **Consider the system as having no security boundaries**
 4. **Use in isolated environments only**
 
+## External References
+
+### Original Documentation by Pei Yuan Wei
+
+- [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
+- [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)
+
+These archived pages from the Wayback Machine contain the original security design documentation.
+
 ## Source Code References
 
 Key files for security implementation:
@@ -539,7 +591,10 @@ ViolaWWW's security architecture represents an early attempt at web security but
 
 ### What Was Planned
 
-The architecture reveals an ambitious security system design:
+The original documentation reveals an ambitious security system design:
+
+- **Self-modification protection**: Objects should not be able to alter their own security status (documented but **not implemented**)
+- **Protected methods list**: 26+ methods blocked for untrusted objects (mostly implemented)
 - Document-level security levels (`<SECURITY LEVEL=...>`)
 - User clearance system (`setSecurityClearence`, `querySecurityClearence`)
 - Confirmation dialogs for dangerous operations

@@ -383,8 +383,8 @@
 #define GET_host(o) ((char*)((o)[57]))
 #define SET_host(o, v) ((char*)((o)[57] = (long)(v)))
 
-#define GET_port(o) ((char*)((o)[58]))
-#define SET_port(o, v) ((char*)((o)[58] = (long)(v)))
+#define GET_port(o) ((int)((o)[58]))
+#define SET_port(o, v) ((int)((o)[58] = (long)(v)))
 
 /*******************
  * class toggle

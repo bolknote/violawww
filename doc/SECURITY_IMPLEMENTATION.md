@@ -35,7 +35,7 @@ When user clicks "Trust" in the security dialog, the document URL is added to a 
 
 ## Protected Operations
 
-### Operations Requiring User Confirmation
+### Operations Requiring User Confirmation (`notSecureWithPrompt`)
 
 When an untrusted object attempts these operations, a security dialog is shown:
 
@@ -45,33 +45,44 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `pipe()` | Execute shell command with I/O | `cl_generic.c` |
 | `loadFile()` | Read file from disk | `cl_generic.c` |
 | `saveFile()` | Write file to disk | `cl_generic.c` |
-| `deleteFile()` | Delete file (non-temp) | `cl_generic.c` |
-| `loadObjFile()` | Load external `.v` file | `cl_cosmic.c` |
-| `violaPath()` | Modify object search path | `cl_generic.c` |
+| `deleteFile()` | Delete file (non-temp only) | `cl_generic.c` |
+| `violaPath(path)` | Modify object search path | `cl_generic.c` |
 | `socket.startClient()` | Open TCP connection | `cl_socket.c` |
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
-| `discoveryBroadcast()` | Send UDP broadcast | `cl_generic.c` |
 
-### Operations Always Blocked for Untrusted
+Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
+
+### Operations Silently Blocked (`notSecure`)
+
+These operations fail silently for untrusted objects without user prompt:
+
+| Operation | Description | Location |
+|-----------|-------------|----------|
+| `exit()`, `quit()` | Terminate application | `cl_cosmic.c` |
+| `destroy()` | Destroy object | `cl_cosmic.c` |
+| `modalExit()` | Exit modal dialog | `cl_cosmic.c` |
+| `save()`, `saveFormatted()` | Save object to file | `cl_cosmic.c` |
+| `tweak()` | Execute script in another object's context | `cl_cosmic.c` |
+| `cli()` | Command line interface | `cl_generic.c` |
+| `environVar()` | Get environment variable | `cl_generic.c` |
+| `accessible()` | Check file accessibility | `cl_generic.c` |
+| `loadSTG()` | Load style file | `cl_generic.c` |
+| `setResource()` | Set X11 resource | `cl_generic.c` |
+| `unhash()` | Get symbol name | `cl_generic.c` |
+| `HTTPHotList*()` | Hotlist operations (Add, Delete, Get, Change, Load, Save) | `cl_generic.c` |
+| `SGML*()` | Document building (BuildDoc, BuildDocB, ReBuildDoc, setBuff) | `cl_generic.c` |
+
+### Privilege Escalation Block
 
 | Operation | Description |
 |-----------|-------------|
-| `set("security", 0)` | Privilege escalation attempt |
+| `set("security", 0)` | Direct privilege escalation — always blocked |
 
-### Operations Always Allowed
+### Trust Inheritance
 
-These operations are required for normal browser functionality:
-
-- `interpret()`, `execScript()` — script execution (core functionality)
-- `sendToInterface()` — UI messaging
-- `addPicFromFile()` — image loading
-- `getResource()` — X11 resources
-- `defineNewFont()` — font handling
-- `HTTPGet()`, `HTTPPost()`, `HTTPSubmit()` — content loading
-
-### Temporary File Operations
-
-Deletion of files in `/tmp/`, `/var/tmp/`, `/var/folders/` is allowed without prompting (garbage collection). Path traversal (`..`) is blocked.
+`loadObjFile()` does not prompt the user but assigns security level to loaded objects based on `current_addr`:
+- Local files (`/...` or `file://`) → objects get `security = 0` (trusted)
+- Remote URLs → objects get `security = 1` (untrusted)
 
 ## Security Dialog
 
@@ -140,13 +151,6 @@ Checks security with user confirmation. Returns 1 if blocked, 0 if allowed.
 
 Registers the C-based security dialog callback from VW frontend.
 
-### Object Loading
-
-Objects loaded via `loadObjFile()` inherit trust based on `current_addr`:
-
-- Local files (`/...` or `file://`) → `security = 0`
-- Remote URLs → `security = 1`
-
 ### Clone Security
 
 Cloned objects inherit security from the original object. If `securityMode` global is set, it overrides.
@@ -157,7 +161,7 @@ Cloned objects inherit security from the original object. If `securityMode` glob
 |------|---------|
 | `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, trusted docs list, `loadObjFile()` security |
 | `src/viola/cl_cosmic.h` | Security callback typedef and prototypes |
-| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `discoveryBroadcast()`, privilege escalation block |
+| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, privilege escalation block |
 | `src/viola/cl_socket.c` | Security check for `startClient()` |
 | `src/viola/cl_TTY.c` | Security check for `startClient()` |
 | `src/viola/loader.c` | `load_object_with_security()` for trust assignment |

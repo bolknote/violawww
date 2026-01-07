@@ -514,6 +514,72 @@ case STR_security:
     helper_setSecurity(self, result->info.i);
 ```
 
+### Dangerous Functions Marked by Author
+
+In the author's method documentation, some functions carry explicit warnings:
+
+#### `addPicFromFile()` — "USE WITH EXTREME CAUTION"
+
+**Source**: [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE)
+
+```c
+// In cl_generic.c:
+/* USE WITH EXTREME CAUTION. kludge for text-inlined images
+ *
+ * (obj)arg[0] 's __content us used to store pic list.
+ * (char*)arg[1] is filepath of picture
+ */
+long meth_generic_addPicFromFile(VObj* self, ...) {
+    // No notSecure() check!
+    pic = tfed_addPicFromFile(&pics, fname, fname);
+}
+```
+
+No security check — any script can add arbitrary files as images.
+
+#### `HTTPGet()` — Temporary File Leakage
+
+```c
+long meth_generic_HTTPGet(VObj* self, ...) {
+    if (self)
+        if (notSecure(self))
+            return 0;
+    // ... downloads to temp file
+}
+```
+
+From documentation:
+> *"Retrieve a document pointed to by the URL, and saves the content in a temporary file. **It's user's responsibility to remove the temporary file after usage.**"*
+
+Temporary files containing potentially sensitive content may persist on disk.
+
+### Security Bypass via NULL Self
+
+**Critical vulnerability in image loading**:
+
+```c
+// In glib_x.c - imgNodeRefInc():
+ImgNode* imgNodeRefInc(char* id, char* filename) {
+    // ...
+    meth_generic_HTTPGet(NULL, &result, 1, &argv);  // NULL bypasses security!
+}
+```
+
+When loading images (via `<IMG>` tag), the code calls `HTTPGet()` with `NULL` instead of `self`. This makes the check `if (self) if (notSecure(self))` always pass, **completely bypassing security** for all image fetches.
+
+**Impact**: Any `<IMG SRC="file:///etc/passwd">` would work regardless of security level.
+
+### Methods Documented as Non-Functional
+
+The author's documentation explicitly marks these methods as broken:
+
+| Method | Documentation Status |
+|--------|---------------------|
+| `loadSTG()` | "Not operational" |
+| `STG()`, `STGInfo()` | "Not functional" |
+| `modalExit()` | "NOT FUNCTIONAL" |
+| `HTTPSubmit()` | "XXX NOT YET WORKING" (comment in code) |
+
 ### Missing Features
 - Sandboxing for loaded content
 - Content validation
@@ -606,6 +672,7 @@ For educational/research purposes only:
 
 - [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
 - [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)
+- [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE) - Method documentation with security warnings ("USE WITH EXTREME CAUTION", "NOT FUNCTIONAL")
 
 ### WWW-TALK Mailing List Archives (1994)
 
@@ -621,10 +688,11 @@ Key files for security implementation:
 | File | Purpose |
 |------|---------|
 | `src/viola/cl_cosmic.c` | `notSecure()` function, `loadObjFile()` |
-| `src/viola/cl_generic.c` | `set("security")`, `securityMode()`, `helper_setSecurity()` |
+| `src/viola/cl_generic.c` | `set("security")`, `securityMode()`, `helper_setSecurity()`, `addPicFromFile()` |
 | `src/viola/class.c` | Security inheritance during clone/create |
 | `src/viola/sgml.c` | `SET_security(obj, 1)` for HTML objects |
 | `src/viola/obj.c` | Global `securityMode` variable |
+| `src/viola/glib_x.c` | `imgNodeRefInc()` — security bypass via `NULL` self |
 | `src/viola/embeds/wwwSecurity_script.v` | Security wall object (incomplete) |
 | `src/viola/embeds/mvw_script3.v` | Empty security handlers |
 | `src/viola/embeds/wwwDialog_confirm_script.v` | Empty confirmation dialog |

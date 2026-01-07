@@ -31,10 +31,14 @@ void freeMemoryGroupHeaps();
 #define Rmalloc(x) malloc(x)
 #define Rfree(x) free(x)
 
-extern long tempFileNameIDCounter;
-extern char* tempFileNamePrefix;
-
 int init_sys(void);
 int sys_alarm(int sec);
 int sys_date(int* year, int* month, int* day);
 int sys_time(int* hour, int* minute, int* sec);
+
+/* Create a temp file with the given suffix (e.g., ".gif").
+ * Uses mkstemps() for secure atomic creation.
+ * Returns path allocated with saveString(), or NULL on error.
+ * Caller is responsible for deleting the file when done.
+ */
+char* sys_make_temp_file(const char* suffix);

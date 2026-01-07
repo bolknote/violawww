@@ -106,8 +106,7 @@
 		ismap = arg[5];
 
 		/* Decode Base64 data directly to GIF file */
-		localFile = concat(makeTempFile(), ".gif");
-		Base64DecodeToFile(arg[4], localFile);
+		localFile = Base64DecodeToFile(arg[4]);
 
 		/* Load the GIF - set dimensions to 0 to get natural size */
 		set("width", 0);

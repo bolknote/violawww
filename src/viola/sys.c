@@ -4,23 +4,38 @@
 #include "sys.h"
 #include "mystrings.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/time.h>
 
 /*#define MEM_VERBOSE */
 /*#define MEM_USE*/
 
-long tempFileNameIDCounter = 0;
-char* tempFileNamePrefix = "/tmp/violaTmp";
-
 int init_sys() {
-    char* tmp = tmpnam(NULL);
-    if (!tmp) {
-        perror("Failed to create temporary file name. Using /tmp/violaTmp\n");
-    }
-    tempFileNamePrefix = saveString(tmp);
-
     return 1;
+}
+
+/*
+ * Create a temp file with the given suffix (e.g., ".gif").
+ * Uses mkstemps() for secure temp file creation.
+ * Returns path allocated with saveString(), or NULL on error.
+ */
+char* sys_make_temp_file(const char* suffix) {
+    char template[256];
+    int suffixlen = suffix ? strlen(suffix) : 0;
+    int fd;
+    
+    snprintf(template, sizeof(template), "/tmp/viola_XXXXXX%s", suffix ? suffix : "");
+    
+    fd = mkstemps(template, suffixlen);
+    if (fd < 0) {
+        return NULL;
+    }
+    close(fd);
+    
+    return saveString(template);
 }
 
 /* return 1 on success */

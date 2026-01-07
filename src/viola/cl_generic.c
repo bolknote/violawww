@@ -1274,12 +1274,14 @@ long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet arg
 }
 
 /*
- * Base64DecodeToFile(base64_string, filename)
+ * Base64DecodeToFile(base64_data)
  *
- * Decodes Base64 encoded data and saves it to a file.
+ * Decodes Base64 encoded data and writes it to a temp file with .gif extension.
  * Handles binary data correctly (with null bytes).
  *
- * Result: 1 on success, 0 on error
+ * Security: filename is generated internally, caller cannot specify arbitrary path.
+ *
+ * Result: path to temp file on success, "" on error
  */
 long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* base64_data;
@@ -1290,18 +1292,17 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
     FILE* fp;
 
     clearPacket(result);
-    result->type = PKT_INT;
+    result->type = PKT_STR;
     result->canFree = 0;
-    result->info.i = 0;
+    result->info.s = "";
 
-    if (argc < 2) {
+    if (argc < 1) {
         return 0;
     }
 
     base64_data = PkInfo2Str(&argv[0]);
-    filename = PkInfo2Str(&argv[1]);
 
-    if (!base64_data || !filename) {
+    if (!base64_data) {
         return 0;
     }
 
@@ -1312,10 +1313,21 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
     }
 
     input_len = strlen(base64_data);
+    if (input_len == 0) {
+        return 0;
+    }
+
+    /* Create secure temp file with .gif extension */
+    filename = sys_make_temp_file(".gif");
+    if (!filename) {
+        return 0;
+    }
 
     /* Allocate buffer for decoded data (decoded is always smaller than encoded) */
     decoded_data = (unsigned char*)malloc(input_len + 1);
     if (!decoded_data) {
+        unlink(filename);
+        free(filename);
         return 0;
     }
 
@@ -1324,26 +1336,34 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
 
     if (decoded_len <= 0) {
         free(decoded_data);
+        unlink(filename);
+        free(filename);
         return 0;
     }
 
-    /* Write binary data to file */
+    /* Write binary data to file (file already created by mkstemps) */
     fp = fopen(filename, "wb");
     if (!fp) {
         free(decoded_data);
+        unlink(filename);
+        free(filename);
         return 0;
     }
 
     if (fwrite(decoded_data, 1, decoded_len, fp) != (size_t)decoded_len) {
         fclose(fp);
         free(decoded_data);
+        unlink(filename);
+        free(filename);
         return 0;
     }
 
     fclose(fp);
     free(decoded_data);
 
-    result->info.i = 1;
+    /* filename is already allocated by saveString in sys_make_temp_file */
+    result->info.s = filename;
+    result->canFree = PK_CANFREE_STR;
     return 1;
 }
 
@@ -1372,70 +1392,44 @@ long meth_generic_HTTPGet(VObj* self, Packet* result, int argc, Packet argv[]) {
         return 0;
     }
 
+    /* Find extension from URL - scan backwards for '.' before '/' */
+    const char* ext = NULL;
     size_t len = strlen(src);
-
-    /* Safety check: ensure tempFileNamePrefix is valid
-     * Check for:
-     * - NULL pointer
-     * - Low addresses (< 0x1000)
-     * - Sign-extended 32-bit addresses (0xffffffff........)
-     */
-    if (!tempFileNamePrefix || (unsigned long)tempFileNamePrefix < 0x1000 ||
-        ((unsigned long)tempFileNamePrefix & 0xffffffff00000000UL) == 0xffffffff00000000UL) {
-        fprintf(stderr, "WARNING: Invalid tempFileNamePrefix=%p, using default\n",
-                (void*)tempFileNamePrefix);
-        tempFileNamePrefix = "/tmp/violaTmp";
-    }
-
-    /* Find extension - scan backwards from end */
-    char* ext = NULL; /* Initialize to NULL */
-    char *tfn, tempFileName[200];
-
-    for (char* p = src + len; p >= src; p--) {
+    for (const char* p = src + len; p >= src; p--) {
         if (*p == '.') {
-            ext = p; /* Found extension */
+            ext = p; /* Found extension (e.g., ".html") */
             break;
         }
-        if (*p == '/' || (p - src) > len - 6) {
-            /* No extension or too far - use no extension */
-
-            /* Re-check tempFileNamePrefix before sprintf - catch sign-extended addresses */
-            if (!tempFileNamePrefix || (unsigned long)tempFileNamePrefix < 0x1000 ||
-                ((unsigned long)tempFileNamePrefix & 0xffffffff00000000UL) ==
-                    0xffffffff00000000UL) {
-                fprintf(stderr, "ERROR: tempFileNamePrefix corrupted (%p)! Using fallback.\n",
-                        (void*)tempFileNamePrefix);
-                tempFileNamePrefix = "/tmp/violaTmp";
-            }
-
-            sprintf(tempFileName, "%s%ld", tempFileNamePrefix, tempFileNameIDCounter++);
-            tfn = tempFileName;
-            goto gogo;
+        if (*p == '/') {
+            break; /* Hit path separator, no extension */
         }
     }
 
-    /* If no extension found, use empty string */
-    if (!ext) {
-        ext = "";
+    /* Create secure temp file with extension */
+    char* tfn = sys_make_temp_file(ext);
+    if (!tfn) {
+        fprintf(stderr, "ERROR: Failed to create temporary file\n");
+        clearPacket(result);
+        return 0;
     }
 
-    sprintf(tempFileName, "%s%ld%s", tempFileNamePrefix, tempFileNameIDCounter++, ext);
-    tfn = tempFileName;
-gogo:
     FILE* fp = fopen(tfn, "w");
     if (fp) {
         char *simpleAddress, *anchorSearch;
         if (html_fetchDocument(self, src, &simpleAddress, &anchorSearch, fp)) {
             fclose(fp);
             result->canFree = PK_CANFREE_STR;
-            result->info.s = saveString(tfn);
+            result->info.s = tfn;
             result->type = PKT_STR;
             return 1;
         }
         fclose(fp);
     } else {
-        fprintf(stderr, "Bummers, failed to create temporary file %s!", tfn);
+        fprintf(stderr, "ERROR: Failed to open temporary file %s\n", tfn);
     }
+    
+    unlink(tfn);
+    free(tfn);
     clearPacket(result);
     return 0;
 }
@@ -3603,22 +3597,23 @@ long meth_generic_loadSTG(VObj* self, Packet* result, int argc, Packet argv[]) {
     return loadSTG(PkInfo2Str(&argv[0]));
 }
 /*
- * Result: unaffected
- * Return: 1 if successful, 0 if error occured
+ * makeTempFile()
+ * Creates a secure temp file using mkstemps().
+ * Result: path to temp file, or "" on error
  */
 long meth_generic_makeTempFile(VObj* self, Packet* result, int argc, Packet argv[]) {
-    char tfn[200];
-
-    /* Safety check: ensure tempFileNamePrefix is valid */
-    if (!tempFileNamePrefix || (unsigned long)tempFileNamePrefix < 0x1000) {
-        tempFileNamePrefix = "/tmp/violaTmp";
-    }
-
-    sprintf(tfn, "%s%ld", tempFileNamePrefix, tempFileNameIDCounter++);
-    result->info.s = saveString(tfn);
+    char* path = sys_make_temp_file(NULL);
+    
     result->type = PKT_STR;
-    result->canFree = PK_CANFREE_STR;
-    return result->info.s ? 1 : 0;
+    if (path) {
+        result->info.s = path;
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    } else {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
 }
 
 /*

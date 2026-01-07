@@ -1891,15 +1891,17 @@ PRIVATE int input_file_number;
 PUBLIC void HTJustRead ARGS3(HTFormat, format, HTParentAnchor*, anchor, /* ignored */
                              int, file_number) {
     FILE* fp;
-    char tfn[200];
 
     input_file_number = file_number;
     input_pointer = input_limit = input_buffer;
 
     tempFileFormat = format;
 
-    sprintf(tfn, "%s%ld", tempFileNamePrefix, tempFileNameIDCounter++);
-    tempFileName = saveString(tfn);
+    tempFileName = sys_make_temp_file(NULL);
+    if (!tempFileName) {
+        fprintf(stderr, "HTJustRead: Failed to create temp file\n");
+        return;
+    }
 
     fp = fopen(tempFileName, "w");
     if (fp) {

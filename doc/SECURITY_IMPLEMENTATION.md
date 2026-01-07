@@ -43,16 +43,23 @@ REMOTE (untrusted):
 ALWAYS BLOCKED for untrusted (security = 1):
   set("security", 0)    — privilege escalation
   interpret()           — arbitrary code execution
+  execScript()          — arbitrary code execution (should be blocked!)
   tweak()               — cross-object code injection
 
 BLOCKED UNLESS USER APPROVES:
   loadObjFile()         — loading external code
   loadFile()/saveFile() — file access
   deleteFile()          — file deletion
-  system()/exec()/pipe() — shell commands
+  system()/pipe()       — shell commands (pipe() currently UNPROTECTED!)
   HTTPGet/Post()        — network access (from untrusted context)
   socket.startClient()  — arbitrary TCP/UDP connections (cl_socket.c)
   TTY.startClient()     — executes subprocess (cl_TTY.c)
+  violaPath()           — search path manipulation (currently UNPROTECTED!)
+  sendToInterface()     — UI message handler (currently UNPROTECTED!)
+  discoveryBroadcast()  — UDP network broadcast (currently UNPROTECTED!)
+  addPicFromFile()      — file read via image loading (currently UNPROTECTED!)
+  getResource()         — X11 resource access (currently UNPROTECTED!)
+  defineNewFont()       — font replacement (currently UNPROTECTED!)
 
 ALWAYS ALLOWED:
   get/set attributes (except security)

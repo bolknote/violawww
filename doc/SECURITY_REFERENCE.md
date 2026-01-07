@@ -420,7 +420,7 @@ SECURITY	HTML_security		1 0 0 0 0		0 0 0 0
 
 ### Object Does Not Exist
 
-The `HTML_security` object is **never defined** in `objs.c`. When the parser encounters `<SECURITY LEVEL="high">`:
+The `HTML_security` object is **never defined** in `objs.c`. When the parser encounters `<SECURITY LEVEL="1">`:
 
 1. Parser looks for object `HTML_security`
 2. Object not found

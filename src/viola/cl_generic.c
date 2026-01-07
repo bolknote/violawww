@@ -2094,13 +2094,10 @@ long meth_generic_bellVolume(VObj* self, Packet* result, int argc, Packet argv[]
 long meth_generic_discoverySetPage(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* url;
     
-    fprintf(stderr, "[DEBUG] meth_generic_discoverySetPage called, argc=%d\n", argc);
-    
     clearPacket(result);
     if (argc < 1) return 0;
     
     url = PkInfo2Str(&argv[0]);
-    fprintf(stderr, "[DEBUG] url=%s\n", url ? url : "(null)");
     if (url && *url) {
         discovery_set_page(url);
     }

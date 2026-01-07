@@ -45,7 +45,7 @@ static char octtools_copyright[] =
 
 /*#include "defhell.h"*/
 /* Workaround for macOS header conflicts */
-#ifdef __DARWIN__
+#ifdef __APPLE__
 #define _ARM__OSBYTEORDER_H_
 #define _I386__OSBYTEORDER_H_
 #include <libkern/OSByteOrder.h>

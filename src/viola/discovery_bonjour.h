@@ -24,7 +24,7 @@
 #ifndef DISCOVERY_BONJOUR_H
 #define DISCOVERY_BONJOUR_H
 
-#ifdef __DARWIN__
+#ifdef __APPLE__
 
 /*
  * Initialize Bonjour service registration and browsing.
@@ -75,6 +75,6 @@ void discovery_bonjour_broadcast(const char* id, const char* func, const char* a
  */
 unsigned int discovery_bonjour_get_seq(void);
 
-#endif /* __DARWIN__ */
+#endif /* __APPLE__ */
 
 #endif /* DISCOVERY_BONJOUR_H */

@@ -9,7 +9,7 @@
  * 3. Detect when peers are viewing the same page (by URL hash)
  */
 
-#ifdef __DARWIN__
+#ifdef __APPLE__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -661,5 +661,5 @@ unsigned int discovery_bonjour_get_seq(void)
     return bonjour_state.sync_seq;
 }
 
-#endif /* __DARWIN__ */
+#endif /* __APPLE__ */
 

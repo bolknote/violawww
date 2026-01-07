@@ -5,7 +5,7 @@
  * platform-specific implementation based on compile-time detection.
  *
  * Supported platforms:
- *   - macOS (__DARWIN__): Uses Bonjour/DNS-SD via discovery_bonjour.c
+ *   - macOS (__APPLE__): Uses UDP broadcast via sync_multicast.c
  *   - Linux (__linux__): Will use Avahi via discovery_avahi.c (TODO)
  *   - Other: Stub implementation (all functions are no-ops)
  *
@@ -158,7 +158,7 @@ void discovery_dispatch_sync(const char* id, const char* func, const char* args)
  * Uses UDP broadcast for sync between browsers on same network.
  * Bonjour is no longer needed - sync works via page hash filtering.
  */
-#ifdef __DARWIN__
+#ifdef __APPLE__
 
 int discovery_init(void) {
     return 1;  /* Lazy init in discovery_set_page */

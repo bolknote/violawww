@@ -694,7 +694,7 @@ void initUserWWW(char* www)
     Errno = 0;
     bzero(path, 128);
 
-#if defined(i386) || defined(__DARWIN__)
+#if defined(i386) || defined(__APPLE__)
     pw = getpwuid(getuid());
 #else
     {

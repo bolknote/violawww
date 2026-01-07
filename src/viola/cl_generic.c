@@ -1438,7 +1438,7 @@ long int helper_buildingHTML(Packet* result, VObj* obj, char* url, long width, i
 
     /*	gettimeofday(&time1, (struct timezone*)NULL);*/
 
-    if (notSecure(obj))
+    if (notSecureWithPrompt(obj, "build HTML document"))
         return 0;
 
     char *simpleAddress, *anchorSearch;
@@ -1491,14 +1491,14 @@ long meth_generic_HTTPSubmit(VObj* self, Packet* result, int argc, Packet argv[]
 
 long meth_generic_HTTPHotListAdd(VObj* self, Packet* result, int argc, Packet argv[]) {
     /* url, comment, date */
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "add URL to hotlist"))
         return 0;
     return addHotListItem(saveString(PkInfo2Str(&argv[0])), saveString(PkInfo2Str(&argv[1])),
                           saveString(PkInfo2Str(&argv[2])));
 }
 
 long meth_generic_HTTPHotListDelete(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "delete URL from hotlist"))
         return 0;
     return deleteHotListItem(PkInfo2Int(&argv[0]));
 }
@@ -1510,7 +1510,7 @@ long meth_generic_HTTPHotListDelete(VObj* self, Packet* result, int argc, Packet
  * arg[1]	n	nth item in the hotlist
  */
 long meth_generic_HTTPHotListGet(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "read hotlist"))
         return 0;
 
     HotListItem* hip;
@@ -1555,7 +1555,7 @@ long meth_generic_HTTPHotListGet(VObj* self, Packet* result, int argc, Packet ar
 long meth_generic_HTTPHotListChange(VObj* self, Packet* result, int argc, Packet argv[]) {
     HotListItem* hip;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "modify hotlist entry"))
         return 0;
 
     switch (PkInfo2Int(&argv[0])) {
@@ -1584,7 +1584,7 @@ long meth_generic_HTTPHotListChange(VObj* self, Packet* result, int argc, Packet
 }
 
 long meth_generic_HTTPHotListLoad(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "load hotlist from file"))
         return 0;
     clearPacket(result);
     result->info.i = initHotList();
@@ -1593,7 +1593,7 @@ long meth_generic_HTTPHotListLoad(VObj* self, Packet* result, int argc, Packet a
 }
 
 long meth_generic_HTTPHotListSave(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "save hotlist to file"))
         return 0;
     return saveHotList();
 }
@@ -1606,7 +1606,7 @@ long meth_generic_HTTPHotListSave(VObj* self, Packet* result, int argc, Packet a
 long meth_generic_SGMLBuildDoc(VObj* self, Packet* result, int argc, Packet argv[]) {
     VObj* newObj;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "build SGML document"))
         return 0;
     if (argc != 6) {
         /* incorrect number of arguments */
@@ -1635,7 +1635,7 @@ long meth_generic_SGMLBuildDoc(VObj* self, Packet* result, int argc, Packet argv
 long meth_generic_SGMLBuildDocB(VObj* self, Packet* result, int argc, Packet argv[]) {
     VObj* newObj;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "build SGML document"))
         return 0;
     if (argc != 6) {
         /* incorrect number of arguments */
@@ -1660,7 +1660,7 @@ long meth_generic_SGMLBuildDocB(VObj* self, Packet* result, int argc, Packet arg
  * SGMLBuildDoc_setBuff()
  */
 long meth_generic_SGMLBuildDoc_setBuff(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "set SGML buffer"))
         return 0;
     clearPacket(result);
     result->info.i = SGMLBuildDoc_setBuff(self, PkInfo2Int(&argv[0]));
@@ -1784,7 +1784,7 @@ long meth_generic_HTMLMathUpdateWindow(VObj* self, Packet* result, int argc, Pac
  * Result: document object
  */
 long meth_generic_SGMLReBuildDoc(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "rebuild SGML document"))
         return 0;
     if (argc != 6) {
         /* incorrect number of arguments */
@@ -1905,7 +1905,7 @@ long meth_generic_SGMLTableFormater(VObj* self, Packet* result, int argc, Packet
 long meth_generic_accessible(VObj* self, Packet* result, int argc, Packet argv[]) {
     int accessible;
     char* path;
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "check file accessibility"))
         return 0;
     result->type = PKT_STR;
     if ((path = SaveString(vl_expandPath(argv[0].info.s, buff)))) {
@@ -2209,7 +2209,7 @@ long meth_generic_cli(VObj* self, Packet* result, int argc, Packet argv[]) {
     char cmdLine[LINE_LENGTH];
     int i, balance, finish = 0;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "command line interface"))
         return 0;
 
     do {
@@ -2759,7 +2759,7 @@ long meth_generic_destroyVariable(VObj* self, Packet* result, int argc, Packet a
 long meth_generic_environVar(VObj* self, Packet* result, int argc, Packet argv[]) {
     extern char** environ;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "read environment variable"))
         return 0;
 
     result->type = PKT_STR;
@@ -3603,7 +3603,7 @@ long meth_generic_loadFile(VObj* self, Packet* result, int argc, Packet argv[]) 
 }
 
 long meth_generic_loadSTG(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "load stylesheet"))
         return 0;
     return loadSTG(PkInfo2Str(&argv[0]));
 }
@@ -4594,7 +4594,7 @@ long meth_generic_addURLToHistory(VObj* self, Packet* result, int argc, Packet a
 }
 
 long meth_generic_setResource(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "set X11 resource"))
         return 0;
     return 0; /* no can't do */
 }
@@ -4919,7 +4919,7 @@ long meth_generic_tool(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_generic_unhash(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "get symbol name"))
         return 0;
     clearPacket(result);
     result->info.s = (char*)symID2Str->get(symID2Str, (PkInfo2Int(&argv[0])))->val;

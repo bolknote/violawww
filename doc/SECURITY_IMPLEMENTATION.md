@@ -35,7 +35,7 @@ When user clicks "Trust" in the security dialog, the document URL is added to a 
 
 ## Protected Operations
 
-### Operations Requiring User Confirmation (`notSecureWithPrompt`)
+### Operations Requiring User Confirmation
 
 When an untrusted object attempts these operations, a security dialog is shown:
 
@@ -50,28 +50,22 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `socket.startClient()` | Open TCP connection | `cl_socket.c` |
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
 | `set("security", 0)` | Elevate to trusted status | `cl_generic.c` |
-
-Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
-
-### Operations Silently Blocked (`notSecure`)
-
-These operations fail silently for untrusted objects without user prompt:
-
-| Operation | Description | Location |
-|-----------|-------------|----------|
 | `exit()`, `quit()` | Terminate application | `cl_cosmic.c` |
 | `destroy()` | Destroy object | `cl_cosmic.c` |
 | `modalExit()` | Exit modal dialog | `cl_cosmic.c` |
-| `save()`, `saveFormatted()` | Save object to file | `cl_cosmic.c` |
+| `save()`, `saveAs()` | Save object to file | `cl_cosmic.c` |
 | `tweak()` | Execute script in another object's context | `cl_cosmic.c` |
 | `cli()` | Command line interface | `cl_generic.c` |
-| `environVar()` | Get environment variable | `cl_generic.c` |
+| `environVar()` | Read environment variable | `cl_generic.c` |
 | `accessible()` | Check file accessibility | `cl_generic.c` |
-| `loadSTG()` | Load style file | `cl_generic.c` |
+| `loadSTG()` | Load stylesheet | `cl_generic.c` |
 | `setResource()` | Set X11 resource | `cl_generic.c` |
 | `unhash()` | Get symbol name | `cl_generic.c` |
-| `HTTPHotList*()` | Hotlist operations (Add, Delete, Get, Change, Load, Save) | `cl_generic.c` |
-| `SGML*()` | Document building (BuildDoc, BuildDocB, ReBuildDoc, setBuff) | `cl_generic.c` |
+| `HTTPHotListAdd/Delete/Get/Change/Load/Save()` | Hotlist operations | `cl_generic.c` |
+| `SGMLBuildDoc/BuildDocB/ReBuildDoc/setBuff()` | Document building | `cl_generic.c` |
+| `discoveryBroadcast()` | Send UDP broadcast | `cl_generic.c` |
+
+Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
 
 ### Trust Inheritance
 

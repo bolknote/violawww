@@ -442,7 +442,7 @@ long meth_cosmic_debug(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return:
  */
 long meth_cosmic_destroy(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "destroy object"))
         return 0;
     clearPacket(result);
     free(self);
@@ -459,7 +459,7 @@ long meth_cosmic_destroy(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return: n/a
  */
 long meth_cosmic_exit(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "exit application"))
         return 0;
 
     exit((int)PkInfo2Int(&argv[0]));
@@ -727,7 +727,7 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
 }
 
 long meth_cosmic_modalExit(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "exit modal dialog"))
         return 0;
     modalState = 0;
     copyPacket(modalResult, &argv[0]);
@@ -782,7 +782,7 @@ long meth_cosmic_push(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return: 1 if successful, 0 if error occured
  */
 long meth_cosmic_quit(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "quit application"))
         return 0;
     /*	methodMembershipProfile();*/
     exitingViola = 1;
@@ -805,7 +805,7 @@ long meth_cosmic_save(VObj* self, Packet* result, int argc, Packet argv[]) {
     FILE* fp;
     int stat;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "save object to file"))
         return 0;
 
     while ((parent = GET__parent(obj)))
@@ -843,7 +843,7 @@ long meth_cosmic_saveAs(VObj* self, Packet* result, int argc, Packet argv[]) {
     FILE* fp;
     int stat;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "save object to file"))
         return 0;
 
     if (argc != 1)
@@ -946,7 +946,7 @@ long meth_cosmic_tweak(VObj* self, Packet* result, int argc, Packet argv[]) {
     size_t len;
     char *cp, *script;
 
-    if (notSecure(self))
+    if (notSecureWithPrompt(self, "execute script in another object"))
         return 0;
 
     obj = PkInfo2Obj(&argv[0]);

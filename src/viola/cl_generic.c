@@ -2998,6 +2998,20 @@ long meth_generic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) 
     VObjList* olist;
     Attr* varlist;
 
+    /* Debug: count children BEFORE freeing name */
+#if 1 /* DEBUG_CLONE */
+    {
+        char* selfName = GET_name(self);
+        int childCount = 0;
+        for (olist = GET__children(self); olist; olist = olist->next)
+            if (olist->o) childCount++;
+        if (childCount > 0) {
+            fprintf(stderr, "FREE CHILDREN: '%s' has %d children to free\n",
+                    selfName ? selfName : "(null)", childCount);
+        }
+    }
+#endif
+
     if (!exitingViola) {
         objID2Obj->remove(objID2Obj, getIdent(GET_name(self)));
         symStr2ID->remove(symStr2ID, (long)GET_name(self));
@@ -5078,25 +5092,19 @@ long meth_generic_y(VObj* self, Packet* result, int argc, Packet argv[]) {
  * (char*)arg[1] is filepath of picture
  */
 long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet argv[]) {
-    extern char* current_addr;  /* from html.c */
     VObj* obj = PkInfo2Obj(&argv[0]);
     int picID;
     TFPic *pics, *pic;
     char* fname = PkInfo2Str(&argv[1]);
     char msgbuf[256];
-    int docIsRemote, fileIsLocal;
+    int fileIsLocal;
 
-    /* Same-Origin check: remote document loading local file is dangerous */
-    docIsRemote = current_addr && (
-        strncmp(current_addr, "http://", 7) == 0 ||
-        strncmp(current_addr, "https://", 8) == 0 ||
-        strncmp(current_addr, "ftp://", 6) == 0);
-    
+    /* Security check: untrusted object loading local file is dangerous */
     fileIsLocal = fname && (
         fname[0] == '/' ||
         strncmp(fname, "file://", 7) == 0);
     
-    if (docIsRemote && fileIsLocal) {
+    if (notSecure(self) && fileIsLocal) {
         snprintf(msgbuf, sizeof(msgbuf), "load local image: %s", fname);
         if (notSecureWithPrompt(self, msgbuf)) {
             result->type = PKT_INT;

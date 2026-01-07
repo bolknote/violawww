@@ -80,13 +80,9 @@ When an untrusted object attempts these operations, a security dialog is shown:
 
 Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
 
-### Same-Origin Policy for Images
+### Local File Protection for Images
 
-`addPicFromFile()` implements Same-Origin Policy. A prompt is shown if:
-- Image protocol differs from document protocol
-- Image host differs from document host  
-- Image port differs from document port
-- Remote document tries to load local file (`file://` or `/...`)
+`addPicFromFile()` prompts if an untrusted object (`security=1`) tries to load a local file (`/...` or `file://`).
 
 ### Trust Inheritance
 

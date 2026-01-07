@@ -91,6 +91,21 @@ long meth_generic_securityMode(VObj* self, Packet* result, int argc, Packet argv
 
 **Critical Limitation**: Once `securityMode` becomes non-zero, it cannot be reset to zero.
 
+### Author's Official Documentation
+
+From [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE):
+
+> **securityMode(mode)**
+>
+> Returns: mode.  
+> Scope: generic
+>
+> *"Forces security mode for newly created objects. All objects created during the time when mode > 0 will have the security value set to the mode value. **Can alter securityMode value only if mode == 0.**"*
+>
+> *"Can affect operation of `interpret()` and `tweak()`."*
+
+This confirms the one-way trap was **intentional design**, not a bug. The author explicitly documented that `securityMode` can only be changed when it equals zero — once elevated, it's permanent for the session.
+
 ### Object Creation Security
 
 Objects created from HTML content receive `security = 1` (untrusted) by default:
@@ -157,7 +172,7 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
 
 **Impact**: Untrusted objects can load arbitrary `.v` files containing malicious scripts.
 
-#### 3. Irreversible Security Mode
+#### 3. Irreversible Security Mode (Intentional Design Flaw)
 
 Once `securityMode` becomes non-zero, it cannot be reset:
 
@@ -166,7 +181,9 @@ if (securityMode == 0)  // One-way door
     securityMode = PkInfo2Int(&argv[1]);
 ```
 
-**Impact**: A single compromised page can permanently compromise the browser.
+The author documented this as intentional: *"Can alter securityMode value only if mode == 0"*
+
+**Impact**: A single compromised page can permanently compromise the browser for the entire session. This was meant to be a security feature (preventing untrusted code from lowering security), but combined with other vulnerabilities it becomes a denial-of-service vector.
 
 ### Attack Scenarios
 

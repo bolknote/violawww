@@ -305,7 +305,7 @@ Pei Yuan Wei discussed ViolaWWW security publicly on the WWW-TALK mailing list i
 | Jan 1994 | Wei admits security "could be better improved" |
 | Sep 1994 | Wei publicly claims system is secure for untrusted applets |
 | ~1995 | ViolaWWW development abandoned |
-| 2024 | Code analysis reveals incomplete implementation |
+| 2026 | Code analysis reveals incomplete implementation |
 
 The gap between Wei's September 1994 claims and the actual implementation suggests either:
 1. The security improvements were planned but never completed

@@ -141,8 +141,6 @@ int notSecureWithPrompt(VObj* self, const char* operation)
     }
     
     /* No callback or user denied - block */
-    fprintf(stderr, "Security: '%s' denied for object '%s'\n",
-            operation ? operation : "operation", objName ? objName : "(null)");
     return 1;
 }
 

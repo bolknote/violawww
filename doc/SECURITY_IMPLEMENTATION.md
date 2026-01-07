@@ -82,7 +82,7 @@ Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`
 
 ### Local File Protection for Images
 
-`addPicFromFile()` prompts if an untrusted object (`security=1`) tries to load a local file (`/...` or `file://`).
+`addPicFromFile()` prompts if an untrusted object (`security=1`) tries to load a local file. A file is considered local if it has no protocol (`://`) or uses `file://` protocol.
 
 ### Trust Inheritance
 

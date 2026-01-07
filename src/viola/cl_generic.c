@@ -5100,9 +5100,13 @@ long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet ar
     int fileIsLocal;
 
     /* Security check: untrusted object loading local file is dangerous */
-    fileIsLocal = fname && (
-        fname[0] == '/' ||
-        strncmp(fname, "file://", 7) == 0);
+    /* Local = no protocol (no ://), or file:// protocol */
+    if (fname) {
+        char* proto = strstr(fname, "://");
+        fileIsLocal = (proto == NULL) || (strncmp(fname, "file://", 7) == 0);
+    } else {
+        fileIsLocal = 0;
+    }
     
     if (notSecure(self) && fileIsLocal) {
         snprintf(msgbuf, sizeof(msgbuf), "load local image: %s", fname);

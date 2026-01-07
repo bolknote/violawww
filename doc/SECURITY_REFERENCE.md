@@ -698,8 +698,10 @@ For educational/research purposes only:
 
 ### Original Documentation by Pei Yuan Wei
 
+- [Chapter 1 - An Overview of Viola](https://web.archive.org/web/20040417144305/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html) - Security rationale: imported objects marked "untrusted" to protect user's system
 - [Chapter 4.7 - Sub Interpreter and Security](https://web.archive.org/web/20030816230407/http://www.xcf.berkeley.edu/~wei/viola/book/chp4.html) - Describes security model and protected methods
 - [Chapter 13 - Applets](https://web.archive.org/web/20031207205546/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) - ViolaWWW applet security (referenced in Chapter 4)
+- [Appendix C - Methods Reference](https://web.archive.org/web/20031207204949/http://www.xcf.berkeley.edu/~wei/viola/book/appc.html) - Documents `saveFile()`, `system()`, `tweak()` security restrictions
 - [Methods/TO_WRITE](https://web.archive.org/web/20041113225255/http://www.xcf.berkeley.edu/~wei/viola/book/methods/TO_WRITE) - Method documentation including `securityMode()` behavior and `addPicFromFile()` warning
 
 ### WWW-TALK Mailing List Archives (1994)

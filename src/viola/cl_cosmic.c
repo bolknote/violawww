@@ -66,7 +66,6 @@ static void addTrustedDocument(const char* url)
     if (!url || trustedDocsCount >= MAX_TRUSTED_DOCS) return;
     if (isDocumentTrusted(url)) return;  /* already trusted */
     trustedDocs[trustedDocsCount++] = strdup(url);
-    fprintf(stderr, "[SEC DEBUG] Added trusted document: %s\n", url);
 }
 
 void ViolaRegisterSecurityCallback(SecurityDialogCallback callback)
@@ -104,7 +103,6 @@ int notSecureWithPrompt(VObj* self, const char* operation)
     
     /* Check if document is already trusted */
     if (current_addr && isDocumentTrusted(current_addr)) {
-        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: document already trusted\n");
         return 0;  /* Document trusted - allow */
     }
     
@@ -112,31 +110,22 @@ int notSecureWithPrompt(VObj* self, const char* operation)
     if (self == NULL) {
         objName = "(null)";
         secLevel = 1;
-        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: self=NULL, op='%s'\n",
-                operation ? operation : "(null)");
     } else {
         secLevel = GET_security(self);
         objName = GET_name(self);
-        fprintf(stderr, "[SEC DEBUG] notSecureWithPrompt: obj='%s', security=%d, op='%s'\n",
-                objName ? objName : "(null)", secLevel, operation ? operation : "(null)");
         
         if (secLevel == 0) {
-            fprintf(stderr, "[SEC DEBUG] -> ALLOWED (trusted)\n");
             return 0;  /* Trusted - allow */
         }
     }
     
     /* Object is untrusted - ask user if callback is registered */
-    fprintf(stderr, "[SEC DEBUG] Object untrusted, callback=%p\n", (void*)g_securityDialogCallback);
-    
     if (g_securityDialogCallback) {
-        fprintf(stderr, "[SEC DEBUG] Calling security dialog...\n");
         userAllowed = g_securityDialogCallback(
             "Privilege Elevation Request",
             NULL,  /* message built in dialog.c */
             operation,
             objName);
-        fprintf(stderr, "[SEC DEBUG] Dialog returned: %d\n", userAllowed);
         
         if (userAllowed) {
             /* Trust the entire document, not just this object */
@@ -146,12 +135,9 @@ int notSecureWithPrompt(VObj* self, const char* operation)
             /* Also elevate privileges for this object */
             if (self) {
                 SET_security(self, 0);
-                fprintf(stderr, "[SEC DEBUG] Elevated privileges for '%s'\n", objName);
             }
             return 0;  /* User allowed - don't block */
         }
-    } else {
-        fprintf(stderr, "[SEC DEBUG] No callback registered!\n");
     }
     
     /* No callback or user denied - block */
@@ -695,15 +681,11 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
     int securityLevel = 1;  /* Default: untrusted */
 
     /* Determine trust level based on document source */
-    fprintf(stderr, "[SEC DEBUG] loadObjFile: current_addr='%s'\n", 
-            current_addr ? current_addr : "(null)");
-    
     if (current_addr) {
         /* Local files are trusted */
         if (current_addr[0] == '/' || 
             strncmp(current_addr, "file://", 7) == 0) {
             securityLevel = 0;  /* Trusted */
-            fprintf(stderr, "[SEC DEBUG] loadObjFile: local file, securityLevel=0\n");
         }
     }
 

@@ -164,21 +164,16 @@ long meth_socket__startClient(VObj* self, Packet* result, int argc, Packet argv[
     int socket_open(char* proto, char* host, int port);
     char msgbuf[256];
 
-    fprintf(stderr, "[SEC DEBUG] socket startClient called for %s:%d\n",
-            GET_host(self) ? GET_host(self) : "(null)", GET_port(self));
-
     /* Security: opening network connections requires user permission */
     snprintf(msgbuf, sizeof(msgbuf), "open TCP connection to %s:%d",
              GET_host(self) ? GET_host(self) : "(unknown)",
              GET_port(self));
     if (notSecureWithPrompt(self, msgbuf)) {
-        fprintf(stderr, "[SEC DEBUG] socket startClient BLOCKED\n");
         result->type = PKT_INT;
         result->canFree = 0;
         result->info.i = -1;
         return 0;
     }
-    fprintf(stderr, "[SEC DEBUG] socket startClient ALLOWED\n");
 
     fd = socket_open("tcp", GET_host(self), GET_port(self));
 

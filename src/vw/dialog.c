@@ -1436,7 +1436,5 @@ int securityQuestionDialog(const char* title, const char* message,
  */
 void initSecurityDialogCallback(void)
 {
-    fprintf(stderr, "[SEC DEBUG] initSecurityDialogCallback: registering callback\n");
     ViolaRegisterSecurityCallback(securityQuestionDialog);
-    fprintf(stderr, "[SEC DEBUG] initSecurityDialogCallback: done\n");
 }

@@ -201,8 +201,6 @@ int load_object_with_security(char* filename, char* pathname, int securityLevel)
         /* Security: set security level for loaded objects */
         if (securityLevel > 0) {
             SET_security(newObj[i], securityLevel);
-            fprintf(stderr, "[SEC DEBUG] load_object: set security=%d for '%s'\n",
-                    securityLevel, GET_name(newObj[i]) ? GET_name(newObj[i]) : "(null)");
         }
         
         sendMessage1(newObj[i], "init");

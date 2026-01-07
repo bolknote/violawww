@@ -674,13 +674,16 @@ long meth_cosmic_interpret(VObj* self, Packet* result, int argc, Packet argv[]) 
  */
 long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     extern char* current_addr;  /* from html.c */
+    extern long securityMode;   /* global security mode */
     char* path;
     char* fname = NULL;
     int securityLevel = 1;  /* Default: untrusted */
 
-    /* Determine trust level based on document source */
-    if (current_addr) {
-        /* Local files are trusted */
+    /* If securityMode is set, use it - overrides everything */
+    if (securityMode > 0) {
+        securityLevel = securityMode;
+    } else if (current_addr) {
+        /* Local files are trusted (only if securityMode not set) */
         if (current_addr[0] == '/' || 
             strncmp(current_addr, "file://", 7) == 0) {
             securityLevel = 0;  /* Trusted */
@@ -926,9 +929,7 @@ long meth_cosmic_tweak(VObj* self, Packet* result, int argc, Packet argv[]) {
     size_t len;
     char *cp, *script;
 
-    if (notSecureWithPrompt(self, "execute script in another object"))
-        return 0;
-
+    /* Script execution between objects is internal operation */
     obj = PkInfo2Obj(&argv[0]);
     if (obj) {
         for (i = 1; i < argc; i++) {

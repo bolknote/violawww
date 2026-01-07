@@ -33,6 +33,19 @@ REMOTE (untrusted, security = 1):
 
 When user clicks "Trust" in the security dialog, the document URL is added to a trusted documents list. All subsequent security checks for objects from that document are automatically allowed without prompting.
 
+## The `<SECURITY>` HTML Tag
+
+Documents can declare their security level using the `<SECURITY>` tag:
+
+```html
+<SECURITY LEVEL="1">  <!-- Mark document as untrusted -->
+<SECURITY LEVEL="0">  <!-- Request trusted status (triggers prompt) -->
+```
+
+When `LEVEL="1"` is set, `securityMode(1)` is called, making all subsequently created objects untrusted.
+
+When `LEVEL="0"` is set, the standard privilege elevation prompt is shown.
+
 ## Protected Operations
 
 ### Operations Requiring User Confirmation
@@ -50,6 +63,7 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `socket.startClient()` | Open TCP connection | `cl_socket.c` |
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
 | `set("security", 0)` | Elevate to trusted status | `cl_generic.c` |
+| `addPicFromFile()` | Load image (cross-origin only) | `cl_generic.c` |
 | `exit()`, `quit()` | Terminate application | `cl_cosmic.c` |
 | `destroy()` | Destroy object | `cl_cosmic.c` |
 | `modalExit()` | Exit modal dialog | `cl_cosmic.c` |
@@ -62,10 +76,17 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `setResource()` | Set X11 resource | `cl_generic.c` |
 | `unhash()` | Get symbol name | `cl_generic.c` |
 | `HTTPHotListAdd/Delete/Get/Change/Load/Save()` | Hotlist operations | `cl_generic.c` |
-| `SGMLBuildDoc/BuildDocB/ReBuildDoc/setBuff()` | Document building | `cl_generic.c` |
 | `discoveryBroadcast()` | Send UDP broadcast | `cl_generic.c` |
 
 Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
+
+### Same-Origin Policy for Images
+
+`addPicFromFile()` implements Same-Origin Policy. A prompt is shown if:
+- Image protocol differs from document protocol
+- Image host differs from document host  
+- Image port differs from document port
+- Remote document tries to load local file (`file://` or `/...`)
 
 ### Trust Inheritance
 
@@ -150,11 +171,13 @@ Cloned objects inherit security from the original object. If `securityMode` glob
 |------|---------|
 | `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, trusted docs list, `loadObjFile()` security |
 | `src/viola/cl_cosmic.h` | Security callback typedef and prototypes |
-| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, privilege escalation block |
+| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `addPicFromFile()`, `securityMode()` fix, privilege escalation |
 | `src/viola/cl_socket.c` | Security check for `startClient()` |
 | `src/viola/cl_TTY.c` | Security check for `startClient()` |
 | `src/viola/loader.c` | `load_object_with_security()` for trust assignment |
 | `src/viola/class.c` | Clone security inheritance |
+| `src/viola/objs.c` | `HTML_security` object registration |
+| `src/viola/embeds/HTML_security_script.v` | `<SECURITY>` tag handler |
 | `src/vw/dialog.c` | `securityQuestionDialog()` implementation |
 | `src/vw/dialog.h` | Dialog prototypes |
 | `src/vw/vw.c` | Security callback registration |

@@ -6610,6 +6610,20 @@ static SlotStruct objDesc_HTML_script[] = {
     {(char*)0, (char*)0},
 };
 
+static char _slotValue_HTML_security0[] = "field";
+static char _slotValue_HTML_security1[] = "HTML_security";
+static char _slotValue_HTML_security2[] = {
+#include "embeds/HTML_security_script.v.h"
+};
+/* END OF FILE */
+
+static SlotStruct objDesc_HTML_security[] = {
+    {"class", _slotValue_HTML_security0},
+    {"name", _slotValue_HTML_security1},
+    {"script", _slotValue_HTML_security2},
+    {(char*)0, (char*)0},
+};
+
 static char _slotValue_HTML_select0[] = "HTML_select";
 static char _slotValue_HTML_select1[] = "menu";
 static char _slotValue_HTML_select2[] = {
@@ -7691,6 +7705,8 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_HTML_quote,
                                "HTML_script.v",
                                objDesc_HTML_script,
+                               "HTML_security.v",
+                               objDesc_HTML_security,
                                "HTML_select.v",
                                objDesc_HTML_select,
                                "HTML_sub.v",

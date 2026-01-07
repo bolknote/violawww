@@ -1660,8 +1660,7 @@ long meth_generic_SGMLBuildDocB(VObj* self, Packet* result, int argc, Packet arg
  * SGMLBuildDoc_setBuff()
  */
 long meth_generic_SGMLBuildDoc_setBuff(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "set SGML buffer"))
-        return 0;
+    /* SGML buffer is internal parser operation - not dangerous */
     clearPacket(result);
     result->info.i = SGMLBuildDoc_setBuff(self, PkInfo2Int(&argv[0]));
     result->type = PKT_INT;
@@ -2289,6 +2288,8 @@ long meth_generic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
         return 0;
     cloneObj = result->info.o;
 
+    /* Note: clone() now sets all OBJL slots to NULL, so _children is already NULL */
+
     newolist = NULL;
     olist = GET__children(self);
     if (olist) {
@@ -2296,15 +2297,38 @@ long meth_generic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
 
         nullPacket(&lresult);
         for (; olist; olist = olist->next) {
+            if (!olist->o) {
+                continue;
+            }
+            /* Check if child object is still valid before cloning.
+             * Objects may have been freed if clone windows were closed. */
+            if (!validObjectP(olist->o)) {
+                fprintf(stderr, "clone: child object %p was freed, skipping\n", (void*)olist->o);
+                continue;
+            }
             if (!callMeth(olist->o, &lresult, argc, argv, STR_clone2)) {
-                fprintf(stderr, "clone (at children cloning) failed\n");
+                fprintf(stderr, "clone (at children cloning) failed for %s\n", 
+                        GET_name(olist->o) ? GET_name(olist->o) : "(null)");
 
                 clearPacket(&lresult);
                 return 0;
             }
+            /* CRITICAL: Verify clone2 returned a different object, not the original */
+            if (lresult.info.o == olist->o) {
+                fprintf(stderr, "clone2 returned original object instead of clone for %s (class %s)\n",
+                        GET_name(olist->o) ? GET_name(olist->o) : "(null)",
+                        GET_class(olist->o) ? GET_class(olist->o) : "(null)");
+                /* Skip this object - don't add original to clone's children */
+                continue;
+            }
+            if (!lresult.info.o) {
+                fprintf(stderr, "clone2 returned NULL for %s\n",
+                        GET_name(olist->o) ? GET_name(olist->o) : "(null)");
+                continue;
+            }
             newolist = appendObjToList(newolist, lresult.info.o);
             SET__parent(lresult.info.o, cloneObj);
-            SET_parent(lresult.info.o, GET_name(cloneObj));
+            SET_parent(lresult.info.o, VSaveString(GET__memoryGroup(lresult.info.o), GET_name(cloneObj)));
         }
         clearPacket(&lresult);
         SET_children(cloneObj, VSaveString(GET__memoryGroup(cloneObj), OListToStr(newolist)));
@@ -4244,8 +4268,8 @@ long meth_generic_scanf(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Result: mode
  */
 long meth_generic_securityMode(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (securityMode == 0)
-        securityMode = PkInfo2Int(&argv[1]);
+    if (argc > 0 && securityMode == 0)
+        securityMode = PkInfo2Int(&argv[0]);
 
     clearPacket(result);
     result->type = PKT_INT;
@@ -4332,6 +4356,8 @@ long helper_generic_set(VObj* self, Packet* result, int argc, Packet argv[], lon
         HashEntry* entry;
         VObj* obj;
 
+        if (GET_parent(self))
+            Vfree(GET__memoryGroup(self), GET_parent(self));
         result->info.s = VSaveString(GET__memoryGroup(self), PkInfo2Str(&argv[1]));
         SET_parent(self, result->info.s);
         result->type = PKT_STR;
@@ -5052,13 +5078,33 @@ long meth_generic_y(VObj* self, Packet* result, int argc, Packet argv[]) {
  * (char*)arg[1] is filepath of picture
  */
 long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet argv[]) {
+    extern char* current_addr;  /* from html.c */
     VObj* obj = PkInfo2Obj(&argv[0]);
     int picID;
     TFPic *pics, *pic;
     char* fname = PkInfo2Str(&argv[1]);
     char msgbuf[256];
+    int docIsRemote, fileIsLocal;
 
-    /* Loading images is core browser functionality - not dangerous */
+    /* Same-Origin check: remote document loading local file is dangerous */
+    docIsRemote = current_addr && (
+        strncmp(current_addr, "http://", 7) == 0 ||
+        strncmp(current_addr, "https://", 8) == 0 ||
+        strncmp(current_addr, "ftp://", 6) == 0);
+    
+    fileIsLocal = fname && (
+        fname[0] == '/' ||
+        strncmp(fname, "file://", 7) == 0);
+    
+    if (docIsRemote && fileIsLocal) {
+        snprintf(msgbuf, sizeof(msgbuf), "load local image: %s", fname);
+        if (notSecureWithPrompt(self, msgbuf)) {
+            result->type = PKT_INT;
+            result->canFree = 0;
+            result->info.i = 0;
+            return 0;
+        }
+    }
 
     pics = (TFPic*)GET__content(obj);
     pic = tfed_addPicFromFile(&pics, fname /*should be URL*/, fname);

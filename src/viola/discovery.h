@@ -11,10 +11,10 @@
  * broadcast to all viewers.
  *
  * Architecture:
- *   - discovery.h     : Platform-independent public API (this file)
- *   - discovery.c     : Dispatcher that routes to platform implementations
- *   - discovery_bonjour.c : macOS implementation using Bonjour/DNS-SD
- *   - discovery_avahi.c   : Linux implementation using Avahi (TODO)
+ *   - discovery.h      : Platform-independent public API (this file)
+ *   - discovery.c      : Dispatcher that routes to platform implementations
+ *   - sync_multicast.c : macOS implementation using UDP broadcast
+ *   - discovery_avahi.c: Linux implementation using Avahi (TODO)
  *
  * How it works:
  *   1. On startup, the browser registers itself as a network service
@@ -70,7 +70,7 @@ int discovery_is_enabled(void);
  *
  * Normally called automatically by discovery_set_page() when needed.
  *
- * On macOS, this uses Bonjour (DNS-SD) to register a "_violawww._tcp" service.
+ * On macOS, this uses UDP broadcast for peer synchronization.
  * On Linux, this will use Avahi (when implemented).
  * On unsupported platforms, this is a no-op that returns 0.
  *

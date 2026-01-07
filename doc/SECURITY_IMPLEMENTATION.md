@@ -1,7 +1,7 @@
 # ViolaWWW Security Implementation
 
-Added in: ViolaWWW 4.0
-The security model was defined in the original ViolaWWW (1994) but not fully implemented. The complete working implementation was completed in version 4.0 (2026).
+> **Added in: ViolaWWW 4.0**
+> The security model was defined in the original ViolaWWW (1994) but not fully implemented. The complete working implementation was completed in version 4.0 (2026).
 
 ## Overview
 

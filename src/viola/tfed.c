@@ -409,7 +409,7 @@ TFStruct* tfed_updateTFStruct(VObj* self, char* text)
     return tf;
 }
 
-TFStruct* tfed_clone(VObj * orig, VObj * clone)
+TFStruct* tfed_clone(VObj * orig, VObj * clone, char* suffix)
 {
     TFStruct* newtf;
     TFLineNode *prevp, *currentp, *newLN;
@@ -419,6 +419,7 @@ TFStruct* tfed_clone(VObj * orig, VObj * clone)
     size_t sz;
     TFStruct* origtf = GET__TFStruct(orig);
     TagInfo *ti, *cti;
+    int suffixLen = suffix ? strlen(suffix) : 0;
 
     if (!origtf)
         return 0;
@@ -472,7 +473,23 @@ TFStruct* tfed_clone(VObj * orig, VObj * clone)
                     ti = &(newLN->tagInfo[i]);
                     cp = cti[i].info;
                     if (cp) {
-                        ti->info = VSaveString(newtf->mg, cp);
+                        /* Check if this tagInfo refers to an inset object.
+                         * If suffix is provided and ORIGINAL object exists,
+                         * add suffix to use the cloned name (clone will be created later). */
+                        if (suffix && suffixLen > 0 && getObject(cp)) {
+                            /* Original object exists - this is an inset reference.
+                             * Add suffix so it will refer to the clone. */
+                            char* newName = Vmalloc(newtf->mg, strlen(cp) + suffixLen + 1);
+                            if (newName) {
+                                strcpy(newName, cp);
+                                strcat(newName, suffix);
+                                ti->info = newName;
+                            } else {
+                                ti->info = VSaveString(newtf->mg, cp);
+                            }
+                        } else {
+                            ti->info = VSaveString(newtf->mg, cp);
+                        }
                     } else {
                         ti->info = 0;
                     }
@@ -2812,7 +2829,10 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                     tfed_anchorPatchIdx = 0;
                 }
 
-                if (GET__parent(inset) != buildInfo->self) {
+                /* Only adopt inset if it has NO parent yet.
+                 * If inset already has a parent, it belongs to another object
+                 * (e.g., original when we're a clone) - don't steal it! */
+                if (GET__parent(inset) == NULL) {
                     VObjList* olist;
                     olist = GET__children(buildInfo->self);
                     SET__children(buildInfo->self, appendObjToList(olist, inset));
@@ -3834,10 +3854,13 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                                 buildInfo->maxFontHeight = insetHeight;
                             /* make sure this object is stuck within self.
                              * Tis a problem with collected text.
+                             * But only adopt if inset has no parent yet!
                              */
-                            olist = GET__children(buildInfo->self);
-                            SET__children(buildInfo->self, appendObjToList(olist, inset));
-                            SET__parent(inset, buildInfo->self);
+                            if (GET__parent(inset) == NULL) {
+                                olist = GET__children(buildInfo->self);
+                                SET__children(buildInfo->self, appendObjToList(olist, inset));
+                                SET__parent(inset, buildInfo->self);
+                            }
                         }
                     }
                 } else {

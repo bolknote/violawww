@@ -914,7 +914,7 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
 
     if (bstate->obj && parent_bstate->obj && bstate->obj != parent_bstate->obj) {
         SET__parent(bstate->obj, parent_bstate->obj);
-        SET_parent(bstate->obj, GET_name(parent_bstate->obj));
+        SET_parent(bstate->obj, VSaveString(GET__memoryGroup(bstate->obj), GET_name(parent_bstate->obj)));
     }
     if (bstate->tmi->notifyOnCreationP) {
         sendTokenMessage(bstate->obj, STR_C);
@@ -1160,7 +1160,7 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
             SET_y(bstate->obj, bstate->tmi->top);
 
             SET__parent(bstate->obj, _insert_obj);
-            SET_parent(bstate->obj, GET_name(_insert_obj));
+            SET_parent(bstate->obj, VSaveString(GET__memoryGroup(bstate->obj), GET_name(_insert_obj)));
 
             olist = GET__children(_insert_obj);
             SET__children(_insert_obj, appendObjToList(olist, bstate->obj));
@@ -1719,7 +1719,7 @@ VObj* HTMLBuildObj(SGMLBuildInfoState* bstate, int parentWidth, SGMLTagMappingIn
             return NULL;
         } else {
             SET__parent(bstate->obj, bstate->parent);
-            SET_parent(bstate->obj, GET_name(bstate->parent));
+            SET_parent(bstate->obj, VSaveString(GET__memoryGroup(bstate->obj), GET_name(bstate->parent)));
         }
     }
 

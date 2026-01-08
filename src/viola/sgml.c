@@ -537,7 +537,7 @@ VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, cha
     SET_security(obj, 1); /* non secure */
 
     SET__parent(obj, parent);
-    SET_parent(obj, GET_name(parent));
+    SET_parent(obj, VSaveString(GET__memoryGroup(obj), GET_name(parent)));
 
     SET_x(obj, tmi->left);
 
@@ -1171,7 +1171,7 @@ VObj* SGMLBuild_B(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, i
     /* modify template object attributes
      */
     SET__parent(obj, parent);
-    SET_parent(obj, GET_name(parent));
+    SET_parent(obj, VSaveString(GET__memoryGroup(obj), GET_name(parent)));
 
     SET_x(obj, tmi->left);
 

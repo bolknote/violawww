@@ -171,6 +171,7 @@ long meth_txt_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])
     if (!exitingViola) {
         if (GET_font(self)) {
             free(GET_font(self));
+            SET_font(self, NULL);
         }
     }
     meth_field_freeSelf(self, result, argc, argv);

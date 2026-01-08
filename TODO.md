@@ -1,9 +1,6 @@
 ## TODO
 
 ### Bugs
-- [ ] Fix crash on Clone button (heap-use-after-free)
-  - Race condition: `clone()` reads object attributes while `ConfigureNotify` event frees them via `helper_generic_set`.
-  - Needs synchronization between event handling and cloning.
 - [ ] Fix "SideBar Pane" demo hanging the browser
   - Example from Viola Central causes browser to freeze.
 - [ ] Fix history behavior

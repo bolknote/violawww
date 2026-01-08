@@ -2303,7 +2303,19 @@ long meth_generic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
             /* Check if child object is still valid before cloning.
              * Objects may have been freed if clone windows were closed. */
             if (!validObjectP(olist->o)) {
-                fprintf(stderr, "clone: child object %p was freed, skipping\n", (void*)olist->o);
+                /* Try to get info about unregistered object - be careful with memory */
+                VObj* childObj = olist->o;
+                ClassInfo* cip = GET__classInfo(childObj);
+                if (cip) {
+                    /* Object exists but wasn't registered - might be a template */
+                    fprintf(stderr, "clone: child object %p NOT REGISTERED (class=%s, name=%s) - skipping\n",
+                            (void*)childObj,
+                            GET_class(childObj) ? GET_class(childObj) : "(null)",
+                            GET_name(childObj) ? GET_name(childObj) : "(null)");
+                } else {
+                    /* Object was freed (classInfo is NULL) */
+                    fprintf(stderr, "clone: child object %p WAS FREED - skipping\n", (void*)childObj);
+                }
                 continue;
             }
             if (!callMeth(olist->o, &lresult, argc, argv, STR_clone2)) {
@@ -2997,18 +3009,30 @@ long meth_generic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) 
     union PCode* pcode;
     VObjList* olist;
     Attr* varlist;
+    VObj* parent;
 
-    /* Debug: count children BEFORE freeing name */
-#if 1 /* DEBUG_CLONE */
+    /* PROTECTION: Don't free an object if its parent is still alive and not being freed.
+     * This prevents scripts from accidentally freeing original objects
+     * when they should only affect clones. */
+    parent = GET__parent(self);
+    if (parent && validObjectP(parent)) {
+        ClassInfo* parentClassInfo = GET__classInfo(parent);
+        if (parentClassInfo != NULL) {
+            /* Parent is alive and not being freed - block this free */
+            clearPacket(result);
+            return 0;
+        }
+    }
+
+    /* Debug: show what's being freed */
+#if 0 /* DEBUG_CLONE */
     {
         char* selfName = GET_name(self);
         int childCount = 0;
         for (olist = GET__children(self); olist; olist = olist->next)
             if (olist->o) childCount++;
-        if (childCount > 0) {
-            fprintf(stderr, "FREE CHILDREN: '%s' has %d children to free\n",
-                    selfName ? selfName : "(null)", childCount);
-        }
+        fprintf(stderr, "FREE: '%s' ptr=%p (%d children)\n",
+                selfName ? selfName : "(null)", (void*)self, childCount);
     }
 #endif
 

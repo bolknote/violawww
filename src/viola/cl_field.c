@@ -443,15 +443,16 @@ long meth_field_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
 
     suffix = VsaveString(GET__memoryGroup(cloneObj), PkInfo2Str(&argv[0]));
 
-    /* make the links to associated (and assumed) clone objects */
-    olist = GET__shownDepend(cloneObj);
+    /* make the links to associated (and assumed) clone objects.
+     * Note: clone() sets OBJL slots to NULL, so we use the ORIGINAL's lists. */
+    olist = GET__shownDepend(self);
     if (olist && suffix) {
         SET_shownDepend(cloneObj, saveString(OListToStrPlusSuffix(olist, suffix)));
     } else {
         SET_shownDepend(cloneObj, saveString(""));
     }
 
-    olist = GET__shownNotify(cloneObj);
+    olist = GET__shownNotify(self);
     if (olist && suffix) {
         SET_shownNotify(cloneObj, saveString(OListToStrPlusSuffix(olist, suffix)));
     } else {
@@ -477,8 +478,8 @@ long meth_field_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
     colorsizes_clone += strlen(GET_FGColor(self));
     colorsizes_clone += strlen(GET_CRColor(self));
     */
-    if (GET_eventMask(self))
-        SET_eventMask(self, saveString(GET_eventMask(self)));
+    if (GET_eventMask(cloneObj))
+        SET_eventMask(cloneObj, saveString(GET_eventMask(cloneObj)));
 
     SET__label(cloneObj, NULL);
 
@@ -1089,26 +1090,44 @@ long meth_field_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     /* unsafe to free, b/c cloning now merely copies pointer value, not content */
     /*print("freeSelf: self=0x%x, %s\n", self, GET_name(self));*/
     if (!exitingViola) {
-        if (GET_content(self))
+        if (GET_content(self)) {
             Vfree(GET__memoryGroup(self), GET_content(self));
-        if (GET_label(self))
+            SET_content(self, NULL);
+        }
+        if (GET_label(self)) {
             free(GET_label(self));
-        if (GET_shownNotify(self))
+            SET_label(self, NULL);
+        }
+        if (GET_shownNotify(self)) {
             free(GET_shownNotify(self));
-        if (GET_shownDepend(self))
+            SET_shownNotify(self, NULL);
+        }
+        if (GET_shownDepend(self)) {
             free(GET_shownDepend(self));
+            SET_shownDepend(self, NULL);
+        }
 
-        if (GET_BDColor(self))
+        if (GET_BDColor(self)) {
             free(GET_BDColor(self));
-        if (GET_BGColor(self))
+            SET_BDColor(self, NULL);
+        }
+        if (GET_BGColor(self)) {
             free(GET_BGColor(self));
-        if (GET_FGColor(self))
+            SET_BGColor(self, NULL);
+        }
+        if (GET_FGColor(self)) {
             free(GET_FGColor(self));
-        if (GET_CRColor(self))
+            SET_FGColor(self, NULL);
+        }
+        if (GET_CRColor(self)) {
             free(GET_CRColor(self));
+            SET_CRColor(self, NULL);
+        }
 
-        if (GET_eventMask(self))
+        if (GET_eventMask(self)) {
             free(GET_eventMask(self));
+            SET_eventMask(self, NULL);
+        }
         if (GET_window(self)) {
 
             /*XXXXXXXXXX for some bloody reason destroying window, running under
@@ -1123,8 +1142,8 @@ long meth_field_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
                                     GLDestroyWindow(GET_window(self));
             */
 
-            SET_window(self, 0); /*insurance*/
             window2Obj->remove(window2Obj, (long)GET_window(self));
+            SET_window(self, 0); /*insurance*/
         }
     }
     meth_generic_freeSelf(self, result, argc, argv);

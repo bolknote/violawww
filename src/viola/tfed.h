@@ -185,7 +185,7 @@ typedef struct TFStruct {
 extern int tfed_init(void);
 TFStruct* tfed_setUpTFStruct(VObj* self, char* text);
 TFStruct* tfed_updateTFStruct(VObj* self, char* text);
-TFStruct* tfed_clone(VObj* clone, VObj* orig);
+TFStruct* tfed_clone(VObj* orig, VObj* clone, char* suffix);
 TFStruct* updateEStrUser(VObj* self);
 int tfed_render(VObj* self);
 int tfed_processMouseInput(VObj* self);

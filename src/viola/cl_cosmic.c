@@ -282,7 +282,7 @@ long meth_cosmic_clone(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 /* Debug flag for clone/freeSelf tracing */
-#define DEBUG_CLONE 1
+#define DEBUG_CLONE 0
 
 long meth_cosmic_clone2(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* suffix;
@@ -504,42 +504,9 @@ long meth_cosmic_exist(VObj* self, Packet* result, int argc, Packet argv[]) {
  */
 long meth_cosmic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) {
     int i;
-    VObj* parent;
-    char* selfName = NULL;
-    char* parentName = NULL;
 
-    /* Save names before they might be freed */
-#if DEBUG_CLONE
-    selfName = GET_name(self) ? GET_name(self) : "(null)";
-    parent = GET__parent(self);
-    parentName = (parent && validObjectP(parent) && GET_name(parent)) ? GET_name(parent) : "(no parent)";
-    fprintf(stderr, "FREE: '%s' (ptr=%p, parent='%s')\n", selfName, (void*)self, parentName);
-#endif
-
-    /* Protection: Don't free an object if its parent is still alive.
-     * This prevents scripts from accidentally freeing original objects
-     * when they should only affect clones. */
-    parent = GET__parent(self);
-    if (parent && validObjectP(parent)) {
-        /* Parent is still alive. Check if parent is being freed.
-         * If parent's _classInfo is NULL, parent is being freed. */
-        if (GET__classInfo(parent) != NULL) {
-            /* Parent is alive and not being freed - don't free this object.
-             * This object should only be freed by its parent's freeSelf. */
-#if DEBUG_CLONE
-            fprintf(stderr, "FREE BLOCKED: '%s' has live parent '%s' (parent classInfo=%p)\n",
-                    selfName, parentName, (void*)GET__classInfo(parent));
-#endif
-            clearPacket(result);
-            return 0;
-        }
-#if DEBUG_CLONE
-        else {
-            fprintf(stderr, "FREE ALLOWED: '%s' parent '%s' is being freed (classInfo=NULL)\n",
-                    selfName, parentName);
-        }
-#endif
-    }
+    /* NOTE: Do NOT access GET_name(self) here - it may already be freed
+     * by meth_generic_freeSelf which calls us AFTER freeing the name. */
 
     for (i = 0; i < callObjStackIdx; i++) {
         if (callObjStack[i].obj == self)

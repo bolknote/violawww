@@ -21,9 +21,9 @@ OPENSSL_AVAILABLE := $(shell test -d "$(OPENSSL_PREFIX)/include" && echo yes || 
 # Debug compiler flags with memory debugging and AddressSanitizer
 ARCH_FLAGS = -arch arm64
 ASAN_FLAGS = -fsanitize=address -fno-omit-frame-pointer
-CFLAGS = -g -O0 $(ARCH_FLAGS) $(ASAN_FLAGS) -std=gnu17 -Wall -Wextra -D__DARWIN__ -DMALLOC_DEBUG -funsigned-char
+CFLAGS = -g -O0 $(ARCH_FLAGS) $(ASAN_FLAGS) -std=gnu17 -Wall -Wextra -D__DARWIN__ -DVIOLA_DARWIN -DMALLOC_DEBUG -funsigned-char
 CFLAGS_LIBS = -g -O0 $(ARCH_FLAGS) $(ASAN_FLAGS) -Wall -Wextra -no-cpp-precomp -fno-common -funsigned-char \
-              -D__DARWIN__ -DNO_ALLOCA -DCSRG_BASED -DMALLOC_DEBUG
+              -D__DARWIN__ -DVIOLA_DARWIN -DNO_ALLOCA -DCSRG_BASED -DMALLOC_DEBUG
 
 # Add ICU support if available
 ifeq ($(ICU_AVAILABLE),yes)

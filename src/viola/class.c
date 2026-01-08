@@ -748,11 +748,16 @@ VObj* clone(VObj* original)
         case PTRV:
         case ATTR:
         case OBJP:
-        case OBJL:
         case CLSI:
         case PCOD:
         case TFLD:
             *clonep = *originalp;
+            break;
+
+        case OBJL:
+            /* Don't share VObjList pointers - each clone must build its own.
+             * Sharing causes use-after-free when clone is freed. */
+            *clonep = 0;
             break;
 
         case RGBV: {

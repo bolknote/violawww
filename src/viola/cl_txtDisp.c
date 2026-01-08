@@ -423,6 +423,92 @@ long int meth_txtDisp_clone(VObj* self, Packet* result, int argc, Packet argv[])
     return 0;
 }
 
+/* Helper: update inset object names in content string by adding suffix.
+ * Inset markers look like: \x1fo(objectname)
+ * Returns new string allocated with VSaveString, or NULL if no changes needed.
+ */
+static char* updateContentInsetNames(VObj* clone, char* content, char* suffix)
+{
+    char* result;
+    char* src;
+    char* dst;
+    char* newContent;
+    size_t contentLen, suffixLen, extraLen;
+    int insetCount = 0;
+    
+    if (!content || !suffix || !*suffix)
+        return NULL;
+    
+    suffixLen = strlen(suffix);
+    contentLen = strlen(content);
+    
+    /* First pass: count inset markers to calculate new size */
+    for (src = content; *src; src++) {
+        if (*src == '\x1f' && *(src+1) == 'o' && *(src+2) == '(') {
+            /* Found inset marker, check if object exists */
+            char* nameStart = src + 3;
+            char* nameEnd = strchr(nameStart, ')');
+            if (nameEnd) {
+                size_t nameLen = nameEnd - nameStart;
+                char nameBuf[256];
+                if (nameLen < sizeof(nameBuf)) {
+                    strncpy(nameBuf, nameStart, nameLen);
+                    nameBuf[nameLen] = '\0';
+                    /* Only add suffix if original object exists */
+                    if (getObject(nameBuf)) {
+                        insetCount++;
+                    }
+                }
+            }
+        }
+    }
+    
+    if (insetCount == 0)
+        return NULL;
+    
+    /* Allocate new content with space for suffixes */
+    extraLen = insetCount * suffixLen;
+    newContent = Vmalloc(GET__memoryGroup(clone), contentLen + extraLen + 1);
+    if (!newContent)
+        return NULL;
+    
+    /* Second pass: copy content and add suffixes */
+    src = content;
+    dst = newContent;
+    while (*src) {
+        if (*src == '\x1f' && *(src+1) == 'o' && *(src+2) == '(') {
+            char* nameStart = src + 3;
+            char* nameEnd = strchr(nameStart, ')');
+            if (nameEnd) {
+                size_t nameLen = nameEnd - nameStart;
+                char nameBuf[256];
+                if (nameLen < sizeof(nameBuf)) {
+                    strncpy(nameBuf, nameStart, nameLen);
+                    nameBuf[nameLen] = '\0';
+                    if (getObject(nameBuf)) {
+                        /* Copy marker prefix and name */
+                        *dst++ = *src++;  /* \x1f */
+                        *dst++ = *src++;  /* o */
+                        *dst++ = *src++;  /* ( */
+                        while (src < nameEnd) {
+                            *dst++ = *src++;
+                        }
+                        /* Add suffix before closing paren */
+                        strcpy(dst, suffix);
+                        dst += suffixLen;
+                        *dst++ = *src++;  /* ) */
+                        continue;
+                    }
+                }
+            }
+        }
+        *dst++ = *src++;
+    }
+    *dst = '\0';
+    
+    return newContent;
+}
+
 long meth_txtDisp_clone2(VObj* self, Packet* result, int argc, Packet argv[])
 {
     VObj* cloneObj;
@@ -432,8 +518,19 @@ long meth_txtDisp_clone2(VObj* self, Packet* result, int argc, Packet argv[])
         return 0;
     cloneObj = result->info.o;
     if (cloneObj) {
+        char* suffix = (argc > 0) ? PkInfo2Str(&argv[0]) : NULL;
+        
+        /* Update content to reference cloned inset objects */
+        if (suffix && GET_content(cloneObj)) {
+            char* newContent = updateContentInsetNames(cloneObj, GET_content(cloneObj), suffix);
+            if (newContent) {
+                Vfree(GET__memoryGroup(cloneObj), GET_content(cloneObj));
+                SET_content(cloneObj, newContent);
+            }
+        }
+        
         if (GET__TFStruct(self)) {
-            clonetf = tfed_clone(self, cloneObj);
+            clonetf = tfed_clone(self, cloneObj, suffix);
             if (!clonetf)
                 return 0;
             SET__TFStruct(cloneObj, clonetf);

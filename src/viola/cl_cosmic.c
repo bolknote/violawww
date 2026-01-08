@@ -942,7 +942,10 @@ long meth_cosmic_tweak(VObj* self, Packet* result, int argc, Packet argv[]) {
     size_t len;
     char *cp, *script;
 
-    /* Script execution between objects is internal operation */
+    /* Security check: untrusted object trying to execute code in another object's context */
+    if (notSecureWithPrompt(self, "execute script in another object's context"))
+        return 0;
+
     obj = PkInfo2Obj(&argv[0]);
     if (obj) {
         for (i = 1; i < argc; i++) {

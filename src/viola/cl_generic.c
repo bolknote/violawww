@@ -2794,12 +2794,21 @@ long meth_generic_destroyVariable(VObj* self, Packet* result, int argc, Packet a
  */
 long meth_generic_environVar(VObj* self, Packet* result, int argc, Packet argv[]) {
     extern char** environ;
+    char *varName;
+    char reasonBuf[256];
 
-    if (notSecureWithPrompt(self, "read environment variable"))
+    varName = PkInfo2Str(&argv[0]);
+    if (varName && strlen(varName) > 200) {
+        snprintf(reasonBuf, sizeof(reasonBuf), "read environment variable: %.200s...", varName);
+    } else {
+        snprintf(reasonBuf, sizeof(reasonBuf), "read environment variable: %s",
+                 varName ? varName : "(null)");
+    }
+    if (notSecureWithPrompt(self, reasonBuf))
         return 0;
 
     result->type = PKT_STR;
-    if (getEnvironVars(environ, PkInfo2Str(&argv[0]), buff)) {
+    if (getEnvironVars(environ, varName, buff)) {
         result->info.s = SaveString(buff);
         result->canFree = PK_CANFREE_STR;
         return 1;

@@ -1356,31 +1356,28 @@ void searchModeMH(char* arg[], int argc, void* clientData) {
     isIndex = !strcmp("searchOn", arg[0]);
 
     if (isIndex) {
+        /* Manage search widgets first so they have valid geometry,
+         * then reattach msgLabel above them. */
         if (dvi->searchLabel)
             XtManageChild(dvi->searchLabel);
         if (dvi->searchText)
             XtManageChild(dvi->searchText);
-        if (dvi->msgLabel) {
+        if (dvi->msgLabel && dvi->searchLabel) {
             XtVaSetValues(dvi->msgLabel,
                          XmNbottomAttachment, XmATTACH_WIDGET,
                          XmNbottomWidget, dvi->searchLabel,
                          NULL);
         }
     } else {
+        /* Restore msgLabel to form bottom first, then unmanage search widgets */
+        if (dvi->msgLabel) {
+            XtVaSetValues(dvi->msgLabel,
+                         XmNbottomAttachment, XmATTACH_FORM,
+                         NULL);
+        }
         if (dvi->searchLabel)
             XtUnmanageChild(dvi->searchLabel);
         if (dvi->searchText)
             XtUnmanageChild(dvi->searchText);
-        /* Find buttonBox widget - it's a child of the same form as msgLabel */
-        if (dvi->msgLabel) {
-            Widget form = XtParent(dvi->msgLabel);
-            Widget buttonBox = XtNameToWidget(form, "buttonBox");
-            if (buttonBox) {
-                XtVaSetValues(dvi->msgLabel,
-                             XmNbottomAttachment, XmATTACH_WIDGET,
-                             XmNbottomWidget, buttonBox,
-                             NULL);
-            }
-        }
     }
 }

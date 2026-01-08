@@ -986,7 +986,7 @@ PUBLIC void HText_endAnchor ARGS1(HText*, text) {
         HText_appendCharacter(text, HT_NON_BREAK_SPACE);
         tfcp = text->tbuff + text->tbuffi - 1;
 
-        if (text->tagID < TAGINFO_SIZE) {
+        if (text->tagID < TAGINFO_SIZE - 1) {
             text->tagID++;
             /*printf("\\\\\\tagID = %d [%s]\n", text->tagID, cp);*/
             TFCTagID(tfcp) = text->tagID;

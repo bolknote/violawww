@@ -1,8 +1,6 @@
 ## TODO
 
 ### Bugs
-- [ ] Fix "SideBar Pane" demo hanging the browser
-  - Example from Viola Central causes browser to freeze.
 - [ ] Fix history behavior
   - Ensure navigation history (back/forward) works consistently across pages and embedded views.
 - [ ] Enable `mailto:` links

@@ -350,6 +350,7 @@ TFStruct* tfed_updateTFStruct(VObj* self, char* text)
         buildInfo.tbuffi = 0;
         buildInfo.breaki = 0;
         buildInfo.tagID = 0;
+        bzero(buildInfo.buffTagInfo, sizeof(buildInfo.buffTagInfo));
         buildInfo.flags = 0;
         buildInfo.spaceWidth = FontWidths(fontID)[' '];
 
@@ -467,37 +468,32 @@ TFStruct* tfed_clone(VObj * orig, VObj * clone, char* suffix)
             if (currentp == origtf->currentp)
                 newtf->currentp = newLN;
 
+            /* Allocate a separate tagInfo array for the clone.
+             * After bcopy, newLN->tagInfo still points to currentp's tagInfo! */
             cti = currentp->tagInfo;
-            if (cti)
-                for (i = currentp->tagInfoCount - 1; i >= 0; i--) {
-                    ti = &(newLN->tagInfo[i]);
-                    cp = cti[i].info;
-                    if (cp) {
-                        /* Check if this tagInfo refers to an inset object.
-                         * If suffix is provided and ORIGINAL object exists,
-                         * add suffix to use the cloned name (clone will be created later). */
-                        if (suffix && suffixLen > 0 && getObject(cp)) {
-                            /* Original object exists - this is an inset reference.
-                             * Add suffix so it will refer to the clone. */
-                            char* newName = Vmalloc(newtf->mg, strlen(cp) + suffixLen + 1);
-                            if (newName) {
-                                strcpy(newName, cp);
-                                strcat(newName, suffix);
-                                ti->info = newName;
-                            } else {
-                                ti->info = VSaveString(newtf->mg, cp);
-                            }
-                        } else {
+            if (cti && currentp->tagInfoCount > 0 && currentp->tagInfoCount <= 256) {
+                size_t tagAllocSize = sizeof(TagInfo) * currentp->tagInfoCount;
+                newLN->tagInfo = (TagInfo*)Vmalloc(newtf->mg, tagAllocSize);
+                if (!newLN->tagInfo) {
+                    newLN->tagInfo = NULL;
+                    newLN->tagInfoCount = 0;
+                } else {
+                    bzero(newLN->tagInfo, tagAllocSize);
+                    newLN->tagInfoCount = currentp->tagInfoCount;
+                    for (i = currentp->tagInfoCount - 1; i >= 0; i--) {
+                        ti = &(newLN->tagInfo[i]);
+                        cp = cti[i].info;
+                        if (cp) {
                             ti->info = VSaveString(newtf->mg, cp);
+                        } else {
+                            ti->info = NULL;
                         }
-                    } else {
-                        ti->info = 0;
                     }
-                    /*				ti->x_begin = 0;
-                                                    ti->x_end = 0;
-                                                    ti->valid = 0;
-                    */
                 }
+            } else {
+                newLN->tagInfo = NULL;
+                newLN->tagInfoCount = 0;
+            }
             prevp = newLN;
             currentp = currentp->next;
         }
@@ -2801,7 +2797,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                     }
                 }
 
-                if (buildInfo->tagID < TAGINFO_SIZE) {
+                if (buildInfo->tagID < TAGINFO_SIZE - 1) {
                     ++(buildInfo->tagID);
                     TFCTagID(tfcp) = buildInfo->tagID;
                     TFCFlags(tfcp) = buildInfo->flags;
@@ -2943,7 +2939,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                 }
                 strncpy(cp, buildInfo->str + 1, length);
                 cp[length] = '\0';
-                if (buildInfo->tagID < TAGINFO_SIZE) {
+                if (buildInfo->tagID < TAGINFO_SIZE - 1) {
                     ++(buildInfo->tagID);
                     TFCTagID(tfcp) = buildInfo->tagID;
                     TFCFlags(tfcp) = buildInfo->flags;
@@ -3714,7 +3710,9 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
 
         if (buildInfo->tagID + patch > 0) {
             newp->tagInfoCount = buildInfo->tagID + 1; /*wrong*/
-            newp->tagInfo = (TagInfo*)malloc(sizeof(struct TagInfo) * (newp->tagInfoCount + patch));
+            size_t tagInfoAllocSize = sizeof(struct TagInfo) * (newp->tagInfoCount + patch);
+            newp->tagInfo = (TagInfo*)malloc(tagInfoAllocSize);
+            bzero(newp->tagInfo, tagInfoAllocSize);
             for (i = newp->tagInfoCount - 1; i > 0; i--) {
                 ti = &(newp->tagInfo[i]);
                 /*should not malloc	ti->info = saveString(buildInfo->buffTagInfo[i].info);*/

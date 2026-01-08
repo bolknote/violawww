@@ -553,12 +553,13 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
     docViewInfo->currentHotlistItem = -1;
     docViewInfo->hotlistSize = 0; /* size of the list allocated */
 
-    /* Search region.  Only becomes active when a document is searchable. */
+    /* Search region.  Only becomes active when a document is searchable.
+     * Search widgets are positioned at the form bottom when visible.
+     * messageText is repositioned above them dynamically in searchModeMH. */
     searchLabel = XtVaCreateWidget("Index: ",
                                 xmLabelWidgetClass, form,
                                 XmNleftAttachment, XmATTACH_FORM,
-                                XmNbottomAttachment, XmATTACH_WIDGET,
-                                XmNbottomWidget, messageText,
+                                XmNbottomAttachment, XmATTACH_FORM,
                                 XmNrecomputeSize, FALSE,
                                 XmNheight, SEARCH_HEIGHT,
                                 NULL);
@@ -572,13 +573,8 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
                                 XmNleftAttachment, XmATTACH_WIDGET,
                                 XmNleftWidget, searchLabel,
                                 XmNrightAttachment, XmATTACH_FORM,
-                                XmNbottomAttachment, XmATTACH_WIDGET,
-                                XmNbottomWidget, messageText,
+                                XmNbottomAttachment, XmATTACH_FORM,
                                 NULL);
-    
-    XtVaSetValues(messageText,
-                  XmNbottomAttachment, XmATTACH_FORM,
-                  NULL);
     setHelp(searchLabel, messageText, "Index entry field.");
     setHelp(searchField, messageText, "Index entry field.");
 

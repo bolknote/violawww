@@ -77,9 +77,27 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `setResource()` | Set X11 resource | `cl_generic.c` |
 | `unhash()` | Get symbol name | `cl_generic.c` |
 | `HTTPHotListAdd/Delete/Get/Change/Load/Save()` | Hotlist operations | `cl_generic.c` |
-| `discoveryBroadcast()` | Send UDP broadcast | `cl_generic.c` |
 
 Note: `deleteFile()` for temp directories (`/tmp/`, `/var/tmp/`, `/var/folders/`) is allowed without prompting. Path traversal (`..`) is blocked.
+
+### Discovery Broadcast (No Security Check)
+
+`discoveryBroadcast()` is an internal synchronization mechanism for interactive web content (games, collaborative demos). It is **not** protected because:
+
+1. **Opt-in only**: Discovery is disabled by default. It must be explicitly enabled via:
+   - `discoveryEnable()` function call
+   - `SC` attribute on HTML elements (e.g., `<FGCOLOR SC>`, `<POS SC>`)
+
+2. **Limited scope**: Only synchronizes visual properties (position, size, color, rotation) between peers viewing the same page. Cannot access files or execute commands.
+
+3. **Used for**: Multiplayer games and collaborative graphics demos using `<LINE>`, `<SQUARE>`, `<CIRCLE>`, `<POLYGON>`, `<TEXT>` elements.
+
+Example enabling sync:
+```html
+<SQUARE><FGCOLOR SC NAME="red"></FGCOLOR></SQUARE>
+```
+
+See [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md) for interactive graphics documentation.
 
 ### Local File Protection for Images
 

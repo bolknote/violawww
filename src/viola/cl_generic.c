@@ -4306,8 +4306,21 @@ long meth_generic_scanf(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Result: mode
  */
 long meth_generic_securityMode(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (argc > 0 && securityMode == 0)
-        securityMode = PkInfo2Int(&argv[0]);
+    if (argc > 0) {
+        int newMode = PkInfo2Int(&argv[0]);
+        if (newMode == 0) {
+            /* Lowering securityMode: requires trust */
+            if (GET_security(self) == 0) {
+                securityMode = 0;
+            } else if (!notSecureWithPrompt(self, "elevate to trusted status")) {
+                securityMode = 0;
+            }
+            /* else: user denied, securityMode unchanged */
+        } else {
+            /* Raising securityMode: always allowed */
+            securityMode = newMode;
+        }
+    }
 
     clearPacket(result);
     result->type = PKT_INT;

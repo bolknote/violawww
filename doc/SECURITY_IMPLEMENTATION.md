@@ -63,6 +63,7 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `socket.startClient()` | Open TCP connection | `cl_socket.c` |
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
 | `set("security", 0)` | Elevate to trusted status | `cl_generic.c` |
+| `securityMode(0)` | Elevate to trusted status | `cl_generic.c` |
 | `addPicFromFile()` | Load image (cross-origin only) | `cl_generic.c` |
 | `exit()`, `quit()` | Terminate application | `cl_cosmic.c` |
 | `destroy()` | Destroy object | `cl_cosmic.c` |

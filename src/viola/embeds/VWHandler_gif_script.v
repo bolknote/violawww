@@ -14,18 +14,9 @@
 			send("VWHandler_fail", "report", 
 			  concat("VWHandler_gif:\nfailed to access: ", 
 				arg[1], "\n"));
-
-			www.mesg.tf("show", 
-				    concatenate("Failed to get ", arg[1]));
 			cursorShape("idle");
 			return 0;
 		} else {
-			www.mesg.tf("show", "");
-			www.udi.tf("show", arg[1]);
-
-			www.doc.ctrl.label("index", 0);
-			www.doc.ctrl.tf("index", 0);
-
 			cursorShape("idle");
 			return docObj;
 		}

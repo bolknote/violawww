@@ -22,21 +22,10 @@
 #include "HTWSRC.h"
 
 PUBLIC void HTFormatInit NOARGS {
-#ifdef NeXT
-    HTSetPresentation("application/postscript", "open %s", 1.0, 2.0, 0.0);
-    /* The following needs the GIF previewer -- you might not have it. */
-    HTSetPresentation("image/gif", "open %s", 0.3, 2.0, 0.0);
-    HTSetPresentation("image/x-tiff", "open %s", 1.0, 2.0, 0.0);
-    HTSetPresentation("audio/basic", "open %s", 1.0, 2.0, 0.0);
-    HTSetPresentation("*", "open %s", 1.0, 0.0, 0.0);
-#else
-    if (getenv("DISPLAY")) { /* Must have X11 */
-        HTSetPresentation("application/postscript", "ghostview %s &", 1.0, 3.0, 0.0);
-        HTSetPresentation("image/gif", "xv %s &", 1.0, 3.0, 0.0);
-        HTSetPresentation("image/x-tiff", "xv %s &", 1.0, 3.0, 0.0);
-        HTSetPresentation("image/jpeg", "xv %s &", 1.0, 3.0, 0.0);
-    }
-#endif
+    /* Images (GIF, JPEG, TIFF, XBM, XPM) and PostScript are handled internally
+     * via VWHandler_gif, VWHandler_extimg, and VWHandler_postscript.
+     * No external viewers needed.
+     */
     HTSetConversion("www/mime", "*", HTMIMEConvert, 1.0, 0.0, 0.0);
     HTSetConversion("application/x-wais-source", "*", HTWSRCConvert, 1.0, 0.0, 0.0);
     HTSetConversion("text/html", "text/x-c", HTMLToC, 0.5, 0.0, 0.0);

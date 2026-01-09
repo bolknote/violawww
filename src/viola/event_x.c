@@ -208,6 +208,11 @@ void signalHandler(int sig)
         fprintf(stderr, "signalHandler: cleaning up resources...\n");
         fflush(stderr);
 
+        /* Flush and sync X display to prevent BadWindow errors on pending requests */
+        if (display) {
+            XSync(display, True);  /* discard pending events */
+        }
+
         freeViolaResources();
 
         fprintf(stderr, "signalHandler: exiting.\n");

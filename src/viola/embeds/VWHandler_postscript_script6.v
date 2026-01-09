@@ -5,11 +5,6 @@
 		return;
 	break;
 	case "tile":
-		/* arg[1]	y
-		 * arg[2]	width
-		 * arg[3]	height
-		 * Keep natural image size - don't stretch to pane size
-		 */
 		set("visible", 1);
 		set("x", 0);
 		set("y", arg[1]);
@@ -25,15 +20,12 @@
 		return;
 	break;
 	case "configSideBar":
-		/* Not applicable for images - return 0 to trigger lbarConfig off */
 		return 0;
 	break;
 	case "VW_event":
-		/* arg[1] is VIEW_ON or VIEW_OFF */
 		return;
 	break;
 	case "config":
-		/* Delegate to C-level GIF config which handles image loading/resizing */
 		config(arg[1], arg[2], arg[3], arg[4]);
 		return;
 	break;
@@ -44,10 +36,12 @@
 		return height();
 	break;
 	case "build":
-		/* arg[1]	sourcefile
+		/* arg[1]	sourcefile (URL)
 		 * arg[2]	parent
 		 * arg[3]	name
 		 * arg[4]	width
+		 *
+		 * Download PostScript, convert to GIF via ImageMagick, display
 		 */
 		docURL = arg[1];
 		docName = arg[3];
@@ -57,23 +51,29 @@
 		prevWidth = arg[4];
 		prevHeight = send(parent(), "heightP");
 
-		localFile = HTTPGet(docURL);
-		if (isBlank(localFile) == 1) {
+		/* Download the source PostScript */
+		localSource = HTTPGet(docURL);
+		if (isBlank(localSource) == 1) {
 			cursorShape("idle");
 			return 0;
-		} else {
-			set("width", 0);
-			set("height", 0);
-			set("label", localFile);
-			cursorShape("idle");
-			return get("name");
 		}
+
+		/* Convert PostScript to GIF via ImageMagick */
+		localFile = concat(localSource, ".gif");
+		system(concat("magick -density 72 -background white 'ps:",
+			localSource, "' -alpha remove -alpha off -colors 256 '", 
+			localFile, "'"));
+
+		/* Clean up source file */
+		send("wwwSecurity", "rmTmpFile", localSource);
+
+		set("width", 0);
+		set("height", 0);
+		set("label", localFile);
+		cursorShape("idle");
+		return get("name");
 	break;
 	case "display":
-		/* arg[1]	width (of viewer window)
-		 * arg[2]	height (of viewer window)
-		 * Keep natural size - don't resize to viewer dimensions
-		 */
 		if (get("window")) raise();
 		return;
 	break;
@@ -100,18 +100,9 @@
 		return 0;
 	break;
 	case "tree":
-		/* produce a n-level anchors tree by recursively fetching
-		 * anchor links 
-		 */
 		return;
 	break;
 	case "showSrc":
-/*
-		VWHANDLER_GIF_EDITOR = "xv";
-		system(concat(VWHANDLER_GIF_EDITOR, " ", localFile));
-		set("label", localFile);
-		render();
-*/
 		res.dialogWithButtons("show", 
 				    concat("For source, please refer to:\n",
 						 "docName: ", docName, 
@@ -120,11 +111,9 @@
 		return;
 	break;
 	case "outlineSrc":
-		/* Outliner not available for GIF */
 		return;
 	break;
 	case "print":
-		/* Printing not available for GIF */
 		return;
  	break;
 	case "torn":
@@ -145,11 +134,9 @@
 		return;
 	break;
 	case "viewP":
-		/* Return if this is a valid view object */
 		return 1;
 	break;
 	case "resize":
-		/* Keep natural size - resizing not supported in XLOADIMAGE mode */
 		return;
 	break;
 	case "clone":

@@ -21,13 +21,21 @@ int init_sys() {
  * Create a temp file with the given suffix (e.g., ".gif").
  * Uses mkstemps() for secure temp file creation.
  * Returns path allocated with saveString(), or NULL on error.
+ * 
+ * On macOS, uses $TMPDIR (user-accessible) instead of /tmp
+ * to avoid sandbox restrictions with 'open' command.
  */
 char* sys_make_temp_file(const char* suffix) {
     char template[256];
     int suffixlen = suffix ? strlen(suffix) : 0;
     int fd;
+    const char* tmpdir = getenv("TMPDIR");
     
-    snprintf(template, sizeof(template), "/tmp/viola_XXXXXX%s", suffix ? suffix : "");
+    if (!tmpdir || !tmpdir[0]) {
+        tmpdir = "/tmp";
+    }
+    
+    snprintf(template, sizeof(template), "%s/viola_XXXXXX%s", tmpdir, suffix ? suffix : "");
     
     fd = mkstemps(template, suffixlen);
     if (fd < 0) {

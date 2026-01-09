@@ -416,8 +416,10 @@ int GLInit(Display* dpy, Screen* scrn)
             return 0;
         }
     }
-    if (sync_event)
-        XSynchronize(display, 1);
+    /* Force synchronous X mode to prevent race conditions where X requests
+     * are buffered and sent after windows are destroyed (causes BadWindow errors).
+     * This is slower but ensures correct operation. */
+    XSynchronize(display, 1);
 
     /* Initialize X Toolkit for this display to ensure Xmu per-display
      * information is available. This is needed by Motif which depends on Xmu. */

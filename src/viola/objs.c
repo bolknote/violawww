@@ -610,6 +610,37 @@ static SlotStruct objDesc_VWHandler_gif[] = {
     {(char*)0, (char*)0},
 };
 
+static char _slotValue_VWHandler_extimg0[] = "generic";
+static char _slotValue_VWHandler_extimg1[] = "VWHandler_extimg";
+static char _slotValue_VWHandler_extimg2[] = {
+#include "embeds/VWHandler_extimg_script.v.h"
+};
+/* END OF OBJ */
+
+static char _slotValue_VWHandler_extimg4[] = "GIF";
+static char _slotValue_VWHandler_extimg5[] = "VWHandler_extimg.gif";
+static char _slotValue_VWHandler_extimg6[] = {
+#include "embeds/VWHandler_extimg_script6.v.h"
+};
+static char _slotValue_VWHandler_extimg7[] = "grey45";
+static char _slotValue_VWHandler_extimg8[] = "LemonChiffon1";
+static char _slotValue_VWHandler_extimg9[] = "black";
+/* END OF FILE */
+
+static SlotStruct objDesc_VWHandler_extimg[] = {
+    {"class", _slotValue_VWHandler_extimg0},
+    {"name", _slotValue_VWHandler_extimg1},
+    {"script", _slotValue_VWHandler_extimg2},
+    {(char*)0, (char*)1},
+    {"class", _slotValue_VWHandler_extimg4},
+    {"name", _slotValue_VWHandler_extimg5},
+    {"script", _slotValue_VWHandler_extimg6},
+    {"BDColor", _slotValue_VWHandler_extimg7},
+    {"BGColor", _slotValue_VWHandler_extimg8},
+    {"FGColor", _slotValue_VWHandler_extimg9},
+    {(char*)0, (char*)0},
+};
+
 static char _slotValue_VWHandler_hmml0[] = "generic";
 static char _slotValue_VWHandler_hmml1[] = "VWHandler_hmml";
 static char _slotValue_VWHandler_hmml2[] = {
@@ -731,6 +762,37 @@ static SlotStruct objDesc_VWHandler_plaintext[] = {
     {"FGColor", _slotValue_VWHandler_plaintext9},
     {"font", _slotValue_VWHandler_plaintext10},
     {"height", _slotValue_VWHandler_plaintext11},
+    {(char*)0, (char*)0},
+};
+
+static char _slotValue_VWHandler_postscript0[] = "generic";
+static char _slotValue_VWHandler_postscript1[] = "VWHandler_postscript";
+static char _slotValue_VWHandler_postscript2[] = {
+#include "embeds/VWHandler_postscript_script.v.h"
+};
+/* END OF OBJ */
+
+static char _slotValue_VWHandler_postscript4[] = "GIF";
+static char _slotValue_VWHandler_postscript5[] = "VWHandler_postscript.gif";
+static char _slotValue_VWHandler_postscript6[] = {
+#include "embeds/VWHandler_postscript_script6.v.h"
+};
+static char _slotValue_VWHandler_postscript7[] = "grey45";
+static char _slotValue_VWHandler_postscript8[] = "white";
+static char _slotValue_VWHandler_postscript9[] = "black";
+/* END OF FILE */
+
+static SlotStruct objDesc_VWHandler_postscript[] = {
+    {"class", _slotValue_VWHandler_postscript0},
+    {"name", _slotValue_VWHandler_postscript1},
+    {"script", _slotValue_VWHandler_postscript2},
+    {(char*)0, (char*)1},
+    {"class", _slotValue_VWHandler_postscript4},
+    {"name", _slotValue_VWHandler_postscript5},
+    {"script", _slotValue_VWHandler_postscript6},
+    {"BDColor", _slotValue_VWHandler_postscript7},
+    {"BGColor", _slotValue_VWHandler_postscript8},
+    {"FGColor", _slotValue_VWHandler_postscript9},
     {(char*)0, (char*)0},
 };
 
@@ -7785,6 +7847,8 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_VWHandler_fail,
                                "VWHandler_gif.v",
                                objDesc_VWHandler_gif,
+                               "VWHandler_extimg.v",
+                               objDesc_VWHandler_extimg,
                                "VWHandler_hmml.v",
                                objDesc_VWHandler_hmml,
                                "VWHandler_hmml_fail.v",
@@ -7797,6 +7861,8 @@ ObjsNamesStruct objsNames[] = {"HTML__box.v",
                                objDesc_VWHandler_html2,
                                "VWHandler_plaintext.v",
                                objDesc_VWHandler_plaintext,
+                               "VWHandler_postscript.v",
+                               objDesc_VWHandler_postscript,
                                "VWHandler_vobj.v",
                                objDesc_VWHandler_vobj,
                                "VWHandler_vobjf.v",

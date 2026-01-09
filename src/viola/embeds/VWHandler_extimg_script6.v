@@ -44,10 +44,12 @@
 		return height();
 	break;
 	case "build":
-		/* arg[1]	sourcefile
+		/* arg[1]	sourcefile (URL)
 		 * arg[2]	parent
 		 * arg[3]	name
 		 * arg[4]	width
+		 *
+		 * Download image, convert to GIF via ImageMagick, display
 		 */
 		docURL = arg[1];
 		docName = arg[3];
@@ -57,17 +59,25 @@
 		prevWidth = arg[4];
 		prevHeight = send(parent(), "heightP");
 
-		localFile = HTTPGet(docURL);
-		if (isBlank(localFile) == 1) {
+		/* Download the source image */
+		localSource = HTTPGet(docURL);
+		if (isBlank(localSource) == 1) {
 			cursorShape("idle");
 			return 0;
-		} else {
-			set("width", 0);
-			set("height", 0);
-			set("label", localFile);
-			cursorShape("idle");
-			return get("name");
 		}
+
+		/* Convert to GIF via ImageMagick */
+		localFile = concat(localSource, ".gif");
+		system(concat("magick '", localSource, "' -colors 256 '", localFile, "'"));
+
+		/* Clean up source file */
+		send("wwwSecurity", "rmTmpFile", localSource);
+
+		set("width", 0);
+		set("height", 0);
+		set("label", localFile);
+		cursorShape("idle");
+		return get("name");
 	break;
 	case "display":
 		/* arg[1]	width (of viewer window)
@@ -100,18 +110,9 @@
 		return 0;
 	break;
 	case "tree":
-		/* produce a n-level anchors tree by recursively fetching
-		 * anchor links 
-		 */
 		return;
 	break;
 	case "showSrc":
-/*
-		VWHANDLER_GIF_EDITOR = "xv";
-		system(concat(VWHANDLER_GIF_EDITOR, " ", localFile));
-		set("label", localFile);
-		render();
-*/
 		res.dialogWithButtons("show", 
 				    concat("For source, please refer to:\n",
 						 "docName: ", docName, 
@@ -120,11 +121,9 @@
 		return;
 	break;
 	case "outlineSrc":
-		/* Outliner not available for GIF */
 		return;
 	break;
 	case "print":
-		/* Printing not available for GIF */
 		return;
  	break;
 	case "torn":
@@ -145,11 +144,9 @@
 		return;
 	break;
 	case "viewP":
-		/* Return if this is a valid view object */
 		return 1;
 	break;
 	case "resize":
-		/* Keep natural size - resizing not supported in XLOADIMAGE mode */
 		return;
 	break;
 	case "clone":

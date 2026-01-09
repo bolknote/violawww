@@ -4,6 +4,27 @@
 		set("y", arg[1]);
 		return;
 	break;
+	case "tile":
+		set("visible", 1);
+		set("x", 0);
+		set("y", arg[1]);
+		return;
+	break;
+	case "vspan":
+		return height();
+	break;
+	case "show":
+		set("visible", 1);
+		render();
+		if (get("window")) raise();
+		return;
+	break;
+	case "configSideBar":
+		return 0;
+	break;
+	case "VW_event":
+		return;
+	break;
 	case "config":
 		if (width() != arg[3]) {
 			loadDoc = 1;
@@ -16,18 +37,6 @@
 			clearWindow();
 			set("width", arg[3]);
 			set("height", arg[4]);
-/*
-			data = loadFile(arg[1]);
-			set("label", data);
-			send(parent(), "update", vspan);
-			vspan = get("height");
-			parentHeight = send(parent(), "heightP");
-			if (vspan >= parentHeight) {
-				set("height", vspan);
-			} else {
-				set("height", parentHeight);
-			}
-*/
 			render();
 		}
 		return;
@@ -57,8 +66,6 @@
 		send("wwwSecurity", "rmTmpFile", localFile);
 
 		if (isBlank(data) == 1) {
-			www.mesg.tf("show", 
-				    concat("Failed to get ", docURL));
 			cursorShape("idle");
 			return 0;
 		} else {
@@ -70,17 +77,7 @@
 		}
 	break;
 	case "display":
-		/* arg[1]	width (of viewer window)
-		 * arg[2]	height (of viewer window)
-		 */
-		raise();
-		if (arg[1] != prevWidth) {
-			prevWidth = arg[1];
-			set("width", prevWidth);
-		} else if (arg[2] != prevHeight) {
-			prevHeight = arg[2];
-			set("height", prevHeight);
-		}
+		if (get("window")) raise();
 		return;
 	break;
 	case "historyRecord":
@@ -107,24 +104,20 @@
 		return 0;
 	break;
 	case "tree":
-		/* produce a n-level anchors tree by recursively fetching
-		 * anchor links 
-		 */
 		return;
 	break;
 	case "showSrc":
-		VWHANDLER_XBM_EDITOR = "bitmap";
-		tmp = concatenate(makeTempFile(), ".xbm");
-		saveFile(tmp, get("label"));
-		system(concatenate(VWHANDLER_XBM_EDITOR, " ", tmp));
-		set("label", loadFile(tmp));
-		render();
-		send("wwwSecurity", "rmTmpFile", tmp);
+		res.dialogWithButtons("show", 
+				    concat("For source, please refer to:\n",
+						 "docName: ", docName, 
+						 "\nDoc URL: ", docURL),
+					"OK", "");
 		return;
 	break;
 	case "outlineSrc":
-		www.mesg.tf("show", 
-			"Outliner not available for VWHANDLER_XBM\n");
+		return;
+	break;
+	case "print":
 		return;
 	break;
 	case "cycleColors":
@@ -149,8 +142,23 @@
 		isTorn = 1;
 		return;
 	break;
+	case "enter":
+		set("cursor", 0); 
+		return;
+	break;
 	case "raise":
-		raise();
+		if (get("window")) raise();
+		return;
+	break;
+	case "render":
+		set("visible", 1);
+		render();
+		return;
+	break;
+	case "viewP":
+		return 1;
+	break;
+	case "resize":
 		return;
 	break;
 	case "clone":

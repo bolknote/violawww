@@ -59,6 +59,8 @@ int initImgLib() {
     }
     Scrn = DefaultScreen(Disp);
     XSetErrorHandler(errorHandler);
+    /* Force synchronous X mode to prevent race conditions (BadWindow errors) */
+    XSynchronize(Disp, 1);
 
     return 1;
 }

@@ -219,13 +219,14 @@ print("\n");
 		case "VWHandler_gif":
 		case "VWHandler_xbm":
 		case "VWHandler_xpm":
+		case "VWHandler_extimg":
+		case "VWHandler_postscript":
 			/* invoke xv or something...
 			 * later, wrap this part into a 
 			 * VWHandler_* object, so as not to 
 			 * complicate it here
 			 */
-/*			DISP_METH = "inView";*/
-			DISP_METH = "extView";
+			DISP_METH = "inView";
 
 			switch (DISP_METH) {
 			case "inView":

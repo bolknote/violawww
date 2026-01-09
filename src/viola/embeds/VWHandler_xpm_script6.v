@@ -4,6 +4,27 @@
 		set("y", arg[1]);
 		return;
 	break;
+	case "tile":
+		set("visible", 1);
+		set("x", 0);
+		set("y", arg[1]);
+		return;
+	break;
+	case "vspan":
+		return height();
+	break;
+	case "show":
+		set("visible", 1);
+		render();
+		if (get("window")) raise();
+		return;
+	break;
+	case "configSideBar":
+		return 0;
+	break;
+	case "VW_event":
+		return;
+	break;
 	case "config":
 		if (width() != arg[3]) {
 			loadDoc = 1;
@@ -45,8 +66,6 @@
 		send("wwwSecurity", "rmTmpFile", localFile);
 
 		if (isBlank(data) == 1) {
-			www.mesg.tf("show", 
-				    concatenate("Failed to get ", arg[1]));
 			cursorShape("idle");
 			return 0;
 		} else {
@@ -61,14 +80,7 @@
 		/* arg[1]	width (of viewer window)
 		 * arg[2]	height (of viewer window)
 		 */
-		raise();
-		if (arg[1] != prevWidth) {
-			prevWidth = arg[1];
-			set("width", prevWidth);
-		} else if (arg[2] != prevHeight) {
-			prevHeight = arg[2];
-			set("height", prevHeight);
-		}
+		if (get("window")) raise();
 		return;
 	break;
 	case "historyRecord":
@@ -80,13 +92,6 @@
 		data = loadFile(localPath);
 		set("label", data);
 		render();
-		system(concat("rm ", tmp));
-		return;
-	break;
-	case "search":
-		cursorShape("busy");
-		search(arg[1]);
-		cursorShape("idle");
 		return;
 	break;
 	case "save":
@@ -103,26 +108,20 @@
 		return 0;
 	break;
 	case "tree":
-		/* produce a n-level anchors tree by recursively fetching
-		 * anchor links 
-		 */
 		return;
 	break;
 	case "showSrc":
-		VWHANDLER_XPM_EDITOR = "pixmap";
-		tmp = concatenate(makeTempFile(), ".xpm");
-		saveFile(tmp, get("label"));
-		system(concat(VWHANDLER_XPM_EDITOR, " -filename ", tmp, 
-						" >& /dev/null"));
-		set("label", loadFile(tmp));
-		send("wwwSecurity", "rmTmpFile", tmp);
-		render();
-		clearWindow();
+		res.dialogWithButtons("show", 
+				    concat("For source, please refer to:\n",
+						 "docName: ", docName, 
+						 "\nDoc URL: ", docURL),
+					"OK", "");
 		return;
 	break;
 	case "outlineSrc":
-		www.mesg.tf("show", 
-			    concatenate("Outliner not available for XPM\n"));
+		return;
+	break;
+	case "print":
 		return;
 	break;
 	case "torn":
@@ -134,7 +133,18 @@
 		return;
 	break;
 	case "raise":
-		raise();
+		if (get("window")) raise();
+		return;
+	break;
+	case "render":
+		set("visible", 1);
+		render();
+		return;
+	break;
+	case "viewP":
+		return 1;
+	break;
+	case "resize":
 		return;
 	break;
 	case "clone":

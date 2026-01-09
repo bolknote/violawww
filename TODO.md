@@ -5,8 +5,6 @@
   - Ensure navigation history (back/forward) works consistently across pages and embedded views.
 - [ ] Enable `mailto:` links
   - Clicking `mailto:` should open the default mail client with the correct address and subject/body.
-- [ ] Stop launching external viewer for direct image links
-  - Direct links to images should render inline; must not attempt to start `xv` or any external program.
 - [ ] Fix STYLE/SCRIPT skipping
   - Skipping STYLE/SCRIPT elements doesn't seem to work everywhere; needs investigation and fixes.
 - [ ] Implement file opening sandbox

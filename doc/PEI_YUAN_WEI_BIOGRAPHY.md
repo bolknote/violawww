@@ -12,8 +12,9 @@ Pei-Yuan "Perry" Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanes
 ### Birth and Education
 - Born in Taiwan, Pingtung County.[^1]
 - Moved to California with his parents in 1980. The family settled two blocks away from the UC Berkeley campus.[^8]
-- Graduated from Berkeley High School (California, USA) in 1986.[^1]
-- Studied geography at UC Berkeley as "a meeting point between the sciences and the arts," but computing was his true love.[^8]
+- At age 12, had his first contact with a computer — a Commodore PET at Willard Jr. High School. He wrote a Frogger-like game that won an award for the school and got to shake hands with the Mayor of Berkeley: *"It basically encouraged me a great deal, and got me started down the road of creating things with a computer."*[^12]
+- Graduated from Berkeley High School (California, USA) in 1986.[^1] In high school, wrote a game called "Pinnacle" — a combination of *The Seven Cities of Gold* and *Archon* with a world map editor — entirely in 6502 machine language using only hexadecimals, without an assembler.[^12]
+- Studied geography at UC Berkeley as "a meeting point between the sciences and the arts," but computing was his true love.[^8] Wei described himself as *"basically an artist at heart, with a bent for technology."*[^12]
 - Received a bachelor's degree from the University of California, Berkeley (UC Berkeley).[^1]
 - Was a member of the student club XCF (eXperimental Computing Facility) — a group engaged in experimental technologies.[^1]
 - After graduating in 1991, rather than getting a "real job," Wei continued working at XCF: *"If you made them a proposal they liked, they would let you loose on their computers. That was all the salary Pei Wei needed."*[^8]
@@ -21,7 +22,7 @@ Pei-Yuan "Perry" Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanes
 ### Career and Technological Contributions
 
 #### Creating Viola (1989–1990)
-In 1989, HyperCard from Apple caught Wei's eye: *"HyperCard was very compelling back then, you know graphically, this hyperlink thing, it was just not very global and it only worked on Mac,"* he recalls. *"And I didn't even have a Mac."*[^8]
+Viola was born out of a desire to build a generalized Adventure Games Construction Set, but soon turned into a HyperCard-like system, and then hypertext.[^12] In 1989, HyperCard from Apple caught Wei's eye: *"HyperCard was very compelling back then, you know graphically, this hyperlink thing, it was just not very global and it only worked on Mac,"* he recalls. *"And I didn't even have a Mac."*[^8]
 
 The machines he had access to were X-terminals, which gave him the idea for his project. He got a HyperCard manual and implemented the concepts in X-windows. Rather than taking the direct route of writing a one-off HyperCard-like application in C, Wei chose a more ambitious approach: writing a new computer language, something like Jean-Marie Hullot's Interface Builder but for X-Window instead of NeXT.[^8]
 
@@ -95,11 +96,13 @@ In Wei's ideal world, *"you would never find a file you couldn't open because yo
 Tim was really excited about ViolaWWW and started discussions with Pei Wei about cross-licensing software. Wei could make free use of the CERN code and CERN could use Viola as long as neither tried to make a profit at the other's expense. It was an arrangement in the spirit of GNU General Public License and it was just what the Web needed. CERN soon had the ViolaWWW code sitting on the info.cern.ch server free for anyone to download.[^8]
 
 ### Historical Significance
+- **Probably the third web browser ever created**, after Tim Berners-Lee's WorldWideWeb and the Line Mode Browser (1991).[^9]
+- **The most popular browser in 1992**, before being surpassed by Mosaic in 1993.[^9]
 - Recommended by CERN (where the WWW was invented) as the best browser at the time.[^4]
 - Mentioned in Ed Krol's book "Whole Internet User's Guide and Catalog" (1992).[^4]
 - **Direct inspiration for Mosaic**: When Marc Andreessen was shown ViolaWWW, it helped inspire him to start an effort at NCSA that would become Mosaic.[^7]
 - Became a model for Mosaic, Netscape Navigator, Internet Explorer, Firefox, Chrome.[^3][^4]
-- Involved in patent disputes (Eolas vs. Microsoft, 1999–2012): recognized as "prior art", which saved the web from monopoly on interactivity.[^4][^5]
+- Involved in patent disputes (Eolas vs. Microsoft, 1999–2012): recognized as "prior art", which saved the web from monopoly on interactivity.[^4][^5] Wei had embedded objects working in Viola by December 1992, and in May 1993 demonstrated the browser with interactive 3D plotting objects to Sun Microsystems.[^11] Wei personally informed Michael Doyle (Eolas CEO) about Viola as prior art and provided him with documentation and source code pointers, but Doyle mentioned only Cello and Mosaic to the Patent Office — not Viola, which predated both. During the trial, Wei was not permitted to demonstrate Viola to the jury, as the judge ruled it would be "too prejudicial" against Eolas.[^11]
 
 ### End of ViolaWWW Development (March 1994)
 
@@ -122,3 +125,7 @@ For further study: source code, design notebooks, and video materials are stored
 [^6]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (1991)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1991.messages/26.html)
 [^7]: [Brian Kardell: A Brief(ish) History of the Web Universe - Part III: The Early Web (2016)](https://bkardell.com/blog/Brief-ish-History-of-The-Web-Part-3.html)
 [^8]: Robert Cailliau & James Gillies, "How the Web Was Born: The Story of the World Wide Web" (2000), Chapter "Viola" and related sections
+[^9]: [Internet Guide: Pei-Yuan Wei (archived 2018)](https://web.archive.org/web/20180108220128/http://www.internet-guide.co.uk/PeiWei.html)
+[^10]: [Pei-Yuan Wei's personal page at viola.org (archived 2017)](https://web.archive.org/web/20171231133301/http://viola.org/wei/)
+[^11]: [Pei-Yuan Wei: Personal Comments on Eolas vs Microsoft, and the Viola Prior Art (archived 2010)](https://web.archive.org/web/20100625180207/http://www.xcf.berkeley.edu/~wei/viola/aboutEolasMicrosoft.html)
+[^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)

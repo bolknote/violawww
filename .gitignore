@@ -17,6 +17,7 @@ src/viola/embeds/*.h
 # IDE
 .vscode/
 .idea/
+.cursorrules
 
 # Test files
 *.html

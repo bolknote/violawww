@@ -367,7 +367,7 @@ static int x11SecurityDialog(const char* title, const char* message,
                 /* Title */
                 XSetForeground(display, gc, 0xCC0000);  /* Dark red */
                 {
-                    const char* title = "/!\\ SECURITY WARNING - Privilege Request";
+                    const char* title = "SECURITY WARNING - Privilege Request";
                     XDrawString(display, dialogWin, gc, 20, y, title, strlen(title));
                 }
                 
@@ -386,7 +386,7 @@ static int x11SecurityDialog(const char* title, const char* message,
                 
                 /* Warning text */
                 y += 35;
-                XSetForeground(display, gc, 0x800000);  /* Dark red */
+                XSetForeground(display, gc, 0xCC0000);  /* Dark red */
                 XDrawString(display, dialogWin, gc, 20, y, 
                            "WARNING: Trusted documents can:", 31);
                 y += 18;

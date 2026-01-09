@@ -1709,6 +1709,17 @@ VObj* HTMLBuildObj(SGMLBuildInfoState* bstate, int parentWidth, SGMLTagMappingIn
             fprintf(stderr,
                     "HTMLBuildObj: BUILT: '%s'\n", GET_name(bstate->obj));
     */
+    /* Security: set trust level based on document source */
+    {
+        extern char* current_addr;
+        extern int isLocalAddress(const char* addr);
+        if (current_addr && isLocalAddress(current_addr)) {
+            SET_security(bstate->obj, 0);  /* Local = trusted */
+        } else {
+            SET_security(bstate->obj, 1);  /* Remote = untrusted */
+        }
+    }
+    
     /* modify template object attributes
      */
     if (bstate->parent && bstate->obj) {

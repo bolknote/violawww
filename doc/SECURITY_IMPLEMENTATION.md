@@ -180,6 +180,17 @@ Checks security with user confirmation. Returns 1 if blocked, 0 if allowed.
 3. Shows security dialog → if Trust, add to trusted list and allow
 4. Otherwise → block
 
+#### `notSecureWithPromptf(VObj* self, const char* fmt, ...)`
+
+Printf-style version of `notSecureWithPrompt()`. Formats the operation message using printf syntax:
+
+```c
+if (notSecureWithPromptf(self, "read file: %s", filename))
+    return 0;  /* Blocked */
+```
+
+Has `__attribute__((format(printf, 2, 3)))` for compile-time format checking.
+
 #### `ViolaRegisterSecurityCallback()`
 
 Registers the C-based security dialog callback from VW frontend.
@@ -207,11 +218,14 @@ Cloned objects inherit security from the original object. If `securityMode` glob
 
 | File | Changes |
 |------|---------|
-| `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, `isLocalAddress()`, trusted docs list, `loadObjFile()` security |
-| `src/viola/cl_cosmic.h` | Security callback typedef and prototypes, `isLocalAddress()` |
+| `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, `notSecureWithPromptf()`, `isLocalAddress()`, trusted docs list, `loadObjFile()` security |
+| `src/viola/cl_cosmic.h` | Security callback typedef and prototypes, `isLocalAddress()`, `notSecureWithPromptf()` |
 | `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `addPicFromFile()`, `HTTPCurrentDocAddrSet()`, `securityMode()` fix, privilege escalation |
 | `src/viola/cl_socket.c` | Security check for `startClient()` |
 | `src/viola/cl_TTY.c` | Security check for `startClient()` |
+| `src/viola/html2.c` | `SET_security()` for HTML-created objects based on `current_addr` |
+| `src/viola/sgml.c` | `SET_security()` for SGML-created objects based on `current_addr` |
+| `src/viola/HTML_style.c` | `<SECURITY>` tag registration |
 | `src/viola/loader.c` | `load_object_with_security()` for trust assignment |
 | `src/viola/class.c` | Clone security inheritance |
 | `src/viola/objs.c` | `HTML_security` object registration |

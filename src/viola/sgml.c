@@ -532,9 +532,16 @@ VObj* SGMLBuild(SGMLDocMappingInfo* dmi, SGMLTagMappingInfo* tagMappingInfo, cha
         return NULL;
     }
 
-    /* modify template object attributes
-     */
-    SET_security(obj, 1); /* non secure */
+    /* Security: set trust level based on document source */
+    {
+        extern char* current_addr;
+        extern int isLocalAddress(const char* addr);
+        if (current_addr && isLocalAddress(current_addr)) {
+            SET_security(obj, 0);  /* Local = trusted */
+        } else {
+            SET_security(obj, 1);  /* Remote = untrusted */
+        }
+    }
 
     SET__parent(obj, parent);
     SET_parent(obj, VSaveString(GET__memoryGroup(obj), GET_name(parent)));

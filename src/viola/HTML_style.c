@@ -82,6 +82,7 @@ BODY		HTML_body 		0 0 0 1 0		0 10 1 1\n\
 HTML 		HTML_fld 		0 0 0 1 0		0 10 0 1\n\
 MENU		HTML_menu 		0 0 0 1 0		3 7 0 2\n\
 META		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
+SECURITY	HTML_security		0 0 0 0 0		0 0 0 0\n\
 NEXTID		HTML_nextID 		0 0 0 0 0		0 0 0 2\n\
 PRE		HTML_pre 		0 0 0 1 0		3 7 0 2\n\
 EXAMPLE		HTML_example 		0 0 0 1 0		3 7 0 2\n\
@@ -135,7 +136,7 @@ VINSERT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 VSCRIPT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 VVIEW		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 GROUP		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-SECURITY	HTML_security		1 0 0 0 0		0 0 0 0\n\
+SECURITY	HTML_security		0 0 0 0 0		0 0 0 0\n\
 MATH		HTML_math		0 0 0 1 0		0 10 0 0\n\
 OVER		HTML_over		0 0 0 1 0		0 0 0 0\n\
 SUB		HTML_sub		1 0 0 0 0		0 0 0 0\n\

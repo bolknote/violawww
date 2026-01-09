@@ -162,13 +162,11 @@ long meth_socket__startClient(VObj* self, Packet* result, int argc, Packet argv[
 {
     int fd;
     int socket_open(char* proto, char* host, int port);
-    char msgbuf[256];
 
     /* Security: opening network connections requires user permission */
-    snprintf(msgbuf, sizeof(msgbuf), "open TCP connection to %s:%d",
-             GET_host(self) ? GET_host(self) : "(unknown)",
-             GET_port(self));
-    if (notSecureWithPrompt(self, msgbuf)) {
+    if (notSecureWithPromptf(self, "open TCP connection to %s:%d",
+            GET_host(self) ? GET_host(self) : "(unknown)",
+            GET_port(self))) {
         result->type = PKT_INT;
         result->canFree = 0;
         result->info.i = -1;

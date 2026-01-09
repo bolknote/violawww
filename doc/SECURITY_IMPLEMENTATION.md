@@ -82,7 +82,6 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `cli()` | Command line interface | `cl_generic.c` |
 | `environVar()` | Read environment variable | `cl_generic.c` |
 | `accessible()` | Check file accessibility | `cl_generic.c` |
-| `loadSTG()` | Load stylesheet | `cl_generic.c` |
 | `setResource()` | Set X11 resource | `cl_generic.c` |
 | `unhash()` | Get symbol name | `cl_generic.c` |
 | `HTTPHotListAdd/Delete/Get/Change/Load/Save()` | Hotlist operations | `cl_generic.c` |

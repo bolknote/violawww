@@ -13,6 +13,7 @@
  * superClass	: NULL
  */
 #include "cl_cosmic.h"
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -186,6 +187,22 @@ int notSecureWithPrompt(VObj* self, const char* operation)
     
     /* No callback or user denied - block */
     return 1;
+}
+
+/*
+ * notSecureWithPromptf() - printf-style version of notSecureWithPrompt.
+ * Usage: notSecureWithPromptf(self, "load file: %s", filename)
+ */
+int notSecureWithPromptf(VObj* self, const char* fmt, ...)
+{
+    char buf[512];
+    va_list ap;
+    
+    va_start(ap, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_end(ap);
+    
+    return notSecureWithPrompt(self, buf);
 }
 
 SlotInfo cl_cosmic_NCSlots[] = {{STR_class, PTRS | SLOT_RW, (long)"cosmic"},
@@ -480,7 +497,7 @@ long meth_cosmic_debug(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return:
  */
 long meth_cosmic_destroy(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "destroy object"))
+    if (notSecureWithPromptf(self, "destroy object: %s", GET_name(self) ? GET_name(self) : "(unnamed)"))
         return 0;
     clearPacket(result);
     free(self);
@@ -855,7 +872,7 @@ long meth_cosmic_save(VObj* self, Packet* result, int argc, Packet argv[]) {
     FILE* fp;
     int stat;
 
-    if (notSecureWithPrompt(self, "save object to file"))
+    if (notSecureWithPromptf(self, "save object: %s", GET_name(self) ? GET_name(self) : "(unnamed)"))
         return 0;
 
     while ((parent = GET__parent(obj)))
@@ -893,10 +910,10 @@ long meth_cosmic_saveAs(VObj* self, Packet* result, int argc, Packet argv[]) {
     FILE* fp;
     int stat;
 
-    if (notSecureWithPrompt(self, "save object to file"))
-        return 0;
-
     if (argc != 1)
+        return 0;
+        
+    if (notSecureWithPromptf(self, "save object to: %s", PkInfo2Str(&argv[0])))
         return 0;
 
     while ((parent = GET__parent(obj)))
@@ -995,12 +1012,14 @@ long meth_cosmic_tweak(VObj* self, Packet* result, int argc, Packet argv[]) {
     int i;
     size_t len;
     char *cp, *script;
-
-    /* Security check: untrusted object trying to execute code in another object's context */
-    if (notSecureWithPrompt(self, "execute script in another object's context"))
-        return 0;
+    const char* targetName;
 
     obj = PkInfo2Obj(&argv[0]);
+    targetName = obj ? GET_name(obj) : "(unknown)";
+    
+    /* Security check: untrusted object trying to execute code in another object's context */
+    if (notSecureWithPromptf(self, "execute script in object: %s", targetName ? targetName : "(unnamed)"))
+        return 0;
     if (obj) {
         for (i = 1; i < argc; i++) {
             script = PkInfo2Str(&argv[i]);

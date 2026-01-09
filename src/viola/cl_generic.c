@@ -1251,9 +1251,7 @@ long meth_generic_HTTPCurrentDocAddrSet(VObj* self, Packet* result, int argc, Pa
     
     /* Security check: untrusted object setting local address requires confirmation */
     if (self && GET_security(self) > 0 && newAddr && isLocalAddress(newAddr)) {
-        char msgbuf[512];
-        snprintf(msgbuf, sizeof(msgbuf), "set document address to local path: %s", newAddr);
-        if (notSecureWithPrompt(self, msgbuf)) {
+        if (notSecureWithPromptf(self, "set document address to local path: %s", newAddr)) {
             return 0;
         }
     }
@@ -1453,7 +1451,7 @@ long int helper_buildingHTML(Packet* result, VObj* obj, char* url, long width, i
 
     /*	gettimeofday(&time1, (struct timezone*)NULL);*/
 
-    if (notSecureWithPrompt(obj, "build HTML document"))
+    if (notSecureWithPromptf(obj, "build HTML document: %s", url ? url : "(null)"))
         return 0;
 
     char *simpleAddress, *anchorSearch;
@@ -1506,14 +1504,14 @@ long meth_generic_HTTPSubmit(VObj* self, Packet* result, int argc, Packet argv[]
 
 long meth_generic_HTTPHotListAdd(VObj* self, Packet* result, int argc, Packet argv[]) {
     /* url, comment, date */
-    if (notSecureWithPrompt(self, "add URL to hotlist"))
+    if (notSecureWithPromptf(self, "add to hotlist: %s", PkInfo2Str(&argv[0])))
         return 0;
     return addHotListItem(saveString(PkInfo2Str(&argv[0])), saveString(PkInfo2Str(&argv[1])),
                           saveString(PkInfo2Str(&argv[2])));
 }
 
 long meth_generic_HTTPHotListDelete(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "delete URL from hotlist"))
+    if (notSecureWithPromptf(self, "delete from hotlist: item #%d", PkInfo2Int(&argv[0])))
         return 0;
     return deleteHotListItem(PkInfo2Int(&argv[0]));
 }
@@ -1919,7 +1917,7 @@ long meth_generic_SGMLTableFormater(VObj* self, Packet* result, int argc, Packet
 long meth_generic_accessible(VObj* self, Packet* result, int argc, Packet argv[]) {
     int accessible;
     char* path;
-    if (notSecureWithPrompt(self, "check file accessibility"))
+    if (notSecureWithPromptf(self, "check file: %s", argv[0].info.s ? argv[0].info.s : "(null)"))
         return 0;
     result->type = PKT_STR;
     if ((path = SaveString(vl_expandPath(argv[0].info.s, buff)))) {
@@ -2744,7 +2742,7 @@ long meth_generic_deleteFile(VObj* self, Packet* result, int argc, Packet argv[]
     }
     
     /* Non-temp files require user confirmation */
-    if (notSecureWithPrompt(self, path ? path : "delete file"))
+    if (notSecureWithPromptf(self, "delete file: %s", path ? path : "(unknown)"))
         return 0;
     
     result->info.i = unlink(path);
@@ -3645,19 +3643,15 @@ long meth_generic_objectPosition(VObj* self, Packet* result, int argc, Packet ar
  */
 long meth_generic_loadFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char *cp, *retStrp, *path;
-    char reasonBuf[1024];
     
     result->type = PKT_STR;
     cp = PkInfo2Str(&argv[0]);
     
     /* Security check - reading local files can leak sensitive data */
-    if (cp) {
-        snprintf(reasonBuf, sizeof(reasonBuf), "read file: %s", cp);
-        if (notSecureWithPrompt(self, reasonBuf)) {
-            result->info.s = "";
-            result->canFree = 0;
-            return 0;
-        }
+    if (cp && notSecureWithPromptf(self, "read file: %s", cp)) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
     }
     if (!cp) {
         result->info.s = "";
@@ -3689,8 +3683,6 @@ long meth_generic_loadFile(VObj* self, Packet* result, int argc, Packet argv[]) 
 }
 
 long meth_generic_loadSTG(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "load stylesheet"))
-        return 0;
     return loadSTG(PkInfo2Str(&argv[0]));
 }
 /*
@@ -3978,14 +3970,12 @@ long meth_generic_pipe(VObj* self, Packet* result, int argc, Packet argv[]) {
     int c;
     FILE* fp;
     char* buffp;
-    char reasonBuf[512];
     char* cmd = (argc > 0) ? PkInfo2Str(&argv[0]) : "(no command)";
 
     clearPacket(result);
 
     /* Security: untrusted objects cannot execute shell commands via pipe */
-    snprintf(reasonBuf, sizeof(reasonBuf), "pipe(\"%s\")", cmd);
-    if (notSecureWithPrompt(self, reasonBuf))
+    if (notSecureWithPromptf(self, "pipe(\"%s\")", cmd))
         return 0;
 
     fp = popen(PkInfo2Str(&argv[0]), PkInfo2Str(&argv[1]));
@@ -4238,11 +4228,9 @@ long meth_generic_replaceStrQ(VObj* self, Packet* result, int argc, Packet argv[
  */
 long meth_generic_saveFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* cp;
-    char reasonBuf[512];
     char* path = PkInfo2Str(&argv[0]);
     
-    snprintf(reasonBuf, sizeof(reasonBuf), "saveFile(\"%s\")", path ? path : "(unknown)");
-    if (notSecureWithPrompt(self, reasonBuf))
+    if (notSecureWithPromptf(self, "saveFile(\"%s\")", path ? path : "(unknown)"))
         return 0;
 
     result->type = PKT_INT;
@@ -4695,7 +4683,7 @@ long meth_generic_addURLToHistory(VObj* self, Packet* result, int argc, Packet a
 }
 
 long meth_generic_setResource(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "set X11 resource"))
+    if (argc > 0 && notSecureWithPromptf(self, "set X11 resource: %s", PkInfo2Str(&argv[0])))
         return 0;
     return 0; /* no can't do */
 }
@@ -5020,7 +5008,7 @@ long meth_generic_tool(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_generic_unhash(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPrompt(self, "get symbol name"))
+    if (notSecureWithPromptf(self, "get symbol name for ID: %d", PkInfo2Int(&argv[0])))
         return 0;
     clearPacket(result);
     result->info.s = (char*)symID2Str->get(symID2Str, (PkInfo2Int(&argv[0])))->val;
@@ -5069,7 +5057,7 @@ long meth_generic_violaPath(VObj* self, Packet* result, int argc, Packet argv[])
         result->canFree = PK_CANFREE_STR;
     } else if (argc == 1) {
         /* Security: untrusted objects cannot modify object search path */
-        if (notSecureWithPrompt(self, "modify object search path"))
+        if (notSecureWithPromptf(self, "set object path: %s", PkInfo2Str(&argv[0])))
             return 0;
         result->type = PKT_INT;
         result->canFree = 0;
@@ -5157,15 +5145,10 @@ long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet ar
     int picID;
     TFPic *pics, *pic;
     char* fname = PkInfo2Str(&argv[1]);
-    char msgbuf[256];
-    int fileIsLocal;
 
     /* Security check: untrusted object loading local file is dangerous */
-    fileIsLocal = fname ? isLocalAddress(fname) : 0;
-    
-    if (notSecure(self) && fileIsLocal) {
-        snprintf(msgbuf, sizeof(msgbuf), "load local image: %s", fname);
-        if (notSecureWithPrompt(self, msgbuf)) {
+    if (notSecure(self) && fname && isLocalAddress(fname)) {
+        if (notSecureWithPromptf(self, "load local image: %s", fname)) {
             result->type = PKT_INT;
             result->canFree = 0;
             result->info.i = 0;

@@ -53,3 +53,6 @@ typedef int (*SecurityDialogCallback)(const char* title, const char* message,
 void ViolaRegisterSecurityCallback(SecurityDialogCallback callback);
 int notSecure(VObj* self);
 int notSecureWithPrompt(VObj* self, const char* operation);
+int notSecureWithPromptf(VObj* self, const char* fmt, ...)
+    __attribute__((format(printf, 2, 3)));
+int isLocalAddress(const char* addr);

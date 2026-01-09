@@ -164,7 +164,6 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     char* args[16];
     int n;
     char *path;
-    char msgbuf[256];
 
     result->type = PKT_INT;
     result->canFree = 0;
@@ -179,8 +178,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     }
 
     /* Security: executing subprocess requires user permission */
-    snprintf(msgbuf, sizeof(msgbuf), "execute subprocess: %s", path);
-    if (notSecureWithPrompt(self, msgbuf)) {
+    if (notSecureWithPromptf(self, "execute subprocess: %s", path)) {
         result->info.i = -1;
         return 0;
     }
@@ -424,7 +422,6 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
     int fd, fd_client, pid, n;
     char* args[16];
     char *cp, *ptymajorp, *ptyminorp, *ttymajorp, *ttyminorp;
-    char msgbuf[256];
     char* path;
 
 #ifdef SYSV
@@ -451,8 +448,7 @@ long meth_TTY__startClient(VObj* self, Packet* result, int argc, Packet argv[]) 
 
     /* Security: executing subprocess requires user permission */
     path = GET_path(self);
-    snprintf(msgbuf, sizeof(msgbuf), "execute subprocess: %s", path ? path : "(unknown)");
-    if (notSecureWithPrompt(self, msgbuf)) {
+    if (notSecureWithPromptf(self, "execute subprocess: %s", path ? path : "(unknown)")) {
         result->info.i = -1;
         return 0;
     }

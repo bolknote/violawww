@@ -8,7 +8,14 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
+/* From vw_stubs.c */
+extern void initConsoleSecurityCallback(void);
+
 int main(int argc, char* argv[]) {
+    /* Initialize console-based security dialog BEFORE initViola
+     * because initViola enters event loop and never returns */
+    initConsoleSecurityCallback();
+    
     initViola(argc, argv, (char*)NULL, (Display*)NULL, (Screen*)NULL, (Window)0);
     return 0;
 }

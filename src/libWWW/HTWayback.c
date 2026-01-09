@@ -486,7 +486,7 @@ PUBLIC char* HTWaybackCheck PARAMS((const char* url)) {
                 free(response_buffer);
                 return NULL;
             }
-            sprintf(wayback_url, "https://web.archive.org/web/%s/%s", timestamp, original_url);
+            sprintf(wayback_url, "https://web.archive.org/web/%sid_/%s", timestamp, original_url);
             
             /* Show success message with date */
             {

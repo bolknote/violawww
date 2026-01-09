@@ -345,7 +345,7 @@ When a domain doesn't resolve (DNS error), ViolaWWW automatically:
 ./src/vw/vw http://www.hackzone.ru/
 
 # Browser will detect DNS failure and load:
-# https://web.archive.org/web/19970327140651/http://www.hackzone.ru:80/
+# https://web.archive.org/web/19970327140651id_/http://www.hackzone.ru:80/
 ```
 
 ### Technical Details

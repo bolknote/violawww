@@ -644,7 +644,7 @@ retry:
                 {
                     char* location = NULL;
                     char* p;
-                    
+                                        
                     /* Parse Location header from response (case-insensitive) */
                     p = find_header(start_of_data, "Location");
                     

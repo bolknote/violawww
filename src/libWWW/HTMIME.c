@@ -164,7 +164,10 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
         return;
 
     case NEWLINE:
-        if (c != '\n' && WHITE(c)) {    /* Folded line */
+        if (c == '\r') {
+            break;  /* Ignore CR in CRLF - wait for LF */
+        }
+        if (c != '\n' && WHITE(c)) {    /* Folded line (space or tab) */
             me->state = me->fold_state; /* pop state before newline */
             break;
         }
@@ -173,6 +176,8 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
 
     case BEGINNING_OF_LINE:
         switch (c) {
+        case '\r':
+            break;  /* Ignore carriage return - HTTP uses CRLF */
         case 'c':
         case 'C':
             me->check_pointer = "ontent-t";
@@ -189,9 +194,6 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
             break;
         case '\n': /* Blank line: End of Header! */
         {
-            if (TRACE)
-                fprintf(stderr, "HTMIME: MIME content type is %s, converting to %s\n",
-                        HTAtom_name(me->format), HTAtom_name(me->targetRep));
             me->target = HTStreamStack(me->format, me->targetRep, me->sink, me->anchor);
             if (!me->target) {
                 if (TRACE)
@@ -201,8 +203,7 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
             if (me->target) {
                 me->targetClass = *me->target->isa;
                 /* Check for encoding and select state from there @@ */
-
-                me->state = MIME_TRANSPARENT; /* From now push straigh through */
+                me->state = MIME_TRANSPARENT; /* From now push straight through */
             } else {
                 me->state = MIME_IGNORE; /* What else to do? */
             }
@@ -218,14 +219,9 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream*, me, char, c) {
     case CHECK: /* Check against string */
         if (TOLOWER(c) == *(me->check_pointer)++) {
             if (!*me->check_pointer) {
-                if (TRACE && me->if_ok == X_ARCHIVE_GUESSED_CHARSET)
-                    fprintf(stderr, "HTMIME: Successfully matched x-archive-guessed-charset header\n");
                 me->state = me->if_ok;
             }
         } else { /* Error */
-            if (TRACE)
-                fprintf(stderr, "HTMIME: Bad character `%c' found where `%s' expected\n", c,
-                        me->check_pointer - 1);
             goto bad_field_name;
         }
         break;

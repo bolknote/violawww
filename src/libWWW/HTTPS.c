@@ -1002,18 +1002,28 @@ copy:
                 }
             }
 
-            /* Find end of headers */
+            /* Find end of headers - check for \r\n\r\n (CRLF CRLF), \n\n, or \n\r\n */
             {
                 sp = binary_buffer + (start_of_data - text_buffer);
                 char* buffer_end = binary_buffer + length;
+                char llllc = '\0';  /* Need 4 chars for CRLF CRLF */
                 while (sp < buffer_end && *sp) {
-                    if (llc == '\n' && lc == '\n') {
-                        offset = sp - binary_buffer - (start_of_data - text_buffer);
-                        goto wheee;
-                    } else if (lllc == '\n' && llc == '\r' && lc == '\n') {
+                    /* Check for \r\n\r\n (standard HTTP) */
+                    if (llllc == '\r' && lllc == '\n' && llc == '\r' && lc == '\n') {
                         offset = sp - binary_buffer - (start_of_data - text_buffer);
                         goto wheee;
                     }
+                    /* Check for \n\n (Unix style) */
+                    if (llc == '\n' && lc == '\n') {
+                        offset = sp - binary_buffer - (start_of_data - text_buffer);
+                        goto wheee;
+                    }
+                    /* Check for \n\r\n (mixed style) */
+                    if (lllc == '\n' && llc == '\r' && lc == '\n') {
+                        offset = sp - binary_buffer - (start_of_data - text_buffer);
+                        goto wheee;
+                    }
+                    llllc = lllc;
                     lllc = llc;
                     llc = lc;
                     lc = *sp++;
@@ -1022,6 +1032,7 @@ copy:
             
             /* Continue reading to find header end */
             {
+                char llllc = '\0';  /* Need 4 chars for CRLF CRLF */
                 for (;;) {
                     status = HTSSL_read(ssl_conn, binary_buffer, buffer_length - 1);
                     if (status < 0) {
@@ -1035,13 +1046,22 @@ copy:
                     sp = binary_buffer;
                     char* chunk_end = binary_buffer + status;
                     while (sp < chunk_end) {
-                        if (llc == '\n' && lc == '\n') {
-                            offset = sp - binary_buffer;
-                            goto dofus;
-                        } else if (lllc == '\n' && llc == '\r' && lc == '\n') {
+                        /* Check for \r\n\r\n (standard HTTP) */
+                        if (llllc == '\r' && lllc == '\n' && llc == '\r' && lc == '\n') {
                             offset = sp - binary_buffer;
                             goto dofus;
                         }
+                        /* Check for \n\n (Unix style) */
+                        if (llc == '\n' && lc == '\n') {
+                            offset = sp - binary_buffer;
+                            goto dofus;
+                        }
+                        /* Check for \n\r\n (mixed style) */
+                        if (lllc == '\n' && llc == '\r' && lc == '\n') {
+                            offset = sp - binary_buffer;
+                            goto dofus;
+                        }
+                        llllc = lllc;
                         lllc = llc;
                         llc = lc;
                         lc = *sp++;
@@ -1097,10 +1117,20 @@ wheee:
         ptrdiff_t data_offset = start_of_data - text_buffer;
         ptrdiff_t remaining_length = length - data_offset - offset;
         int initial_data = (int)remaining_length;
-        (*target->isa->put_block)(target, binary_buffer + data_offset + offset, initial_data);
+        char* ptr = binary_buffer + data_offset + offset;
+        if (target && target->isa && target->isa->put_block) {
+            (*target->isa->put_block)(target, ptr, initial_data);
+        }
     }
     
     /* Copy remaining data - chunked, Content-Length, or EOF */
+    /* 
+     * Note: When format_out != WWW_SOURCE, we're passing raw HTTP response
+     * (headers + body) to the MIME parser. If offset == 0, it means we didn't
+     * find the end of headers in the initial buffer, so remaining_length
+     * includes headers. In this case, we can't use content_length (which is
+     * body size only) to calculate bytes_to_read.
+     */
     if (is_chunked) {
         /* Chunked transfer encoding - read chunks until size 0 */
         struct timeval timeout;
@@ -1115,8 +1145,10 @@ wheee:
             bytes_received += chunk_bytes;
             (*target->isa->put_block)(target, binary_buffer, chunk_bytes);
         }
-    } else if (content_length >= 0) {
-        /* We know exact length - read only what's needed */
+    } else if (content_length >= 0 && offset > 0) {
+        /* We know exact body length AND we found the end of headers.
+         * offset > 0 means we found \r\n\r\n so remaining_length is body data.
+         */
         ptrdiff_t data_offset = start_of_data - text_buffer;
         ptrdiff_t remaining_length = length - data_offset - offset;
         int bytes_to_read = content_length - (int)remaining_length;
@@ -1141,10 +1173,65 @@ wheee:
             bytes_read_so_far += status;
             (*target->isa->put_block)(target, binary_buffer, status);
         }
+    } else if (content_length >= 0 && offset == 0) {
+        /* Headers didn't fit in first buffer (offset == 0).
+         * We need to continue reading until we find \r\n\r\n,
+         * then read exactly content_length bytes of body.
+         */
+        int header_end_found = 0;
+        int body_bytes_read = 0;
+        char lc = '\0', llc = '\0', lllc = '\0';
+        
+        /* Continue reading and searching for header end */
+        for (;;) {
+            status = HTSSL_read(ssl_conn, binary_buffer, buffer_length - 1);
+            if (status <= 0)
+                break;
+            
+            bytes_received += status;
+            
+            if (!header_end_found) {
+                /* Search for \r\n\r\n in this chunk */
+                char* sp = binary_buffer;
+                char* end = binary_buffer + status;
+                int header_end_offset = -1;
+                
+                while (sp < end) {
+                    if (lllc == '\r' && llc == '\n' && lc == '\r' && *sp == '\n') {
+                        header_end_offset = (sp - binary_buffer) + 1;
+                        header_end_found = 1;
+                        break;
+                    }
+                    lllc = llc;
+                    llc = lc;
+                    lc = *sp++;
+                }
+                
+                if (header_end_found) {
+                    /* Pass entire chunk to HTMIME, it will find the boundary */
+                    (*target->isa->put_block)(target, binary_buffer, status);
+                    /* Count body bytes in this chunk */
+                    body_bytes_read = status - header_end_offset;
+                } else {
+                    /* Still in headers, pass to HTMIME */
+                    (*target->isa->put_block)(target, binary_buffer, status);
+                }
+            } else {
+                /* Headers done, reading body */
+                (*target->isa->put_block)(target, binary_buffer, status);
+                body_bytes_read += status;
+            }
+            
+            /* If we've found headers and read all body, we're done */
+            if (header_end_found && body_bytes_read >= content_length)
+                break;
+        }
     } else {
-        /* No Content-Length/chunked - read until EOF or timeout */
+        /* No Content-Length and not chunked - read until EOF or timeout.
+         * Use shorter timeout to avoid hanging on keep-alive connections.
+         */
         struct timeval timeout;
-        timeout.tv_sec = 60;
+        timeout.tv_sec = 10;
         timeout.tv_usec = 0;
         setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
         

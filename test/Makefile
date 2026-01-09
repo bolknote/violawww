@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime
 
 .PHONY: all test clean $(TESTS)
 
@@ -53,6 +53,7 @@ test:
 	-@$(MAKE) test-notsecure >$(BUILD_DIR)/test-notsecure.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-notsecure: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-notsecure: FAIL")
 	-@$(MAKE) test-security-escalation >$(BUILD_DIR)/test-security-escalation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-security-escalation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-security-escalation: FAIL")
 	-@$(MAKE) test-path-validation >$(BUILD_DIR)/test-path-validation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-path-validation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-path-validation: FAIL")
+	-@$(MAKE) test-htmime >$(BUILD_DIR)/test-htmime.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-htmime: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-htmime: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -185,6 +186,13 @@ test-path-validation: test_path_validation.c
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_path_validation test_path_validation.c
 	@./$(BUILD_DIR)/test_path_validation
 
+test-htmime: test_htmime.c
+	@echo ""
+	@echo "Building HTMIME header parsing tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_htmime test_htmime.c
+	@cd $(BUILD_DIR) && ./test_htmime
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -217,4 +225,5 @@ help:
 	@echo "  test-notsecure       - notSecure() NULL handling tests"
 	@echo "  test-security-escalation - Security escalation prevention tests"
 	@echo "  test-path-validation - Path validation security tests"
+	@echo "  test-htmime          - HTTPS/HTMIME large header handling tests"
 

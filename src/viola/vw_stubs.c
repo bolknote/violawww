@@ -15,9 +15,14 @@
 #include <unistd.h>
 #include <pwd.h>
 
+#include <signal.h>
+#include <sys/select.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
+
+/* Finish flag from event_x.c */
+extern volatile sig_atomic_t finish;
 
 #include "../libWWW/HTParse.h"
 #include "cl_cosmic.h"
@@ -355,9 +360,24 @@ static int x11SecurityDialog(const char* title, const char* message,
     XMapRaised(display, dialogWin);
     XFlush(display);
     
-    /* Modal event loop */
-    while (!done) {
-        XNextEvent(display, &event);
+    /* Modal event loop - non-blocking to allow signal handling */
+    {
+        int xfd = ConnectionNumber(display);
+        
+        while (!done && !finish) {
+            /* Check for pending events without blocking */
+            if (XPending(display)) {
+                XNextEvent(display, &event);
+            } else {
+                /* Wait with timeout so we can check finish flag */
+                fd_set readfds;
+                struct timeval tv = {0, 50000};  /* 50ms timeout */
+                
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+                continue;  /* Loop back to check finish and XPending */
+            }
         
         switch (event.type) {
         case Expose:
@@ -460,7 +480,8 @@ static int x11SecurityDialog(const char* title, const char* message,
             result = 0;
             break;
         }
-    }
+        }  /* end while */
+    }  /* end block with xfd */
     
     /* Cleanup */
     XFreeGC(display, gc);

@@ -38,6 +38,7 @@
 #include <Xm/TextF.h>
 #include <Xm/Xm.h>
 #include <X11/Xlib.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -84,6 +85,8 @@ static Atom gcd_wakeup_atom = 0;
 /* --- Constants ----------------------------------------------------------- */
 
 /* --- Globals ------------------------------------------------------------- */
+extern volatile sig_atomic_t finish;  /* from event_x.c - set by signal handler */
+
 XtAppContext appCon;
 Widget topWidget;
 Pixmap icon = (Pixmap)0;
@@ -385,11 +388,11 @@ int main(int argc, char* argv[])
         gcd_wakeup_atom = XInternAtom(dpy, "_VW_WAKEUP", False);
 #endif
         
-        while (1) {
+        while (!finish) {
             XtInputMask mask;
             
             /* Process all pending X events and Xt timers */
-            while ((mask = XtAppPending(appCon)) != 0) {
+            while ((mask = XtAppPending(appCon)) != 0 && !finish) {
                 if (mask & XtIMXEvent) {
                     XtAppNextEvent(appCon, &event);
                     
@@ -438,6 +441,10 @@ int main(int argc, char* argv[])
 #endif
         }
     }
+    
+    /* Graceful cleanup after signal */
+    freeViolaResources();
+    exit(0);
 }
 
 DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* parentInfo, int argc, char* argv[])

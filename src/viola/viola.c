@@ -54,6 +54,9 @@ extern long meth_generic_cli(VObj* self, Packet* result, int argc, Packet argv[]
 extern void tfed_FreeTmpFileToFree(int freeP);
 extern void XtToolkitInitialize();
 
+/* Forward declarations */
+void freeViolaResources(void);
+
 #define DFLT_USR_WWW_HOME "WWW" /* patched */
 
 char* viola_version = "Viola=4.0 Beta";
@@ -457,8 +460,10 @@ char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen
         if (user_action_tracking != stderr)
             fclose(user_action_tracking);
 
-    if (!runInSubWindow)
+    if (!runInSubWindow) {
+        freeViolaResources();
         exit(0);
+    }
 
     /* Scott */
     if (vObjFile) {

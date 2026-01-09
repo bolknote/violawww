@@ -94,7 +94,7 @@ typedef struct TimeInfo {
         PointerMotionHintMask | EnterWindowMask | LeaveWindowMask | Button1MotionMask |            \
         StructureNotifyMask | ExposureMask
 
-int finish = 0;
+volatile sig_atomic_t finish = 0;  /* Set by signal handler */
 int obj_track = 0;
 int mouse_track = 0;
 int objectPeekFlag = 0;
@@ -175,13 +175,18 @@ int init_event() {
 
 void signalHandler(int sig)
 {
-    static int exiting = 0;
-
-    if (exiting == 1)
-        exit(0); /* alright already */
-
+    /*
+     * Signal handlers must be async-signal-safe.
+     * Cannot call freeViolaResources(), XSync(), malloc(), free(), etc.
+     * 
+     * Strategy:
+     * - First signal: set finish flag and return (graceful exit with cleanup)
+     * - Second signal: force exit via _exit() (if graceful exit hangs)
+     */
+    static volatile sig_atomic_t signal_count = 0;
+    
     switch (sig) {
-    /* fatal signals */
+    /* fatal signals - exit immediately */
     case SIGBUS:
     case SIGFPE:
 #if HAVE_SIGEMT
@@ -190,9 +195,9 @@ void signalHandler(int sig)
     case SIGILL:
     case SIGSEGV:
     case SIGSYS:
-        fprintf(stderr, "signalHandler: caught fatal signal %d. Exiting.\n", sig);
-        fflush(stderr);
-        exit(0);
+        /* Use write() instead of fprintf - it's async-signal-safe */
+        write(STDERR_FILENO, "Fatal signal caught. Exiting.\n", 30);
+        _exit(128 + sig);
         break;
     case SIGHUP:
     case SIGINT:
@@ -202,23 +207,19 @@ void signalHandler(int sig)
     case SIGUSR1:
     case SIGUSR2:
     default:
-        exiting = 1;
-
-        fprintf(stderr, "signalHandler: caught nonfatal signal %d.\n", sig);
-        fprintf(stderr, "signalHandler: cleaning up resources...\n");
-        fflush(stderr);
-
-        /* Flush and sync X display to prevent BadWindow errors on pending requests */
-        if (display) {
-            XSync(display, True);  /* discard pending events */
+        signal_count++;
+        
+        if (signal_count == 1) {
+            /* First signal: try graceful exit */
+            finish = 1;
+            write(STDERR_FILENO, "Interrupted. Cleaning up...\n", 28);
+            /* Return to let event loop exit gracefully */
+            return;
+        } else {
+            /* Second signal: force exit */
+            write(STDERR_FILENO, "Forced exit.\n", 13);
+            _exit(0);
         }
-
-        freeViolaResources();
-
-        fprintf(stderr, "signalHandler: exiting.\n");
-        fflush(stderr);
-
-        exit(0);
         break;
     }
 }
@@ -310,7 +311,7 @@ void violaIdleEvent() {
     bits = select(max_socks, &cur_read_mask, (fd_set*)NULL, (fd_set*)NULL, timeval);
 
     if (bits < 0) {
-        perror("violaIdleEvent(): select() error: ");
+        /* EINTR is normal when interrupted by signal - not an error */
         return;
     }
 
@@ -406,8 +407,18 @@ int eventLoop() {
             }
             bcopy(&read_mask, &cur_read_mask, sizeof cur_read_mask);
 
+            /* Always use a timeout so we can check finish flag periodically */
+            if (!timeval) {
+                timeout.tv_sec = 0;
+                timeout.tv_usec = 100000;  /* 100ms max wait */
+                timeval = &timeout;
+            }
+            
             bits = select(max_socks, &cur_read_mask, (fd_set*)NULL, (fd_set*)NULL,
                           (struct timeval*)timeval);
+
+            /* Check finish flag after select (may have been interrupted by signal) */
+            if (finish) break;
 
             /* Check if timer expired, regardless of whether there are other events */
             if (firstTimeInfo) {

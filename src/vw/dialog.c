@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <X11/keysym.h>
+
 #include <Xm/FileSB.h>
 #include <Xm/Form.h>
 #include <Xm/Frame.h>
@@ -40,8 +42,12 @@
 #include "dialog.h"
 #include "vw.h"
 
+#include <signal.h>
+#include <sys/select.h>
+
 extern HTParentAnchor* HTMainAnchor;
 extern char* current_addr;  /* from html.c - current document address */
+extern volatile sig_atomic_t finish;  /* from event_x.c - set by signal handler */
 
 void dialogOK(Widget button, XtPointer clientData, XtPointer callData)
 {
@@ -138,9 +144,35 @@ void modalErrorDialog(DocViewInfo* dvip, char* msg) {
 
     XtManageChild(dlog);
 
-    while (!done) {
-        XtAppNextEvent(appCon, &event);
-        XtDispatchEvent(&event);
+    {
+        Display* dpy = XtDisplay(dvip->shell);
+        int xfd = ConnectionNumber(dpy);
+        
+        while (!done && !finish) {
+            if (XtAppPending(appCon)) {
+                XtAppNextEvent(appCon, &event);
+                
+                /* Handle Escape and Ctrl+C to close dialog */
+                if (event.type == KeyPress) {
+                    KeySym keysym;
+                    XLookupString(&event.xkey, NULL, 0, &keysym, NULL);
+                    
+                    if (keysym == XK_Escape ||
+                        ((event.xkey.state & ControlMask) && (keysym == XK_c || keysym == XK_C))) {
+                        done = 1;
+                        continue;
+                    }
+                }
+                
+                XtDispatchEvent(&event);
+            } else {
+                fd_set readfds;
+                struct timeval tv = {0, 50000};
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+        }
     }
 
     XtDestroyWidget(dlog);
@@ -236,9 +268,35 @@ char* promptDialog(DocViewInfo* dvip, char *msg, char *defaultString) {
     ps.done = &done;
     XtManageChild(dlog);
 
-    while (!done) {
-        XtAppNextEvent(appCon, &event);
-        XtDispatchEvent(&event);
+    {
+        Display* dpy = XtDisplay(dvip->shell);
+        int xfd = ConnectionNumber(dpy);
+        
+        while (!done && !finish) {
+            if (XtAppPending(appCon)) {
+                XtAppNextEvent(appCon, &event);
+                
+                /* Handle Escape to cancel dialog */
+                if (event.type == KeyPress) {
+                    KeySym keysym;
+                    XLookupString(&event.xkey, NULL, 0, &keysym, NULL);
+                    
+                    if (keysym == XK_Escape) {
+                        ps.result = NULL;
+                        done = 1;
+                        continue;
+                    }
+                }
+                
+                XtDispatchEvent(&event);
+            } else {
+                fd_set readfds;
+                struct timeval tv = {0, 50000};
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+        }
     }
 
     XtDestroyWidget(dlog);
@@ -434,9 +492,43 @@ char* questionDialog(DocViewInfo* dvip, char *question, char *defaultChoice, cha
     XtAddEventHandler(XtParent(dlog), StructureNotifyMask, FALSE, 
                       dialogResizeHandler, NULL);
 
-    while (!done) {
-        XtAppNextEvent(appCon, &event);
-        XtDispatchEvent(&event);
+    {
+        Display* dpy = XtDisplay(dvip->shell);
+        int xfd = ConnectionNumber(dpy);
+        
+        while (!done && !finish) {
+            if (XtAppPending(appCon)) {
+                XtAppNextEvent(appCon, &event);
+                
+                /* Handle Escape and Ctrl+C to close dialog with "Don't Trust" */
+                if (event.type == KeyPress) {
+                    KeySym keysym;
+                    char buf[8];
+                    XLookupString(&event.xkey, buf, sizeof(buf), &keysym, NULL);
+                    
+                    if (keysym == XK_Escape) {
+                        /* Escape - close with noLabel (Don't Trust) */
+                        ps.result = noLabel;
+                        done = 1;
+                        continue;
+                    }
+                    if ((event.xkey.state & ControlMask) && (keysym == XK_c || keysym == XK_C)) {
+                        /* Ctrl+C - close with noLabel (Don't Trust) */
+                        ps.result = noLabel;
+                        done = 1;
+                        continue;
+                    }
+                }
+                
+                XtDispatchEvent(&event);
+            } else {
+                fd_set readfds;
+                struct timeval tv = {0, 50000};
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+        }
     }
 
     XtRemoveEventHandler(XtParent(dlog), StructureNotifyMask, FALSE,
@@ -683,9 +775,35 @@ void printDialog(DocViewInfo* dvip, char* docName) {
     ps.done = &done;
     XtManageChild(dlog);
 
-    while (!done) {
-        XtAppNextEvent(appCon, &event);
-        XtDispatchEvent(&event);
+    {
+        Display* dpy = XtDisplay(dvip->shell);
+        int xfd = ConnectionNumber(dpy);
+        
+        while (!done && !finish) {
+            if (XtAppPending(appCon)) {
+                XtAppNextEvent(appCon, &event);
+                
+                /* Handle Escape to cancel dialog */
+                if (event.type == KeyPress) {
+                    KeySym keysym;
+                    XLookupString(&event.xkey, NULL, 0, &keysym, NULL);
+                    
+                    if (keysym == XK_Escape) {
+                        ps.result = NULL;
+                        done = 1;
+                        continue;
+                    }
+                }
+                
+                XtDispatchEvent(&event);
+            } else {
+                fd_set readfds;
+                struct timeval tv = {0, 50000};
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+        }
     }
 
     if (ps.result) {
@@ -1237,9 +1355,35 @@ char* fileSelectionDialog(DocViewInfo* dvi, char *message, char *helpMsg) {
 
     XtManageChild(dlog);
 
-    while (!done) {
-        XtAppNextEvent(appCon, &event);
-        XtDispatchEvent(&event);
+    {
+        Display* dpy = XtDisplay(dvi->shell);
+        int xfd = ConnectionNumber(dpy);
+        
+        while (!done && !finish) {
+            if (XtAppPending(appCon)) {
+                XtAppNextEvent(appCon, &event);
+                
+                /* Handle Escape to cancel dialog */
+                if (event.type == KeyPress) {
+                    KeySym keysym;
+                    XLookupString(&event.xkey, NULL, 0, &keysym, NULL);
+                    
+                    if (keysym == XK_Escape) {
+                        fss.fileName = NULL;
+                        done = 1;
+                        continue;
+                    }
+                }
+                
+                XtDispatchEvent(&event);
+            } else {
+                fd_set readfds;
+                struct timeval tv = {0, 50000};
+                FD_ZERO(&readfds);
+                FD_SET(xfd, &readfds);
+                select(xfd + 1, &readfds, NULL, NULL, &tv);
+            }
+        }
     }
 
     XtDestroyWidget(dlog);

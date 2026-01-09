@@ -20,6 +20,11 @@
 		docURL = arg[1];
 		docName = arg[2];
 
+		/* Security: Set current address to actual URL before loading
+		 * This ensures loadObjFile knows the real source of the file
+		 */
+		HTTPCurrentDocAddrSet(docURL);
+
 		localFile = HTTPGet(docURL);
 
 		addrInfo = HTTPCurrentDocAddrParsed(localFile);

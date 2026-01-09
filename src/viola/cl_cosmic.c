@@ -50,6 +50,50 @@ static SecurityDialogCallback g_securityDialogCallback = NULL;
 static char* trustedDocs[MAX_TRUSTED_DOCS];
 static int trustedDocsCount = 0;
 
+/*
+ * isLocalAddress() - check if address refers to local filesystem.
+ * 
+ * Returns 1 if address is local:
+ *   1. Starts with "file://"
+ *   2. Starts with "/" (absolute Unix path)
+ *   3. Has no ":" before first "/" or no ":" at all (relative path, no protocol)
+ * 
+ * Returns 0 if address is remote (has protocol like http://, ftp://, gopher://, etc.)
+ */
+int isLocalAddress(const char* addr)
+{
+    const char* colon;
+    const char* slash;
+    
+    if (!addr || !*addr) return 0;
+    
+    /* 1. Explicit file:// protocol */
+    if (strncmp(addr, "file://", 7) == 0) return 1;
+    
+    /* 2. Absolute Unix path */
+    if (addr[0] == '/') return 1;
+    
+    /* 3. Check for protocol: if ":" exists, it must be after first "/" */
+    colon = strchr(addr, ':');
+    if (colon == NULL) {
+        /* No colon = no protocol = relative local path */
+        return 1;
+    }
+    
+    slash = strchr(addr, '/');
+    if (slash == NULL) {
+        /* Colon exists but no slash - could be "C:" on Windows or protocol without path */
+        /* Treat as protocol (e.g., "mailto:foo") - not local */
+        return 0;
+    }
+    
+    /* If colon comes after first slash, it's not a protocol (e.g., "/path/to:file") */
+    if (colon > slash) return 1;
+    
+    /* Colon before slash = protocol (e.g., "http://...") */
+    return 0;
+}
+
 static int isDocumentTrusted(const char* url)
 {
     int i;
@@ -692,16 +736,26 @@ long meth_cosmic_loadObjFile(VObj* self, Packet* result, int argc, Packet argv[]
     char* fname = NULL;
     int securityLevel = 1;  /* Default: untrusted */
 
-    /* If securityMode is set, use it - overrides everything */
+    /*
+     * Security logic (defense in depth):
+     * 1. If securityMode is set globally, use it (overrides everything)
+     * 2. If calling object is untrusted, loaded objects MUST be untrusted
+     *    (prevents privilege escalation via current_addr spoofing)
+     * 3. Only if caller is trusted AND current_addr is local, trust loaded objects
+     */
+    
     if (securityMode > 0) {
+        /* Global security mode overrides everything */
         securityLevel = securityMode;
-    } else if (current_addr) {
-        /* Local files are trusted (only if securityMode not set) */
-        if (current_addr[0] == '/' || 
-            strncmp(current_addr, "file://", 7) == 0) {
-            securityLevel = 0;  /* Trusted */
-        }
+    } else if (self && GET_security(self) > 0) {
+        /* CRITICAL: Untrusted caller cannot create trusted objects */
+        /* This prevents HTTPCurrentDocAddrSet spoofing attack */
+        securityLevel = 1;
+    } else if (current_addr && isLocalAddress(current_addr)) {
+        /* Trusted caller loading from local source = trusted */
+        securityLevel = 0;
     }
+    /* Otherwise: securityLevel stays 1 (untrusted) */
 
     if (argc > 0) {
         path = PkInfo2Str(&argv[0]);

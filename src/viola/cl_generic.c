@@ -1238,14 +1238,29 @@ lameLoopEsc:
 
 /*
  * HTTPCurrentDocAddrSet()
+ * 
+ * Security: Untrusted objects cannot set current_addr to a local path.
+ * This prevents privilege escalation via loadObjFile spoofing.
  */
 long meth_generic_HTTPCurrentDocAddrSet(VObj* self, Packet* result, int argc, Packet argv[]) {
     extern char* current_addr; /* from html.c */
+    char* newAddr;
 
     clearPacket(result);
+    newAddr = PkInfo2Str(argv);
+    
+    /* Security check: untrusted object setting local address requires confirmation */
+    if (self && GET_security(self) > 0 && newAddr && isLocalAddress(newAddr)) {
+        char msgbuf[512];
+        snprintf(msgbuf, sizeof(msgbuf), "set document address to local path: %s", newAddr);
+        if (notSecureWithPrompt(self, msgbuf)) {
+            return 0;
+        }
+    }
+    
     if (current_addr)
         free(current_addr);
-    current_addr = saveString(PkInfo2Str(argv));
+    current_addr = saveString(newAddr);
     return 1;
 }
 
@@ -5146,13 +5161,7 @@ long meth_generic_addPicFromFile(VObj* self, Packet* result, int argc, Packet ar
     int fileIsLocal;
 
     /* Security check: untrusted object loading local file is dangerous */
-    /* Local = no protocol (no ://), or file:// protocol */
-    if (fname) {
-        char* proto = strstr(fname, "://");
-        fileIsLocal = (proto == NULL) || (strncmp(fname, "file://", 7) == 0);
-    } else {
-        fileIsLocal = 0;
-    }
+    fileIsLocal = fname ? isLocalAddress(fname) : 0;
     
     if (notSecure(self) && fileIsLocal) {
         snprintf(msgbuf, sizeof(msgbuf), "load local image: %s", fname);

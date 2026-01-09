@@ -7,6 +7,14 @@
 
 ViolaWWW 4.0 implements a complete security system to protect users from malicious web content. The security model uses two trust levels and requires user confirmation for dangerous operations.
 
+### Core Principle
+
+**We never silently block operations.** If an untrusted object attempts a privileged operation, we always ask the user for confirmation. The user decides whether to trust the document or not. This approach:
+
+- Keeps the user in control
+- Avoids breaking legitimate functionality
+- Makes security decisions transparent
+
 ## Security Model
 
 ### Two Trust Levels
@@ -64,7 +72,8 @@ When an untrusted object attempts these operations, a security dialog is shown:
 | `TTY.startClient()` | Execute subprocess | `cl_TTY.c` |
 | `set("security", 0)` | Elevate to trusted status | `cl_generic.c` |
 | `securityMode(0)` | Elevate to trusted status | `cl_generic.c` |
-| `addPicFromFile()` | Load image (cross-origin only) | `cl_generic.c` |
+| `addPicFromFile()` | Load local image (cross-origin only) | `cl_generic.c` |
+| `HTTPCurrentDocAddrSet()` | Set document address to local path | `cl_generic.c` |
 | `exit()`, `quit()` | Terminate application | `cl_cosmic.c` |
 | `destroy()` | Destroy object | `cl_cosmic.c` |
 | `modalExit()` | Exit modal dialog | `cl_cosmic.c` |
@@ -176,6 +185,21 @@ Checks security with user confirmation. Returns 1 if blocked, 0 if allowed.
 
 Registers the C-based security dialog callback from VW frontend.
 
+#### `isLocalAddress(const char* addr)`
+
+Central utility function to determine if an address refers to local filesystem. Returns 1 if local, 0 if remote.
+
+```c
+int isLocalAddress(const char* addr) {
+    // 1. Starts with "file://" → local
+    // 2. Starts with "/" → absolute Unix path → local
+    // 3. No ":" or ":" after first "/" → relative path → local
+    // 4. Has "protocol://" (http, ftp, gopher, etc.) → remote
+}
+```
+
+Used by `loadObjFile()`, `addPicFromFile()`, and `HTTPCurrentDocAddrSet()` to detect local paths.
+
 ### Clone Security
 
 Cloned objects inherit security from the original object. If `securityMode` global is set, it overrides.
@@ -184,9 +208,9 @@ Cloned objects inherit security from the original object. If `securityMode` glob
 
 | File | Changes |
 |------|---------|
-| `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, trusted docs list, `loadObjFile()` security |
-| `src/viola/cl_cosmic.h` | Security callback typedef and prototypes |
-| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `addPicFromFile()`, `securityMode()` fix, privilege escalation |
+| `src/viola/cl_cosmic.c` | `notSecure()`, `notSecureWithPrompt()`, `isLocalAddress()`, trusted docs list, `loadObjFile()` security |
+| `src/viola/cl_cosmic.h` | Security callback typedef and prototypes, `isLocalAddress()` |
+| `src/viola/cl_generic.c` | Security checks for `system()`, `pipe()`, `loadFile()`, `saveFile()`, `deleteFile()`, `violaPath()`, `addPicFromFile()`, `HTTPCurrentDocAddrSet()`, `securityMode()` fix, privilege escalation |
 | `src/viola/cl_socket.c` | Security check for `startClient()` |
 | `src/viola/cl_TTY.c` | Security check for `startClient()` |
 | `src/viola/loader.c` | `load_object_with_security()` for trust assignment |

@@ -77,9 +77,7 @@ print("Bar maxWidth=", barMaxWidth, "\n");
 				print("failed to load obj file {", objFileName,
 					"} in {", path, "}\n");
 			}
-			securityMode(1); 
 			send(objName, "init"); /* make new object(s) */
-			securityMode(0);
 
 			send(send(parent(), "findTop"), "addTool", objName,
 				oarg, oargc);
@@ -106,9 +104,7 @@ print("Bar maxWidth=", barMaxWidth, "\n");
 				print("failed to load obj file {", objFileName,
 					"} in {", path, "}\n");
 			}
-			securityMode(1); 
 			send(objName, "init"); /* make new object(s) */
-			securityMode(0);
 /*
 print("HTML_LINK load vobj=>>>>>>", objName, "<<\n");
 			for(i=0; i<oargc; i++) {

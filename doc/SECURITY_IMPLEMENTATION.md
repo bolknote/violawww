@@ -117,6 +117,15 @@ See [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md) for interactive graphics document
 - Local files (`/...` or `file://`) → objects get `security = 0` (trusted)
 - Remote URLs → objects get `security = 1` (untrusted)
 
+### When `securityMode()` is Used
+
+The global `securityMode` variable is **only** used by the `<SECURITY>` HTML tag handler (`HTML_security_script.v`). It allows documents to explicitly declare all subsequent objects as untrusted.
+
+Other object loading mechanisms (`<LINK REL="vobj">`, `<VOBJF>`, etc.) rely on automatic `current_addr`-based security and do **not** use `securityMode()`. This is because:
+1. `loadObjFile()` already checks `current_addr` to determine trust level
+2. Objects created during init inherit security from context
+3. Manual `securityMode()` calls would be redundant and could trigger unnecessary security prompts
+
 ## Security Dialog
 
 When an untrusted object attempts a protected operation, the user sees:

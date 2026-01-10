@@ -29,11 +29,7 @@
 			return vspan;
 		}
 
-		/* from now on, newly made objects are declared unsecure */
-		securityMode(1); 
 		send(objName, "init"); /* make new object(s) */
-		securityMode(0);
-		/* back to normal */
 
 		set("children", objName);
 		tweak(objName, concat("set(\"parent\", \"", self(), "\");"));

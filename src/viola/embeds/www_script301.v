@@ -179,6 +179,8 @@
 			if (oldDocName != docName) {
 				if (pageObj) {
 					send(pageObj, "VW_event", "VIEW_OFF");
+					send(pageObj, "visible", 0);
+					send(pageObj, "freeSelf");
 				}
 				pageObj = oo;
 				send(pageObj, "VW_event", "VIEW_ON");

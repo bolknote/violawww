@@ -394,6 +394,32 @@ int initDefaultColor(char* colorname, unsigned long defpixel, unsigned long* pix
     return 1;
 }
 
+/* Flag to suppress X errors during cleanup (set by signal handler) */
+extern volatile sig_atomic_t finish;
+
+/*
+ * X Error handler for ViolaWWW - overrides libIMG's handler
+ */
+static int violaXErrorHandler(Display* disp, XErrorEvent* error) {
+    char errortext[BUFSIZ];
+    char msg[256];
+    
+    /* Suppress BadWindow errors during cleanup - windows may already be destroyed.
+     * Also suppress if finish flag is set (exiting due to signal).
+     * BadWindow (error_code 3) is harmless during cleanup.
+     */
+    if (finish || error->error_code == BadWindow)
+        return 0;
+    
+    XGetErrorText(disp, error->error_code, errortext, BUFSIZ);
+    
+    /* Use write() to avoid stdio buffering issues with signal handlers */
+    snprintf(msg, sizeof(msg), "X Error: %s on 0x%lx\n", errortext, error->resourceid);
+    write(STDERR_FILENO, msg, strlen(msg));
+    
+    return 0;
+}
+
 /*
  *
  */
@@ -538,6 +564,9 @@ int GLInit(Display* dpy, Screen* scrn)
     theDisp = display;
 #ifdef USE_XLOADIMAGE_PACKAGE
     initImgLib();
+    /* Override libIMG's error handler with viola's own - this handler is
+     * global for all X connections in the process */
+    XSetErrorHandler(violaXErrorHandler);
 #endif
 
     theScreen = screenNumber; /* Scott */
@@ -3099,14 +3128,19 @@ ImgNode* imgNodeRefInc(char* id, char* filename)
         }
     }
     /* determine if id-URL is local... if not, do HTTP */
-    nullPacket(&result);
-    nullPacket(&argv);
-    argv.info.s = id;
-    argv.type = PKT_STR;
-    meth_generic_HTTPGet(NULL, &result, 1, &argv);
-    localFilePath = result.info.s;
-    if (localFilePath == NULL)
-        return NULL;
+    /* If id starts with '/', it's already a local file path - use directly */
+    if (id[0] == '/') {
+        localFilePath = id;
+    } else {
+        nullPacket(&result);
+        nullPacket(&argv);
+        argv.info.s = id;
+        argv.type = PKT_STR;
+        meth_generic_HTTPGet(NULL, &result, 1, &argv);
+        localFilePath = result.info.s;
+        if (localFilePath == NULL)
+            return NULL;
+    }
 
     /* make new node */
     ip = (ImgNode*)malloc(sizeof(struct ImgNode));

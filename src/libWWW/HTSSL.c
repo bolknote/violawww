@@ -45,6 +45,12 @@ PUBLIC int HTSSL_init(void) {
     /* Set options for better compatibility */
     SSL_CTX_set_options(ssl_context.ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
     
+    /* Explicitly request HTTP/1.1 only via ALPN - we don't support HTTP/2 */
+    {
+        static const unsigned char alpn[] = {8, 'h','t','t','p','/','1','.','1'};
+        SSL_CTX_set_alpn_protos(ssl_context.ctx, alpn, sizeof(alpn));
+    }
+    
     /* Load default CA certificates (best-effort, non-fatal) */
     if (!SSL_CTX_set_default_verify_paths(ssl_context.ctx)) {
         fprintf(stderr, "HTSSL: Warning - could not load CA certificates\n");

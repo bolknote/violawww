@@ -129,6 +129,12 @@ PUBLIC char* HTWaybackCheck PARAMS((const char* url)) {
         return NULL;
     }
 
+    /* Skip if URL is already a Wayback Machine URL */
+    if (strstr(url, "web.archive.org/") != NULL) {
+        if (TRACE) fprintf(stderr, "Wayback: URL is already from Wayback Machine, skipping check\n");
+        return NULL;
+    }
+
     if (TRACE) fprintf(stderr, "Wayback: Checking URL: %s\n", url);
     
     /* Show status message */

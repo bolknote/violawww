@@ -303,7 +303,9 @@ PRIVATE BOOL HTLoadDocument ARGS4(const char*, full_address, HTParentAnchor*, an
         
         if (hostname) {
             /* Check if hostname is web.archive.org */
-            if (strcmp(hostname, WAYBACK_API_HOST) == 0) {
+            /* Note: hostname may contain port (e.g., "web.archive.org:443") */
+            if (strcmp(hostname, WAYBACK_API_HOST) == 0 ||
+                strncmp(hostname, WAYBACK_API_HOST, strlen(WAYBACK_API_HOST)) == 0) {
                 is_archive = 1;
             }
             free(hostname);

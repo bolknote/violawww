@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -53,6 +54,7 @@ extern int SGMLInit();
 extern long meth_generic_cli(VObj* self, Packet* result, int argc, Packet argv[]);
 extern void tfed_FreeTmpFileToFree(int freeP);
 extern void XtToolkitInitialize();
+extern volatile sig_atomic_t finish;  /* Set by signal handler in event_x.c */
 
 /* Forward declarations */
 void freeViolaResources(void);
@@ -461,7 +463,12 @@ char* initViola(int argc, char* argv[], char* vObjFile, Display* display, Screen
             fclose(user_action_tracking);
 
     if (!runInSubWindow) {
-        freeViolaResources();
+        /* Skip cleanup if exiting due to signal - X resources are automatically
+         * freed when connection closes. This avoids BadWindow errors from
+         * destroying already-destroyed child windows.
+         */
+        if (!finish)
+            freeViolaResources();
         exit(0);
     }
 

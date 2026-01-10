@@ -138,7 +138,7 @@
 	break;
 	case "get_gnnWIC":
 		send("www", "showHistoryDoc", 
-		 "http://nearnet.gnn.com/wic/newrescat.toc.html");
+		 "https://web.archive.org/web/20041205155855im_/http://www.oreilly.com/25anniversary/graphics/gnn_home.gif");
 		return;
 	break;
 	case "get_cern":

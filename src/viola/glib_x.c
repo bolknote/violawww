@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "vlist.h"
 #include <math.h>
+#include <signal.h>
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>

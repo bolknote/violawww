@@ -521,6 +521,36 @@ A boolean flag attribute. Purpose unknown — possibly related to whitespace han
 
 > **Note**: The parser comment in `libstg.c:210` also mentions `spacing` in a minor selector context: `{compact spacing}`. This suggests the author experimented with these as both flag attributes and minor selector identifiers.
 
+#### Other Planned Features (from `libstg.c` comments)
+
+The example syntax in `libstg.c:207-215` reveals additional planned features that were never implemented:
+
+```
+(HEAD,BODY                  fontSize=18
+                            mesg="Hi there\n"
+    {compact                spacing}
+                            foregroundColor=black
+    (H1                     fontSize=28)
+                            backgroundColor=white
+)
+```
+
+**Observations**:
+
+1. **Numeric font sizes** (`fontSize=18`, `fontSize=28`): The parser may accept these, but only keyword values (`normal`, `small`, `large`, `largest`) are processed by rendering code.
+
+2. **Long attribute names** (`foregroundColor`, `backgroundColor`): Only short names (`FGColor`, `BGColor`, `BDColor`) are implemented and queried.
+
+3. **Arbitrary string attributes** (`mesg="Hi there\n"`): Shows support for escape sequences in quoted strings. The `mesg` attribute is not used.
+
+4. **Minor selector with multiple IDs** (`{compact spacing}`): The minor contains both `compact` and `spacing` as identifiers, suggesting planned support for compound minor selectors.
+
+The TODO list in `libstg.c:5-10` also mentions:
+- Caching mechanism in `$LIBSTG_CACHE`
+- Input from file descriptors
+- Cached lookups
+- Support for `ROLE` attribute in minors (e.g., `<EM role="WARNING">`)
+
 ---
 
 ## Complete Examples
@@ -952,7 +982,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 1. **Attribute selectors**: **ONLY** the `STYLE` attribute is supported for minor selectors
    - Hardcoded in `libstg.c:562`: `stg_tagName2ID("STYLE")`
    - No support for `CLASS`, `ID`, `ROLE`, or any other HTML attributes
-   - This is a fundamental implementation limitation, not a design choice
+   - **Note**: The original author intended to support `ROLE` attribute (see TODO comment in `libstg.c:9-10`: "Deal with minors, ie: distinction between `<EM role="WARNING">` and `<EM role="NOTE">`") but this was never implemented
    
 2. **Context depth validation**: Stylesheet nesting must match or be shallower than HTML structure
    - Style `(BODY (ADDRESS (P)))` won't match standalone `<P>` tag

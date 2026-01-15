@@ -118,7 +118,7 @@ Select multiple tags with the same styles using comma separation:
 ```
 (H1,H2,H3
     FGColor=red
-    fontWeight=bold
+    fontSlant=bold
 )
 ```
 
@@ -384,31 +384,33 @@ Sets the font size.
 - `large`
 - `largest`
 
-#### `fontWeight=<weight>` - Font Weight
+#### `fontWeight=<weight>` - Font Weight (NOT IMPLEMENTED)
 
-Sets the font weight (boldness).
+> **Warning**: This attribute was planned but **never implemented** in the codebase. The original author used it in some stylesheets (e.g., [HTML_sodium.stg](https://web.archive.org/web/20040308032623id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HTML_sodium.stg)), but the parsing code does not process it.
+>
+> To achieve bold text, use `fontSlant=bold` instead (see below).
 
-```
-(STRONG fontWeight=bold)
-(B fontWeight=bold)
-```
-
-**Values**:
+**Planned values** (not functional):
 - `normal` (default)
 - `bold`
 
 #### `fontSlant=<slant>` - Font Slant
 
-Sets the font slant (italic).
+Sets the font style. Despite the name suggesting only italic/slant control, this attribute also controls **bold** text in ViolaWWW's implementation.
 
 ```
 (I fontSlant=italic)
 (EM fontSlant=italic)
+(STRONG fontSlant=bold)
+(B fontSlant=bold)
 ```
 
 **Values**:
 - `normal` (default)
-- `italic`
+- `italic` - italic/oblique text
+- `bold` - bold text
+
+> **Historical Note**: The original author experimented with both `fontWeight=bold` (in [HTML_sodium.stg](https://web.archive.org/web/20040308032623id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HTML_sodium.stg)) and `fontSlant=bold` (in [HMML_red.stg](https://web.archive.org/web/20040329164857id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HMML_red.stg)). Only `fontSlant` was ultimately implemented, with `bold` added as a non-standard value alongside `italic`.
 
 #### `fontSpacing=<spacing>` - Font Spacing
 
@@ -503,14 +505,14 @@ Color when blink is in "off" state.
     
     (H1
         fontSize=largest
-        fontWeight=bold
+        fontSlant=bold
         FGColor=darkblue
         align=center
     )
     
     (H2
         fontSize=large
-        fontWeight=bold
+        fontSlant=bold
         FGColor=darkred
     )
     
@@ -564,7 +566,7 @@ Color when blink is in "off" state.
     )
 
     (A FGColor=red)
-    (BOLD,EMPH,STRONG fontWeight=bold)
+    (BOLD,EMPH,STRONG fontSlant=bold)
     (CMD,KBD,SCREEN,LISTING,EXAMPLE fontSpacing=mono)
     (I fontSlant=italic)
 
@@ -1015,7 +1017,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
     
     (H1
         fontSize=largest
-        fontWeight=bold
+        fontSlant=bold
         FGColor=white
         BGColor=navy
         align=center
@@ -1023,7 +1025,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
     
     (H2
         fontSize=large
-        fontWeight=bold
+        fontSlant=bold
         FGColor=maroon
     )
     
@@ -1034,7 +1036,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
             FGColor=red
             BDColor=orange
             border=2
-            fontWeight=bold
+            fontSlant=bold
         }
     )
     
@@ -1050,7 +1052,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
     )
     
     (STRONG
-        fontWeight=bold
+        fontSlant=bold
     )
 )
 ```
@@ -1083,10 +1085,11 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 ## See Also
 
 - [Web Archive: Original Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html)
+- [Web Archive: Viola Styles Directory](https://web.archive.org/web/20040427234619id_/http://www.xcf.berkeley.edu/~wei/viola/styles/) - Original `.stg` files from Pei Wei
 - `MATH_REFERENCE.md` - Mathematical notation in ViolaWWW
 - `README.md` - Project overview
 
 ---
 
-*Last updated: November 19, 2025*
+*Last updated: January 15, 2026*
 

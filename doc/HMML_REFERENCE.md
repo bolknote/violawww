@@ -266,7 +266,7 @@ From Pei Wei's original proposal, here is a sample stylesheet:
   (P)
   (A FGColor=red)
   (CMD,KBD,SCREEN,LISTING,EXAMPLE fontFamily=fixed)
-  (BOLD,EMPH,STRONG fontWeight=bold)
+  (BOLD,EMPH,STRONG fontSlant=bold)
   (I fontSlant=italic)
   (ADDRESS
     (P fontSlant=italic))
@@ -292,8 +292,7 @@ Properties documented in the original proposal:
 | Property | Values | Description |
 |----------|--------|-------------|
 | `fontSize` | `small`, `normal`, `large`, `largest` | Relative font size |
-| `fontWeight` | `bold` | Font weight |
-| `fontSlant` | `italic` | Font style |
+| `fontSlant` | `normal`, `italic`, `bold` | Font style (italic or bold) |
 | `fontFamily` | `fixed` | Font family type |
 | `fontSpacing` | (values unknown) | Letter/word spacing |
 | `numStyle` | `roman`, `number`, `alpha` | List numbering style |

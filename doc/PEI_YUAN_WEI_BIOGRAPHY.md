@@ -28,6 +28,11 @@ The machines he had access to were X-terminals, which gave him the idea for his 
 
 The name **Viola** didn't come from the musical instrument — it was an abbreviation for **"Visually Interactive Object-oriented Language and Application."**[^8] In 1990, that's what Viola became, and the HyperCard-like application was the first thing Wei did with it. In 1991, as Wei was graduating, he released Viola 0.8.[^8]
 
+#### Preview release announcement (April 1991)
+On April 23, 1991, Wei publicly announced a *"preview release"* of Viola on Usenet as a highly manipulable interactive-media authoring tool for UNIX/X11, describing it as the closest thing to Apple's HyperCard for that environment.[^13] In the announcement he stated that Viola binary and source were available via anonymous FTP on `scam.berkeley.edu` (IP `128.32.138.1`) in `src/local/viola` (see the README in that directory).[^13] The post was signed *"Director, Experimental Computing Facility, University of California, Berkeley"* and included a physical address at XCF in Cory Hall.[^13]
+
+In early May 1991, at least one public follow-up raised concerns about Paul Heckel's HyperCard-related patent and potential infringement questions for HyperCard-like systems, including Viola.[^13]
+
 #### Discovering the World Wide Web
 Wei was on the verge of an independent invention of networked hypertext. The question he had to answer was how to transport his Viola pages across the Internet. *"And that's when I read Tim's e-mail about the World Wide Web,"* he explains. *"The URL was very, very clever, it was perfectly what I needed."*[^8]
 
@@ -129,3 +134,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^10]: [Pei-Yuan Wei's personal page at viola.org (archived 2017)](https://web.archive.org/web/20171231133301/http://viola.org/wei/)
 [^11]: [Pei-Yuan Wei: Personal Comments on Eolas vs Microsoft, and the Viola Prior Art (archived 2010)](https://web.archive.org/web/20100625180207/http://www.xcf.berkeley.edu/~wei/viola/aboutEolasMicrosoft.html)
 [^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)
+[^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)

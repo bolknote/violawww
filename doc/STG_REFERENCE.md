@@ -96,7 +96,7 @@ STG files use a Lisp-like syntax with parentheses to define hierarchical rules:
 
 ### Comments
 
-STG does not have a formal comment syntax. Use whitespace liberally for readability.
+STG does **not** have a comment syntax. The `#` character is **not** treated as a comment delimiter — it will be parsed as part of an identifier or cause parse errors. Use whitespace liberally for readability, and add explanatory notes outside the stylesheet file if needed.
 
 ---
 
@@ -159,19 +159,22 @@ Attributes are **inherited** down the tree unless explicitly overridden:
 
 ```
 (BODY
-    FGColor=black        # All children inherit black text
+    FGColor=black
     BGColor=white
     
     (H1
-        FGColor=red      # H1 overrides to red text
-        BGColor=yellow   # H1 overrides to yellow background
+        FGColor=red
+        BGColor=yellow
     )
     
-    (P)                   # P inherits black text, white background from BODY
+    (P)
 )
 ```
 
-**Note**: The lone `(P)` engages the `<P>` tag in this context even without additional attributes.
+**Explanation**:
+- All children of `BODY` inherit black text and white background
+- `H1` overrides to red text on yellow background  
+- `P` inherits black text, white background from `BODY` (the empty `(P)` engages the tag in this context even without additional attributes)
 
 ---
 
@@ -242,22 +245,24 @@ Minor selectors allow styling based on the value of the `style` attribute in HTM
 Both identifiers are stored equally in the minor's `IDList`. The matching algorithm (`matchMinor` function) requires **both** identifiers to be present in the list for a match.
 
 **Equivalent syntaxes**:
-```
-{STYLE "WARNING"}      # With quotes (recommended)
-{STYLE WARNING}        # Without quotes (works if no spaces)
-{STYLE,WARNING}        # With explicit comma
-```
+
+| Syntax | Notes |
+|--------|-------|
+| `{STYLE "WARNING"}` | With quotes (recommended) |
+| `{STYLE WARNING}` | Without quotes (works if no spaces) |
+| `{STYLE,WARNING}` | With explicit comma |
 
 **When quotes are required**:
 - Use quotes if the value contains spaces: `{STYLE "MY WARNING"}`
 - Without quotes, each word becomes a separate ID: `{STYLE MY WARNING}` creates three IDs (incorrect)
 
 **What won't work**:
-```
-{CLASS "highlight"}    # ❌ Only STYLE attribute is supported
-{ID "main"}            # ❌ Only STYLE attribute is supported
-{ROLE "navigation"}    # ❌ Only STYLE attribute is supported
-```
+
+| Syntax | Why |
+|--------|-----|
+| `{CLASS "highlight"}` | ❌ Only STYLE attribute is supported |
+| `{ID "main"}` | ❌ Only STYLE attribute is supported |
+| `{ROLE "navigation"}` | ❌ Only STYLE attribute is supported |
 
 ### Multiple Minor Selectors
 
@@ -781,7 +786,7 @@ This example demonstrates the "cascading downward" behavior from the [original V
     <p>Second stylesheet in effect starting from here. 
        The ADDRESS paragraphs below will be blinking.</p>
     
-    <!-- Second ADDRESS uses HTML_sodium.stg + HTML_address1.stg -->
+    <!-- Second ADDRESS uses ONLY HTML_address1.stg (replaced HTML_sodium.stg) -->
     <address>
         <p>wei@ora.com</p>
         <p>Digital Media Group, O'Reilly & Associates</p>
@@ -790,7 +795,7 @@ This example demonstrates the "cascading downward" behavior from the [original V
     <link rel="style" href="HTML_address2.stg">
     <p>Third stylesheet in effect starting from here.</p>
     
-    <!-- Third ADDRESS uses all three stylesheets -->
+    <!-- Third ADDRESS uses ONLY HTML_address2.stg (replaced HTML_address1.stg) -->
     <address>
         <p>wei@ora.com</p>
         <p>Digital Media Group, O'Reilly & Associates</p>
@@ -1163,14 +1168,6 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 | **Specificity** | Context depth-based | Complex specificity rules |
 | **Cascading** | Document order (top-down) | Multiple cascade layers |
 | **Dynamic** | Static at load | Can be dynamic (JavaScript) |
-
----
-
-## File Locations
-
-- **Parser**: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
-- **Example Stylesheets**: `examples/*.stg`
-- **Test Files**: `test/test_stg_*.c`
 
 ---
 

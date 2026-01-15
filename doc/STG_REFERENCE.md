@@ -11,9 +11,24 @@ ViolaWWW uses a hierarchical stylesheet system called **STG** (Stylesheet) that 
 
 **References**:
 - [Original Stylesheet RFC (October 1993)](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - Pei Wei's proposal on WWW-Talk mailing list
+- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - early public prototype example (includes `fontFamily=fixed`, `fontWeight=bold`, `numStyle=roman/number/alpha`)
 - [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
 - [Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
 - Implementation: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
+
+## Contents
+
+- [Linking Stylesheets](#linking-stylesheets)
+- [Quick Start](#quick-start)
+- [STG Syntax Overview](#stg-syntax-overview)
+- [Major Selectors (Tag-Based)](#major-selectors-tag-based)
+- [Minor Selectors (Attribute-Based)](#minor-selectors-attribute-based)
+- [Style Attributes Reference](#style-attributes-reference)
+- [Complete Examples](#complete-examples)
+- [Technical Implementation Details](#technical-implementation-details)
+- [Limitations and Notes](#limitations-and-notes)
+- [Comparison with CSS](#comparison-with-css)
+- [See Also](#see-also)
 
 ---
 
@@ -26,6 +41,8 @@ Stylesheets are linked using the HTML `<LINK>` tag in the document head or body:
 ```html
 <link rel="style" href="HTML_sodium.stg">
 ```
+
+> **Note**: In the shipped `HTML_link_script.v`, the `REL` value is matched as `"style"`. Use lowercase `rel="style"`.
 
 ### Multiple Stylesheets and Live Switching
 
@@ -78,6 +95,36 @@ Stylesheets are linked using the HTML `<LINK>` tag in the document head or body:
 
 ---
 
+## Quick Start
+
+1. Create a stylesheet file `mystyle.stg`:
+
+```
+(BODY
+    FGColor=black
+    BGColor=white
+
+    (H1
+        fontSlant=bold
+        FGColor=darkblue
+        align=center
+    )
+
+    (A
+        FGColor=blue
+        traversedForegroundColor=purple
+    )
+)
+```
+
+2. Link it in HTML **before** the content you want to affect:
+
+```html
+<link rel="style" href="mystyle.stg">
+```
+
+> Note: ViolaWWW loads only one STG at a time. A later `<link rel="style">` replaces the previous stylesheet (no stacking).
+
 ## STG Syntax Overview
 
 ### Basic Structure
@@ -93,6 +140,12 @@ STG files use a Lisp-like syntax with parentheses to define hierarchical rules:
     )
 )
 ```
+
+### Tokenization (Delimiters and Strings)
+
+- **Whitespace**: space, tab, newline are treated equally.
+- **Delimiters (always split tokens)**: `=`, `,`, `(`, `)`, `{`, `}`.
+- **Quoted strings**: use double quotes to include spaces inside a single value, e.g. `mesg="Hi there\n"`.
 
 ### Comments
 
@@ -272,9 +325,20 @@ You can define multiple minor selectors for the same tag:
 (DIV
     BGColor=white
     
-    {STYLE "HIGHLIGHT"}
-    {STYLE "ALERT"}
-    {STYLE "INFO"}
+    {STYLE "HIGHLIGHT"
+        BGColor=yellow
+    }
+
+    {STYLE "ALERT"
+        BGColor=red
+        FGColor=white
+        border=2
+        BDColor=black
+    }
+
+    {STYLE "INFO"
+        BGColor=lightblue
+    }
 )
 ```
 
@@ -422,6 +486,8 @@ Sets the font style. Despite the name suggesting only italic/slant control, this
 #### `fontSpacing=<spacing>` - Font Spacing
 
 Sets the font to monospace.
+
+> **Historical note**: Early examples used `fontFamily=fixed` (see the 1993 WWW-Talk post above), but ViolaWWW's implementation uses `fontSpacing=mono`. The `fontFamily` attribute is not used by the current code.
 
 ```
 (CODE fontSpacing=mono)
@@ -1024,11 +1090,11 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 
 5. **Dynamic updates**: Stylesheets are loaded at document parse time, not dynamically
 
-6. **Cascading order**: Order of `<link>` tags matters for applying styles
+6. **Document-order replacement**: Order of `<link rel="style">` tags matters because each one replaces the active STG for the remainder of the document
 
-7. **Parser buffer limits**: Parse context uses fixed 1000-byte buffers (`ParseContext` struct)
-   - Very long tag names or attribute values may be truncated
-   - No error reporting for buffer overflow
+7. **Parser token buffer limit (unsafe)**: the parser uses fixed 1000-byte buffers (`ParseContext` in `libstg.c`) and does **not** bounds-check writes.
+   - Very long identifiers or quoted strings can overflow the internal buffer (undefined behavior).
+   - There is no structured error reporting for this.
 
 8. **Unimplemented attributes**: Some attributes from the original RFC are parsed but ignored
    - `fontWeight` - use `fontSlant=bold` instead
@@ -1047,8 +1113,9 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 
 ### Known Issues
 
-1. **Parser is case-sensitive** for tag names (use uppercase: `BODY`, not `body`)
-   - Tag comparison uses configured comparison function (`stg_tagNameCmp`)
+1. **Tag and attribute matching is case-sensitive in ViolaWWW**
+   - In the ViolaWWW integration (`src/viola/stgcall.c`), tag names are interned exactly as seen; no case-folding is performed.
+   - Practical rule: write selectors in the same case as the HTML parser provides (typically uppercase: `BODY`, `P`, `H1`).
    
 2. **No error reporting**: Invalid syntax may be silently ignored
    - Parser prints errors to stdout with `printf()` but continues parsing

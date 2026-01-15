@@ -295,7 +295,7 @@ Properties documented in the original proposal:
 | `fontSlant` | `normal`, `italic`, `bold` | Font style (italic or bold) |
 | `fontFamily` | `fixed` | Font family type |
 | `fontSpacing` | (values unknown) | Letter/word spacing |
-| `numStyle` | `roman`, `number`, `alpha` | List numbering style |
+| `numStyle` | `roman`, `number`, `alpha` | List numbering style (**not implemented**) |
 | `BGColor` | X11 color names | Background color |
 | `FGColor` | X11 color names | Foreground (text) color |
 | `BDColor` | X11 color names | Border color |

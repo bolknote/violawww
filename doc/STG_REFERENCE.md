@@ -7,10 +7,12 @@
 
 ViolaWWW uses a hierarchical stylesheet system called **STG** (Stylesheet) that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.
 
-> **Historical Note**: This stylesheet system was experimental and specific to the Viola browser. It was never adopted as a web standard, but represents an early attempt at separating presentation from content.
+> **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. The original "Stylesheet RFC" was published on **October 23, 1993** — predating CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
 
 **References**:
-- [Original Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
+- [Original Stylesheet RFC (October 1993)](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - Pei Wei's proposal on WWW-Talk mailing list
+- [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- [Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
 - Implementation: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
 
 ---
@@ -521,6 +523,27 @@ A boolean flag attribute. Purpose unknown — possibly related to whitespace han
 
 > **Note**: The parser comment in `libstg.c:210` also mentions `spacing` in a minor selector context: `{compact spacing}`. This suggests the author experimented with these as both flag attributes and minor selector identifiers.
 
+#### `numStyle=<style>` - List Numbering Style (NOT IMPLEMENTED)
+
+Intended to control list item numbering format. Defined in the [original Stylesheet RFC](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html):
+
+```
+(OL
+    (LI numStyle=roman
+        (LI numStyle=number
+            (LI numStyle=alpha)
+        )
+    )
+)
+```
+
+**Planned values**:
+- `roman` - Roman numerals (I, II, III, IV...)
+- `number` - Arabic numerals (1, 2, 3...)
+- `alpha` - Alphabetic (a, b, c...)
+
+**Status**: The parser may accept this attribute, but the list rendering code (`HTML_listNumbered_script.v`, `HTML_listSep_script.v`) only supports Arabic numerals via a simple integer counter (`itemN`). No conversion to roman numerals or alphabetic characters is implemented.
+
 #### Other Planned Features (from `libstg.c` comments)
 
 The example syntax in `libstg.c:207-215` reveals additional planned features that were never implemented:
@@ -1002,8 +1025,9 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
    - Very long tag names or attribute values may be truncated
    - No error reporting for buffer overflow
 
-8. **Unimplemented attributes**: Some attributes from original stylesheets are parsed but ignored
+8. **Unimplemented attributes**: Some attributes from the original RFC are parsed but ignored
    - `fontWeight` - use `fontSlant=bold` instead
+   - `numStyle` - list numbering (roman/number/alpha), only Arabic numerals supported
    - `compact` - flag attribute, never queried
    - `space` - flag attribute, never queried
    - See "Unimplemented Attributes" section for details
@@ -1152,8 +1176,14 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 
 ## See Also
 
-- [Web Archive: Original Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html)
+### Primary Sources
+- [Original Stylesheet RFC (October 1993)](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - Pei Wei's proposal on WWW-Talk mailing list
+- [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- [Web Archive: Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Chapter 14 of Viola documentation
 - [Web Archive: Viola Styles Directory](https://web.archive.org/web/20040427234619id_/http://www.xcf.berkeley.edu/~wei/viola/styles/) - Original `.stg` files from Pei Wei
+
+### Related Documentation
+- `HMML_REFERENCE.md` - HMML markup language reference
 - `MATH_REFERENCE.md` - Mathematical notation in ViolaWWW
 - `README.md` - Project overview
 

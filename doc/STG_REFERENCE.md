@@ -489,6 +489,38 @@ Color when blink is in "off" state.
 )
 ```
 
+### Unimplemented Attributes
+
+The following attributes appear in original ViolaWWW stylesheets (e.g., [test1.stg](https://web.archive.org/web/20040329164633id_/http://www.xcf.berkeley.edu/~wei/viola/styles/test1.stg), [test3.stg](https://web.archive.org/web/20040329164722id_/http://www.xcf.berkeley.edu/~wei/viola/styles/test3.stg)) but are **parsed without effect** — the rendering code never queries them.
+
+#### `compact` - Compact Mode (NOT IMPLEMENTED)
+
+A boolean flag attribute (used without a value). Likely intended to reduce spacing in lists or other elements.
+
+```
+(HEAD,BODY
+    compact
+    BGColor=white
+)
+```
+
+**Status**: Parsed by `libstg.c` as a flag attribute with `NULL` value, but never queried via `STG_attr()`.
+
+#### `space` - Spacing Control (NOT IMPLEMENTED)
+
+A boolean flag attribute. Purpose unknown — possibly related to whitespace handling or element spacing.
+
+```
+(HEAD,BODY
+    space
+    BGColor=white
+)
+```
+
+**Status**: Parsed by `libstg.c` as a flag attribute with `NULL` value, but never queried via `STG_attr()`.
+
+> **Note**: The parser comment in `libstg.c:210` also mentions `spacing` in a minor selector context: `{compact spacing}`. This suggests the author experimented with these as both flag attributes and minor selector identifiers.
+
 ---
 
 ## Complete Examples
@@ -939,6 +971,12 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 7. **Parser buffer limits**: Parse context uses fixed 1000-byte buffers (`ParseContext` struct)
    - Very long tag names or attribute values may be truncated
    - No error reporting for buffer overflow
+
+8. **Unimplemented attributes**: Some attributes from original stylesheets are parsed but ignored
+   - `fontWeight` - use `fontSlant=bold` instead
+   - `compact` - flag attribute, never queried
+   - `space` - flag attribute, never queried
+   - See "Unimplemented Attributes" section for details
 
 ### Best Practices
 

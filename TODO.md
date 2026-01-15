@@ -16,3 +16,15 @@
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.
 - [ ] Add `fontFamily` in STG
   - Define and apply the desired `fontFamily` in the STG configuration so text renders as expected.
+
+### Core & HTML
+- [ ] Implement stubbed Viola functions (`src/viola/cl_generic.c`)
+  - `depth()`, `field()`, `fieldList()`, `destroyVariable()`, `countWords()`, `item()`, `nthItem()`, `not()`, `scan()`, `gravity()`, `clear()`, `GB_count()`, `GB_create()`.
+- [ ] Implement functions marked "NOT IMPLEMENTED" (`src/viola/cl_generic.c`)
+  - `deleteSubStr()`, `deleteSubStrQ()`, `replaceStrQ()`, `sprintf()`.
+- [ ] Complete `watch(flag)` implementation (`src/viola/cl_generic.c`)
+  - Current implementation only sets a flag without full functionality.
+- [ ] Implement HTML editing functions (`src/viola/html.c`)
+  - `HText_applyStyle()`, `HText_updateStyle()`, `HText_selectionStyle()`, `HText_replaceSel()`, `HTextApplyToSimilar()`, `HTextSelectUnstyled()`, `HText_unlinkSelection()`.
+- [ ] Support ignored HTML tags (`src/libWWW/HTML.c`)
+  - Implement rendering for `<B>` and `<STRONG>` tags.

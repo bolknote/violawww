@@ -5,7 +5,9 @@
 
 ## Introduction
 
-ViolaWWW uses a hierarchical stylesheet system called **STG** (Stylesheet) that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.
+ViolaWWW uses a hierarchical stylesheet system called **STG** that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.
+
+> **Note on the abbreviation**: The exact expansion of "STG" is not documented in the original sources. However, based on the system's data structure (which includes `STGGroup`, `STGMajor` with tag ID lists, and style assertions), it is most likely **Style Tag Group** — a group that contains style rules for HTML tags. The original author (Pei Y. Wei) used "STG" as the name for the stylesheet library and file format, but did not explicitly define what the acronym stands for in the documented sources.
 
 > **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. An early public example of the stylesheet language was posted to WWW-Talk on **October 22, 1993**, noting a prototype implementation in Viola. A longer “Stylesheet RFC” text is dated **Oct 23, 1993** in its own header and was later re-posted to WWW-Talk (Oct 25, 1994). This work predates CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
 

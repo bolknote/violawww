@@ -1,6 +1,6 @@
 # ViolaWWW Documentation
 
-> **Note:** All documentation in this directory was created or compiled in ViolaWWW 4.0 (2025). Documents marked with "Added in: ViolaWWW 4.0" describe features that were implemented or significantly enhanced in version 4.0. Documents without this marker describe features that existed in the original ViolaWWW (v3.x, 1992-1995).
+> **Note:** The documentation set in this directory was written or compiled during the ViolaWWW 4.0 (2025) revival work. Documents marked with "Added in: ViolaWWW 4.0" describe features that were implemented or significantly enhanced in version 4.0. Documents without this marker describe features that existed in the original ViolaWWW (v3.x, 1992–1995).
 
 This directory contains technical documentation for ViolaWWW.
 
@@ -17,6 +17,9 @@ Topics covered:
 - Historic correspondence with Tim Berners-Lee (1991)
 - Technical innovations that pioneered modern web standards
 - ViolaWWW's role in the Eolas vs. Microsoft patent case
+
+### [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md)
+Comprehensive release history of ViolaWWW based on historical sources and announcements (1991–1995).
 
 ---
 
@@ -294,19 +297,19 @@ Topics covered:
 
 ## Historical Context
 
-ViolaWWW (1991-1994) was one of the first graphical web browsers and pioneered many features that were later standardized:
+ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered many features that later reappeared in other systems and standards:
 
-| ViolaWWW Feature | Later Standard |
+| ViolaWWW Feature | Rough modern analogue |
 |------------------|----------------|
 | HMML | Alternative SGML-based markup |
 | VOBJF (embedded objects) | Java applets, JavaScript |
 | FIGURE element | HTML IMG |
 | FIGA (image maps) | HTML AREA/MAP |
-| STG stylesheets | CSS |
-| FOSI stylesheets | CSS |
+| STG stylesheets | CSS (similar in spirit) |
+| FOSI stylesheets | DSSSL / XSL-FO (similar in spirit) |
 | Tables | HTML 3.0 Tables |
 | 3D Graphics tags | VRML, WebGL |
-| TTY (external processes) | Web Workers, WebAssembly |
+| TTY (external processes) | External helper processes; IPC |
 | VPLOT (3D visualization) | WebGL, Three.js |
 | CHANGED (revision tracking) | Track Changes (Word), Git diff |
 
@@ -322,4 +325,5 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 - [TODO](../TODO.md) - Known issues and future enhancements
 - [LICENSE](../LICENSE.md) - Licensing information
 - [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md) - Biography of Pei-Yuan Wei and ViolaWWW history
+- [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md) - Comprehensive release history (1991–1995)
 - [CHARSET_TRANSLITERATION.md](CHARSET_TRANSLITERATION.md) - Encoding/transliteration pipeline

@@ -2749,16 +2749,117 @@ long meth_generic_deleteFile(VObj* self, Packet* result, int argc, Packet argv[]
     return 1;
 }
 
+/*
+ * deleteSubStr(str, start, end)
+ *
+ * Deletes characters from position start to end (inclusive).
+ * Uses 0-based indexing.
+ *
+ * Result: new string with substring removed
+ * Return: 1 if successful, 0 if error occured
+ */
 long meth_generic_deleteSubStr(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char *str, *newStr;
+    long start, end, len, newLen;
+
     result->type = PKT_STR;
-    result->info.s = "NOT IMPLEMENTED";
-    result->canFree = 0;
+
+    if (argc < 3) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    start = PkInfo2Int(&argv[1]);
+    end = PkInfo2Int(&argv[2]);
+
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    len = strlen(str);
+
+    /* Validate bounds */
+    if (start < 0) start = 0;
+    if (end >= len) end = len - 1;
+    if (start > end || start >= len) {
+        /* Nothing to delete, return copy of original */
+        result->info.s = SaveString(str);
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+
+    /* Calculate new length: original minus deleted portion */
+    newLen = len - (end - start + 1);
+    newStr = (char*)malloc(newLen + 1);
+    if (!newStr) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    /* Copy part before start */
+    if (start > 0) {
+        strncpy(newStr, str, start);
+    }
+    /* Copy part after end */
+    strcpy(newStr + start, str + end + 1);
+
+    result->info.s = newStr;
+    result->canFree = PK_CANFREE_STR;
     return 1;
 }
 
+/*
+ * deleteSubStrQ(str, start, end)
+ *
+ * Deletes characters from position start to end (inclusive).
+ * Uses 0-based indexing. Modifies string in-place (without copying).
+ *
+ * Result: modified original string
+ * Return: 1 if successful, 0 if error occured
+ */
 long meth_generic_deleteSubStrQ(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char *str;
+    long start, end, len;
+
     result->type = PKT_STR;
-    result->info.s = "NOT IMPLEMENTED";
+
+    if (argc < 3) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    start = PkInfo2Int(&argv[1]);
+    end = PkInfo2Int(&argv[2]);
+
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    len = strlen(str);
+
+    /* Validate bounds */
+    if (start < 0) start = 0;
+    if (end >= len) end = len - 1;
+    if (start > end || start >= len) {
+        /* Nothing to delete */
+        result->info.s = str;
+        result->canFree = 0;
+        return 1;
+    }
+
+    /* Move the tail over the deleted portion (including null terminator) */
+    memmove(str + start, str + end + 1, len - end);
+
+    result->info.s = str;
     result->canFree = 0;
     return 1;
 }
@@ -4211,9 +4312,70 @@ long meth_generic_replaceStr(VObj* self, Packet* result, int argc, Packet argv[]
     return 1;
 }
 
+/*
+ * replaceStrQ(originalStr, pattern, patternReplaceStr)
+ *
+ * Replaces all occurrences of pattern with replacement string.
+ * Works without copying - uses global buffer, does not allocate new memory.
+ *
+ * Result: string with replacements (in global buffer)
+ * Return: 1 if successful, 0 if error occured
+ */
 long meth_generic_replaceStrQ(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char *cp, *lp;
+    char *inStr, *patStr, *repStr;
+    int pi = 0;
+    size_t patLength;
+
     result->type = PKT_STR;
-    result->info.s = "NOT IMPLEMENTED";
+
+    if (argc < 3) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    inStr = PkInfo2Str(&argv[0]);
+    patStr = PkInfo2Str(&argv[1]);
+    repStr = PkInfo2Str(&argv[2]);
+
+    if (!inStr || !patStr || !repStr) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    patLength = strlen(patStr);
+    if (patLength == 0) {
+        /* Empty pattern - return original */
+        result->info.s = inStr;
+        result->canFree = 0;
+        return 1;
+    }
+
+    buff[0] = '\0';
+    lp = inStr;
+    for (cp = inStr; *cp; cp++) {
+        if (*cp == patStr[pi]) {
+            if (++pi >= patLength) {
+                /* Found pattern match */
+                /* Copy chars before pattern (excluding matched chars) */
+                size_t prefixLen = (cp - lp) - (patLength - 1);
+                if (prefixLen > 0) {
+                    strncat(buff, lp, prefixLen);
+                }
+                strcat(buff, repStr);
+                lp = cp + 1;
+                pi = 0;
+            }
+        } else {
+            pi = 0;
+        }
+    }
+    /* Copy remaining part */
+    strcat(buff, lp);
+
+    result->info.s = buff;
     result->canFree = 0;
     return 1;
 }
@@ -4799,42 +4961,111 @@ long meth_generic_sleep(VObj* self, Packet* result, int argc, Packet argv[]) {
  * Return: 1 if successful, 0 if error occured
  */
 long meth_generic_sprintf(VObj* self, Packet* result, int argc, Packet argv[]) {
-    /*XXX NOT IMPLEMENTED*/
+    char *fmt, *cp;
+    char tempBuff[256];
+    int argIdx = 1;
+    int specCount = 0;
+    size_t outLen = 0;
 
-    /*
-            clearPacket(result);
-            for (int i = 0; i < argc; i++) {
-                    switch (argv[i].type) {
-                    case PKT_OBJ:
-                            printf("%s", GET_name(argv[i].info.o));
-                    continue;
-                    case PKT_INT:
-                            printf("%ld", argv[i].info.i);
-                    continue;
-                    case PKT_FLT:
-                            printf("%f", argv[i].info.f);
-                    continue;
-                    case PKT_CHR:
-                            printf("%c", argv[i].info.c);
-                    continue;
-                    case PKT_STR:
-                            printf("%s", argv[i].info.s);
-                    continue;
-                    case PKT_ARY:
-                            if (argv[i].info.y) {
-                                    int n;
-                                    Array *array = argv[i].info.y;
-                                    for (n = 0; n < array->size; n++)
-                                            printf("%ld ", array->info[n]);
-                            }
-                    continue;
-                    default:
-                            printf("??");
-                            dumpPacket(&argv[i]);
-                            return 0;
-                    }
+    result->type = PKT_STR;
+
+    if (argc < 1) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    fmt = PkInfo2Str(&argv[0]);
+    if (!fmt) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    /* Count format specifiers for runtime validation */
+    for (cp = fmt; *cp; cp++) {
+        if (*cp == '%' && *(cp + 1)) {
+            cp++;
+            if (*cp != '%') { /* %% is not a specifier */
+                specCount++;
             }
-    */
+        }
+    }
+
+    /* Warn if argument count doesn't match specifier count */
+    if (specCount > argc - 1) {
+        fprintf(stderr, "sprintf: warning: format expects %d arguments, but only %d provided\n",
+                specCount, argc - 1);
+    } else if (specCount < argc - 1) {
+        fprintf(stderr, "sprintf: warning: format expects %d arguments, but %d provided (extra ignored)\n",
+                specCount, argc - 1);
+    }
+
+    buff[0] = '\0';
+
+    for (cp = fmt; *cp; cp++) {
+        if (*cp == '%' && *(cp + 1)) {
+            cp++;
+            switch (*cp) {
+            case 's':
+                if (argIdx < argc) {
+                    char *s = PkInfo2Str(&argv[argIdx++]);
+                    if (s) strcat(buff, s);
+                } else {
+                    strcat(buff, "(null)");
+                }
+                break;
+            case 'd':
+            case 'i':
+                if (argIdx < argc) {
+                    snprintf(tempBuff, sizeof(tempBuff), "%ld", 
+                             PkInfo2Int(&argv[argIdx++]));
+                    strcat(buff, tempBuff);
+                } else {
+                    strcat(buff, "0");
+                }
+                break;
+            case 'f':
+                if (argIdx < argc) {
+                    snprintf(tempBuff, sizeof(tempBuff), "%f", 
+                             PkInfo2Flt(&argv[argIdx++]));
+                    strcat(buff, tempBuff);
+                } else {
+                    strcat(buff, "0.000000");
+                }
+                break;
+            case 'c':
+                if (argIdx < argc) {
+                    char c = PkInfo2Char(&argv[argIdx++]);
+                    outLen = strlen(buff);
+                    buff[outLen] = c;
+                    buff[outLen + 1] = '\0';
+                } else {
+                    strcat(buff, "?");
+                }
+                break;
+            case '%':
+                outLen = strlen(buff);
+                buff[outLen] = '%';
+                buff[outLen + 1] = '\0';
+                break;
+            default:
+                /* Unknown format specifier - output as-is */
+                outLen = strlen(buff);
+                buff[outLen] = '%';
+                buff[outLen + 1] = *cp;
+                buff[outLen + 2] = '\0';
+                break;
+            }
+        } else {
+            outLen = strlen(buff);
+            buff[outLen] = *cp;
+            buff[outLen + 1] = '\0';
+        }
+    }
+
+    result->info.s = SaveString(buff);
+    result->canFree = PK_CANFREE_STR;
     return 1;
 }
 

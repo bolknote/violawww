@@ -715,7 +715,7 @@ Replaces substrings in a string.
 ---
 
 ### replaceStrQ(originalStr, pattern, patternReplaceStr)
-Replaces substrings in a string (Q version).
+Replaces substrings in a string (Q version - without copying, uses global buffer).
 
 **Parameters:**
 - `originalStr` (string) - original string
@@ -724,29 +724,44 @@ Replaces substrings in a string (Q version).
 
 **Returns:** (string) string with replaced substrings
 
+**Implemented in:** ViolaWWW 4.0
+
 ---
 
 ### deleteSubStr(str, start, end)
-Deletes a substring.
+Deletes a substring from position `start` to `end` (inclusive). Uses 0-based indexing.
 
 **Parameters:**
 - `str` (string) - original string
-- `start` (int) - start position
-- `end` (int) - end position
+- `start` (int) - start position (0-based)
+- `end` (int) - end position (0-based, inclusive)
 
-**Returns:** (string) string without substring
+**Returns:** (string) new string without the deleted substring
+
+**Example:**
+```c
+result = deleteSubStr("Hello World", 5, 10);
+/* result = "Hello" */
+
+result = deleteSubStr("Hello", 2, 2);
+/* result = "Helo" (single character deleted) */
+```
+
+**Implemented in:** ViolaWWW 4.0
 
 ---
 
 ### deleteSubStrQ(str, start, end)
-Deletes a substring (without copying).
+Deletes a substring (without copying). Modifies the original string in-place. Uses 0-based indexing.
 
 **Parameters:**
-- `str` (string) - original string
-- `start` (int) - start position
-- `end` (int) - end position
+- `str` (string) - original string (will be modified)
+- `start` (int) - start position (0-based)
+- `end` (int) - end position (0-based, inclusive)
 
-**Returns:** (string) string without substring
+**Returns:** (string) the modified original string
+
+**Implemented in:** ViolaWWW 4.0
 
 ---
 
@@ -1213,13 +1228,37 @@ Prints arguments to standard output with newline.
 ---
 
 ### sprintf(format, arg1, arg2, ...)
-Formats a string.
+Formats a string using format specifiers.
 
 **Parameters:**
-- `format` (string) - format
-- `arg1, arg2, ...` (any) - arguments
+- `format` (string) - format string with specifiers
+- `arg1, arg2, ...` (any) - arguments to substitute
+
+**Format specifiers:**
+- `%s` - string
+- `%d` or `%i` - integer
+- `%f` - float
+- `%c` - character
+- `%%` - literal percent sign
 
 **Returns:** (string) formatted string
+
+**Example:**
+```c
+result = sprintf("Hello %s!", "World");
+/* result = "Hello World!" */
+
+result = sprintf("%s has %d items", "List", 5);
+/* result = "List has 5 items" */
+
+result = sprintf("Value: %f", 3.14);
+/* result = "Value: 3.140000" */
+
+result = sprintf("100%% complete");
+/* result = "100% complete" */
+```
+
+**Implemented in:** ViolaWWW 4.0
 
 ---
 

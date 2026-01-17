@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs
 
 .PHONY: all test clean $(TESTS)
 
@@ -54,6 +54,7 @@ test:
 	-@$(MAKE) test-security-escalation >$(BUILD_DIR)/test-security-escalation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-security-escalation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-security-escalation: FAIL")
 	-@$(MAKE) test-path-validation >$(BUILD_DIR)/test-path-validation.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-path-validation: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-path-validation: FAIL")
 	-@$(MAKE) test-htmime >$(BUILD_DIR)/test-htmime.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-htmime: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-htmime: FAIL")
+	-@$(MAKE) test-string-funcs >$(BUILD_DIR)/test-string-funcs.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-string-funcs: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-string-funcs: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -193,6 +194,13 @@ test-htmime: test_htmime.c
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_htmime test_htmime.c
 	@cd $(BUILD_DIR) && ./test_htmime
 
+test-string-funcs: test_string_funcs.c
+	@echo ""
+	@echo "Building string functions tests (deleteSubStr, replaceStrQ, sprintf)..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_string_funcs test_string_funcs.c
+	@./$(BUILD_DIR)/test_string_funcs
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -226,4 +234,5 @@ help:
 	@echo "  test-security-escalation - Security escalation prevention tests"
 	@echo "  test-path-validation - Path validation security tests"
 	@echo "  test-htmime          - HTTPS/HTMIME large header handling tests"
+	@echo "  test-string-funcs    - String functions (deleteSubStr, replaceStrQ, sprintf)"
 

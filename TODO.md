@@ -26,5 +26,3 @@
   - Current implementation only sets a flag without full functionality.
 - [ ] Implement HTML editing functions (`src/viola/html.c`)
   - `HText_applyStyle()`, `HText_updateStyle()`, `HText_selectionStyle()`, `HText_replaceSel()`, `HTextApplyToSimilar()`, `HTextSelectUnstyled()`, `HText_unlinkSelection()`.
-- [ ] Support ignored HTML tags (`src/libWWW/HTML.c`)
-  - Implement rendering for `<B>` and `<STRONG>` tags.

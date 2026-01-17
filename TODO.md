@@ -19,7 +19,7 @@
 
 ### Core & HTML
 - [ ] Implement stubbed Viola functions (`src/viola/cl_generic.c`)
-  - `depth()`, `field()`, `fieldList()`, `destroyVariable()`, `countWords()`, `item()`, `nthItem()`, `not()`, `scan()`, `gravity()`, `clear()`, `GB_count()`, `GB_create()`.
+  - `depth()`, `fieldList()`, `scan()`, `clear()`, `GB_count()`, `GB_create()` — no documentation found.
 - [ ] Complete `watch(flag)` implementation (`src/viola/cl_generic.c`)
   - Current implementation only sets a flag without full functionality.
 - [ ] Implement HTML editing functions (`src/viola/html.c`)

@@ -69,6 +69,7 @@ extern Attr* setVariable_INT(VObj* self, char* varname, int val);
 extern long getVariable_id(Attr* varlist, int varid);
 
 extern int destroyVariable(Attr* varlist, char* name, int retp);
+extern Attr* destroyVariable_internal(Attr* varlist, char* name);
 
 /*extern int ASSERT();*/
 #define ASSERT(t, mesg) NULL

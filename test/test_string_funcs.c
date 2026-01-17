@@ -4,6 +4,10 @@
  * - deleteSubStrQ(str, start, end)
  * - replaceStrQ(originalStr, pattern, patternReplaceStr)
  * - sprintf(format, args...)
+ * - countWords(str)
+ * - not(boolean)
+ * - item(str, n1 [, n2])
+ * - nthItem(str, n)
  *
  * This test file contains isolated copies of the functions to avoid
  * pulling in the entire Viola runtime.
@@ -712,6 +716,403 @@ static int test_sprintf(void) {
     return 1;
 }
 
+/* ===== Copy of countWords from cl_generic.c ===== */
+static long meth_generic_countWords(void* self, Packet* result, int argc, Packet argv[]) {
+    char *cp;
+    int count = 0;
+    int inWord = 0;
+
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (argc < 1) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    cp = PkInfo2Str(&argv[0]);
+    if (!cp) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    /* Count words by detecting transitions from non-word to word */
+    while (*cp) {
+        if (*cp == ' ' || *cp == '\t' || *cp == '\n' || *cp == '\r') {
+            inWord = 0;
+        } else {
+            if (!inWord) {
+                count++;
+                inWord = 1;
+            }
+        }
+        cp++;
+    }
+
+    result->info.i = count;
+    return 1;
+}
+
+/* ===== Copy of not from cl_generic.c ===== */
+static long meth_generic_not(void* self, Packet* result, int argc, Packet argv[]) {
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (argc < 1) {
+        result->info.i = 1; /* not(nothing) = true */
+        return 1;
+    }
+
+    /* Get the boolean value and negate it */
+    result->info.i = PkInfo2Int(&argv[0]) ? 0 : 1;
+    return 1;
+}
+
+/* ===== Copy of item from cl_generic.c ===== */
+static long meth_generic_item(void* self, Packet* result, int argc, Packet argv[]) {
+    char *str, *cp, *start;
+    long n1, n2;
+    long itemNum = 1;
+    int bi = 0;
+
+    result->type = PKT_STR;
+
+    if (argc < 2) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    n1 = PkInfo2Int(&argv[1]);
+    if (argc >= 3) {
+        n2 = PkInfo2Int(&argv[2]);
+    } else {
+        n2 = n1;
+    }
+
+    /* Validate range */
+    if (n1 < 1 || n2 < n1) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    buff[0] = '\0';
+    start = str;
+
+    for (cp = str; ; cp++) {
+        if (*cp == ',' || *cp == '\0') {
+            if (itemNum >= n1 && itemNum <= n2) {
+                /* Copy this item */
+                if (bi > 0) {
+                    buff[bi++] = ','; /* Add comma between items */
+                }
+                while (start < cp) {
+                    buff[bi++] = *start++;
+                }
+            }
+            if (*cp == '\0' || itemNum >= n2) {
+                break;
+            }
+            itemNum++;
+            start = cp + 1;
+        }
+    }
+    buff[bi] = '\0';
+
+    result->info.s = SaveString(buff);
+    result->canFree = PK_CANFREE_STR;
+    return 1;
+}
+
+/* ===== Copy of nthItem from cl_generic.c ===== */
+static long meth_generic_nthItem(void* self, Packet* result, int argc, Packet argv[]) {
+    char *str, *cp, *start;
+    long n;
+    long itemNum = 1;
+    int bi = 0;
+
+    result->type = PKT_STR;
+
+    if (argc < 2) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    n = PkInfo2Int(&argv[1]);
+    if (n < 1) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    start = str;
+
+    for (cp = str; ; cp++) {
+        if (*cp == ',' || *cp == '\0') {
+            if (itemNum == n) {
+                /* Copy this item */
+                while (start < cp) {
+                    buff[bi++] = *start++;
+                }
+                break;
+            }
+            if (*cp == '\0') {
+                /* Item not found */
+                result->info.s = "";
+                result->canFree = 0;
+                return 0;
+            }
+            itemNum++;
+            start = cp + 1;
+        }
+    }
+    buff[bi] = '\0';
+
+    result->info.s = SaveString(buff);
+    result->canFree = PK_CANFREE_STR;
+    return 1;
+}
+
+/* ===== Tests for countWords ===== */
+int test_countWords(void) {
+    printf("\n--- Testing countWords ---\n");
+    Packet argv[1];
+    Packet result;
+    long ret;
+    
+    /* Test 1: Simple words */
+    make_str_packet(&argv[0], "Hello World");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1");
+    ASSERT(result.info.i == 2, "countWords('Hello World') == 2");
+    
+    /* Test 2: Multiple spaces */
+    make_str_packet(&argv[0], "  one   two   three  ");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1");
+    ASSERT(result.info.i == 3, "countWords('  one   two   three  ') == 3");
+    
+    /* Test 3: Empty string */
+    make_str_packet(&argv[0], "");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1 for empty string");
+    ASSERT(result.info.i == 0, "countWords('') == 0");
+    
+    /* Test 4: Only spaces */
+    make_str_packet(&argv[0], "   ");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1");
+    ASSERT(result.info.i == 0, "countWords('   ') == 0");
+    
+    /* Test 5: Tabs and newlines */
+    make_str_packet(&argv[0], "word1\tword2\nword3");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1");
+    ASSERT(result.info.i == 3, "countWords('word1\\tword2\\nword3') == 3");
+    
+    /* Test 6: Single word */
+    make_str_packet(&argv[0], "word");
+    ret = meth_generic_countWords(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "countWords returns 1");
+    ASSERT(result.info.i == 1, "countWords('word') == 1");
+    
+    return 1;
+}
+
+/* ===== Tests for not ===== */
+int test_not(void) {
+    printf("\n--- Testing not ---\n");
+    Packet argv[1];
+    Packet result;
+    long ret;
+    
+    /* Test 1: not(0) = 1 */
+    make_int_packet(&argv[0], 0);
+    ret = meth_generic_not(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "not returns 1");
+    ASSERT(result.info.i == 1, "not(0) == 1");
+    
+    /* Test 2: not(1) = 0 */
+    make_int_packet(&argv[0], 1);
+    ret = meth_generic_not(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "not returns 1");
+    ASSERT(result.info.i == 0, "not(1) == 0");
+    
+    /* Test 3: not(42) = 0 */
+    make_int_packet(&argv[0], 42);
+    ret = meth_generic_not(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "not returns 1");
+    ASSERT(result.info.i == 0, "not(42) == 0");
+    
+    /* Test 4: not(-1) = 0 */
+    make_int_packet(&argv[0], -1);
+    ret = meth_generic_not(NULL, &result, 1, argv);
+    ASSERT(ret == 1, "not returns 1");
+    ASSERT(result.info.i == 0, "not(-1) == 0");
+    
+    /* Test 5: not() with no args = 1 */
+    ret = meth_generic_not(NULL, &result, 0, argv);
+    ASSERT(ret == 1, "not returns 1");
+    ASSERT(result.info.i == 1, "not() with no args == 1");
+    
+    return 1;
+}
+
+/* ===== Tests for item ===== */
+int test_item(void) {
+    printf("\n--- Testing item ---\n");
+    Packet argv[3];
+    Packet result;
+    long ret;
+    
+    /* Test 1: Single item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 2);
+    
+    ret = meth_generic_item(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "item returns 1");
+    ASSERT(strcmp(result.info.s, "banana") == 0,
+           "item('apple,banana,cherry', 2) == 'banana'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 2: Range of items */
+    make_str_packet(&argv[0], "apple,banana,cherry,date");
+    make_int_packet(&argv[1], 2);
+    make_int_packet(&argv[2], 3);
+    
+    ret = meth_generic_item(NULL, &result, 3, argv);
+    ASSERT(ret == 1, "item returns 1");
+    ASSERT(strcmp(result.info.s, "banana,cherry") == 0,
+           "item('apple,banana,cherry,date', 2, 3) == 'banana,cherry'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 3: First item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 1);
+    
+    ret = meth_generic_item(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "item returns 1");
+    ASSERT(strcmp(result.info.s, "apple") == 0,
+           "item('apple,banana,cherry', 1) == 'apple'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 4: Last item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 3);
+    
+    ret = meth_generic_item(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "item returns 1");
+    ASSERT(strcmp(result.info.s, "cherry") == 0,
+           "item('apple,banana,cherry', 3) == 'cherry'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 5: All items */
+    make_str_packet(&argv[0], "one,two,three");
+    make_int_packet(&argv[1], 1);
+    make_int_packet(&argv[2], 3);
+    
+    ret = meth_generic_item(NULL, &result, 3, argv);
+    ASSERT(ret == 1, "item returns 1");
+    ASSERT(strcmp(result.info.s, "one,two,three") == 0,
+           "item('one,two,three', 1, 3) == 'one,two,three'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 6: Invalid range (n1 < 1) */
+    make_str_packet(&argv[0], "apple,banana");
+    make_int_packet(&argv[1], 0);
+    
+    ret = meth_generic_item(NULL, &result, 2, argv);
+    ASSERT(ret == 0, "item returns 0 for invalid range");
+    ASSERT(strcmp(result.info.s, "") == 0,
+           "item with n1=0 returns empty string");
+    
+    return 1;
+}
+
+/* ===== Tests for nthItem ===== */
+int test_nthItem(void) {
+    printf("\n--- Testing nthItem ---\n");
+    Packet argv[2];
+    Packet result;
+    long ret;
+    
+    /* Test 1: First item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 1);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "nthItem returns 1");
+    ASSERT(strcmp(result.info.s, "apple") == 0,
+           "nthItem('apple,banana,cherry', 1) == 'apple'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 2: Second item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 2);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "nthItem returns 1");
+    ASSERT(strcmp(result.info.s, "banana") == 0,
+           "nthItem('apple,banana,cherry', 2) == 'banana'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 3: Last item */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 3);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "nthItem returns 1");
+    ASSERT(strcmp(result.info.s, "cherry") == 0,
+           "nthItem('apple,banana,cherry', 3) == 'cherry'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 4: Out of range */
+    make_str_packet(&argv[0], "apple,banana,cherry");
+    make_int_packet(&argv[1], 5);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 0, "nthItem returns 0 for out of range");
+    ASSERT(strcmp(result.info.s, "") == 0,
+           "nthItem out of range returns empty string");
+    
+    /* Test 5: Single item string */
+    make_str_packet(&argv[0], "only");
+    make_int_packet(&argv[1], 1);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 1, "nthItem returns 1");
+    ASSERT(strcmp(result.info.s, "only") == 0,
+           "nthItem('only', 1) == 'only'");
+    if (result.canFree == PK_CANFREE_STR) free(result.info.s);
+    
+    /* Test 6: Invalid n (< 1) */
+    make_str_packet(&argv[0], "apple,banana");
+    make_int_packet(&argv[1], 0);
+    
+    ret = meth_generic_nthItem(NULL, &result, 2, argv);
+    ASSERT(ret == 0, "nthItem returns 0 for n < 1");
+    ASSERT(strcmp(result.info.s, "") == 0,
+           "nthItem with n=0 returns empty string");
+    
+    return 1;
+}
+
 int main(void) {
     printf("=======================================\n");
     printf("String Functions Tests (cl_generic.c)\n");
@@ -721,6 +1122,10 @@ int main(void) {
     test_deleteSubStrQ();
     test_replaceStrQ();
     test_sprintf();
+    test_countWords();
+    test_not();
+    test_item();
+    test_nthItem();
     
     printf("\n=======================================\n");
     printf("Test Results: %d/%d passed, %d failed\n", tests_passed, tests_run, tests_failed);

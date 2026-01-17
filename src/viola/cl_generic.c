@@ -2594,14 +2594,49 @@ long meth_generic_countLines(VObj* self, Packet* result, int argc, Packet argv[]
 /*
  * countWords(str)
  *
- *
+ * Counts the number of words in a string.
+ * Words are separated by whitespace (spaces, tabs, newlines).
  *
  * Result: number of words
  * Return: 1 if successful, 0 if error occured
+ *
+ * Source: Wayback Machine archived documentation
+ * https://web.archive.org/web/20050122165617/http://www.xcf.berkeley.edu/~wei/viola/book/methods/all2.html
  */
 long meth_generic_countWords(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    char *cp;
+    int count = 0;
+    int inWord = 0;
+
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (argc < 1) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    cp = PkInfo2Str(&argv[0]);
+    if (!cp) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    /* Count words by detecting transitions from non-word to word */
+    while (*cp) {
+        if (*cp == ' ' || *cp == '\t' || *cp == '\n' || *cp == '\r') {
+            inWord = 0;
+        } else {
+            if (!inWord) {
+                count++;
+                inWord = 1;
+            }
+        }
+        cp++;
+    }
+
+    result->info.i = count;
+    return 1;
 }
 
 /*
@@ -2887,15 +2922,40 @@ long meth_generic_destroy(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 /*
- * destroyVariable(attribute)
+ * destroyVariable(name)
  *
+ * Removes a named variable from the object's variable list.
  *
- * Result: the gotten attribute
+ * Result: 1 if variable was found and removed, 0 otherwise
  * Return: 1 if successful, 0 if error occured
+ *
+ * Source: By analogy with getVariable/setVariable
  */
 long meth_generic_destroyVariable(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    char *varName;
+    Attr *varlist, *newVarlist;
+
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (argc < 1) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    varName = PkInfo2Str(&argv[0]);
+    if (!varName) {
+        result->info.i = 0;
+        return 0;
+    }
+
+    varlist = GET__varList(self);
+    newVarlist = destroyVariable_internal(varlist, varName);
+    SET__varList(self, newVarlist);
+
+    /* Return 1 if the list changed (variable was removed) */
+    result->info.i = (varlist != newVarlist) ? 1 : 0;
+    return 1;
 }
 
 /*
@@ -3410,18 +3470,79 @@ long meth_generic_isBlank(VObj* self, Packet* result, int argc, Packet argv[]) {
     return 1;
 }
 
-/* XXX
+/*
  * item(str, n1 [,n2])
  *
  * Extract the item(s) ranged by n1 and n2. Comma (,) is the seperating
- * character.
+ * character. Item numbering starts from 1.
  *
  * Result: string containing the items
  * Return: 1 if successful, 0 if error occured
+ *
+ * Source: Original author's comment in cl_generic.c and archived documentation
+ * https://web.archive.org/web/20040601221047/http://www.xcf.berkeley.edu/~wei/viola/book/appc.html
  */
 long meth_generic_item(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    char *str, *cp, *start;
+    long n1, n2;
+    long itemNum = 1;
+    int bi = 0;
+
+    result->type = PKT_STR;
+
+    if (argc < 2) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    n1 = PkInfo2Int(&argv[1]);
+    if (argc >= 3) {
+        n2 = PkInfo2Int(&argv[2]);
+    } else {
+        n2 = n1;
+    }
+
+    /* Validate range */
+    if (n1 < 1 || n2 < n1) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    buff[0] = '\0';
+    start = str;
+
+    for (cp = str; ; cp++) {
+        if (*cp == ',' || *cp == '\0') {
+            if (itemNum >= n1 && itemNum <= n2) {
+                /* Copy this item */
+                if (bi > 0) {
+                    buff[bi++] = ','; /* Add comma between items */
+                }
+                while (start < cp) {
+                    buff[bi++] = *start++;
+                }
+            }
+            if (*cp == '\0' || itemNum >= n2) {
+                break;
+            }
+            itemNum++;
+            start = cp + 1;
+        }
+    }
+    buff[bi] = '\0';
+
+    result->info.s = SaveString(buff);
+    result->canFree = PK_CANFREE_STR;
+    return 1;
 }
 
 /*
@@ -3807,12 +3928,28 @@ long meth_generic_makeTempFile(VObj* self, Packet* result, int argc, Packet argv
 }
 
 /*
- * Result: unaffected
+ * not(boolean)
+ *
+ * Returns the logical NOT of the argument.
+ *
+ * Result: logical NOT of argument (0 becomes 1, non-zero becomes 0)
  * Return: 1 if successful, 0 if error occured
+ *
+ * Source: Wayback Machine archived documentation
+ * https://web.archive.org/web/20050122165617/http://www.xcf.berkeley.edu/~wei/viola/book/methods/all2.html
  */
 long meth_generic_not(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    result->type = PKT_INT;
+    result->canFree = 0;
+
+    if (argc < 1) {
+        result->info.i = 1; /* not(nothing) = true */
+        return 1;
+    }
+
+    /* Get the boolean value and negate it */
+    result->info.i = PkInfo2Int(&argv[0]) ? 0 : 1;
+    return 1;
 }
 
 /*
@@ -3898,14 +4035,68 @@ long meth_generic_nthChild(VObj* self, Packet* result, int argc, Packet argv[]) 
 /*
  * nthItem(string, n)
  *
+ * Returns the nth comma-separated item from the string.
+ * Item numbering starts from 1.
  *
- *
- * Result: unaffected
+ * Result: the nth item as a string
  * Return: 1 if successful, 0 if error occured
+ *
+ * Source: By analogy with item() and nthWord()
  */
 long meth_generic_nthItem(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    char *str, *cp, *start;
+    long n;
+    long itemNum = 1;
+    int bi = 0;
+
+    result->type = PKT_STR;
+
+    if (argc < 2) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    str = PkInfo2Str(&argv[0]);
+    if (!str) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    n = PkInfo2Int(&argv[1]);
+    if (n < 1) {
+        result->info.s = "";
+        result->canFree = 0;
+        return 0;
+    }
+
+    start = str;
+
+    for (cp = str; ; cp++) {
+        if (*cp == ',' || *cp == '\0') {
+            if (itemNum == n) {
+                /* Copy this item */
+                while (start < cp) {
+                    buff[bi++] = *start++;
+                }
+                break;
+            }
+            if (*cp == '\0') {
+                /* Item not found */
+                result->info.s = "";
+                result->canFree = 0;
+                return 0;
+            }
+            itemNum++;
+            start = cp + 1;
+        }
+    }
+    buff[bi] = '\0';
+
+    result->info.s = SaveString(buff);
+    result->canFree = PK_CANFREE_STR;
+    return 1;
 }
 
 /*

@@ -3175,6 +3175,50 @@ Attr *setVariable(varlistp, name, resultp)
 }
 */
 
+/*
+ * destroyVariable(varlist, name, retp)
+ *
+ * Removes a named variable from the variable list.
+ *
+ * Returns: 1 if variable was found and removed, 0 otherwise
+ *
+ * Source: By analogy with getVariable/setVariable
+ */
+Attr* destroyVariable_internal(Attr* varlist, char* name) {
+    Attr *head = varlist;
+    Attr *prev = NULL;
+    HashEntry* entry;
+    long varid;
+
+    if (!name || !varlist) {
+        return varlist;
+    }
+
+    if ((entry = symStr2ID->get(symStr2ID, (long)name))) {
+        varid = entry->val;
+
+        for (; varlist; prev = varlist, varlist = varlist->next) {
+            if (varlist->id == varid) {
+                /* Found the variable - remove it from the list */
+                if (prev) {
+                    prev->next = varlist->next;
+                } else {
+                    head = varlist->next;
+                }
+                /* Free the packet if it exists */
+                if (varlist->val) {
+                    Packet *pk = (Packet*)(varlist->val);
+                    clearPacket(pk);
+                    free(pk);
+                }
+                free(varlist);
+                return head;
+            }
+        }
+    }
+    return head;
+}
+
 int destroyVariable(Attr* varlist, char* name, int retp) { return 0; }
 
 long sendMessageAndIntsByName(char* objName, char* messg, int* intArray, int intCount)

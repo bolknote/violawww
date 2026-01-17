@@ -659,12 +659,25 @@ Counts the number of lines (number of '\n' characters).
 ---
 
 ### countWords(str)
-Counts the number of words.
+Counts the number of words in a string. Words are separated by whitespace (spaces, tabs, newlines).
 
 **Parameters:**
 - `str` (string) - string
 
 **Returns:** (int) number of words
+
+**Example:**
+```c
+n = countWords("Hello World");
+/* n = 2 */
+
+n = countWords("  one   two   three  ");
+/* n = 3 */
+```
+
+**Implemented in:** ViolaWWW 4.0
+
+**Source:** [Wayback Machine archived documentation](https://web.archive.org/web/20050122165617/http://www.xcf.berkeley.edu/~wei/viola/book/methods/all2.html) — "Number of words"
 
 ---
 
@@ -1856,12 +1869,23 @@ Converts a character to an ASCII code.
 ---
 
 ### not(value)
-Logical negation.
+Returns the logical NOT of the argument.
 
 **Parameters:**
-- `value` (any) - value
+- `value` (any) - value to negate
 
-**Returns:** (int) 1 if false, 0 if true
+**Returns:** (int) 1 if argument is 0/false, 0 if argument is non-zero/true
+
+**Example:**
+```c
+x = not(0);    /* x = 1 */
+x = not(1);    /* x = 0 */
+x = not(42);   /* x = 0 */
+```
+
+**Implemented in:** ViolaWWW 4.0
+
+**Source:** [Wayback Machine archived documentation](https://web.archive.org/web/20050122165617/http://www.xcf.berkeley.edu/~wei/viola/book/methods/all2.html) — "Logical not of argument"
 
 ---
 
@@ -1908,12 +1932,24 @@ Sets the value of an object variable.
 ---
 
 ### destroyVariable(name)
-Deletes an object variable.
+Removes a named variable from the object's variable list.
 
 **Parameters:**
-- `name` (string) - variable name
+- `name` (string) - variable name to remove
 
-**Returns:** (int) 1
+**Returns:** (int) 1 if variable was found and removed, 0 otherwise
+
+**Example:**
+```c
+setVariable("temp", 42);
+x = getVariable("temp");  /* x = 42 */
+destroyVariable("temp");
+x = getVariable("temp");  /* x = "" (variable no longer exists) */
+```
+
+**Implemented in:** ViolaWWW 4.0
+
+**Source:** By analogy with `getVariable()` and `setVariable()`
 
 ---
 
@@ -2003,25 +2039,57 @@ Appends an item to a list.
 ---
 
 ### item(str, n1 [, n2])
-Extracts item(s) from a comma-separated string.
+Extracts item(s) from a comma-separated string. Item numbering starts from 1.
 
 **Parameters:**
-- `str` (string) - string
-- `n1` (int) - starting item
-- `n2` (int, optional) - ending item
+- `str` (string) - comma-separated string
+- `n1` (int) - starting item (1-based)
+- `n2` (int, optional) - ending item (1-based, inclusive)
 
-**Returns:** (string) item(s)
+**Returns:** (string) extracted item(s), comma-separated if range
+
+**Example:**
+```c
+result = item("apple,banana,cherry", 2);
+/* result = "banana" */
+
+result = item("apple,banana,cherry,date", 2, 3);
+/* result = "banana,cherry" */
+
+result = item("one,two,three", 1, 3);
+/* result = "one,two,three" */
+```
+
+**Implemented in:** ViolaWWW 4.0
+
+**Source:** Original author's comment in `cl_generic.c` — "Comma seperate items" and [Wayback Machine archived documentation](https://web.archive.org/web/20040601221047/http://www.xcf.berkeley.edu/~wei/viola/book/appc.html)
 
 ---
 
 ### nthItem(str, n)
-Returns the n-th item from a string.
+Returns the n-th comma-separated item from a string. Item numbering starts from 1.
 
 **Parameters:**
-- `str` (string) - string
-- `n` (int) - item number
+- `str` (string) - comma-separated string
+- `n` (int) - item number (1-based)
 
-**Returns:** (string) item
+**Returns:** (string) the n-th item, or "" if n is out of range
+
+**Example:**
+```c
+result = nthItem("apple,banana,cherry", 1);
+/* result = "apple" */
+
+result = nthItem("apple,banana,cherry", 2);
+/* result = "banana" */
+
+result = nthItem("apple,banana,cherry", 5);
+/* result = "" (out of range) */
+```
+
+**Implemented in:** ViolaWWW 4.0
+
+**Source:** By analogy with `item()` and `nthWord()`
 
 ---
 

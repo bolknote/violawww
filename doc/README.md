@@ -27,7 +27,7 @@ Topics covered:
 - Version milestones and feature descriptions
 - Historical sources, dates, and announcements
 - Known issues and technical changes per release
-- ViolaWWW 4.0 revival timeline (2025–2026)
+- ViolaWWW 4.0 revival (2025–2026)
 
 ---
 

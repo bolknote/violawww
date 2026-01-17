@@ -193,46 +193,45 @@ Discussion on WWW-Talk during early 1993 indicates significant internal improvem
 
 ---
 
-### April – May 1993 — Version 1993.3.7 (Alpha) & HMML
-**Status**: April 1993 (Alpha), May 1993 (Internal/Experimental)
+### April 21, 1993 — HMML Mentioned as an O'Reilly Multimedia Extension
+**Date**: April 21, 1993 (WWW-Talk)
 
-This period marks the transition of ViolaWWW from a simple browser to a sophisticated hypermedia platform, largely developed under the auspices of O'Reilly & Associates. 
+Tim Berners-Lee noted that **HMML already existed** as an extension of HTML for multimedia “from O'Reilly”, and also mentioned “O'Reilly's (unreleased) Viola.”
 
-#### HMML (HyperMedia Markup Language)
-Pei Wei developed **HMML**, an internal experimental DTD at O'Reilly. This DTD introduced many features that would eventually influence the HTML+ and HTML 3.0 specifications.
+**Source**: [WWW-Talk 1993: HTML, HMML, and HyperTeX (T. Berners-Lee)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/127.html)
 
-- **The `<FIGURE>` Tag**: A comprehensive tag for multimedia content, featuring:
-    - `SRC` and `TYPE` (with full MIME type support).
-    - `<FIGCAP>` for integrated figure captions.
-    - `<FIGDATA>` for embedding raw data (e.g., TeX) directly within the document.
-    - `ISMAP` support for server-side image maps.
-    - `<FIGA>` for client-side image maps (anchors with coordinates).
-- **SGML Philosophy**: Wei and Dave Raggett coordinated on the development of HMML/HTML+, with Raggett eventually adopting the name "HTML+" to distinguish the emerging public standard from O'Reilly's internal HMML.
+### May 25, 1993 — HMML DTD Discussion and “HTML+” Mention
+**Date**: May 25, 1993 (WWW-Talk)
 
-#### Version 1993.3.7 Features
-The version string format changed from `2.x.y` to date-based `YYYY.M.N` (1993.3.7 = 1993, release 3.7).
+Dave Raggett discussed HMML/HTML DTD direction and noted that extensions should be compatible with parsing “HTML+” efficiently. The message also includes an FTP location for `hmml.dtd`.
 
-The built-in About page for this version describes ViolaWWW as an "X-Windows browser client to the World-Wide Web system" with:
-- Clickable hot-words navigation
-- History list (previous/back/next document traversal)
-- Book-mark lists
-- Keyword search entry
-- Page cloning (multiple windows)
-- Simple printer hook
-- HTML source viewer (not editor)
+**Source**: [WWW-Talk 1993: Re HMML? (D. Raggett)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/383.html)
 
-**Sources**:
-- [Viola Home Page (archived)](https://web.archive.org/web/20180203005145/http://www.viola.org/) — screenshot of ViolaWWW circa 1993
-- [WWW-Talk 1993: Proposal for FIGURE tag (Pei Wei)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html)
+### May 28, 1993 — `<FIGURE>` Proposal in HMML (Working Version)
+**Date**: May 28, 1993 (WWW-Talk)
+
+Pei-Yuan Wei described HMML as “my working version” and proposed a richer `<FIGURE>` structure (including captions and mapped/anchored regions).
+
+**Source**: [WWW-Talk 1993: Proposal for FIGURE tag (Pei Wei)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html)
+
+### Circa 1993 — About/Status Screenshot (Key Dates Only)
+
+The archived viola.org home page includes a ViolaWWW “circa 1993” screenshot of the built-in About/Status page. The only information treated as dated evidence from this screenshot is its **Status** list:
+
+- **April 1993**: “Alpha release. SGML and other hypermedia features...”
+- **May 10, 1992**: “Beta release. HTML centric version.”
+- **March 9 to April 20, 1992**: “Releases to the WWW people at CERN for tests.”
+
+**Source**: [Viola Home Page (archived)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
 
 ---
 
-### June 10, 1993 — Stylesheet Proposal
-**Announcement**: June 10, 1993 on WWW-Talk mailing list
+### October 22, 1993 — STG “Stylesheet Language” Posted (Prototype in Viola)
+**Announcement**: October 22, 1993 on WWW-Talk mailing list
 
-Rob Raisch (O'Reilly & Associates) formally proposed a mechanism for **Stylesheets** in HTML, based on O'Reilly's internal work with Viola and HMML. This was one of the earliest formal discussions about separating content from presentation on the Web.
+Pei-Yuan Wei shared an early stylesheet description language (STG) and noted that a prototype was already implemented in Viola, with the goal of producing a standalone library usable by multiple W3 browsers.
 
-**Source**: [WWW-Talk 1993: Request for Comments: STYLESHEETS](http://1997.webhistory.org/www.lists/www-talk.1993q2/0612.html)
+**Source**: [WWW-Talk Oct-Dec 1993: Stylesheet Language (Pei Y. Wei)](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html)
 
 ---
 
@@ -290,7 +289,7 @@ Final known release of ViolaWWW. Self-contained single binary for easier install
 - **Self-contained single binary**: Unlike older versions which required setup of various Viola application files
 
 #### Availability
-- Source and binary: `ftp://ftp.ora.com/pub/www/viola`
+- Source and binary (historical; unavailable today — `ftp.ora.com` no longer resolves): `ftp://ftp.ora.com/pub/www/viola`
 - Platform: Unix/X Windows
 - Sparc binary supplied
 
@@ -313,24 +312,24 @@ Work is ongoing as of **2026**.
 
 ## Version Summary Table
 
-|| Date | Version | Milestone |
-||------|---------|-----------|
-|| Apr 23, 1991 | Viola Preview | First public announcement (pre-WWW) |
-|| 1991 | Viola 0.8 | First numbered release |
-|| Dec 9, 1991 | — | Official intention to create X11 W3 browser |
-|| Jan 24, 1992 | — | First successful test report by Tim Berners-Lee |
-|| Mar 9 – Apr 20, 1992 | 2.0.x (2.0.4 by Apr 4) | CERN testing phase |
-|| May 10 – 15, 1992 | — | Beta release demo at JENC3; packaging/README dates |
-|| May 23, 1992 | 2.1.0 | First public release |
-|| Jun 30, 1992 | — | Multi-object SGML architecture announced |
-|| Jul 14, 1992 | 2.1.2 | W3 library update, archive `viola920730.tar.Z` |
-|| Nov 4, 1992 | — | Scrollable regions for `LISTING` sections |
-|| Early 1993 | — | Memory/resource leak fixes, preparing "Next Release" |
-|| Apr 1993 | 1993.3.7 | Alpha release with SGML/HMML support |
-|| Jun 10, 1993 | — | Formal Stylesheet proposal (Rob Raisch) |
-|| Mar 23, 1994 | 3.1 Beta | Bug fixes, collapsible/expandable lists |
-|| Apr 10, 1995 | 3.3 Beta | Final release |
-|| Oct 17, 2025 | 4.0 (Revival) | 64-bit port, ongoing feature restoration |
+| Date | Version | Milestone |
+|------|---------|-----------|
+| Apr 23, 1991 | Viola Preview | First public announcement (pre-WWW) |
+| 1991 | Viola 0.8 | First numbered release |
+| Dec 9, 1991 | — | Official intention to create X11 W3 browser |
+| Jan 24, 1992 | — | First successful test report by Tim Berners-Lee |
+| Mar 9 – Apr 20, 1992 | 2.0.x (2.0.4 by Apr 4) | CERN testing phase |
+| May 10 – 15, 1992 | — | Beta release demo at JENC3; packaging/README dates |
+| May 23, 1992 | 2.1.0 | First public release |
+| Jun 30, 1992 | — | Multi-object SGML architecture announced |
+| Jul 14, 1992 | 2.1.2 | W3 library update, archive `viola920730.tar.Z` |
+| Nov 4, 1992 | — | Scrollable regions for `LISTING` sections |
+| Early 1993 | — | Memory/resource leak fixes, preparing "Next Release" |
+| Apr–May 1993 | — | HMML discussions on WWW-Talk; About/Status screenshot lists key dates (not a confirmed release) |
+| Oct 22, 1993 | — | STG “Stylesheet Language” posted (prototype in Viola) |
+| Mar 23, 1994 | 3.1 Beta | Bug fixes, collapsible/expandable lists |
+| Apr 10, 1995 | 3.3 Beta | Final release |
+| Oct 17, 2025 | 4.0 (Revival) | 64-bit port, ongoing feature restoration |
 
 ---
 
@@ -352,8 +351,10 @@ Work is ongoing as of **2026**.
 - [W3.org History: www-talk archive Jan-Jun 1993](https://www.w3.org/History/1992/www-talk.9301-9306.Z)
 - [WWW-Talk 1993: Re: viola/www memory leak](http://1997.webhistory.org/www.lists/www-talk.1993q1/0173.html)
 - [WWW-Talk 1993: Re HMML?](http://1997.webhistory.org/www.lists/www-talk.1993q2/0488.html)
+- [WWW-Talk 1993: HTML, HMML, and HyperTeX (T. Berners-Lee)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/127.html)
+- [WWW-Talk 1993: Re HMML? (D. Raggett)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/383.html)
 - [WWW-Talk 1993: Proposal for FIGURE tag (Pei Wei)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html)
-- [WWW-Talk 1993: Request for Comments: STYLESHEETS](http://1997.webhistory.org/www.lists/www-talk.1993q2/0612.html)
+- [WWW-Talk Oct-Dec 1993: Stylesheet Language (Pei Y. Wei)](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html)
 - [W3.org: An updated quick look at ViolaWWW (May 15, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review.html)
 - [W3.org: A quick look at ViolaWWW (April 11, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html)
 - [W3.org: Viola installation instructions (May 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Installation.html)

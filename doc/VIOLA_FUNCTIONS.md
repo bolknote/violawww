@@ -221,22 +221,23 @@ Encodes a URL.
 
 ---
 
-### Base64DecodeToFile(base64_data)
-Decodes Base64-encoded data and saves it to a temporary file with `.gif` extension. Handles binary data correctly (including null bytes).
+### Base64DecodeToFile(base64_data [, extension])
+Decodes Base64-encoded data and saves it to a temporary file with the specified extension. Handles binary data correctly (including null bytes).
 
 **Parameters:**
 - `base64_data` (string) - Base64 encoded string
+- `extension` (string, optional) - file extension (e.g., ".gif", ".jpg"). Defaults to empty string.
 
 **Returns:** (string) path to temp file on success, "" on error
 
 **Example:**
 ```c
 /* Decode inline GIF image */
-localFile = Base64DecodeToFile(base64Data);
+localFile = Base64DecodeToFile(base64Data, ".gif");
 set("label", localFile);
 ```
 
-**Note:** This function wraps `HTUU_decode()` from `src/libWWW/HTUU.c` and writes binary data using `fwrite()`, correctly handling null bytes that would truncate regular string operations. The filename is generated internally for security — caller cannot specify arbitrary paths.
+**Note:** This function wraps `HTUU_decode()` from `src/libWWW/HTUU.c` and writes binary data using `fwrite()`, correctly handling null bytes that would truncate regular string operations. The filename is generated internally for security — caller cannot specify arbitrary paths. Extension is used as a suffix for the generated temporary file.
 
 **Added in:** ViolaWWW 4.0
 

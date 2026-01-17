@@ -1302,10 +1302,11 @@ long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet arg
 }
 
 /*
- * Base64DecodeToFile(base64_data)
+ * Base64DecodeToFile(base64_data, extension)
  *
- * Decodes Base64 encoded data and writes it to a temp file with .gif extension.
+ * Decodes Base64 encoded data and writes it to a temp file with specified extension.
  * Handles binary data correctly (with null bytes).
+ * Extension is optional and defaults to empty if not provided.
  *
  * Security: filename is generated internally, caller cannot specify arbitrary path.
  *
@@ -1313,6 +1314,7 @@ long meth_generic_HTTPEncodeURL(VObj* self, Packet* result, int argc, Packet arg
  */
 long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packet argv[]) {
     char* base64_data;
+    char* extension = NULL;
     char* filename;
     unsigned char* decoded_data;
     int decoded_len;
@@ -1334,6 +1336,10 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
         return 0;
     }
 
+    if (argc >= 2) {
+        extension = PkInfo2Str(&argv[1]);
+    }
+
     /* Skip leading whitespace (including newlines) */
     while (*base64_data && (*base64_data == ' ' || *base64_data == '\t' || 
            *base64_data == '\n' || *base64_data == '\r')) {
@@ -1345,8 +1351,8 @@ long meth_generic_Base64DecodeToFile(VObj* self, Packet* result, int argc, Packe
         return 0;
     }
 
-    /* Create secure temp file with .gif extension */
-    filename = sys_make_temp_file(".gif");
+    /* Create secure temp file with specified extension */
+    filename = sys_make_temp_file(extension);
     if (!filename) {
         return 0;
     }

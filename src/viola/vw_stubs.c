@@ -261,14 +261,14 @@ static void drawButton(Display* dpy, Window win, GC gc,
     /* Button text */
     XSetForeground(dpy, gc, BlackPixel(dpy, DefaultScreen(dpy)));
     if (font) {
-        textWidth = XTextWidth(font, label, strlen(label));
+        textWidth = XTextWidth(font, label, (int)strlen(label));
         textX = x + (w - textWidth) / 2;
         textY = y + (h + font->ascent - font->descent) / 2;
     } else {
         textX = x + 10;
         textY = y + h / 2 + 5;
     }
-    XDrawString(dpy, win, gc, textX, textY, label, strlen(label));
+    XDrawString(dpy, win, gc, textX, textY, label, (int)strlen(label));
 }
 
 /* Check if point is inside rectangle */
@@ -388,21 +388,21 @@ static int x11SecurityDialog(const char* title, const char* message,
                 XSetForeground(display, gc, 0xCC0000);  /* Dark red */
                 {
                     const char* title = "SECURITY WARNING - Privilege Request";
-                    XDrawString(display, dialogWin, gc, 20, y, title, strlen(title));
+                    XDrawString(display, dialogWin, gc, 20, y, title, (int)strlen(title));
                 }
                 
                 /* Document info */
                 y += 35;
                 XSetForeground(display, gc, BlackPixel(display, screenNumber));
-                XDrawString(display, dialogWin, gc, 20, y, line1, strlen(line1));
+                XDrawString(display, dialogWin, gc, 20, y, line1, (int)strlen(line1));
                 if (line2[0]) {
                     y += 18;
-                    XDrawString(display, dialogWin, gc, 20, y, line2, strlen(line2));
+                    XDrawString(display, dialogWin, gc, 20, y, line2, (int)strlen(line2));
                 }
                 y += 25;
-                XDrawString(display, dialogWin, gc, 20, y, line3, strlen(line3));
+                XDrawString(display, dialogWin, gc, 20, y, line3, (int)strlen(line3));
                 y += 18;
-                XDrawString(display, dialogWin, gc, 20, y, line4, strlen(line4));
+                XDrawString(display, dialogWin, gc, 20, y, line4, (int)strlen(line4));
                 
                 /* Warning text */
                 y += 35;

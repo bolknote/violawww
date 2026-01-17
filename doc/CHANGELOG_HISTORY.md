@@ -262,7 +262,7 @@ This release represents a significant advancement in ViolaWWW's capabilities, pa
 - **Hook for help**: Added a hook for Viola scripts to send messages to the active help field (e.g., for HTTP progress reports).
 
 #### Availability
-- Source and binary: `ftp://ora.com/pub/www/viola`
+- Source and binary (historical; unavailable today — `ftp.ora.com` no longer resolves): `ftp://ora.com/pub/www/viola`
 - Archive: `viola940323.tar.gz` (dated March 23, 1994)
 
 **Source**: [WWW-Talk 1994: ViolaWWW Release](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html) and `src/vw/changes` from `viola940323.tar.gz`.

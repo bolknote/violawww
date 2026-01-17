@@ -18,9 +18,5 @@
   - Define and apply the desired `fontFamily` in the STG configuration so text renders as expected.
 
 ### Core & HTML
-- [ ] Implement stubbed Viola functions (`src/viola/cl_generic.c`)
-  - `depth()`, `fieldList()`, `scan()`, `clear()`, `GB_count()`, `GB_create()` — no documentation found.
-- [ ] Complete `watch(flag)` implementation (`src/viola/cl_generic.c`)
-  - Current implementation only sets a flag without full functionality.
 - [ ] Implement HTML editing functions (`src/viola/html.c`)
   - `HText_applyStyle()`, `HText_updateStyle()`, `HText_selectionStyle()`, `HText_replaceSel()`, `HTextApplyToSimilar()`, `HTextSelectUnstyled()`, `HText_unlinkSelection()`.

@@ -573,9 +573,24 @@ long meth_generic_GB_char(VObj* self, Packet* result, int argc, Packet argv[]) {
     }
 }
 
+/*
+ * GB_count()
+ *
+ * Returns the number of currently allocated Global Buffers.
+ *
+ * Result: number of global buffers (int)
+ * Return: 1 if successful
+ *
+ * Source: By analogy with other GB_* functions that check numOfGBuffs
+ *         (viola940323/src/viola/cl_generic.c, mystrings.c)
+ */
 long meth_generic_GB_count(VObj* self, Packet* result, int argc, Packet argv[]) {
-    clearPacket(result);
-    return 0;
+    extern int numOfGBuffs;  /* defined in mystrings.c */
+
+    result->type = PKT_INT;
+    result->canFree = 0;
+    result->info.i = numOfGBuffs;
+    return 1;
 }
 
 long meth_generic_GB_create(VObj* self, Packet* result, int argc, Packet argv[]) {

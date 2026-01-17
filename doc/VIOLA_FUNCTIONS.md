@@ -22,6 +22,7 @@ This document describes functions available in the Viola language. All functions
 - [Miscellaneous Functions](#miscellaneous-functions)
 - [Client/TTY Class Methods](#clienttty-class-methods)
 - [Peer Discovery Functions](#peer-discovery-functions)
+- [Global Buffer Functions](#global-buffer-functions)
 
 ---
 
@@ -2557,6 +2558,145 @@ break;
 **See also:** [GRAPHICS_TAGS_REFERENCE.md](GRAPHICS_TAGS_REFERENCE.md) for `SC` attribute documentation
 
 **Added in:** ViolaWWW 4.0
+
+---
+
+## Global Buffer Functions
+
+The Global Buffer (GB_*) API provides efficient string/data manipulation using pre-allocated buffers. Buffers are identified by numeric IDs (0 to 63).
+
+### GB_count()
+
+Returns the number of currently allocated Global Buffers.
+
+**Parameters:** None
+
+**Returns:** (int) number of active global buffers
+
+**Example:**
+```viola
+n = GB_count();
+print("Active buffers: ", n);
+```
+
+**Source:** Implementation derived from ViolaWWW source code (viola940323) — `numOfGBuffs` variable in `mystrings.c`
+
+**Implemented in:** ViolaWWW 4.0
+
+---
+
+## Unimplemented Functions (No Specification)
+
+The following functions were declared in the original ViolaWWW source code but were never implemented by the author. They remain stubs because no specification exists to define their intended behavior.
+
+### depth()
+
+**Synopsis:** `depth()`
+
+**Status:** NOT IMPLEMENTED — No specification
+
+**What we know:**
+- Declared in `cl_generic.c` with comment `/* XXX */`
+- Listed in archived documentation as "NYI" (Not Yet Implemented)
+- Current implementation returns 0
+
+**Source:** [Wayback Machine — out.html](https://web.archive.org/web/20050122175400/http://www.xcf.berkeley.edu/~wei/viola/book/methods/out.html) — "depth() Return: NYI"
+
+---
+
+### fieldList()
+
+**Synopsis:** `fieldList()`
+
+**Status:** NOT IMPLEMENTED — No specification
+
+**What we know:**
+- Declared in `cl_generic.c` with no documentation
+- Purpose unknown — possibly related to `field` class object lists
+- Current implementation returns 0
+
+---
+
+### scan(argument [, ...])
+
+**Synopsis:** `scan(argument [, ...])`
+
+**Status:** NOT IMPLEMENTED — Purpose unclear
+
+**What we know:**
+- Declared in `cl_generic.c` with comment: "Print arguments to standard output."
+- This description is identical to `print()` / `printf()` which already exist
+- It's unclear how `scan()` differs from `print()` — possibly intended for input scanning (like C's `scanf`) but the comment says "print"
+- Current implementation is a stub returning 0
+
+**Source:** ViolaWWW source code (viola940323) `src/viola/cl_generic.c` lines 4467-4484
+
+**Why it cannot be completed:** The comment says "Print arguments" but that's already what `print()` does. The name suggests input scanning (like C's `scanf`), but there's no specification for the input source or format. Without clarification, any implementation would be guesswork.
+
+---
+
+### clear()
+
+**Synopsis:** `clear()`
+
+**Status:** NOT IMPLEMENTED — No specification
+
+**What we know:**
+- Declared in `cl_generic.c`
+- Listed in archived documentation as "UNIMPLEMENTED"
+- Possibly intended to clear some state or buffer
+- Note: `clearWindow()` in `field` class is a different, working function
+
+**Source:** [Wayback Machine — out.html](https://web.archive.org/web/20050122175400/http://www.xcf.berkeley.edu/~wei/viola/book/methods/out.html) — "clear() Return: UNIMPLEMENTED"
+
+---
+
+---
+
+### GB_create()
+
+**Synopsis:** `GB_create()`
+
+**Status:** NOT IMPLEMENTED — No specification
+
+**What we know:**
+- Part of the Global Buffer (GB_*) API
+- Logically should create a new Global Buffer (by analogy with `GB_free()` which frees a buffer)
+- The system uses `GBuff[]` array and `numOfGBuffs` limit (defined elsewhere)
+- No implementation hint — other GB_* functions reference existing buffers by ID, but creation mechanism is missing
+- Current implementation is a stub returning 0
+
+**Source:** ViolaWWW source code (viola940323) `src/viola/cl_generic.c` — Global Buffer API context
+
+**Why it cannot be completed:** Unknown what parameters are needed (size? initial data?) and how buffer IDs should be allocated. `GB_set()` can populate an existing buffer, but creation semantics are undefined.
+
+---
+
+### watch(flag)
+
+**Synopsis:** `watch(flag)`
+
+**Status:** PARTIALLY IMPLEMENTED — No specification for flags
+
+**What we know:**
+- Sets global `flag_vwatch` variable (defined in `cexec.c`)
+- The flag is never read or used anywhere in the codebase
+- Documented as "Specifies variable tracking flags. NOT YET IMPLEMENTED."
+- Compare with `debug(option)` which has full documentation of flags (`pa`, `pc`, `pe`, `dumpPCode`)
+
+**Source:** [Wayback Machine — out.html](https://web.archive.org/web/20050122175400/http://www.xcf.berkeley.edu/~wei/viola/book/methods/out.html) — "watch(flag) Return: NOT YET IMPLEMENTED. Description: Specifies variable tracking flags. NOT YET IMPLEMENTED."
+
+**Current implementation:**
+```c
+long meth_generic_watch(VObj* self, Packet* result, int argc, Packet argv[]) {
+    extern int flag_vwatch; /* defined in cexec.c */
+    clearPacket(result);
+    flag_vwatch = (int)PkInfo2Int(&argv[0]);
+    return 1;
+}
+```
+
+**Why it cannot be completed:** The author never specified which flags should be supported or what "variable tracking" should do. Without this specification, any implementation would be guesswork.
 
 ---
 

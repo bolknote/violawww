@@ -61,7 +61,7 @@ LDFLAGS = $(ARCH_FLAGS) $(ASAN_FLAGS) -L$(BREW_PREFIX)/lib \
           -L$(OPENMOTIF_PREFIX)/lib \
           -L/opt/X11/lib
 LIBS = -lXm -lXext -lXmu -lXt -lSM -lICE -lX11 -lXrender -lm $(ICU_LIBS) $(SSL_LIBS) \
-       -framework AppKit -framework AVFoundation -framework Foundation
+       -framework AudioToolbox -framework CoreFoundation
 
 # Source directories
 SRC_DIR = src

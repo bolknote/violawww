@@ -21,7 +21,7 @@ ifeq ($(UNAME_S),Darwin)
 
   PLATFORM_CFLAGS = -DVIOLA_DARWIN
   PLATFORM_LDFLAGS = -Wl,-dead_strip
-  PLATFORM_LIBS = -framework AppKit -framework AVFoundation -framework Foundation
+  PLATFORM_LIBS = -framework AudioToolbox -framework CoreFoundation
   PKG_CONFIG ?= pkg-config
 else
   # Linux configuration - use pkg-config for library detection
@@ -404,10 +404,6 @@ $(VIOLA): $(VIOLA_OBJS) $(LIBWWW) $(LIBXPM) $(LIBXPA) $(LIBIMG) $(LIBSTYLE)
 # Compile Viola sources with automatic dependency generation
 $(VIOLA_DIR)/%.o: $(VIOLA_DIR)/%.c
 	$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -c $< -o $@
-
-# Compile Objective-C sources (macOS only)
-$(VIOLA_DIR)/%.o: $(VIOLA_DIR)/%.m
-	$(CC) $(CFLAGS) -fobjc-arc $(DEPFLAGS) $(INCLUDES) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -c $< -o $@
 
 # Generate .h files from .v scripts (hex encoding for C string literals)
 $(VIOLA_DIR)/embeds/%.v.h: $(VIOLA_DIR)/embeds/%.v

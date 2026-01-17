@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 #ifdef __APPLE__
-/* Implemented in slib_darwin.m using AVFoundation */
+/* Implemented in slib_darwin.c using AudioToolbox */
 extern void SLBell_Darwin(void);
 extern int SLBellVolume_Darwin(int percent);
 #endif

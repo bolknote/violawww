@@ -1,7 +1,7 @@
 # Sound Reference
 
 > **ViolaWWW 4.0 Additions:**  
-> - macOS `NSSound` implementation for `bell()` function
+> - macOS Audio Queue Services implementation for `bell()` function (pure C, no ObjC)
 > - Audio file playback using `afplay` on macOS
 
 This document describes sound capabilities in ViolaWWW.
@@ -27,7 +27,7 @@ Plays a system alert sound.
 bell();
 ```
 
-**macOS Implementation:** Uses `NSSound` to play the system sound "Tink.aiff". Each call creates a fresh sound instance, allowing rapid repeated playback.
+**macOS Implementation:** Uses Audio Queue Services (AudioToolbox framework) to play the system sound "Tink.aiff". This is a pure C implementation without Objective-C dependencies. Supports volume control via `bellVolume()`.
 
 **Other platforms:** Falls back to X11 `XBell()`.
 
@@ -125,44 +125,70 @@ afconvert -hf
 
 ### Simple Bell Button
 
+Create a file `bell_button.v`:
+
 ```
 \class {txtButton}
 \name {bell_button}
-\label {Ring!}
+\label {Ring Bell!}
+\width {120}
+\height {30}
 \script {
   switch (arg[0]) {
   case "buttonRelease":
     bell();
   break;
+  case "init":
+    usual();
+  break;
   }
   usual();
 }
 \
+```
+
+Then embed it in HTML using `<VOBJF>`:
+
+```html
+<html>
+<body>
+<p>Click the button:</p>
+<VOBJF HREF="bell_button.v"></VOBJF>
+</body>
+</html>
 ```
 
 ### Volume Control Example
 
+Create a file `volume_button.v`:
+
 ```
 \class {txtButton}
-\name {volume_demo}
-\label {Soft-Loud-Soft}
+\name {volume_button}
+\label {Click Me!}
+\width {150}
+\height {30}
 \script {
   switch (arg[0]) {
   case "buttonRelease":
-    bellVolume(30);
+    count = count + 10;
+    if (count > 100) count = 10;
+    set("label", concat("Volume: ", count, "%"));
+    bellVolume(count);
     bell();
-    sleep(1);
-    bellVolume(100);
-    bell();
-    sleep(1);
-    bellVolume(30);
-    bell();
+    render();
+  break;
+  case "init":
+    count = 0;
+    usual();
   break;
   }
   usual();
 }
 \
 ```
+
+Each click increases volume by 10% and plays the bell.
 
 ### HTML Page with Background Sound
 
@@ -202,7 +228,7 @@ afconvert -hf
 
 ## Technical Notes
 
-1. **macOS Sound Implementation:** The `bell()` function uses `NSSound` from AppKit framework, which provides reliable audio playback without depending on X11.
+1. **macOS Sound Implementation:** The `bell()` function uses Audio Queue Services from AudioToolbox framework, providing reliable audio playback without depending on X11 or Objective-C runtime.
 
 2. **File Playback:** Audio files are first downloaded via HTTP to a temporary file, then played using `afplay` in the background.
 

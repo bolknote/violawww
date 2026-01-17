@@ -19,7 +19,7 @@ Topics covered:
 - ViolaWWW's role in the Eolas vs. Microsoft patent case
 
 ### [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md)
-Comprehensive release history of ViolaWWW based on historical sources and announcements (1991–1995).
+Comprehensive release history of ViolaWWW based on historical sources and announcements (1991–1995), plus the modern ViolaWWW 4.0 revival timeline (2025–2026).
 
 ---
 

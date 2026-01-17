@@ -21,6 +21,14 @@ Topics covered:
 ### [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md)
 Comprehensive release history of ViolaWWW based on historical sources and announcements (1991–1995), plus the modern ViolaWWW 4.0 revival timeline (2025–2026).
 
+Topics covered:
+- Viola (pre-WWW) releases (1991)
+- ViolaWWW browser era (1991–1995)
+- Version milestones and feature descriptions
+- Historical sources, dates, and announcements
+- Known issues and technical changes per release
+- ViolaWWW 4.0 revival timeline (2025–2026)
+
 ---
 
 ## Network Protocols

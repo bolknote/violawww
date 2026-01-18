@@ -1532,7 +1532,7 @@ long meth_generic_HTTPHotListAdd(VObj* self, Packet* result, int argc, Packet ar
 }
 
 long meth_generic_HTTPHotListDelete(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPromptf(self, "delete from hotlist: item #%d", PkInfo2Int(&argv[0])))
+    if (notSecureWithPromptf(self, "delete from hotlist: item #%ld", PkInfo2Int(&argv[0])))
         return 0;
     return deleteHotListItem(PkInfo2Int(&argv[0]));
 }
@@ -5451,7 +5451,7 @@ long meth_generic_tool(VObj* self, Packet* result, int argc, Packet argv[]) {
 }
 
 long meth_generic_unhash(VObj* self, Packet* result, int argc, Packet argv[]) {
-    if (notSecureWithPromptf(self, "get symbol name for ID: %d", PkInfo2Int(&argv[0])))
+    if (notSecureWithPromptf(self, "get symbol name for ID: %ld", PkInfo2Int(&argv[0])))
         return 0;
     clearPacket(result);
     result->info.s = (char*)symID2Str->get(symID2Str, (PkInfo2Int(&argv[0])))->val;

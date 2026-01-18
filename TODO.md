@@ -16,6 +16,10 @@
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.
 - [ ] Add `fontFamily` in STG
   - Define and apply the desired `fontFamily` in the STG configuration so text renders as expected.
+- [ ] Implement `fontWeight=<weight>` in STG
+  - Add support for fontWeight attribute in STG stylesheets (planned values: normal, bold).
+- [ ] Implement `numStyle=<style>` in STG
+  - Add support for list numbering styles in STG (planned values: roman, number, alpha).
 
 ### Core & HTML
 - [ ] Implement HTML editing functions (`src/viola/html.c`)

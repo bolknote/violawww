@@ -6,7 +6,7 @@ This directory contains technical documentation for ViolaWWW.
 
 ---
 
-## About the Creator
+## Creator Biography and Development History
 
 ### [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md)
 Biography of Pei-Yuan Wei (魏培源, 1969–2023) and the history of ViolaWWW.

@@ -420,7 +420,7 @@ TFStruct* tfed_clone(VObj * orig, VObj * clone, char* suffix)
     size_t sz;
     TFStruct* origtf = GET__TFStruct(orig);
     TagInfo *ti, *cti;
-    int suffixLen = suffix ? strlen(suffix) : 0;
+    int suffixLen = suffix ? (int)strlen(suffix) : 0;
 
     if (!origtf)
         return 0;
@@ -2128,7 +2128,7 @@ int tfed_searchAndHighlightStringFromPoint(TFStruct* tf, char* s)
     int col_ret, row_ret;
 
     col_ret = -1;
-    patlen = strlen(s);
+    patlen = (int)strlen(s);
 
     if (tf->search_len) {
         startrow = tf->search_y;
@@ -6882,7 +6882,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         char* ext;
 
         pic = (TFPic*)malloc(sizeof(struct TFPic));
-        len = strlen(id);
+        len = (int)strlen(id);
 
         for (ext = id + len; ext >= id; ext--) {
             if (*ext == '.')

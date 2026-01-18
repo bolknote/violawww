@@ -753,7 +753,7 @@ void scanTopObjName(char *fileName, char *returnName)
         *returnName = '\0';
         return;
     }
-    len = strlen(fileName);
+    len = (int)strlen(fileName);
 
     if (!len) {
         *returnName = '\0';

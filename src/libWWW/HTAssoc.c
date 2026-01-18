@@ -62,7 +62,7 @@ PUBLIC char* HTAssocList_lookup ARGS2(HTAssocList*, alist, const char*, name) {
     HTAssoc* assoc;
 
     while (NULL != (assoc = (HTAssoc*)HTList_nextObject(cur))) {
-        if (!strncasecomp(assoc->name, name, strlen(name)))
+        if (!strncasecomp(assoc->name, name, (int)strlen(name)))
             return assoc->value;
     }
     return NULL;

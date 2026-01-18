@@ -86,7 +86,7 @@ PRIVATE int is_url_protocol ARGS1(const char*, s) {
     };
     int i;
     for (i = 0; protocols[i]; i++) {
-        int len = strlen(protocols[i]);
+        int len = (int)strlen(protocols[i]);
         if (strncasecmp(s, protocols[i], len) == 0)
             return len;
     }
@@ -319,7 +319,7 @@ PRIVATE int response ARGS1(const char*, command) {
     char* p = response_text;
     if (command) {
         int status;
-        int length = strlen(command);
+        int length = (int)strlen(command);
         if (TRACE)
             fprintf(stderr, "NNTP command to be sent: %s", command);
 #ifdef NOT_ASCII
@@ -660,7 +660,7 @@ PRIVATE void read_article NOARGS {
                 if (conv_len > 0) {
                     strncpy(line, outbuf, LINE_LENGTH);
                     line[LINE_LENGTH] = '\0';
-                    len = strlen(line);
+                    len = (int)strlen(line);
                 }
             }
             
@@ -1159,7 +1159,7 @@ PRIVATE const char* parse_news_url ARGS4(
                 host_len = colon - p;
                 *url_port = atoi(colon + 1);
             } else {
-                host_len = strlen(p);
+                host_len = (int)strlen(p);
             }
             path_start = p + strlen(p); /* Empty path = list */
         }

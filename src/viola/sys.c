@@ -27,7 +27,7 @@ int init_sys() {
  */
 char* sys_make_temp_file(const char* suffix) {
     char template[256];
-    int suffixlen = suffix ? strlen(suffix) : 0;
+    int suffixlen = suffix ? (int)strlen(suffix) : 0;
     int fd;
     const char* tmpdir = getenv("TMPDIR");
     

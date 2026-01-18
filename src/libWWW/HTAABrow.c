@@ -118,8 +118,8 @@ PRIVATE char* HTAAForwardAuth = NULL;    /* Authorization: line to forward    */
 /*** HTAAForwardAuth for enabling gateway-httpds to forward Authorization ***/
 
 PUBLIC void HTAAForwardAuth_set ARGS2(const char*, scheme_name, const char*, scheme_specifics) {
-    int len = 20 + (scheme_name ? strlen(scheme_name) : 0) +
-              (scheme_specifics ? strlen(scheme_specifics) : 0);
+    int len = 20 + (scheme_name ? (int)strlen(scheme_name) : 0) +
+              (scheme_specifics ? (int)strlen(scheme_specifics) : 0);
 
     FREE(HTAAForwardAuth);
     if (!(HTAAForwardAuth = (char*)malloc(len)))
@@ -532,8 +532,8 @@ PRIVATE char* compose_auth_string ARGS2(HTAAScheme, scheme, HTAASetup*, setup) {
             return NULL; /* Suggested by marca; thanks! */
     }
 
-    len = strlen(realm->username ? realm->username : "") +
-          strlen(realm->password ? realm->password : "") + 3;
+    len = (int)strlen(realm->username ? realm->username : "") +
+          (int)strlen(realm->password ? realm->password : "") + 3;
 
     if (scheme == HTAA_PUBKEY) {
 #ifdef PUBKEY
@@ -578,7 +578,7 @@ PRIVATE char* compose_auth_string ARGS2(HTAAScheme, scheme, HTAASetup*, setup) {
     } else { /* scheme == HTAA_BASIC */
         if (!(result = (char*)malloc(4 * ((len + 2) / 3) + 1)))
             outofmem(__FILE__, "compose_auth_string");
-        HTUU_encode((unsigned char*)cleartext, strlen(cleartext), result);
+        HTUU_encode((unsigned char*)cleartext, (unsigned int)strlen(cleartext), result);
         free(cleartext);
     }
     return result;

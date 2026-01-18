@@ -64,7 +64,7 @@ PRIVATE HTAAUser* decompose_auth_string ARGS2(char*, authstring, HTAAScheme, sch
     if (scheme == HTAA_PUBKEY) { /* Decrypt authentication string */
         int bytes_decoded;
         char* ciphertext;
-        int len = strlen(authstring) + 1;
+        int len = (int)strlen(authstring) + 1;
 
         if (!(ciphertext = (char*)malloc(len)) || !(cleartext = (char*)malloc(len)))
             outofmem(__FILE__, "decompose_auth_string");
@@ -77,7 +77,7 @@ PRIVATE HTAAUser* decompose_auth_string ARGS2(char*, authstring, HTAAScheme, sch
         free(ciphertext);
     } else { /* Just uudecode */
         int bytes_decoded;
-        int len = strlen(authstring) + 1;
+        int len = (int)strlen(authstring) + 1;
 
         if (!(cleartext = (char*)malloc(len)))
             outofmem(__FILE__, "decompose_auth_string");

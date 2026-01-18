@@ -72,7 +72,7 @@ char* HTCharset_utf8_to_ascii(const char* utf8_str) {
     strncpy(outbuf, utf8_str, sizeof(outbuf) - 1);
     outbuf[sizeof(outbuf) - 1] = '\0';
     
-    HTCharset_utf8_to_ascii_buffer(outbuf, strlen(outbuf));
+    HTCharset_utf8_to_ascii_buffer(outbuf, (int)strlen(outbuf));
     
     return outbuf;
 }

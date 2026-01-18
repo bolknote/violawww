@@ -1511,7 +1511,7 @@ int GLUpdateFontInfo(FontInfo* fontInfo, int id)
 /* currently assumes that all fonts are of equal width */
 int GLTextWidth(int fontID, char* str)
 {
-    return XTextWidth(FontFontStruct(fontID), str, strlen(str));
+    return XTextWidth(FontFontStruct(fontID), str, (int)strlen(str));
 }
 
 int GLTextHeight(int fontID, char* str)
@@ -1633,7 +1633,7 @@ int GLPaintTextTransformed(Window w, GC gc, int fontID, int x0, int y0,
     int tx = pixSize / 2 - textWidth / 2;
     int ty = pixSize / 2 - textHeight / 2 + textHeight - FontDescent(fontID);
     XSetFont(display, maskGC, FontFont(fontID));
-    XDrawString(display, maskPix, maskGC, tx, ty, str, strlen(str));
+    XDrawString(display, maskPix, maskGC, tx, ty, str, (int)strlen(str));
     XFreeGC(display, maskGC);
     
     /* Create mask picture (A1 format) */

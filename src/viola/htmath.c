@@ -1012,7 +1012,7 @@ void setMASTSize(MAST* mast)
         break;
     case MINFO_DATA:
 #ifdef DOX
-        mast->width = XTextWidth(mfinfo, mast->s, strlen(mast->s)) + 1;
+        mast->width = XTextWidth(mfinfo, mast->s, (int)strlen(mast->s)) + 1;
         mast->height = mfinfo->ascent + mfinfo->descent;
 #else
         /*dummy values*/
@@ -1285,7 +1285,7 @@ void drawMAST(MAST* self, int level, Window w)
             item.delta = 0;
             item.font = theFont->fid;
             item.chars = mast->s;
-            item.nchars = strlen(mast->s);
+            item.nchars = (int)strlen(mast->s);
             XDrawText(display, w, gc_fg, mast->rx + 1, mast->ry + mast->height - 2, &item, 1);
             FLUSH;
             break;

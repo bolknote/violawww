@@ -69,7 +69,7 @@ Image* dither(Image* cimage, unsigned int verbose) {
     }
     image = newBitImage(cimage->width, cimage->height);
     if (cimage->title) {
-        image->title = (char*)lmalloc(strlen(cimage->title) + 12);
+        image->title = (char*)lmalloc((unsigned int)strlen(cimage->title) + 12);
         sprintf(image->title, "%s (dithered)", cimage->title);
     }
 
@@ -196,7 +196,7 @@ Image* approx(Image* cimage, unsigned int verbose) {
     }
     image = newBitImage(cimage->width, cimage->height);
     if (cimage->title) {
-        image->title = (char*)lmalloc(strlen(cimage->title) + 16);
+        image->title = (char*)lmalloc((unsigned int)strlen(cimage->title) + 16);
         sprintf(image->title, "%s (approximated)", cimage->title);
     }
 #ifdef sflkjsflkflkf

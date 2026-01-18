@@ -76,7 +76,7 @@ PRIVATE void HTWriter_put_character ARGS2(HTStream*, me, char, c) {
 **	Strings must be smaller than this buffer size.
 */
 PRIVATE void HTWriter_put_string ARGS2(HTStream*, me, const char*, s) {
-    int l = strlen(s);
+    int l = (int)strlen(s);
     if (me->write_pointer + l > &me->buffer[BUFFER_SIZE])
         flush(me);
     strcpy(me->write_pointer, s);

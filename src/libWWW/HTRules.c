@@ -183,7 +183,7 @@ char* HTTranslate(char* required)
         }
 
         if (*p == '*') {                   /* Match up to wildcard */
-            m = strlen(q) - strlen(p + 1); /* Amount to match to wildcard */
+            m = (int)strlen(q) - (int)strlen(p + 1); /* Amount to match to wildcard */
             if (m < 0)
                 continue; /* tail is too short to match */
             if (0 != strcmp(q + m, p + 1))

@@ -432,10 +432,10 @@ static void listOptions() {
 
     width = 0;
     for (a = 0; Options[a].name; a++) {
-        width += strlen(Options[a].name) + 2;
+        width += (int)strlen(Options[a].name) + 2;
         if (width > 78) {
             printf("\n");
-            width = strlen(Options[a].name) + 2;
+            width = (int)strlen(Options[a].name) + 2;
         }
         printf("%s%s", Options[a].name, (Options[a + 1].name ? ", " : "\n\n"));
     }

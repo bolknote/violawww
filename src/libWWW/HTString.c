@@ -80,7 +80,7 @@ PUBLIC char* HTSACopy ARGS2(char**, dest, const char*, src) {
 PUBLIC char* HTSACat ARGS2(char**, dest, const char*, src) {
     if (src && *src) {
         if (*dest) {
-            int length = strlen(*dest);
+            int length = (int)strlen(*dest);
             *dest = (char*)realloc(*dest, length + strlen(src) + 1);
             if (*dest == NULL)
                 outofmem(__FILE__, "HTSACat");

@@ -65,7 +65,7 @@ struct struct_parts* parts;
 {
     char* after_access;
     char* p;
-    int length = strlen(name);
+    int length = (int)strlen(name);
 
     parts->access = 0;
     parts->host = 0;
@@ -167,7 +167,7 @@ char* HTParse(char* aName, char* relatedName, int wanted)
 
     /* Make working copies of input strings to cut up:
      */
-    len = strlen(aName) + strlen(relatedName) + 10;
+    len = (int)strlen(aName) + (int)strlen(relatedName) + 10;
     result = (char*)malloc(len); /* Lots of space: more than enough */
     if (result == NULL)
         outofmem(__FILE__, "HTParse");

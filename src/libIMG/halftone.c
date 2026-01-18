@@ -122,7 +122,7 @@ Image* halftone(Image* cimage, unsigned int verbose)
     }
     image = newBitImage(cimage->width * 4, cimage->height * 4);
     if (cimage->title) {
-        image->title = (char*)lmalloc(strlen(cimage->title) + 13);
+        image->title = (char*)lmalloc((unsigned int)strlen(cimage->title) + 13);
         sprintf(image->title, "%s (halftoned)", cimage->title);
     }
     spl = cimage->pixlen;

@@ -157,7 +157,7 @@ PUBLIC GroupDef* HTAA_getAclEntry ARGS3(FILE*, acl_file, const char*, pathname, 
     else
         filename++; /* Skip slash */
 
-    len = strlen(filename);
+    len = (int)strlen(filename);
 
     if (!(buf = (char*)malloc((strlen(filename) + 2) * sizeof(char))))
         outofmem(__FILE__, "HTAA_getAuthorizedGroups");

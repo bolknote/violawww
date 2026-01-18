@@ -70,7 +70,7 @@ char* dupString(char* s) {
 
     if (!s)
         return (NULL);
-    d = (char*)lmalloc(strlen(s) + 1);
+    d = (char*)lmalloc((unsigned int)strlen(s) + 1);
     strcpy(d, s);
     return (d);
 }

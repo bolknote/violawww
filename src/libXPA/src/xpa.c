@@ -610,12 +610,12 @@ static void item_draw(xpa_intern* intern, /* Internal view of menu */
             XDrawString(
                 intern->disp, item->item_win,
                 fg_gc(intern->disp, item->item_win, intern->attr->key_font, intern->attr->item_fg),
-                XPA_HORPAD, item->baseline, item->key_buf, strlen(item->key_buf));
+                XPA_HORPAD, item->baseline, item->key_buf, (int)strlen(item->key_buf));
         }
         XDrawString(
             intern->disp, item->item_win,
             fg_gc(intern->disp, item->item_win, intern->attr->item_font, intern->attr->item_fg),
-            item->key_off + XPA_HORPAD, item->baseline, item->name, strlen(item->name));
+            item->key_off + XPA_HORPAD, item->baseline, item->name, (int)strlen(item->name));
     } else {
         /* Not selected */
         XFillRectangle(intern->disp, item->item_win,
@@ -625,12 +625,12 @@ static void item_draw(xpa_intern* intern, /* Internal view of menu */
             XDrawString(
                 intern->disp, item->item_win,
                 fg_gc(intern->disp, item->item_win, intern->attr->key_font, intern->attr->item_fg),
-                XPA_HORPAD, item->baseline, item->key_buf, strlen(item->key_buf));
+                XPA_HORPAD, item->baseline, item->key_buf, (int)strlen(item->key_buf));
         }
         XDrawString(
             intern->disp, item->item_win,
             fg_gc(intern->disp, item->item_win, intern->attr->item_font, intern->attr->item_fg),
-            item->key_off + XPA_HORPAD, item->baseline, item->name, strlen(item->name));
+            item->key_off + XPA_HORPAD, item->baseline, item->name, (int)strlen(item->name));
     }
 }
 
@@ -770,7 +770,7 @@ static void title_draw(xpa_intern* intern, xpa_title* title)
     XDrawString(
         intern->disp, title->title_win,
         fg_gc(intern->disp, title->title_win, intern->attr->title_font, intern->attr->title_fg), x,
-        intern->attr->title_font->ascent, title->title_str, strlen(title->title_str));
+        intern->attr->title_font->ascent, title->title_str, (int)strlen(title->title_str));
 }
 
 /*
@@ -979,7 +979,7 @@ static void item_size(XFontStruct* font, /* Font for display     */
     } else {
         *ac_off = 0;
     }
-    *rw = 2 * XPA_HORPAD + XTextWidth(font, name, strlen(name));
+    *rw = 2 * XPA_HORPAD + XTextWidth(font, name, (int)strlen(name));
     if (sub_flag) {
         *rw += XPA_HORPAD + XPA_PB_W;
     }
@@ -1007,7 +1007,7 @@ static void title_size(XFontStruct* font, /* Font for display */
  * Computes a suitable bounding box for `title'.
  */
 {
-    *rw = 2 * XPA_HORPAD + XTextWidth(font, title, strlen(title));
+    *rw = 2 * XPA_HORPAD + XTextWidth(font, title, (int)strlen(title));
     *rh = 2 * XPA_VERPAD + font->ascent + font->descent;
 }
 
@@ -1058,7 +1058,7 @@ static int make_title(xpa_intern* intern, /* Internval view of menu */
     title_win =
         make_window(intern->disp, parent, 0, yspot, width, th, 0, intern->attr->border_bd,
                     intern->attr->title_bg, (Cursor)None, EnterWindowMask | ExposureMask, 0);
-    XTextExtents(intern->attr->title_font, title_str, strlen(title_str), &dir, &ascent, &descent,
+    XTextExtents(intern->attr->title_font, title_str, (int)strlen(title_str), &dir, &ascent, &descent,
                  &metric);
     dispatch(title_win, intern, (xpa_data*)new_title(title_win, title_str, &metric, width, lev),
              cb_title);

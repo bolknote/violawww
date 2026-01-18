@@ -339,7 +339,7 @@ PUBLIC HTFormat HTFileFormat(const char* filename, HTAtom** pencoding)
     HTSuffix* suff;
     int n;
     int i;
-    int lf = strlen(filename);
+    int lf = (int)strlen(filename);
 
 #ifndef NO_INIT
     if (!HTSuffixes)
@@ -350,7 +350,7 @@ PUBLIC HTFormat HTFileFormat(const char* filename, HTAtom** pencoding)
     for (i = 0; i < n; i++) {
         int ls;
         suff = HTList_objectAt(HTSuffixes, i);
-        ls = strlen(suff->suffix);
+        ls = (int)strlen(suff->suffix);
         if ((ls <= lf) && 0 == strcmp(suff->suffix, filename + lf - ls)) {
             int j;
             *pencoding = suff->encoding;
@@ -360,7 +360,7 @@ PUBLIC HTFormat HTFileFormat(const char* filename, HTAtom** pencoding)
             for (j = 0; j < n; j++) { /* Got encoding, need representation */
                 int ls2;
                 suff = HTList_objectAt(HTSuffixes, j);
-                ls2 = strlen(suff->suffix);
+                ls2 = (int)strlen(suff->suffix);
                 if ((ls <= lf) && 0 == strncmp(suff->suffix, filename + lf - ls - ls2, ls2)) {
                     if (suff->rep)
                         return suff->rep;
@@ -392,7 +392,7 @@ PUBLIC float HTFileValue(const char* filename)
     HTSuffix* suff;
     int n;
     int i;
-    int lf = strlen(filename);
+    int lf = (int)strlen(filename);
 
 #ifndef NO_INIT
     if (!HTSuffixes)
@@ -402,7 +402,7 @@ PUBLIC float HTFileValue(const char* filename)
     for (i = 0; i < n; i++) {
         int ls;
         suff = HTList_objectAt(HTSuffixes, i);
-        ls = strlen(suff->suffix);
+        ls = (int)strlen(suff->suffix);
         if ((ls <= lf) && 0 == strcmp(suff->suffix, filename + lf - ls)) {
             if (TRACE)
                 fprintf(stderr, "File: Value of %s is %.3f\n", filename, suff->quality);

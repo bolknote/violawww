@@ -77,7 +77,7 @@ PUBLIC char* HTAA_encryptPasswd ARGS1(const char*, password) {
     char* result;
     char* tmp;
     const char* cur = password;
-    int len = strlen(password);
+    int len = (int)strlen(password);
     extern time_t theTime;
     int random = (int)theTime; /* This is random enough */
 
@@ -131,7 +131,7 @@ PUBLIC BOOL HTAA_passwdMatch ARGS2(const char*, password, const char*, encrypted
     if (!password || !encrypted)
         return NO;
 
-    len = 13 * ((strlen(password) + 7) / 8);
+    len = 13 * (((int)strlen(password) + 7) / 8);
     if (len < strlen(encrypted))
         return NO;
 

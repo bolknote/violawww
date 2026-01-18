@@ -240,7 +240,7 @@ PUBLIC BOOL HTAA_templateMatch ARGS2(const char*, template, const char*, filenam
         return YES;                /* Equally long equal strings */
     else if ('*' == *p) {          /* Wildcard */
         p++;                       /* Skip wildcard character */
-        m = strlen(q) - strlen(p); /* Amount to match to wildcard */
+        m = (int)strlen(q) - (int)strlen(p); /* Amount to match to wildcard */
         if (m < 0)
             return NO; /* No match, filename too short */
         else {         /* Skip the matched characters and compare */
@@ -288,7 +288,7 @@ PUBLIC BOOL HTAA_templateCaseMatch ARGS2(const char*, template, const char*, fil
         return YES;                /* Equally long equal strings */
     else if ('*' == *p) {          /* Wildcard */
         p++;                       /* Skip wildcard character */
-        m = strlen(q) - strlen(p); /* Amount to match to wildcard */
+        m = (int)strlen(q) - (int)strlen(p); /* Amount to match to wildcard */
         if (m < 0)
             return NO; /* No match, filename too short */
         else {         /* Skip the matched characters and compare */

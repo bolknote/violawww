@@ -55,7 +55,7 @@ static void readPathsAndExts(char* name)
     linenum = 0;
     while (fscanf(f, "%s", tokenbuf) > 0) {
         linenum++;
-        l = strlen(tokenbuf);
+        l = (unsigned int)strlen(tokenbuf);
         for (a = 0, b = 0; a < l; a++, b++) {
             if (tokenbuf[a] == '\\')
                 tokenbuf[b] = tokenbuf[++a];

@@ -58,7 +58,7 @@ PRIVATE void HTPlain_put_character ARGS2(HTStream*, me, char, c) {
 */
 PRIVATE void HTPlain_put_string ARGS2(HTStream*, me, const char*, s) {
     /* Use HTPlain_write for conversion */
-    HTPlain_write(me, s, strlen(s));
+    HTPlain_write(me, s, (int)strlen(s));
 }
 
 PRIVATE void HTPlain_progress ARGS2(HTStream*, me, int, l) {}

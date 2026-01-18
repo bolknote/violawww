@@ -69,7 +69,7 @@ extern char* HTAppVersion; /* Application version: please supply */
 */
 PRIVATE char* find_header(char* headers, const char* header_name) {
     char* p = headers;
-    int len = strlen(header_name);
+    int len = (int)strlen(header_name);
     
     while (*p) {
         /* Check if we're at start of line */
@@ -165,7 +165,7 @@ PUBLIC int HTLoadHTTP ARGS4(const char*, arg,
     int foundContentLength = 0;
 
     if (delimSize == 0)
-        delimSize = strlen(delim);
+        delimSize = (int)strlen(delim);
 
     if (!arg)
         return -3; /* Bad if no name sepcified	*/

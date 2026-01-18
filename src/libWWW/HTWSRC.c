@@ -278,7 +278,7 @@ PRIVATE void WSRC_gen_html ARGS2(HTStream*, me, BOOL, source_file)
         char* shortname = 0;
         int l;
         StrAllocCopy(shortname, me->par_value[PAR_DATABASE_NAME]);
-        l = strlen(shortname);
+        l = (int)strlen(shortname);
         if (l > 4 && !strcasecomp(shortname + l - 4, ".src")) {
             shortname[l - 4] = 0; /* Chop of .src -- boring! */
         }

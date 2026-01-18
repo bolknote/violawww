@@ -2836,7 +2836,7 @@ long meth_generic_deleteSubStr(VObj* self, Packet* result, int argc, Packet argv
         return 0;
     }
 
-    len = strlen(str);
+    len = (long)strlen(str);
 
     /* Validate bounds */
     if (start < 0) start = 0;
@@ -2900,7 +2900,7 @@ long meth_generic_deleteSubStrQ(VObj* self, Packet* result, int argc, Packet arg
         return 0;
     }
 
-    len = strlen(str);
+    len = (long)strlen(str);
 
     /* Validate bounds */
     if (start < 0) start = 0;

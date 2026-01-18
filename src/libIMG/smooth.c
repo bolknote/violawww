@@ -26,7 +26,7 @@ static Image* doSmooth(Image* image) {
 
     old = expand(image);
     new = newTrueImage(image->width, image->height);
-    new->title = (char*)lmalloc(strlen(image->title) + 12);
+    new->title = (char*)lmalloc((unsigned int)strlen(image->title) + 12);
     sprintf(new->title, "%s (smoothed)", image->title);
 
     /* run through image and take a guess as to what the color should

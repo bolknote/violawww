@@ -107,7 +107,7 @@ Image* mcidasLoad(char* fullname, char* name, unsigned int verbose)
     }
 
     if (verbose)
-        (void)printf("%s %lu %lu (%lu, %lu) (%lu, %lu)\n", mc_sensor(dir.satid), dir.idate, dir.itime,
+        (void)printf("%s %lu %lu (%lu, %lu) (%lu, %lu)\n", mc_sensor((int)dir.satid), dir.idate, dir.itime,
                      dir.lcor, dir.ecor, dir.lres, dir.eres);
     znocache(zf);
     /* skip the nav */

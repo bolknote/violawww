@@ -361,7 +361,7 @@ static char* translate_token(int token)
     } else if (token == STRING) {
         sprintf(buf, "a string");
     } else if (token == INTCONST) {
-        sprintf(buf, "the integer %d", yylval.i);
+        sprintf(buf, "the integer %ld", yylval.i);
     } else if (token == FLOATCONST) {
         sprintf(buf, "the float %f", yylval.f);
     } else

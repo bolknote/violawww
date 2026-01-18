@@ -5319,13 +5319,13 @@ long meth_generic_strlen(VObj* self, Packet* result, int argc, Packet argv[]) {
 long meth_generic_system(VObj* self, Packet* result, int argc, Packet argv[]) {
     int i;
     char reasonBuf[1024];
-    int pos = 0;
+    size_t pos = 0;
 
-    pos = snprintf(reasonBuf, sizeof(reasonBuf), "system(");
+    pos = (size_t)snprintf(reasonBuf, sizeof(reasonBuf), "system(");
     for (i = 0; i < argc && pos < sizeof(reasonBuf) - 10; i++) {
         char* cmd = PkInfo2Str(&argv[i]);
-        if (i > 0) pos += snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, ", ");
-        pos += snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, "\"%s\"", cmd ? cmd : "");
+        if (i > 0) pos += (size_t)snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, ", ");
+        pos += (size_t)snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, "\"%s\"", cmd ? cmd : "");
     }
     snprintf(reasonBuf + pos, sizeof(reasonBuf) - pos, ")");
     

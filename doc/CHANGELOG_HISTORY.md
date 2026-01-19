@@ -31,14 +31,25 @@ The exact release date is unclear in surviving public archives; **1991** is comm
 
 ## ViolaWWW (Browser Era)
 
-### December 9, 1991 — "One-Night Hack"
-**Announcement**: December 9, 1991 on WWW-Talk mailing list
+### December 9–13, 1991 — "One-Night Hack" (Initial X11 Browser Implementation)
+**Announcement**: December 9, 1991 (intention announced); December 13, 1991 (technical details shared) on WWW-Talk mailing list
 
-Pei-Yuan Wei officially announced his intention to create an X11 browser by extending his Viola system (a HyperCard-like media tool). 
+Pei-Yuan Wei officially announced his intention to create an X11 browser by extending his Viola system (a HyperCard-like media tool).
 
-The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility.
+The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility. In his follow-up message, Wei detailed the technical approach:
 
-**Source**: [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html)
+- Used Viola as a frontend wrapper for the existing `www` line-mode browser
+- Made only "very few and minor changes" to `www.c`
+- Created an X11 interface that displays `www` output in a scrollable text field
+- Added visual highlighting of reference numbers for better visibility
+- Made references and commands (Back, Help...) clickable or keyboard-accessible
+- Included buttons corresponding to `www` commands
+
+Wei also outlined future plans to "teach the parser about viola object descriptions, and basically embed viola objects (GUIs & programmability) into html files."
+
+**Sources**:
+- [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html) (initial announcement)
+- [WWW-Talk 1991: X Browser](https://lists.w3.org/Archives/Public/www-talk/1991NovDec/0023.html) (technical implementation details)
 
 ### January 24, 1992 — First CERN Test Report
 Tim Berners-Lee tested ViolaWWW at CERN and reported: *"ViolaWWW works great... A strange thing is that it seems to be so fast—a search in the CERN phone book seems to be instantaneous!"*
@@ -52,16 +63,31 @@ TBL noted that Viola appeared faster than the line-mode browser, possibly due to
 ### March 9 – April 20, 1992 — CERN Testing Phase (2.0.x)
 **Known version string (by Apr 4)**: `Viola=2.0.4, date=April 4, 1992` (from source code)
 
-First versions circulated to the WWW team at CERN for testing. 
+First versions circulated to the WWW team at CERN for testing.
 
-On the archived viola.org home page, Wei later summarized the browser as “first released around April 1992” and highlighted early support for inline graphics, scripting, tables, and stylesheets (retrospective statement).
+On the archived viola.org home page, Wei later summarized the browser as "first released around April 1992" and highlighted early support for inline graphics, scripting, tables, and stylesheets (retrospective statement). During this period, Pei Wei was completing his degree at UC Berkeley, with plans for continued ViolaWWW support being developed.
 
 - **March 9, 1992**: First CERN test release.
 - **March 21, 1992**: First public reports of compilation issues (on Sun4/X11), indicating wider circulation beyond CERN.
 - **April 4, 1992**: Version 2.0.4 released for continued testing.
-- **April 11, 1992**: Tim Berners-Lee's first "Quick Look" review.
+- **April 11, 1992**: Tim Berners-Lee's first "Quick Look" review (detailed technical assessment of early ViolaWWW).
+    - **Platform Testing**: Successfully tested on NeXT with CubeX in both grayscale and color versions.
+    - **Key Features Evaluated**:
+        - Multifont text display
+        - Links highlighted with "button" boxes (single click to jump)
+        - Home, Back, and Forward buttons
+        - Single window operation with "clone" facility for documents
+        - Bookmark facility
+        - Online help buttons
+        - Remote index searching via bottom input field
+        - Hidden documentation (accessible via globe icon for Viola docs, question mark for help)
+        - Source viewer for HTML markup
     - **Early Navigation**: Arrow buttons worked differently than in later versions: "Up" was a destructive backtrack (Back), while "Left" and "Right" were non-destructive traversal through history.
-    - **Fuzzy Clicking**: Clicks did not have to be exactly on a button; clicking "somewhere near it" would trigger the jump.
+    - **Fuzzy Clicking**: Clicks did not have to be exactly on a button; clicking "somewhere near it" would trigger the jump (could cause accidental navigation).
+    - **Performance Notes**: Display speed was "just slow enough to be frustrating" compared to the older "1.0" version referenced by TBL, which was much faster but limited to monofont display (single-font rendering, i.e. without multiple font styles). The multifont support in the current version was deemed worth the performance trade-off, as it provided clearer text formatting with distinct styles.
+    - **UI Feedback**: Window looked "a little cluttered"; suggested moving "ViolaWWW" title to window title bar instead of within the window.
+    - **Ease of Use**: Simple installation (three-part setup: binary, viola scripts directory, environment variable), started with `vw` command and default home page.
+    - **Comparison**: TBL noted the browser was very intuitive and straightforward, with features most users would want, though some advanced capabilities might be excessive for casual users.
 - **April 20, 1992**: Conclusion of the initial CERN testing phase.
 
 #### Known Issues (April 1992)
@@ -69,12 +95,12 @@ On the archived viola.org home page, Wei later summarized the browser as “firs
 - **UI Glitches**: Scroll bars and side icons sometimes failed to appear; resizing the window vertically was the known workaround.
 - **Stability**: Closing a clone window or the main window caused a crash (which TBL noted as "the only way to quit it").
 
-**Sources**: 
+**Sources**:
 - [Ancient Web Browsers](https://browsers.flanigan.us/browsers/violawww/)
 - [WWW-Talk 1992: problem yacc'ing violaWWW](http://1997.webhistory.org/www.lists/www-talk.1992/0064.html)
-- [W3.org: A quick look at ViolaWWW (April 11, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html)
+- [W3.org: A quick look at ViolaWWW (April 11, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html) (detailed technical review comparing with Erwise)
 - [Ancient Web Browsers: ViolaWWW internal "About/Status" page (screenshot)](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg) (status section lists "March 9 to April 20, 1992" CERN testing)
-- [Viola Home Page (archived): “First released around April 1992” (retrospective)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
+- [Viola Home Page (archived): "First released around April 1992" (retrospective)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
 - ViolaWWW 2.0.4 source code (`main.c`)
 - ViolaWWW internal help page (`www.v`)
 
@@ -359,5 +385,6 @@ Work is ongoing as of **2026**.
 - [W3.org: A quick look at ViolaWWW (April 11, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html)
 - [W3.org: Viola installation instructions (May 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Installation.html)
 - [W3.org: Using Viola At CERN](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/AtCERN.html)
+- [UNIX Browsers (UrbanCenter, University of Toronto)](http://www.urbancenter.utoronto.ca/webdocs/HTMLdocs/UNIXTOOLS/unix_browsers.html) — secondary list (updated 1995); contains outdated/possibly conflated Viola/ViolaWWW details (e.g., lists “ViolaWWW” as version 0.8 and points to an old FTP archive), so use with caution.
 
 *Last updated: January 2026*

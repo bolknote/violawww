@@ -26,7 +26,9 @@ ViolaWWW is an extensible World Wide Web hypermedia browser, originally created 
 - Multi-encoding support with transliteration (Windows-1251, KOI8-R, UTF-8 → Latin/ASCII)
 - Socket timeouts and improved error handling
 - Modern build system with parallel compilation
-- STG stylesheet support
+- **STG Stylesheet System** - Implementation of Pei-Yuan Wei's 1993 stylesheet language predating CSS, featuring hierarchical context-sensitive styling, tag-based selectors, minor selectors, and visited link coloring via `traversedForegroundColor`
+- **FIGURE Element Support** - Full implementation with FIGDATA for inline images (XBM, XPM, GIF, PostScript), FIGA client-side image maps with clickable hotspots, FIGCAP captions, and delayed loading capabilities
+- **Mathematical Notation** - Native rendering of `<MATH>` expressions with subscripts/superscripts, fractions, extensible parentheses/brackets, and mathematical symbols (&pi;, &sigma;, &integral;, &infin;)
 - Bug fixes including buffer overflow issues and other security improvements
 
 This version brings ViolaWWW into the modern web era while preserving its unique extensible architecture and historical significance.
@@ -87,6 +89,142 @@ This version brings ViolaWWW into the modern web era while preserving its unique
 - Automatic cleanup of stale connections
 - Reduces latency for multiple requests to same host
 - **Files**: `HTKeepAlive.h`, `HTKeepAlive.c`
+
+#### STG Stylesheet System
+
+ViolaWWW 4.0 implements the STG (Style Tag Group) stylesheet system, designed by Pei-Yuan Wei in 1993 and predating CSS. This hierarchical stylesheet language provides context-sensitive styling with unique capabilities not found in modern CSS, though with some limitations compared to the original vision.
+
+**Key Features:**
+- **Hierarchical Selectors**: Lisp-like syntax with nested parentheses for context-dependent styles
+- **Tag-Based Styling**: Apply styles to HTML elements by tag name with comma-separated multiple selectors
+- **Attribute-Based Variants**: Use `{STYLE "value"}` minor selectors for style variations (equivalent to CSS classes)
+- **Context Sensitivity**: Nested selectors only apply within specific parent elements
+- **Visited Link Styling**: `traversedForegroundColor` attribute for styling visited links (equivalent to CSS `:visited`)
+- **Color Support**: Full X11 color database with basic colors, extended colors, and grey scales (grey0-grey100)
+- **Typography**: Font size scaling (smallest→largest), slant (normal/italic/bold), and spacing (proportional/mono)
+- **Layout**: Text alignment, borders with custom colors, and blinking text effects
+
+**Example STG Stylesheet:**
+```
+(BODY
+    FGColor=black
+    BGColor=white
+
+    (H1
+        fontSlant=bold
+        FGColor=darkblue
+        align=center
+    )
+
+    (A
+        FGColor=blue
+        traversedForegroundColor=purple
+    )
+
+    (P
+        {STYLE "WARNING"
+            FGColor=red
+            border=2
+            BDColor=orange
+        }
+    )
+)
+```
+
+**HTML Usage:**
+```html
+<link rel="style" href="stylesheet.stg">
+<p style="WARNING">This paragraph has red text and orange border</p>
+```
+
+**Technical Details:**
+- **Files**: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`, `src/viola/stgcall.c`
+- **Context Matching**: Hierarchical matching algorithm builds ancestor chain for style resolution
+- **Memory Management**: Efficient ID-based lookups with automatic memory cleanup
+- **Limitations**: Some attributes like `fontWeight`, `numStyle`, `compact`, `space` are parsed but not implemented; STG was designed with only `STYLE` attribute support for minor selectors (no CLASS/ID concepts like in CSS)
+
+**Historical Context**: STG was proposed on WWW-Talk mailing list in October 1993, representing one of the earliest attempts to separate presentation from content on the web.
+
+#### FIGURE Element Implementation
+
+The FIGURE element provides advanced image embedding capabilities with client-side image maps, inline image data, and captions - features that were later adopted by modern HTML standards.
+
+**Supported Image Formats:**
+- **XBM (X BitMap)**: Monochrome bitmap format, embeddable inline via FIGDATA
+- **XPM (X PixMap)**: Color pixmap format, embeddable inline via FIGDATA
+- **GIF**: Binary format with Base64 encoding for inline embedding
+- **PostScript**: Vector graphics converted to GIF via ImageMagick
+
+**Key Features:**
+- **FIGDATA**: Inline image data embedding without external file references
+- **FIGA Hotspots**: Client-side image maps with rectangular regions and URL links
+- **FIGCAP**: Image captions with automatic text wrapping
+- **ISMAP**: Server-side image maps for coordinate-based interactions
+- **Dimensions**: WIDTH/HEIGHT attributes with MAXWIDTH/MINWIDTH constraints
+- **Delayed Loading**: MAYDELAY attribute for progressive image loading
+
+**Example Usage:**
+```html
+<FIGURE TYPE="xbm" SRC="worldmap.xbm">
+  <FIGA HREF="/americas" AREA="0 0 16 32"></FIGA>
+  <FIGA HREF="/europe" AREA="16 0 16 32"></FIGA>
+  <FIGCAP>World Map - Click regions for details</FIGCAP>
+</FIGURE>
+
+<FIGURE TYPE="gif">
+<FIGDATA>
+R0lGODlhIAAgAIAAAAAAAP///yH5BAAAAAAALAAAAAAgACAAAAJBhI+py+0P
+</FIGDATA>
+  <FIGA HREF="/left" AREA="0 0 16 32"></FIGA>
+  <FIGA HREF="/right" AREA="16 0 16 32"></FIGA>
+</FIGURE>
+```
+
+**Technical Implementation:**
+- **Inline Processing**: FIGDATA content parsed and converted to temporary files
+- **Hotspot Interaction**: Hover highlighting and click navigation
+- **Format Conversion**: PostScript images automatically converted to GIF
+- **Base64 Decoding**: Built-in decoder for GIF inline embedding
+- **Files**: Multiple Viola scripts for each format and feature combination
+
+#### Mathematical Expression Rendering
+
+ViolaWWW 4.0 includes native mathematical notation rendering, transforming HTML `<MATH>` elements into properly formatted mathematical expressions with vector graphics and scalable symbols.
+
+**Mathematical Elements:**
+- **`<MATH>...</MATH>`**: Container for mathematical expressions
+- **`<sup>...</sup>`**: Superscript (exponents) with 70% scaling
+- **`<sub>...</sub>`**: Subscript (indices) with 70% scaling
+- **`<box>...<over>...</box>`**: Vertical fractions with division lines
+- **Parentheses `()` and Brackets `[]`**: Extensible delimiters that scale to content height
+
+**Mathematical Symbols:**
+- **`&integral;`**: Integration symbol (∫) with limits support
+- **`&sigma;`**: Summation symbol (Σ) with range notation
+- **`&infin;`**: Infinity symbol (∞) with scaling
+- **`&pi;`**: Pi symbol (π) with proper Greek letter rendering
+
+**Advanced Features:**
+- **Nested Expressions**: Complex hierarchies with proper layout
+- **Vector Graphics**: Symbols drawn using X11 primitives for crisp rendering
+- **Automatic Scaling**: Smaller symbols in superscript/subscript contexts
+- **Extensible Delimiters**: Parentheses and brackets stretch to match content height
+- **Complex Examples**: Euler's identity, quadratic formula, Taylor series
+
+**Example Expressions:**
+```html
+<math>E = mc<sup>2</sup></math>
+<math><box>a<over>b</box> + <box>c<over>d</box></math>
+<math>&integral;<sup>b</sup><sub>a</sub> f(x) dx</math>
+<math>e<sup>i&pi;</sup> + 1 = 0</math>
+<math>(<box>x<sup>2</sup> + y<over>z</over></box>)</math>
+```
+
+**Technical Implementation:**
+- **MAST Engine**: Mathematical Abstract Syntax Tree with three-phase layout algorithm
+- **Token System**: 22 internal tokens for different mathematical constructs
+- **Rendering Pipeline**: Tiling, expandable element processing, and centering
+- **Files**: `src/viola/htmath.c`, `src/viola/htmath.h`, multiple Viola scripts
 
 #### HTTP Redirect Handling
 - Automatic following of redirects: 301, 302, 303, 307, 308
@@ -690,6 +828,9 @@ Contributions are welcome! Areas of interest:
 
 **Contributions**:
 - Ported to 64-bit ARM64 architecture (Apple Silicon)
+- STG stylesheet system implementation (hierarchical context-sensitive styling predating CSS)
+- FIGURE element support (inline images, client-side image maps, captions, multiple formats)
+- Mathematical notation rendering (`<MATH>` expressions with subscripts/superscripts, fractions, symbols)
 - HTTPS/TLS support with OpenSSL integration
 - HTTP redirect handling (3xx status codes)
 - Internet Archive (Wayback Machine) integration

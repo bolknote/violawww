@@ -12,11 +12,12 @@ Pei-Yuan "Perry" Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanes
 ### Birth and Education
 - Born in Taiwan, Pingtung County.[^1]
 - Moved to California with his parents in 1980. The family settled two blocks away from the UC Berkeley campus.[^8]
+- English was his third language (after Taiwanese at home and Mandarin at school). At age 11, his father gave him a dictionary and told him to memorize English starting with "A" (he gave up after "O"). He passed English proficiency tests in the seventh grade, taking only 1-2 years to master the language.[^14]
 - At age 12, had his first contact with a computer — a Commodore PET at Willard Jr. High School. He wrote a Frogger-like game that won an award for the school and got to shake hands with the Mayor of Berkeley: *"It basically encouraged me a great deal, and got me started down the road of creating things with a computer."*[^12]
 - Graduated from Berkeley High School (California, USA) in 1986.[^1] In high school, wrote a game called "Pinnacle" — a combination of *The Seven Cities of Gold* and *Archon* with a world map editor — entirely in 6502 machine language using only hexadecimals, without an assembler.[^12]
 - Studied geography at UC Berkeley as "a meeting point between the sciences and the arts," but computing was his true love.[^8] Wei described himself as *"basically an artist at heart, with a bent for technology."*[^12]
 - Received a bachelor's degree from the University of California, Berkeley (UC Berkeley).[^1]
-- Was a member of the student club XCF (eXperimental Computing Facility) — a group engaged in experimental technologies.[^1]
+- Was a member of the student club XCF (eXperimental Computing Facility) — a group engaged in experimental technologies. XCF consisted of computer science-minded students, but half of them were not CS majors, just people interested in doing their own projects for fun, not for academic credit.[^14]
 - After graduating in 1991, rather than getting a "real job," Wei continued working at XCF: *"If you made them a proposal they liked, they would let you loose on their computers. That was all the salary Pei Wei needed."*[^8]
 
 ### Career and Technological Contributions
@@ -28,6 +29,8 @@ The machines he had access to were X-terminals, which gave him the idea for his 
 
 The name **Viola** didn't come from the musical instrument — it was an abbreviation for **"Visually Interactive Object-oriented Language and Application."**[^8] In 1990, that's what Viola became, and the HyperCard-like application was the first thing Wei did with it. In 1991, as Wei was graduating, he released Viola 0.8.[^8]
 
+Wei's vision was to create something generalized and network-portable, where it wouldn't matter what kind of computer you were on. This was the same idea that later appeared with Java applets, which could bounce around the network and weren't tied to a particular architecture.[^14]
+
 #### Preview release announcement (April 1991)
 On April 23, 1991, Wei publicly announced a *"preview release"* of Viola on Usenet as a highly manipulable interactive-media authoring tool for UNIX/X11, describing it as the closest thing to Apple's HyperCard for that environment.[^13] In the announcement he stated that Viola binary and source were available via anonymous FTP on `scam.berkeley.edu` (IP `128.32.138.1`) in `src/local/viola` (see the README in that directory).[^13] The post was signed *"Director, Experimental Computing Facility, University of California, Berkeley"* and included a physical address at XCF in Cory Hall.[^13]
 
@@ -36,15 +39,27 @@ In early May 1991, at least one public follow-up raised concerns about Paul Heck
 #### Discovering the World Wide Web
 Wei was on the verge of an independent invention of networked hypertext. The question he had to answer was how to transport his Viola pages across the Internet. *"And that's when I read Tim's e-mail about the World Wide Web,"* he explains. *"The URL was very, very clever, it was perfectly what I needed."*[^8]
 
+At that time, the Web, Gopher, and WAIS were the three nascent information systems on the Internet, but the Web made the most sense due to its concise and extensible URL and HTML concepts. HTML was initially text-only; Wei downloaded and ran the text-based browser "WorldWideWeb" (with numbered links that required typing numbers to follow). He had access to Tim Berners-Lee's NeXTSTEP browser, but lacked a NeXT workstation, so his initial experience with the Web was through the line-mode browser.[^14]
+
+ViolaWWW was created alongside other early browsers including Erwise (by Finnish students), MidasWWW (by Tony Johnson), and Cello (by Thomas R. Bruce) — all preceding Mosaic.[^14]
+
 #### Working at O'Reilly Media
 Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
 
 Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep working on ViolaWWW. O'Reilly was interested in stand-alone electronic versions of its books. With Viola, it took just a few lines of code to put a "button" object on the screen and have it link through to somewhere else.[^8]
 
+During his time at O'Reilly, Wei and Dale Dougherty sought funding for Viola from Sun Microsystems and venture capital firms, but received no funding. Venture capitalists asked basic questions like "What is this Web thing? How big is the market? How many Web servers are there?" and ultimately declined, noting they "didn't see its value." This was in the early 1990s when the Web's potential was not yet obvious to most business people.[^14]
+
 #### Later Life
 - In the 1990s, worked on developing Viola, collaborated with O'Reilly Media, and founded Global Network Navigator (GNN) — one of the first Internet businesses with advertising.[^1]
-- In the late 1990s, worked at the **Internet Archive** (Brewster Kahle's organization).[^3]
-- After 2008, lived between Taiwan and the USA, devoting time to caring for an ill family member.[^1]
+- Global Network Navigator was acquired by AOL, where Wei worked for about a year.[^14]
+- In the late 1990s, worked at the **Internet Archive** (Brewster Kahle's organization). The Internet Archive spun off Alexa (a web traffic analysis service), which was later acquired by Amazon (though Wei had left before this acquisition).[^3][^14]
+- Later worked at Palm Computing, developing a wireless browser. When Palm split into two companies, Wei stayed with the software-centric PalmSource.[^14]
+- Subsequently worked at ACCESS, which acquired PalmSource, allowing him to reunite with former PalmSource colleagues.[^14]
+- Around 2009, burned out from corporate life, Wei quit his job and took an extended break to travel and work on personal projects.[^14]
+- After 2008, lived between Taiwan and the USA, devoting time to caring for an ill family member and exploring personal interests.[^1]
+- Spent several months in Taiwan, traveling around the island and reconnecting with his roots (having left as a child, Taiwan felt like a foreign country). Also traveled to France, England, and Japan before the 2011 earthquake.[^14]
+- During his hiatus, worked on personal projects, caught up on reading, and spent time with friends. Considered this break a luxury and expressed contentment with having the freedom to do what he wanted.[^14]
 - Wei donated his Viola design notebooks, software, and video materials to the Computer History Museum.[^3]
 
 ### Correspondence with Tim Berners-Lee (1991)
@@ -96,6 +111,14 @@ ViolaWWW was the first browser with:
 
 In Wei's ideal world, *"you would never find a file you couldn't open because you didn't have the right program; the program would just come down the wire along with the information. A click could take you to a program on some other computer that would be loaded into your ViolaWWW browser and run there."*[^8]
 
+### Thoughts on Technology and the Future
+
+Reflecting on technology's evolution, Wei noted that the Web developed slowly for about five years after its inception, then experienced a "technological equivalent of the Cambrian explosion."[^14]
+
+Looking forward, he expressed interest in more intelligent networks, envisioning AI systems that could help humans navigate the exponentially growing information space. He believed the semantic web would lead to intelligent, knowledge-processing agents to manage the information overload.[^14]
+
+Wei also commented on Taiwan's technology sector, noting its competence and significant global manufacturing presence (producing about 80% of the world's laptops and 90% of motherboards). While acknowledging the country's technical skills and manufacturing capabilities, he observed that Taiwan could be more aggressive in marketing its own brands despite political constraints.[^14]
+
 ### Cross-Licensing with CERN
 
 Tim was really excited about ViolaWWW and started discussions with Pei Wei about cross-licensing software. Wei could make free use of the CERN code and CERN could use Viola as long as neither tried to make a profit at the other's expense. It was an arrangement in the spirit of GNU General Public License and it was just what the Web needed. CERN soon had the ViolaWWW code sitting on the info.cern.ch server free for anyone to download.[^8]
@@ -135,3 +158,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^11]: [Pei-Yuan Wei: Personal Comments on Eolas vs Microsoft, and the Viola Prior Art (archived 2010)](https://web.archive.org/web/20100625180207/http://www.xcf.berkeley.edu/~wei/viola/aboutEolasMicrosoft.html)
 [^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)
 [^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
+[^14]: [Bart Eisenberg: #28 Perry Wei: creator of ViolaWWW (Software Design 2011 interview)](https://gihyo.jp/dev/serial/01/software_designers/0028)

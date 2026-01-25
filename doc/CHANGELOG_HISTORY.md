@@ -206,25 +206,36 @@ Community feedback led to several refinements during the latter half of 1992.
 ---
 
 ### Early 1993 — "Next Release" Preparation
-Discussion on WWW-Talk during early 1993 indicates significant internal improvements to the Viola engine in preparation for a major new release.
+Discussion on WWW-Talk during early 1993 indicates significant internal improvements to the Viola engine in preparation for a major new release. A stabilized build (often referred to as the February 1993 release) followed the Purify-assisted fixes; surviving archives do not preserve a dedicated announcement or version string for it.
 
 #### Notable Improvements & Discussions
 - **Memory Management**: Fixed numerous memory leaks and X11 resource handling issues (fonts/pixmaps not being correctly released), eventually causing the X server to require a restart.
 - **Bitmap Support**: Discussed the proposed `IMG` tag. Wei revealed that Viola already utilized multiple "bitmap tags" but kept them in a separate experimental DTD (HMML) to avoid polluting the standard HTML specification.
 - **WAIS Integration**: Improved handling of WAIS search results. At this stage, the browser "forgot" the result list after following a link; the recommended workaround was the "Clone Page" facility.
+- **Library Update**: March 1993 — ViolaWWW began using libwww 2.0-alpha.
+- **Applets Development**: Late 1992 – Early 1993 — ViolaWWW with fully-interactive inline program objects (applets) was developed. The technology existed in ViolaWWW and was released to the public in full source code form in 1993.
 
 **Sources**:
 - [WWW-Talk 1993: Re: viola/www memory leak](http://1997.webhistory.org/www.lists/www-talk.1993q1/0173.html)
 - [WWW-Talk 1993: Re HMML?](http://1997.webhistory.org/www.lists/www-talk.1993q2/0488.html)
+- [WWW-Talk 1993: libwww 2.0-alpha usage](http://1997.webhistory.org/www.lists/www-talk.1993q1/0246.html)
+- [WWW-Talk 1995: Re: Java, Viola, and prior art](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html) (applets timeline)
 
 ---
 
 ### April 21, 1993 — HMML Mentioned as an O'Reilly Multimedia Extension
 **Date**: April 21, 1993 (WWW-Talk)
 
-Tim Berners-Lee noted that **HMML already existed** as an extension of HTML for multimedia “from O'Reilly”, and also mentioned “O'Reilly's (unreleased) Viola.”
+Tim Berners-Lee noted that **HMML already existed** as an extension of HTML for multimedia “from O'Reilly”, and also mentioned “O'Reilly's (unreleased) Viola” — likely meaning an O'Reilly-packaged or commercial variant not yet publicly released.
 
 **Source**: [WWW-Talk 1993: HTML, HMML, and HyperTeX (T. Berners-Lee)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/127.html)
+
+### May 8, 1993 — ViolaWWW Applets Demonstration
+**Date**: May 8, 1993
+
+Pei-Yuan Wei demonstrated the plotting demo (interactive applets) to visitors from a computer manufacturer at O'Reilly & Associates. This demonstration showcased ViolaWWW's fully-interactive inline program objects capability.
+
+**Source**: [WWW-Talk 1995: Re: Java, Viola, and prior art](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
 
 ### May 25, 1993 — HMML DTD Discussion and “HTML+” Mention
 **Date**: May 25, 1993 (WWW-Talk)
@@ -240,9 +251,16 @@ Pei-Yuan Wei described HMML as “my working version” and proposed a richer `<
 
 **Source**: [WWW-Talk 1993: Proposal for FIGURE tag (Pei Wei)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/409.html)
 
+### August 1993 — First Web Conference Demonstration
+**Date**: August 1993
+
+ViolaWWW with applets was demonstrated at the first Web Conference in Cambridge, Massachusetts. Demonstrations were also conducted at the O'Reilly & Associates office for all interested parties.
+
+**Source**: [WWW-Talk 1995: Re: Java, Viola, and prior art](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
+
 ### Circa 1993 — About/Status Screenshot (Key Dates Only)
 
-The archived viola.org home page includes a ViolaWWW “circa 1993” screenshot of the built-in About/Status page. The only information treated as dated evidence from this screenshot is its **Status** list:
+The archived viola.org home page includes a ViolaWWW “circa 1993” screenshot of the built-in About/Status page. The only information treated as dated evidence from this screenshot is its **Status** list (shown in reverse chronological order):
 
 - **April 1993**: “Alpha release. SGML and other hypermedia features...”
 - **May 10, 1992**: “Beta release. HTML centric version.”
@@ -252,14 +270,37 @@ The archived viola.org home page includes a ViolaWWW “circa 1993” screenshot
 
 ---
 
+### September 4, 1993 — HTML Forms Discussion
+**Date**: September 4, 1993 (WWW-Talk)
+
+Pei-Yuan Wei participated in discussions about HTML forms, proposing query syntax (`url?query` with `name=value&name=value`) for submitting form data to servers. He discussed various approaches including SGML-like structures and MIME formats.
+
+**Source**: [WWW-Talk 1993: Submitting input-form data to server](http://1997.webhistory.org/www.lists/www-talk.1993q3/0810.html)
+
 ### October 22, 1993 — STG “Stylesheet Language” Posted (Prototype in Viola)
 **Announcement**: October 22, 1993 on WWW-Talk mailing list
 
 Pei-Yuan Wei shared an early stylesheet description language (STG) and noted that a prototype was already implemented in Viola, with the goal of producing a standalone library usable by multiple W3 browsers.
 
-**Source**: [WWW-Talk Oct-Dec 1993: Stylesheet Language (Pei Y. Wei)](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html)
+**Source**: [WWW-Talk 1993: Stylesheet Language](http://1997.webhistory.org/www.lists/www-talk.1993q4/0266.html)
+
+### October 1994 — Stylesheet RFC Re-Published
+**Date**: October 1994 (WWW-Talk)
+
+Pei-Yuan Wei re-published the Stylesheet RFC with a preliminary implementation of the stylesheet mechanism in Viola. The code was written as a library independent of Viola, making it easy for other browsers to reuse. He also discussed issues with mixing different stylesheets and context-sensitive styling.
+
+**Sources**:
+- [WWW-Talk 1994: Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0401.html)
+- [WWW-Talk 1994: Stylesheet Language](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html)
 
 ---
+
+### January 1994 — FIGA Support
+**Date**: January 1994 (WWW-Talk)
+
+ViolaWWW added support for FIGA (rectangular image maps only at this stage).
+
+**Source**: [WWW-Talk 1994: FIGA support](http://1997.webhistory.org/www.lists/www-talk.1994q1/0020.html)
 
 ### February 23–25, 1994 — Version 3.0 Beta
 **Announcement**: February 25, 1994 on WWW-Talk mailing list  
@@ -306,15 +347,13 @@ Pei-Yuan Wei acknowledged:
 **Announcement**: March 24, 1994 on WWW-Talk mailing list  
 **README date**: March 23, 1994
 
-This release represents a significant advancement in ViolaWWW's capabilities, particularly in its support for emerging web standards and its integration with the Viola scripting language.
+Builds on 3.0 Beta with improved stability, UI refinements, and new formatting features.
 
-#### Notable Features
-- **HTML+ support**: Added support for container paragraphs, input forms, and tables (experimental).
-- **Advanced formatting**: Support for multiple columning and document insertion (client-side).
+#### New in 3.1 (vs 3.0)
 - **Dynamic lists**: Implementation of dynamically collapsible/expandable `<UL>` lists.
-- **Programmable objects**: Embeddable in-document and in-toolbar programmable Viola objects/applets.
-- **New GUI options**: Introduction of the Motif front-end (`vw`), alongside the traditional Xlib-based version (`viola`).
-- **Simplified installation**: Transitioned to a single binary for easier deployment.
+- **FOLD attribute proposal**: Pei Wei proposed the `FOLD` attribute for HTML+ lists (`FOLD=NO/YES`) to control initial collapsed/expanded state, along with a `LABEL` attribute for list labels.
+- **HTML+ / formatting**: Container paragraphs, input forms, and tables (experimental); multiple columning and document insertion (client-side). Conformance to the evolving HTML+ standard improved over 3.0.
+- **Programmable objects** and **Motif / X11** front-ends, plus **single-binary installation**, carried over from 3.0.
 
 #### Technical Changes
 - **Improved messaging**: Optimized communication between the Motif front-end and the Viola engine by switching from string-based to object pointer-based messaging, resulting in better scrolling performance.
@@ -332,7 +371,26 @@ This release represents a significant advancement in ViolaWWW's capabilities, pa
 - Source and binary (historical; unavailable today — `ftp.ora.com` no longer resolves): `ftp://ora.com/pub/www/viola`
 - Archive: `viola940323.tar.gz` (dated March 23, 1994)
 
-**Source**: [WWW-Talk 1994: ViolaWWW Release](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html) and `src/vw/changes` from `viola940323.tar.gz`.
+**Sources**:
+- [WWW-Talk 1994: ViolaWWW Release](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
+- [WWW-Talk 1994: FOLD attribute proposal](http://1997.webhistory.org/www.lists/www-talk.1994q1/1027.html)
+- `src/vw/changes` from `viola940323.tar.gz`
+
+---
+
+### May 1994 — Cross-Platform Testing Initiative
+**Date**: May 18–20, 1994 (WWW-Talk)
+
+Pei-Yuan Wei requested guest accounts for testing ViolaWWW on major Unix platforms (AIX R6000, Dec Alpha, HP Snake, SGI systems) to improve cross-platform support. He already had access to SunOS 4.1.3 and Ultrix 4.2. By May 20, he had received access to all requested platforms.
+
+During this period, ViolaWWW was described as "real close to 100% HTML+ conformance" and considered the "most 'featureful' browser." Wei also inquired about multithreaded libwww to enable multiple independent HTTP operations, allowing users to read/scroll/follow links in one page while another page loads in the background.
+
+**Sources**:
+- [WWW-Talk 1994: Testing accounts request](http://1997.webhistory.org/www.lists/www-talk.1994q2/0597.html)
+- [WWW-Talk 1994: Thanks for testing accounts](http://1997.webhistory.org/www.lists/www-talk.1994q2/0626.html)
+- [WWW-Talk 1994: ViolaWWW status](http://1997.webhistory.org/www.lists/www-talk.1994q2/0271.html)
+- [WWW-Talk 1994: Multithreaded libwww inquiry](http://1997.webhistory.org/www.lists/www-talk.1994q2/0519.html)
+- [WWW-Talk 1994: Multiple HTTP operations](http://1997.webhistory.org/www.lists/www-talk.1994q2/0542.html)
 
 ---
 
@@ -391,10 +449,10 @@ Work is ongoing as of **2026**.
 | Jun 30, 1992 | — | Multi-object SGML architecture announced |
 | Jul 14, 1992 | 2.1.2 | W3 library update, archive `viola920730.tar.Z` |
 | Nov 4, 1992 | — | Scrollable regions for `LISTING` sections |
-| Early 1993 | — | Memory/resource leak fixes, preparing "Next Release" |
-| Apr–May 1993 | — | HMML discussions on WWW-Talk; About/Status screenshot lists key dates (not a confirmed release) |
+| Early 1993 | — | Memory/resource leak fixes, preparing "Next Release"; Feb 1993 stabilized build (no dedicated announcement) |
+| Apr–May 1993 | — | HMML discussions; May 8 applets demo at O'Reilly; About/Status screenshot key dates (not a release) |
 | Oct 22, 1993 | — | STG “Stylesheet Language” posted (prototype in Viola) |
-|| Feb 23–25, 1994 | 3.0 Beta | HTML+ support, Motif front-end, programmable objects |
+| Feb 23–25, 1994 | 3.0 Beta | HTML+ support, Motif front-end, programmable objects |
 | Mar 23, 1994 | 3.1 Beta | Bug fixes, collapsible/expandable lists |
 | Apr 10, 1995 | 3.3 Beta | Final release |
 | Oct 17, 2025 | 4.0 (Revival) | 64-bit port, ongoing feature restoration |

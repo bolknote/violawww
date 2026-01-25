@@ -315,7 +315,7 @@ Intro **P** plus several **FIGURE**s in a row. No HPANE attributes are used; **F
 
 ### WWW-Talk
 
-- **Pei Y. Wei (Dec 1993):** [Re: a compromise on tables, etc.](../www_lists_archive/www-talk.1993q4/0684.html) — “I’ve been calling it HPANE, and it has MINWIDTH and MAXWIDTH constraint attributes.”
+- **Pei Y. Wei (Dec 1993):** [Re: a compromise on tables, etc.](http://1997.webhistory.org/www.lists//www-talk.1993q4/0684.html) — “I’ve been calling it HPANE, and it has MINWIDTH and MAXWIDTH constraint attributes.”
 
 ### See Also
 

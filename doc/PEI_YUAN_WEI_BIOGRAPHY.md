@@ -41,6 +41,8 @@ Wei was on the verge of an independent invention of networked hypertext. The que
 
 At that time, the Web, Gopher, and WAIS were the three nascent information systems on the Internet, but the Web made the most sense due to its concise and extensible URL and HTML concepts. HTML was initially text-only; Wei downloaded and ran the text-based browser "WorldWideWeb" (with numbered links that required typing numbers to follow). He had access to Tim Berners-Lee's NeXTSTEP browser, but lacked a NeXT workstation, so his initial experience with the Web was through the line-mode browser.[^14]
 
+Through his development of ViolaWWW and collaboration with Tim Berners-Lee, Wei became associated with the CERN WWW Project, which had over fifteen members working to develop applications that would expand accessibility to the World Wide Web.[^15]
+
 ViolaWWW was created alongside other early browsers including Erwise (by Finnish students), MidasWWW (by Tony Johnson), and Cello (by Thomas R. Bruce) — all preceding Mosaic.[^14]
 
 #### Working at O'Reilly Media
@@ -100,7 +102,7 @@ ViolaWWW is a discontinued web browser developed based on the Viola language. Re
 
 ### Technical Innovations
 ViolaWWW was the first browser with:
-- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4]
+- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4] ViolaWWW pioneered the use of embedded script objects, stylesheets, and tables.[^15]
 - **Interactive Elements**: Bookmarks, back/forward buttons, history feature, forms, tables, client-side document insertion, sidebar panel for meta-information.[^4][^8]
 - **Architecture**: Viola (not ViolaWWW) was an Object Oriented programming language and a bytecode VM. The ViolaWWW browser was a VM application — the "killer app" that made most people care about the Viola platform.[^3][^7]
 - **Applets (Mini-Applications)**: By May 1993, ViolaWWW could run programs. Wei came up with "mini-applications" — applets to all intents and purposes: a network traffic monitoring graph, a chessboard where you could move pieces, a chat application that let you send text AND draw things, applications for remote computation, and a drawing tool called xplot. *"Two years later Sun released the Java language, complete with applets, to great fanfare, but Pei Wei had been there first."*[^8]
@@ -159,3 +161,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)
 [^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 [^14]: [Bart Eisenberg: #28 Perry Wei: creator of ViolaWWW (Software Design 2011 interview)](https://gihyo.jp/dev/serial/01/software_designers/0028)
+[^15]: [Internet Guide: Pei-Yuan Wei (archived 2016)](https://web.archive.org/web/20160204100329id_/http://www.internet-guide.co.uk/PeiWei.html)

@@ -127,6 +127,7 @@
 			fontSlant = STG_attr(tagPtr, "fontSlant");
 			fontSize = STG_attr(tagPtr, "fontSize");
 			fontSpacing = STG_attr(tagPtr, "fontSpacing");
+			fontWeight = STG_attr(tagPtr, "fontWeight");
 			
 			/* If mono spacing requested, use fixed font */
 			if (fontSpacing == "mono") {
@@ -175,6 +176,7 @@
 				default:		size = "";		break;
 				}
 			}
+			if (fontWeight == "bold") slant = "bold";
 			
 			/* Map font name to font ID */
 			if (slant == "normal") {

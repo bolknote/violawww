@@ -275,9 +275,50 @@ int test_quoted_strings() {
     return 1;
 }
 
+int test_fontweight() {
+    STGLib* lib;
+    STGGroup* group;
+    STGMajor* major;
+    STGAssert* assert;
+    char* spec = "(P fontWeight=bold)";
+    int fwID;
+    
+    printf("\n=== Test 5: fontWeight attribute ===\n");
+    
+    lib = STG_init(test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name,
+                   test_tagNameCmp, (long (*)())test_tagName2ID, (char* (*)())test_tagID2Name);
+    if (!lib) {
+        printf("FAIL: STG_init failed\n");
+        return 0;
+    }
+    group = STG_makeGroup(lib, spec);
+    if (!group || !group->first) {
+        printf("FAIL: STG_makeGroup failed or no major\n");
+        freeLib(lib);
+        return 0;
+    }
+    major = group->first;
+    fwID = test_tagName2ID("fontWeight");
+    assert = STGFindAssert(major, (char*)(long)fwID);
+    if (!assert) {
+        printf("FAIL: fontWeight assert not found\n");
+        freeLib(lib);
+        return 0;
+    }
+    if (strcmp(assert->val, "bold") != 0) {
+        printf("FAIL: fontWeight expected 'bold', got '%s'\n", assert->val);
+        freeLib(lib);
+        return 0;
+    }
+    printf("fontWeight=bold parsed and found ✓\n");
+    freeLib(lib);
+    printf("PASS\n");
+    return 1;
+}
+
 int main() {
     int passed = 0;
-    int total = 4;
+    int total = 5;
     
     printf("STG Minors Unit Tests\n");
     printf("=====================\n");
@@ -286,6 +327,7 @@ int main() {
     if (test_match_minor()) passed++;
     if (test_assert_with_minor()) passed++;
     if (test_quoted_strings()) passed++;
+    if (test_fontweight()) passed++;
     
     printf("\n");
     printf("=====================\n");

@@ -101,13 +101,15 @@ int loadSTG(char* url)
 /*
  * access to libstg - with style attribute support
  */
+#define STG_MAX_RESULTS 8
+
 int getSTGInfo_tagPtrWithStyle(Packet* result, char* tagName1, char* tagName2, char* styleAttr)
 /* tagName2: super element */
 /* styleAttr: style attribute value like "WARNING" */
 {
     int stat;
     char* context[4];
-    STGResult results[2];
+    STGResult results[STG_MAX_RESULTS];
     extern int WWW_TraceFlag;
 
     clearPacket(result);
@@ -126,7 +128,7 @@ int getSTGInfo_tagPtrWithStyle(Packet* result, char* tagName1, char* tagName2, c
         context[3] = 0;
         stat = STG_findStyle(stgGroup, context, 2, results, 2);
     } else {
-        stat = STG_findStyle(stgGroup, context, 1, results, 1);
+        stat = STG_findStyle(stgGroup, context, 1, results, STG_MAX_RESULTS);
     }
     
     if (WWW_TraceFlag && styleAttr) {
@@ -134,18 +136,26 @@ int getSTGInfo_tagPtrWithStyle(Packet* result, char* tagName1, char* tagName2, c
     }
     
     if (stat) {
-        /* Pack both major and minor into result */
-        /* Even if minor is not found, return major so its styles can be applied */
-        /* We'll use a simple encoding: store pointer to results array */
-        /* Actually, let's return a struct pointer */
+        /* When styleAttr is set, prefer a result with matching minor (most specific).
+         * Otherwise we may pick (P) without minors before (P {STYLE "X"}) and ignore the minor. */
+        int idx = 0;
+        if (styleAttr && stat > 1) {
+            int k;
+            for (k = 0; k < stat; k++) {
+                if (results[k].sminor) {
+                    idx = k;
+                    break;
+                }
+            }
+        }
         STGResult* res = (STGResult*)malloc(sizeof(STGResult));
         if (res) {
-            res->smajor = results[0].smajor;
-            res->sminor = results[0].sminor;
+            res->smajor = results[idx].smajor;
+            res->sminor = results[idx].sminor;
             
             if (WWW_TraceFlag && styleAttr) {
-                printf("### getSTGInfo_tagPtrWithStyle: found major=%p minor=%p\n", 
-                       res->smajor, res->sminor);
+                printf("### getSTGInfo_tagPtrWithStyle: found major=%p minor=%p (idx=%d)\n", 
+                       res->smajor, res->sminor, idx);
             }
             
             result->info.i = (long)res;

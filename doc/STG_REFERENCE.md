@@ -457,15 +457,21 @@ Sets the font size.
 - `large`
 - `largest`
 
-#### `fontWeight=<weight>` - Font Weight (NOT IMPLEMENTED)
+#### `fontWeight=<weight>` - Font Weight
 
-> **Warning**: This attribute was planned but **never implemented** in the codebase. The original author used it in some stylesheets (e.g., [HTML_sodium.stg](https://web.archive.org/web/20040308032623id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HTML_sodium.stg)), but the parsing code does not process it.
->
-> To achieve bold text, use `fontSlant=bold` instead (see below).
+Controls font weight (bold vs. normal). Implemented in ViolaWWW 4.0; the parser has always accepted it, and rendering scripts now read and apply it.
 
-**Planned values** (not functional):
-- `normal` (default)
-- `bold`
+**Values**:
+- `normal` (default) — non-bold
+- `bold` — bold text
+
+`fontWeight=bold` has the same effect as `fontSlant=bold` for weight. Both can be used. If both `fontWeight=bold` and `fontSlant=italic` are set, **bold takes precedence** (bold is used; italic is ignored) because the font set has no bold-italic combination.
+
+**Example**:
+```
+(STRONG fontWeight=bold)
+(H1 fontWeight=bold fontSize=largest)
+```
 
 #### `fontSlant=<slant>` - Font Slant
 
@@ -483,7 +489,7 @@ Sets the font style. Despite the name suggesting only italic/slant control, this
 - `italic` - italic/oblique text
 - `bold` - bold text
 
-> **Historical Note**: The original author experimented with both `fontWeight=bold` (in [HTML_sodium.stg](https://web.archive.org/web/20040308032623id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HTML_sodium.stg)) and `fontSlant=bold` (in [HMML_red.stg](https://web.archive.org/web/20040329164857id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HMML_red.stg)). Only `fontSlant` was ultimately implemented, with `bold` added as a non-standard value alongside `italic`.
+> **Historical Note**: The original author experimented with both `fontWeight=bold` (in [HTML_sodium.stg](https://web.archive.org/web/20040308032623id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HTML_sodium.stg)) and `fontSlant=bold` (in [HMML_red.stg](https://web.archive.org/web/20040329164857id_/http://www.xcf.berkeley.edu/~wei/viola/styles/HMML_red.stg)). Initially only `fontSlant` was implemented, with `bold` added as a non-standard value alongside `italic`. `fontWeight` was implemented in ViolaWWW 4.0.
 
 #### `fontSpacing=<spacing>` - Font Spacing
 
@@ -1099,7 +1105,6 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
    - There is no structured error reporting for this.
 
 8. **Unimplemented attributes**: Some attributes from the original RFC are parsed but ignored
-   - `fontWeight` - use `fontSlant=bold` instead
    - `numStyle` - list numbering (roman/number/alpha), only Arabic numerals supported
    - `compact` - flag attribute, never queried
    - `space` - flag attribute, never queried

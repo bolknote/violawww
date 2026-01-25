@@ -141,7 +141,7 @@ ViolaWWW 4.0 implements the STG (Style Tag Group) stylesheet system, designed by
 - **Files**: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`, `src/viola/stgcall.c`
 - **Context Matching**: Hierarchical matching algorithm builds ancestor chain for style resolution
 - **Memory Management**: Efficient ID-based lookups with automatic memory cleanup
-- **Limitations**: Some attributes like `fontWeight`, `numStyle`, `compact`, `space` are parsed but not implemented; STG was designed with only `STYLE` attribute support for minor selectors (no CLASS/ID concepts like in CSS)
+- **Limitations**: Some attributes like `numStyle`, `compact`, `space` are parsed but not implemented; STG was designed with only `STYLE` attribute support for minor selectors (no CLASS/ID concepts like in CSS)
 
 **Historical Context**: STG was proposed on WWW-Talk mailing list in October 1993, representing one of the earliest attempts to separate presentation from content on the web.
 

@@ -370,6 +370,7 @@ print("TXT: height=", get("height"), "................................\n");
 		fontSlant = 0;
 		fontSize = 0;
 		fontSpacing = 0;
+		fontWeight = 0;
 
 		/* Check if element has a style attribute for minor matching */
 		/* Can be passed as arg[2] or from savedStyleAttr variable */
@@ -420,6 +421,7 @@ print("TXT: height=", get("height"), "................................\n");
 				fontSlant = STG_attrEx(tagPtr, "fontSlant");
 				fontSize = STG_attrEx(tagPtr, "fontSize");
 				fontSpacing = STG_attrEx(tagPtr, "fontSpacing");
+				fontWeight = STG_attrEx(tagPtr, "fontWeight");
 			} else {
 				i = STG_attr(tagPtr, "BGColor");
 				if (i) set("BGColor", i);
@@ -440,6 +442,7 @@ print("TXT: height=", get("height"), "................................\n");
 				fontSlant = STG_attr(tagPtr, "fontSlant");
 				fontSize = STG_attr(tagPtr, "fontSize");
 				fontSpacing = STG_attr(tagPtr, "fontSpacing");
+				fontWeight = STG_attr(tagPtr, "fontWeight");
 			}
 			
 			/* If mono spacing requested, use fixed font and ignore slant/size */
@@ -496,6 +499,7 @@ print("TXT: height=", get("height"), "................................\n");
 				default:		size = "";		break;
 				}
 			}
+			if (fontWeight == "bold") slant = "bold";
 			
 			/* Map font name to font ID */
 			if (slant == "normal") {

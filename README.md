@@ -225,6 +225,7 @@ ViolaWWW 4.0 includes native mathematical notation rendering, transforming HTML 
 - **Token System**: 22 internal tokens for different mathematical constructs
 - **Rendering Pipeline**: Tiling, expandable element processing, and centering
 - **Files**: `src/viola/htmath.c`, `src/viola/htmath.h`, multiple Viola scripts
+- **Documentation**: [MATH_REFERENCE.md](doc/MATH_REFERENCE.md)
 
 #### HTTP Redirect Handling
 - Automatic following of redirects: 301, 302, 303, 307, 308
@@ -278,6 +279,7 @@ ViolaWWW 4.0 includes native mathematical notation rendering, transforming HTML 
 - Automatic scaling of symbols in superscript/subscript contexts
 - **Files**: `htmath.h`, `htmath.c`, `embeds/HTML_math_script.v`
 - **HTML Tag**: `<MATH>` element support
+- **Documentation**: [MATH_REFERENCE.md](doc/MATH_REFERENCE.md)
 
 #### HTML+ CHANGED Tag (Document Revision Tracking)
 - Implementation of HTML+ (1993) `<CHANGED>` element for marking document revisions

@@ -46,14 +46,14 @@ Through his development of ViolaWWW and collaboration with Tim Berners-Lee, Wei 
 ViolaWWW was created alongside other early browsers including Erwise (by Finnish students), MidasWWW (by Tony Johnson), and Cello (by Thomas R. Bruce) — all preceding Mosaic.[^14]
 
 #### Working at O'Reilly Media
-Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
+Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei worked at O'Reilly & Associates from May 1993 through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^16][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
 
 Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep working on ViolaWWW. O'Reilly was interested in stand-alone electronic versions of its books. With Viola, it took just a few lines of code to put a "button" object on the screen and have it link through to somewhere else.[^8]
 
 During his time at O'Reilly, Wei and Dale Dougherty sought funding for Viola from Sun Microsystems and venture capital firms, but received no funding. Venture capitalists asked basic questions like "What is this Web thing? How big is the market? How many Web servers are there?" and ultimately declined, noting they "didn't see its value." This was in the early 1990s when the Web's potential was not yet obvious to most business people.[^14]
 
 #### Later Life
-- In the 1990s, worked on developing Viola, collaborated with O'Reilly Media, and founded Global Network Navigator (GNN) — one of the first Internet businesses with advertising.[^1]
+- In the 1990s, worked on developing Viola, collaborated with O'Reilly Media, and founded Global Network Navigator (GNN) — one of the first Internet businesses with advertising.[^1] Wei worked at GNN starting in August 1995.[^20]
 - Global Network Navigator was acquired by AOL, where Wei worked for about a year.[^14]
 - In the late 1990s, worked at the **Internet Archive** (Brewster Kahle's organization). The Internet Archive spun off Alexa (a web traffic analysis service), which was later acquired by Amazon (though Wei had left before this acquisition).[^3][^14]
 - Later worked at Palm Computing, developing a wireless browser. When Palm split into two companies, Wei stayed with the software-centric PalmSource.[^14]
@@ -102,10 +102,10 @@ ViolaWWW is a discontinued web browser developed based on the Viola language. Re
 
 ### Technical Innovations
 ViolaWWW was the first browser with:
-- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4] ViolaWWW pioneered the use of embedded script objects, stylesheets, and tables.[^15]
+- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4] ViolaWWW pioneered the use of embedded script objects, stylesheets, and tables.[^15] In October 1993, Wei developed his own stylesheet language called STG (Stylesheet Language) and implemented it in ViolaWWW, predating the development of CSS.[^21]
 - **Interactive Elements**: Bookmarks, back/forward buttons, history feature, forms, tables, client-side document insertion, sidebar panel for meta-information.[^4][^8]
 - **Architecture**: Viola (not ViolaWWW) was an Object Oriented programming language and a bytecode VM. The ViolaWWW browser was a VM application — the "killer app" that made most people care about the Viola platform.[^3][^7]
-- **Applets (Mini-Applications)**: By May 1993, ViolaWWW could run programs. Wei came up with "mini-applications" — applets to all intents and purposes: a network traffic monitoring graph, a chessboard where you could move pieces, a chat application that let you send text AND draw things, applications for remote computation, and a drawing tool called xplot. *"Two years later Sun released the Java language, complete with applets, to great fanfare, but Pei Wei had been there first."*[^8]
+- **Applets (Mini-Applications)**: By May 1993, ViolaWWW could run programs. Wei came up with "mini-applications" — applets to all intents and purposes: a network traffic monitoring graph, a chessboard where you could move pieces, a chat application that let you send text AND draw things, applications for remote computation, and a drawing tool called xplot. *"Two years later Sun released the Java language, complete with applets, to great fanfare, but Pei Wei had been there first."*[^8] On May 8, 1993, Wei demonstrated the plotting demo to visitors from a computer manufacturer at O'Reilly & Associates. In August 1993, ViolaWWW with applets was demonstrated at the first Web Conference in Cambridge.[^20]
 
 ### Wei's Vision
 
@@ -162,3 +162,9 @@ For further study: source code, design notebooks, and video materials are stored
 [^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 [^14]: [Bart Eisenberg: #28 Perry Wei: creator of ViolaWWW (Software Design 2011 interview)](https://gihyo.jp/dev/serial/01/software_designers/0028)
 [^15]: [Internet Guide: Pei-Yuan Wei (archived 2016)](https://web.archive.org/web/20160204100329id_/http://www.internet-guide.co.uk/PeiWei.html)
+[^16]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0026.html)
+[^17]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0028.html)
+[^18]: [WWW-TALK Archives: ViolaWWW Version 3.0 Beta (Feb 1994)](http://1997.webhistory.org/www.lists/www-talk.1994q1/0722.html)
+[^19]: [WWW-TALK Archives: ViolaWWW Version 3.3 Beta (Apr 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)
+[^20]: [WWW-TALK Archives: Re: Java, Viola, and prior art (Aug 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
+[^21]: [WWW-TALK Archives: Stylesheet Language (Oct 1993)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0266.html)

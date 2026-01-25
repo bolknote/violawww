@@ -18,6 +18,8 @@
   - Define and apply the desired `fontFamily` in the STG configuration so text renders as expected.
 - [ ] Implement `numStyle=<style>` in STG
   - Add support for list numbering styles in STG (planned values: roman, number, alpha).
+- [ ] Remove red background from MATH tags
+  - Remove the default red background color (`BGColor="red"` in `src/viola/objs.c`) from MATH elements. This appears to be a debug feature, as the original author's screenshots show no colored background for math expressions.
 
 ### Core & HTML
 - [ ] Implement HTML editing functions (`src/viola/html.c`)

@@ -51,6 +51,15 @@ Wei also outlined future plans to "teach the parser about viola object descripti
 - [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html) (initial announcement)
 - [WWW-Talk 1991: X Browser](https://lists.w3.org/Archives/Public/www-talk/1991NovDec/0023.html) (technical implementation details)
 
+### Early January 1992 — Early Demonstration on Apollo and DECstation
+**Date**: January 1992 (W3 News 9201)
+
+Tim Berners-Lee observed ViolaWWW running in early January 1992 and noted: *"A version of www running in the 'Viola' hypertext system looks good - I just saw it running on an apollo and on a decstation. We hope to release it soon with the coming new version of viola."*
+
+This early demonstration confirmed that ViolaWWW was already functional on multiple platforms (Apollo and DECstation) and indicated that a public release was anticipated.
+
+**Source**: [W3.org History: What's new in '92 (January 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9201.html)
+
 ### January 24, 1992 — First CERN Test Report
 Tim Berners-Lee tested ViolaWWW at CERN and reported: *"ViolaWWW works great... A strange thing is that it seems to be so fast—a search in the CERN phone book seems to be instantaneous!"*
 
@@ -89,6 +98,7 @@ On the archived viola.org home page, Wei later summarized the browser as "first 
     - **Ease of Use**: Simple installation (three-part setup: binary, viola scripts directory, environment variable), started with `vw` command and default home page.
     - **Comparison**: TBL noted the browser was very intuitive and straightforward, with features most users would want, though some advanced capabilities might be excessive for casual users.
 - **April 20, 1992**: Conclusion of the initial CERN testing phase.
+- **April 1992**: A version was released that was missing the search panel functionality. This version was not generally distributed. Pei Wei fixed the issue and prepared a corrected version.
 
 #### Known Issues (April 1992)
 - **Color Crashes**: A "minor bug" caused the program to crash when displaying on color screens (specifically noted on April 29 in the internal status page).
@@ -99,6 +109,7 @@ On the archived viola.org home page, Wei later summarized the browser as "first 
 - [Ancient Web Browsers](https://browsers.flanigan.us/browsers/violawww/)
 - [WWW-Talk 1992: problem yacc'ing violaWWW](http://1997.webhistory.org/www.lists/www-talk.1992/0064.html)
 - [W3.org: A quick look at ViolaWWW (April 11, 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html) (detailed technical review comparing with Erwise)
+- [W3.org History: Spring releases (April 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9204.html) (search panel issue and fix)
 - [Ancient Web Browsers: ViolaWWW internal "About/Status" page (screenshot)](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg) (status section lists "March 9 to April 20, 1992" CERN testing)
 - [Viola Home Page (archived): "First released around April 1992" (retrospective)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
 - ViolaWWW 2.0.4 source code (`main.c`)
@@ -202,6 +213,17 @@ Community feedback led to several refinements during the latter half of 1992.
 **Sources**: 
 - [WWW-Talk 1992: WWW/VIOLA "Memory leak" ?](http://1997.webhistory.org/www.lists/www-talk.1992/0212.html)
 - [WWW-Talk 1992: HTML](http://1997.webhistory.org/www.lists/www-talk.1992/0252.html)
+
+---
+
+### September 1992 — Pei Wei Joins O'Reilly & Associates
+**Date**: September 1992 (W3 News 9209)
+
+Pei-Yuan Wei began working on W3 for O'Reilly & Associates (publishers of books on computing topics). At this time, he had a prototype W3 browser including advanced features such as embedded graphics, scrollable lists, and generic SGML parsing. The announcement noted that an editor was expected to come out of this work.
+
+This marked a significant transition in ViolaWWW development, moving from academic work at UC Berkeley to commercial development at O'Reilly, which would lead to the major 3.0 release in 1994.
+
+**Source**: [W3.org History: W3 News - September '92](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9209.html)
 
 ---
 
@@ -442,12 +464,14 @@ Work is ongoing as of **2026**.
 | Apr 23, 1991 | Viola Preview | First public announcement (pre-WWW) |
 | 1991 | Viola 0.8 | First numbered release |
 | Dec 9, 1991 | — | Official intention to create X11 W3 browser |
+| Early Jan 1992 | — | Early demonstration on Apollo and DECstation observed by TBL |
 | Jan 24, 1992 | — | First successful test report by Tim Berners-Lee |
 | Mar 9 – Apr 20, 1992 | 2.0.x (2.0.4 by Apr 4) | CERN testing phase |
 | May 10 – 15, 1992 | — | Beta release demo at JENC3; packaging/README dates |
 | May 23, 1992 | 2.1.0 | First public release |
 | Jun 30, 1992 | — | Multi-object SGML architecture announced |
 | Jul 14, 1992 | 2.1.2 | W3 library update, archive `viola920730.tar.Z` |
+| Sep 1992 | — | Pei Wei joins O'Reilly & Associates |
 | Nov 4, 1992 | — | Scrollable regions for `LISTING` sections |
 | Early 1993 | — | Memory/resource leak fixes, preparing "Next Release"; Feb 1993 stabilized build (no dedicated announcement) |
 | Apr–May 1993 | — | HMML discussions; May 8 applets demo at O'Reilly; About/Status screenshot key dates (not a release) |
@@ -476,6 +500,9 @@ Work is ongoing as of **2026**.
 - [Viola Home Page (archived)](https://web.archive.org/web/20180203005145/http://www.viola.org/) — includes “First released around April 1992” retrospective note
 - [W3.org History: www-talk archive 1991-1992](https://www.w3.org/History/1992/www-talk.archive.Z)
 - [W3.org History: www-talk archive Jan-Jun 1993](https://www.w3.org/History/1992/www-talk.9301-9306.Z)
+- [W3.org History: What's new in '92 (January 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9201.html)
+- [W3.org History: Spring releases (April 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9204.html)
+- [W3.org History: W3 News - September '92](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9209.html)
 - [WWW-Talk 1993: Re: viola/www memory leak](http://1997.webhistory.org/www.lists/www-talk.1993q1/0173.html)
 - [WWW-Talk 1993: Re HMML?](http://1997.webhistory.org/www.lists/www-talk.1993q2/0488.html)
 - [WWW-Talk 1993: HTML, HMML, and HyperTeX (T. Berners-Lee)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/127.html)

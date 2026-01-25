@@ -73,9 +73,9 @@ ViolaWWW was created alongside other early browsers including Erwise (by Finnish
 
 Tim was really excited about ViolaWWW and started discussions with Pei Wei about cross-licensing software. Wei could make free use of the CERN code and CERN could use Viola as long as neither tried to make a profit at the other's expense. It was an arrangement in the spirit of GNU General Public License and it was just what the Web needed. CERN soon had the ViolaWWW code sitting on the info.cern.ch server free for anyone to download.[^8]
 
-### Working at O'Reilly Media (1993–1995)
+### Working at O'Reilly Media (1992–1995)
 
-Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei worked at O'Reilly & Associates from May 1993 through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^16][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
+Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei began working with O'Reilly & Associates in September 1992 (announced in W3 News), and worked there through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^16][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
 
 Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep working on ViolaWWW. O'Reilly was interested in stand-alone electronic versions of its books. With Viola, it took just a few lines of code to put a "button" object on the screen and have it link through to somewhere else.[^8]
 
@@ -111,6 +111,8 @@ Tim Berners-Lee spoke about Pei Wei in glowing terms in his book "Weaving the We
 
 ## ViolaWWW: History and Significance
 
+> For a detailed chronological history of all releases, versions, and technical milestones, see [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md).
+
 ViolaWWW is a discontinued web browser developed based on the Viola language. Released in 1991–1992 for Unix systems with X Window System.[^4]
 
 ### Historical Significance
@@ -141,9 +143,9 @@ ViolaWWW was the first browser with:
 
 In Wei's ideal world, *"you would never find a file you couldn't open because you didn't have the right program; the program would just come down the wire along with the information. A click could take you to a program on some other computer that would be loaded into your ViolaWWW browser and run there."*[^8]
 
-### End of ViolaWWW Development (March 1994)
+### End of ViolaWWW Development (1994–1995)
 
-The last release of ViolaWWW came in March 1994, because by then a browser called Netscape was taking the Web by storm. *"That's when I threw in the towel and gave up on developing Web browsers,"* says Wei, *"because, you know, they've got this whole company, they're doing a good job, let them do it."* He moved on to other things, but looking back he can't help thinking how things might have turned out differently. *"Boy, would I have loved to have known some technology investors then,"* he sighs.[^8]
+Active development of ViolaWWW effectively ended in March 1994 (with the release of Version 3.1 Beta), because by then a browser called Netscape was taking the Web by storm. *"That's when I threw in the towel and gave up on developing Web browsers,"* says Wei, *"because, you know, they've got this whole company, they're doing a good job, let them do it."*[^8] A final release (Version 3.3 Beta) was published in April 1995, but active development had already ceased. He moved on to other things, but looking back he can't help thinking how things might have turned out differently. *"Boy, would I have loved to have known some technology investors then,"* he sighs.[^8]
 
 ### Challenges and Limitations
 

@@ -1,6 +1,8 @@
 # ViolaWWW Release History
 
 > This document compiles the release history of ViolaWWW based on historical sources, announcements, and archived materials.
+>
+> For biographical information about Pei-Yuan Wei, the creator of ViolaWWW, see [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md).
 
 **Conventions used below**:
 - **Announcement**: date of a public mailing list / Usenet post.
@@ -34,7 +36,7 @@ The exact release date is unclear in surviving public archives; **1991** is comm
 ### December 9–13, 1991 — "One-Night Hack" (Initial X11 Browser Implementation)
 **Announcement**: December 9, 1991 (intention announced); December 13, 1991 (technical details shared) on WWW-Talk mailing list
 
-Pei-Yuan Wei officially announced his intention to create an X11 browser by extending his Viola system (a HyperCard-like media tool).
+Pei-Yuan Wei officially announced his intention to create an X11 browser by extending his Viola system (a HyperCard-like media tool). (See also [biographical section on the "One-Night Hack"](PEI_YUAN_WEI_BIOGRAPHY.md#the-one-night-hack-december-1991).)
 
 The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility. In his follow-up message (December 13, 1991), which was a response to Tim Berners-Lee's announcement of a new browser architecture with a generic SGML parser, Wei detailed the technical approach and expressed interest in using the new CERN codebase for testing. Tim Berners-Lee had offered to provide a tar file of the alpha-test code, including the HTML SGML parser, and Wei responded that he was "very interested in using that code, and do the testing."
 
@@ -221,7 +223,7 @@ Community feedback led to several refinements during the latter half of 1992.
 
 Pei-Yuan Wei began working on W3 for O'Reilly & Associates (publishers of books on computing topics). At this time, he had a prototype W3 browser including advanced features such as embedded graphics, scrollable lists, and generic SGML parsing. The announcement noted that an editor was expected to come out of this work.
 
-This marked a significant transition in ViolaWWW development, moving from academic work at UC Berkeley to commercial development at O'Reilly, which would lead to the major 3.0 release in 1994.
+This marked a significant transition in ViolaWWW development, moving from academic work at UC Berkeley to commercial development at O'Reilly, which would lead to the major 3.0 release in 1994. (See also [biographical section on O'Reilly work](PEI_YUAN_WEI_BIOGRAPHY.md#working-at-oreilly-media-19921995).)
 
 **Source**: [W3.org History: W3 News - September '92](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9209.html)
 
@@ -419,7 +421,7 @@ During this period, ViolaWWW was described as "real close to 100% HTML+ conforma
 ### April 10, 1995 — Version 3.3 Beta
 **Announcement**: April 17, 1995 on WWW-Talk mailing list
 
-Final known release of ViolaWWW. Self-contained single binary for easier installation.
+Final known release of ViolaWWW. Self-contained single binary for easier installation. (Note: Active development had effectively ended in March 1994; see [biographical section on end of development](PEI_YUAN_WEI_BIOGRAPHY.md#end-of-violawww-development-19941995).)
 
 #### Notable Features
 - **HTML 3.0 support**: Highly container-based, plus many extensions for richer formatting

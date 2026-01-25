@@ -9,12 +9,14 @@ ViolaWWW uses a hierarchical stylesheet system called **STG** that predates CSS 
 
 > **Note on the abbreviation**: The exact expansion of "STG" is not documented in the original sources. However, based on the system's data structure (which includes `STGGroup`, `STGMajor` with tag ID lists, and style assertions), it is most likely **Style Tag Group** — a group that contains style rules for HTML tags. The original author (Pei Y. Wei) used "STG" as the name for the stylesheet library and file format, but did not explicitly define what the acronym stands for in the documented sources.
 
-> **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. An early public example of the stylesheet language was posted to WWW-Talk on **October 22, 1993**, noting a prototype implementation in Viola. A longer “Stylesheet RFC” text is dated **Oct 23, 1993** in its own header and was later re-posted to WWW-Talk (Oct 25, 1994). This work predates CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
+> **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. The initial stylesheet proposal was written by **Rob Raisch** in summer 1993. After Rob Raisch left ORA, Pei Wei inherited the work, refined the design, created a prototype implementation in Viola, and finalized the implementation. An early public example of the stylesheet language was posted to WWW-Talk on **October 22, 1993**, noting a prototype implementation in Viola. A longer “Stylesheet RFC” text is dated **Oct 23, 1993** in its own header and was later re-posted to WWW-Talk (Oct 25, 1994). Pei Wei planned to create a more formal RFC and a stand-alone library for all W3 browsers. In October 1994, Pei Wei re-published the Stylesheet RFC, noting that the code was written as a library independent of viola, making it easy for other browsers to reuse. This work predates CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
 
 **References**:
-- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - early public prototype example (notes a prototype implementation in Viola)
-- [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html)
+- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - Pei Wei requests feedback on stylesheet syntax, notes prototype implementation in viola
+- [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal
 - [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- ~~[Stylesheet RFC (Oct 23, 1993)](http://pebble.berkeley.ora.com/vdoc/style/stylesheetRFC.txt)~~ - Original RFC text (link no longer available; content included in WWW-Talk archives above)
+- ~~[Sample stylesheet demo (Oct 1994)](http://pebble.berkeley.ora.com/vdoc/style/sample.html)~~ - Example working stylesheet demonstration (link no longer available)
 - [Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
 - Implementation: `src/libStyle/libstg.c`, `src/libStyle/libstg.h`
 
@@ -604,7 +606,7 @@ A boolean flag attribute. Purpose unknown — possibly related to whitespace han
 
 #### `numStyle=<style>` - List Numbering Style (NOT IMPLEMENTED)
 
-Intended to control list item numbering format. Defined in the [original Stylesheet RFC](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html):
+Intended to control list item numbering format. Defined in the [original Stylesheet RFC](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal:
 
 ```
 (OL
@@ -1248,9 +1250,11 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 ## See Also
 
 ### Primary Sources
-- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html)
-- [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html)
+- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - Pei Wei requests feedback on stylesheet syntax, notes prototype implementation in viola
+- [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal
 - [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- ~~[Stylesheet RFC (Oct 23, 1993)](http://pebble.berkeley.ora.com/vdoc/style/stylesheetRFC.txt)~~ - Original RFC text (link no longer available; content included in WWW-Talk archives above)
+- ~~[Sample stylesheet demo (Oct 1994)](http://pebble.berkeley.ora.com/vdoc/style/sample.html)~~ - Example working stylesheet demonstration (link no longer available)
 - [Web Archive: Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Chapter 14 of Viola documentation
 - [Web Archive: Viola Styles Directory](https://web.archive.org/web/20040427234619id_/http://www.xcf.berkeley.edu/~wei/viola/styles/) - Original `.stg` files from Pei Wei
 

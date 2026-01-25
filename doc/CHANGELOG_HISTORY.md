@@ -36,7 +36,7 @@ The exact release date is unclear in surviving public archives; **1991** is comm
 
 Pei-Yuan Wei officially announced his intention to create an X11 browser by extending his Viola system (a HyperCard-like media tool).
 
-The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility. In his follow-up message, Wei detailed the technical approach:
+The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility. In his follow-up message (December 13, 1991), which was a response to Tim Berners-Lee's announcement of a new browser architecture with a generic SGML parser, Wei detailed the technical approach and expressed interest in using the new CERN codebase for testing. Tim Berners-Lee had offered to provide a tar file of the alpha-test code, including the HTML SGML parser, and Wei responded that he was "very interested in using that code, and do the testing."
 
 - Used Viola as a frontend wrapper for the existing `www` line-mode browser
 - Made only "very few and minor changes" to `www.c`
@@ -261,6 +261,47 @@ Pei-Yuan Wei shared an early stylesheet description language (STG) and noted tha
 
 ---
 
+### February 23–25, 1994 — Version 3.0 Beta
+**Announcement**: February 25, 1994 on WWW-Talk mailing list  
+**README date**: February 23, 1994
+
+First beta release of ViolaWWW 3.0, introducing major new features and architectural improvements.
+
+#### Notable Features
+- **HTML+ support**: Container paragraphs, input forms, and tables (note: not yet exact and complete compliance with the currently evolving HTML+ standard).
+- **HTML+ extensions**: Additional extensions beyond the defined HTML+ standard, including columning and document insertion (client-side).
+- **Programmable objects**: Embeddable in-document and in-toolbar programmable Viola objects. A document can embed mini Viola applications (e.g., a chess board), or can cause mini apps to be placed in the toolbar.
+- **Motif front-end**: Introduction of the Motif GUI (`vw`), alongside the traditional X11 (non-Motif) version (`viola`).
+- **Simplified installation**: Single binary for easy installation, unlike the old ViolaWWW which required setup of various Viola application files.
+
+#### Technical Details
+- **Compilation**: Build process generates two binaries: `viola/src/viola/viola` and `viola/src/vw/vw`.
+- **Recommended binary**: The `vw` binary (ViolaWWW with Motif GUI) is the more polished front-end and should be used.
+- **Requirements**: 
+  - Viola requires X11R5
+  - Motif version requires a Motif toolkit library
+  - Uses modified libwww(2.14) that comes with ViolaWWW (don't use the libwww that didn't come with viola until changes are integrated into CERN's version)
+- **Supported platforms**: SunOS and Ultrix confirmed; compilation success stories and patches welcomed for other platforms.
+- **Sparc binary**: Supplied in the distribution.
+
+#### Availability
+- Source and binary (historical; unavailable today — `ftp.ora.com` no longer resolves): `ftp://ora.com/pub/www/viola`
+- Contact: `viola@ora.com` for feedback, bug reports, patches, and constructive criticisms
+
+#### Acknowledgements
+Pei-Yuan Wei acknowledged:
+- Tim Berners-Lee for inventing the WWW
+- Tim and the CERN crew for the libwww
+- All contributors on www-talk
+- Jon Blow (ORA) for the lexical analyzer used in viola
+- Scott Silvey (ORA) for creating the Motif front-end
+- Terry Allen (ORA) for lots of testing and help with SGML
+- Dale Dougherty and Tim O'Reilly for supporting the work on viola at ORA
+
+**Source**: [WWW-Talk 1994: ViolaWWW beta release is available](http://1997.webhistory.org/www.lists/www-talk.1994q1/0716.html)
+
+---
+
 ### March 23–24, 1994 — Version 3.1 Beta
 **Announcement**: March 24, 1994 on WWW-Talk mailing list  
 **README date**: March 23, 1994
@@ -353,6 +394,7 @@ Work is ongoing as of **2026**.
 | Early 1993 | — | Memory/resource leak fixes, preparing "Next Release" |
 | Apr–May 1993 | — | HMML discussions on WWW-Talk; About/Status screenshot lists key dates (not a confirmed release) |
 | Oct 22, 1993 | — | STG “Stylesheet Language” posted (prototype in Viola) |
+|| Feb 23–25, 1994 | 3.0 Beta | HTML+ support, Motif front-end, programmable objects |
 | Mar 23, 1994 | 3.1 Beta | Bug fixes, collapsible/expandable lists |
 | Apr 10, 1995 | 3.3 Beta | Final release |
 | Oct 17, 2025 | 4.0 (Revival) | 64-bit port, ongoing feature restoration |
@@ -365,6 +407,7 @@ Work is ongoing as of **2026**.
 - [Ancient Web Browsers: ViolaWWW internal "About/Status" page (screenshot)](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
 - [WWW-Talk Archives: Release of ViolaWWW 3.3](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)
 - [WWW-Talk Archives: viola update (with latest W3 library)](http://1997.webhistory.org/www.lists/www-talk.1992/0152.html)
+- [WWW-Talk Archives: ViolaWWW beta release is available (3.0 Beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/0716.html)
 - [WWW-Talk Archives: ViolaWWW Release (3.1 Beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
 - [Usenet Archives: Viola Announcement (Apr 1991)](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 - [Olde Viola Montage (archived): Viola 0.8 (1991)](https://web.archive.org/web/19990830034431/http://viola.org/vintage/montage.html)

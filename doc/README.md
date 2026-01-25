@@ -127,6 +127,18 @@ Topics covered:
 - Applying styles to HTML elements
 - Layout control (margins, padding, positioning)
 
+### [PANELS_REFERENCE.md](PANELS_REFERENCE.md)
+Panels and column layout — HPANE, hpane, COL2/COL3/COL4, sidebar.
+
+Topics covered:
+- **HPANE** — HTML columns formatter (attributes, content, layout)
+- **hpane** — Viola widget class (westToEast, UI usage)
+- **COL2, COL3, COL4** — multi-column formatters; **DIR** (two-column)
+- **LINK rel=sidebar** — document sidebar panel (ARG=ratio)
+- Relationships with INPUT, FIGURE, SECTION, STG
+- Implementation notes (postponed geometry, config/resize)
+- Example: testHPane.html; references (Viola book, code)
+
 ### [FOSI_REFERENCE.md](FOSI_REFERENCE.md)
 **FOSI** (Formatting Output Specification Instance) — SGML-based stylesheet system (partial implementation).
 

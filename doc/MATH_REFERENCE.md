@@ -302,7 +302,7 @@ The math engine uses these internal tokens (not directly accessible in HTML):
 - **Font**: Uses system font; no special mathematical font
 - **Colors**: Inherits from parent container
 - **Borders**: Optional red debug borders (controlled by `drawBoxP` flag)
-- **Background Color**: By default, `<MATH>` elements have a red background (`BGColor="red"` in `src/viola/objs.c`). This appears to be a debugging feature, as the original author's website screenshots (e.g., https://web.archive.org/web/20051018065648id_/http://www.xcf.berkeley.edu/~wei/viola/img3/math.jpg) show mathematical expressions without colored backgrounds. The background color can be overridden via stylesheets or by setting the `BGColor` attribute.
+- **Background Color**: By default, `<MATH>` elements have no background color (`BGColor=""` in `src/viola/objs.c`), which means they inherit the background from the parent container. The original red background (`BGColor="red"`) was removed in ViolaWWW 4.0, as it appears to have been a debugging feature. This is confirmed by the original author's website screenshots (e.g., https://web.archive.org/web/20051018065648id_/http://www.xcf.berkeley.edu/~wei/viola/img3/math.jpg) which show mathematical expressions without colored backgrounds. The background color can be set via stylesheets or by setting the `BGColor` attribute.
 
 ---
 

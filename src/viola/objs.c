@@ -6419,10 +6419,10 @@ static char _slotValue_HTML_math1[] = "HTML_math";
 static char _slotValue_HTML_math2[] = {
 #include "embeds/HTML_math_script.v.h"
 };
-static char _slotValue_HTML_math3[] = "white";
-static char _slotValue_HTML_math4[] = "red";
-static char _slotValue_HTML_math5[] = "200";
-static char _slotValue_HTML_math6[] = "200";
+static char _slotValue_HTML_math3[] = "";  /* FGColor - foreground/text color (empty = default) */
+static char _slotValue_HTML_math4[] = "";  /* BGColor - background color (empty = default/transparent) */
+static char _slotValue_HTML_math5[] = "200"; /* width - default width in pixels */
+static char _slotValue_HTML_math6[] = "200"; /* height - default height in pixels */
 /* END OF FILE */
 
 static SlotStruct objDesc_HTML_math[] = {

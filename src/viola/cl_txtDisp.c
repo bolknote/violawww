@@ -699,15 +699,25 @@ long int meth_txtDisp_eraseCursor(VObj* self, Packet* result, int argc, Packet a
 
 long int meth_txtDisp_expose(VObj* self, Packet* result, int argc, Packet argv[])
 {
+    Window w = GET_window(self);
+    int retval;
+    
     /*XXX WATCH OUT. This is cheating and not calling super methods.
             meth_txt_expose(self, result, argc, argv);
     */
     GLPrepareObjColor(self);
     if (argc == 0) {
-        return tfed_expose(self, 0, 0, GET_width(self), GET_height(self));
+        retval = tfed_expose(self, 0, 0, GET_width(self), GET_height(self));
     } else {
-        return tfed_expose(self, argv[0].info.i, argv[1].info.i, argv[2].info.i, argv[3].info.i);
+        retval = tfed_expose(self, argv[0].info.i, argv[1].info.i, argv[2].info.i, argv[3].info.i);
     }
+    
+    /* Draw border if set */
+    if (w && GET_border(self)) {
+        GLDrawBorder(w, 0, 0, GET_width(self) - 1, GET_height(self) - 1, GET_border(self), 1);
+    }
+    
+    return retval;
 }
 
 long int meth_txtDisp_freeSelf(VObj* self, Packet* result, int argc, Packet argv[])

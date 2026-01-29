@@ -328,16 +328,55 @@
 			set("label", "");
 		}
 
-/*		tagPtr = STG_tagPtr("MATH");
-		if (tagPtr) {
-			i = STG_attr(tagPtr, "BGColor");
-			if (i) set("BGColor", i);
-			i = STG_attr(tagPtr, "FGColor");
-			if (i) set("FGColor", i);
-			i = STG_attr(tagPtr, "BDColor");
-			if (i) set("BDColor", i);
+		/* Check if element has a style attribute for minor matching */
+		styleAttr = 0;
+		if (savedStyleAttr) {
+			styleAttr = savedStyleAttr;
 		}
-*/
+		
+		/* Get tag pointer with or without minor */
+		if (styleAttr) {
+			tagPtr = STG_tagPtr("MATH", "", styleAttr);
+		} else {
+			tagPtr = STG_tagPtr("MATH");
+		}
+		
+		if (tagPtr) {
+			/* Use STG_attrEx if styleAttr is set (supports minors), else use STG_attr */
+			if (styleAttr) {
+				i = STG_attrEx(tagPtr, "BGColor");
+				if (i) set("BGColor", i);
+				i = STG_attrEx(tagPtr, "FGColor");
+				if (i) set("FGColor", i);
+				i = STG_attrEx(tagPtr, "BDColor");
+				if (i) set("BDColor", i);
+				i = STG_attrEx(tagPtr, "border");
+				if (i) {
+					/* border can be numeric (thickness) or style name */
+					/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+					if (i != "0") {
+						set("border", 6);
+						border = 1;
+					}
+				}
+			} else {
+				i = STG_attr(tagPtr, "BGColor");
+				if (i) set("BGColor", i);
+				i = STG_attr(tagPtr, "FGColor");
+				if (i) set("FGColor", i);
+				i = STG_attr(tagPtr, "BDColor");
+				if (i) set("BDColor", i);
+				i = STG_attr(tagPtr, "border");
+				if (i) {
+					/* border can be numeric (thickness) or style name */
+					/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+					if (i != "0") {
+						set("border", 6);
+						border = 1;
+					}
+				}
+			}
+		}
 		SGMLMathFormater(tok, data, tokCount);
 		set("width", get("width"));
 		set("height", get("height"));
@@ -400,7 +439,12 @@
 			tagID = arg[2];
 		break;
 		case "BORDER":
-			border = 1;
+			/* border can be numeric (thickness) or style name */
+			/* For now, if border is set to non-zero, use BORDER_BORDER (6) */
+			if (arg[2] && arg[2] != "0") {
+				border = 1;
+				set("border", 6);
+			}
 		break;
 		case "COMPACT":
 			compact = 1; 	/* NOT USED YET */
@@ -441,6 +485,11 @@
 	case "findTop":
 	case "findForm":
 		return send(parent(), arg[0]);
+	break;
+	case "setStyleAttr":
+		/* Save style attribute value for later use in D */
+		savedStyleAttr = arg[1];
+		return;
 	break;
 	case "init":
 		usual();

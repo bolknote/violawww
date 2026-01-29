@@ -175,6 +175,10 @@ static attr line_attr[] = {{"HINT"}, {"ID"}, {"NAME"}, {0}};
 #undef HTML_LINE_ATTRIBUTES
 #define HTML_LINE_ATTRIBUTES 3
 
+static attr math_attr[] = {{"BORDER"}, {"COMPACT"}, {"ID"}, {"MAXWIDTH"}, {"MINWIDTH"}, {"STYLE"}, {0}};
+#undef HTML_MATH_ATTRIBUTES
+#define HTML_MATH_ATTRIBUTES 6
+
 static attr link_attr[] = {{"ARG"}, {"HREF"}, {"ID"}, {"REL"}, {"REV"}, {0}};
 
 static attr listing_attr[] = {{"BORDER"}, {"FOLD"}, {"HREF"}, {0}};
@@ -462,7 +466,7 @@ static HTTag tags[] = {
     {"LINK", link_attr, HTML_LINK_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"LISTING", listing_attr, HTML_LISTING_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"LIT", no_attr, 0, SGML_LITTERAL, 0, 0},
-    {"MATH", no_attr, 0, SGML_MIXED, 0, 0},
+    {"MATH", math_attr, HTML_MATH_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"MENU", menu_attr, HTML_MENU_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"META", meta_attr, HTML_META_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"MH", mh_attr, HTML_MH_ATTRIBUTES, SGML_MIXED, 0, 0},

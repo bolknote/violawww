@@ -13,6 +13,8 @@ This document describes the **dynamic toolbar** feature in ViolaWWW — the abil
 - [Related Features](#related-features)
 - [References](#references)
 
+<img width="636" height="849" alt="" src="https://github.com/user-attachments/assets/fa9e88e4-6503-4d5b-abac-e46b856f4471" />
+
 ---
 
 ## Overview

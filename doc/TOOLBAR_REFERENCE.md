@@ -367,6 +367,21 @@ From the Viola book (Chapter 9):
 
 > "Plus, the extensibility simply lends a lot more flexibility in designing more sophisticated applications. For example: customized order forms, dynamic and continuously updating stock market quote monitors, interactive games, front-end to remote back-ends, etc."
 
+### Archived Demo: Continuously Updating Toolbar Tool
+
+The archived ViolaWWW demo pages include a concrete example of a **toolbar tool** that maintains a continuous network connection and updates itself in the toolbar (a “monitor bar” / activity monitor concept):
+
+- [Embedding Applets in the ToolBar — monitorBarDemo.html (Wayback)](https://web.archive.org/web/20040307144710id_/http://www.xcf.berkeley.edu/~wei/viola/vw/monitorBarDemo.html)
+
+Key takeaways for this repository’s dynamic toolbar implementation:
+
+- A toolbar tool does **not** have to be a `txtButton`: the demo describes a toolbar-installed applet implemented as a `field` object with a `socket` child (i.e., it’s a live, updating widget).
+- The mechanism is still the same: a document uses a “tool” link to a `.v` script, which is fetched, instantiated, and installed into the toolbar via `LINK REL="tool"`.
+
+Related (non-toolbar) demo page showing the same “continuously updating field” concept:
+
+- [Continuously Updating Field — monitorDemo.html (Wayback)](https://web.archive.org/web/20040302093724id_/http://www.xcf.berkeley.edu/~wei/viola/vw/monitorDemo.html)
+
 ---
 
 ## Related Features

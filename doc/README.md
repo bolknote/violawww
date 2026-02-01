@@ -184,6 +184,16 @@ Historical sources:
 
 ## Browser Interface
 
+### [TOOLBAR_REFERENCE.md](TOOLBAR_REFERENCE.md)
+**Dynamic Toolbar** — document-engaged tool applets and custom buttons.
+
+Topics covered:
+- `<LINK REL="tool">` — adding custom buttons to the browser toolbar
+- Document-engaged applets (appear/disappear with the document)
+- Creating toolbar objects (`.v` files)
+- Implementation details and message flow
+- Standard HTML 3.0 LINK relationships (Home, Next, Previous, etc.)
+
 ### [CATALOG.md](CATALOG.md)
 Personal URL Catalog — a hierarchical bookmark organizer.
 
@@ -332,6 +342,7 @@ ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered
 | TTY (external processes) | External helper processes; IPC |
 | VPLOT (3D visualization) | WebGL, Three.js |
 | CHANGED (revision tracking) | Track Changes (Word), Git diff |
+| Dynamic Toolbar (`<LINK REL="tool">`) | Browser extensions, per-site actions |
 
 Modern enhancements (TLS, transliteration, Wayback, etc.) are documented in the main [README.md](../README.md) under “Modern Enhancements.”
 

@@ -424,8 +424,6 @@ The [W3C HTML 3.0 specification](https://www.w3.org/MarkUp/html3/dochead.html) r
 
 ### Viola Book (Archived)
 
-- [Viola book directory listing (Wayback snapshot)](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/)
-- **Wayback snapshot directory listing**: [web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/)
 - **Particularly relevant files (Wayback snapshot)**:
   - [Chapter 1](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html) — describes toolbar-plugged tools appearing/disappearing with the document
   - [Chapter 9](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html) — feature description and screenshot note about toolbar applets linked to the document

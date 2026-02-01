@@ -146,13 +146,21 @@ Returns an object reference by name.
 
 ---
 
-### loadObjFile(filename)
-Loads objects from a `.v` file.
+### loadObjFile(path [, filename])
+Loads objects from a `.v` object file.
+
+In the current codebase this is commonly called with **two arguments**:
+
+- `loadObjFile(path, filename)` where `path` is a directory and `filename` is the `.v` file name.
 
 **Parameters:**
-- `filename` (string) - path to the object file
+- `path` (string) - directory path (or base path) where the `.v` file lives
+- `filename` (string, optional) - `.v` file name within `path`
 
-**Returns:** (int) number of objects loaded, -1 on error
+**Returns:** (int) number of objects loaded on success, `0` on failure, `-1` on error
+
+**Notes:**
+- The loader applies security rules to prevent privilege escalation; objects loaded from remote/untrusted contexts are forced untrusted.
 
 ---
 
@@ -249,9 +257,11 @@ Loads a document from URL and saves it to a temporary file.
 **Parameters:**
 - `url` (string) - document URL
 
-**Returns:** (string) path to temporary file
+**Returns:** (string) path to temporary file on success, `0` on failure
 
-**Note:** The user must delete the temporary file after use.
+**Notes:**
+- The temporary filename is generated in a secure temp directory; the file extension (if any) is derived from the URL.
+- It is the caller's responsibility to remove the temporary file after use. In embedded scripts this is typically done via `send("wwwSecurity", "rmTmpFile", localFile)` rather than calling raw file deletion directly.
 
 ---
 
@@ -263,7 +273,9 @@ Loads and parses an HTML document.
 - `parentForBuiltObjs` (object) - parent object for created objects
 - `width` (int) - width
 
-**Returns:** (object) document object
+**Returns:** (object) document object on success, `0` on failure
+
+**Note:** This operation may trigger a security prompt (see source: `helper_buildingHTML()`).
 
 ---
 
@@ -276,7 +288,9 @@ Sends a POST request.
 - `width` (int) - width
 - `postData` (string) - data to send
 
-**Returns:** (object) document object
+**Returns:** (object) document object on success, `0` on failure
+
+**Note:** This operation may trigger a security prompt (see source: `helper_buildingHTML()`).
 
 ---
 
@@ -289,7 +303,11 @@ Sends a SUBMIT request.
 - `width` (int) - width
 - `submitData` (string) - data to send
 
-**Returns:** (object) document object
+**Returns:** (object) document object on success, `0` on failure
+
+**Notes:**
+- Marked as "NOT YET WORKING" in the source code; treat as experimental.
+- This operation may trigger a security prompt (see source: `helper_buildingHTML()`).
 
 ---
 
@@ -1166,7 +1184,9 @@ Gets the value of an environment variable.
 **Parameters:**
 - `name` (string) - variable name
 
-**Returns:** (string) variable value
+**Returns:** (string) variable value on success, `""` on failure
+
+**Note:** Reading environment variables may trigger a security prompt.
 
 ---
 
@@ -1294,7 +1314,11 @@ Loads file contents.
 **Parameters:**
 - `fileName` (string) - file path
 
-**Returns:** (string) file contents
+**Returns:** (string) file contents on success, `""` on failure
+
+**Notes:**
+- Paths with `~` are expanded.
+- Reading local files may trigger a security prompt.
 
 ---
 
@@ -1307,6 +1331,10 @@ Saves data to a file.
 
 **Returns:** (int) 1 on success, 0 on error
 
+**Notes:**
+- Paths with `~` are expanded.
+- Writing local files may trigger a security prompt.
+
 ---
 
 ### deleteFile(fileName)
@@ -1315,7 +1343,11 @@ Deletes a file.
 **Parameters:**
 - `fileName` (string) - file path
 
-**Returns:** (int) 0 on success
+**Returns:** (int) `0` on success, `-1` on error
+
+**Notes:**
+- Deleting non-temp files may trigger a security prompt.
+- Temp paths such as `/tmp/`, `/var/tmp/`, and `/var/folders/` are allowed without a prompt (with basic path traversal blocking).
 
 ---
 
@@ -1325,7 +1357,9 @@ Creates a temporary file.
 **Parameters:**
 - `prefix` (string, optional) - file name prefix
 
-**Returns:** (string) path to temporary file
+**Returns:** (string) path to temporary file on success, `""` on error
+
+**Note:** The `prefix` argument is currently ignored; the temp filename is generated internally.
 
 ---
 
@@ -1336,6 +1370,11 @@ Checks file accessibility.
 - `filePath` (string) - file path
 
 **Returns:** (string) full path on success, "" on error
+
+**Notes:**
+- Paths with `~` are expanded.
+- This checks readability (`R_OK`) via `access()`.
+- Checking local files may trigger a security prompt.
 
 ---
 
@@ -2272,16 +2311,6 @@ Displays a message in the active help field.
 - `message` (string, optional) - message
 
 **Returns:** (int) 1
-
----
-
-### accessible(filePath)
-Checks file accessibility.
-
-**Parameters:**
-- `filePath` (string) - file path
-
-**Returns:** (string) full path on success, "" on error
 
 ---
 

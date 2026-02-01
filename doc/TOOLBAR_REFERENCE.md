@@ -1,5 +1,8 @@
 # Dynamic Toolbar Reference
 
+> **Documentation created in: ViolaWWW 4.0**  
+> This document describes the **dynamic toolbar** feature in ViolaWWW: document-engaged tool applets added via HTML `<LINK REL="tool">` and implemented as Viola `.v` objects. It is based on the original ViolaWWW implementation, the Viola book, and archived examples.
+
 This document describes the **dynamic toolbar** feature in ViolaWWW — the ability to have document-specific toolbar objects engaged while a document is being viewed, using the HTML `<LINK>` tag.
 
 ## Contents

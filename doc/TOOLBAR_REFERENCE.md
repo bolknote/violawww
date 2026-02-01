@@ -19,7 +19,7 @@ This document describes the **dynamic toolbar** feature in ViolaWWW — the abil
 
 ViolaWWW includes **document-engaged tool applets** — toolbar objects that can be engaged per-document (appear while a document is being viewed, and be removed when navigating away). This allows documents to provide their own navigational aids or custom functionality directly in the browser toolbar.
 
-As described in the Viola book (Chapter 9: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html`):
+As described in the Viola book ([Chapter 9](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html)):
 
 > "Dynamic toolbar: document engaged tool applets (ie: navigational aids)."
 >
@@ -42,11 +42,11 @@ The same chapter also describes the per-document nature of these tools:
 4. When the document is **displayed**, it adds the recorded tools to the toolbar container (by sending `addTool` to its parent, which routes to the toolbar manager).
 5. When navigating away, the document receives `VIEW_OFF` and removes the tools from the toolbar container.
 
-From the Viola book (Chapter 1: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html`):
+From the Viola book ([Chapter 1](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html)):
 
 > "The following picture shows a 'bookmark tool' that acts as a mini table of contents for the page. In this case, the bookmark is linked to the document (by using the `<LINK>` tag from HTML 3.0), and the bookmark will appear and disappear with the document."
 
-The Viola book is archived on the Wayback Machine (directory listing snapshot: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/`).
+The Viola book is archived on the Wayback Machine ([directory listing snapshot](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/)).
 
 ---
 
@@ -60,13 +60,13 @@ The Viola book is archived on the Wayback Machine (directory listing snapshot: `
 </HEAD>
 ```
 
-The Viola book calls out toolbar objects via `LINK REL="tool"` in its LINK tag reference (Chapter 11 links: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_links.html`):
+The Viola book calls out toolbar objects via `LINK REL="tool"` in its LINK tag reference ([Chapter 11 links](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_links.html)):
 
 ```html
 <LINK REL="tool" HREF="tool_violaTOC.v">
 ```
 
-The book archive also includes a concrete example toolbar tool object file: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/tool_violaTOC.v`.
+The book archive also includes a concrete example toolbar tool object file: [`tool_violaTOC.v`](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/tool_violaTOC.v).
 
 ### Multiple Tools
 
@@ -149,11 +149,11 @@ send("www", "tear");
 ### Practical Constraints
 
 - A toolbar tool should expect the toolbar container to send it `visible 1` / `visible 0` when adding/removing it (see `www_script107.v`). Many tools implement a `case "visible"` handler for this.
-- The Viola book notes that the toolbar height is fixed/non-adjustable, so tools should be designed to fit within the toolbar region (see Chapter 13 “The Dynamic Toolbar”: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html`).
+- The Viola book notes that the toolbar height is fixed/non-adjustable, so tools should be designed to fit within the toolbar region (see Chapter 13 “[The Dynamic Toolbar](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html)”).
 
 ### `VIEW_ON` / `VIEW_OFF` for Applets
 
-The Viola book recommends that applets be sensitive to `VIEW_ON` and `VIEW_OFF` so they can stop timers/updates when not in view (see Chapter 13: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html`). In this repository, `VIEW_OFF` is also used to detach document-engaged tools from the toolbar when navigating away.
+The Viola book recommends that applets be sensitive to `VIEW_ON` and `VIEW_OFF` so they can stop timers/updates when not in view (see [Chapter 13](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html)). In this repository, `VIEW_OFF` is also used to detach document-engaged tools from the toolbar when navigating away.
 
 ---
 
@@ -420,13 +420,13 @@ The [W3C HTML 3.0 specification](https://www.w3.org/MarkUp/html3/dochead.html) r
 ### Viola Book (Archived)
 
 - [Viola book directory listing (Wayback snapshot)](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/)
-- **Wayback snapshot directory listing**: `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/`
+- **Wayback snapshot directory listing**: [web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/)
 - **Particularly relevant files (Wayback snapshot)**:
-  - `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html` — describes toolbar-plugged tools appearing/disappearing with the document
-  - `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html` — feature description and screenshot note about toolbar applets linked to the document
-  - `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_links.html` — LINK tag note that `LINK REL="tool"` is for toolbar objects
-  - `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html` — “The Dynamic Toolbar” section (constraints, examples)
-  - `https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/tool_violaTOC.v` — concrete example of a toolbar tool object
+  - [Chapter 1](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html) — describes toolbar-plugged tools appearing/disappearing with the document
+  - [Chapter 9](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html) — feature description and screenshot note about toolbar applets linked to the document
+  - [Chapter 11 links](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_links.html) — LINK tag note that `LINK REL="tool"` is for toolbar objects
+  - [Chapter 13](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) — “The Dynamic Toolbar” section (constraints, examples)
+  - [`tool_violaTOC.v`](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/tool_violaTOC.v) — concrete example of a toolbar tool object
 
 ### W3C Documentation
 

@@ -56,6 +56,13 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
   - **Announcement**: 1991-12-13 (technical details) on WWW-Talk
 - **What the sources say**
   - Pei-Yuan Wei announced an intention to create an X11 browser by extending the Viola system, described the initial implementation as “a one-night hack”, and discussed reusing/connecting existing WWW code.
+- **Selected technical details recorded in the 1991-12-13 message**
+  - Viola used as a frontend wrapper for the existing `www` line-mode browser.
+  - Only “very few and minor changes” were made to `www.c`.
+  - An X11 interface displayed `www` output in a scrollable text field.
+  - Reference numbers were visually highlighted; references and commands became clickable / keyboard-accessible.
+  - Buttons corresponded to `www` commands (e.g., Back, Help).
+  - Future direction: “embed viola objects … into html files” (GUI/programming objects in documents).
 - **Sources**
   - [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html)
   - [WWW-Talk 1991: X Browser](https://lists.w3.org/Archives/Public/www-talk/1991NovDec/0023.html)
@@ -74,9 +81,12 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 
 - **Evidence**
   - **Announcement**: WWW-Talk post dated 1992-01-24
-  - Includes an explicit quote: “ViolaWWW works great…”
+- **What the source says (selected)**
+  - “ViolaWWW works great! It has impressed us here.”
+  - It was “fine on decstation and apollo displays” (and one crash was attributed to an HP X server problem).
+  - Performance note: “a search in the CERN phone book seems instantaneous (when done at CERN).”
 - **Source**
-  - [WWW-Talk 1992: “Viola - WWW interface”](http://1997.webhistory.org/www.lists/www-talk.1992/0014.html)
+  - [WWW-Talk 1992: “Viola - WWW interface”](http://1997.webhistory.org/www.lists/www-talk.1992/0002.html)
 
 ---
 
@@ -84,14 +94,26 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 
 - **Evidence**
   - **Version string (known by 1992-04-04)**: `Viola=2.0.4, date=April 4, 1992` (from surviving source)
+  - **Compilation report**: “problem yacc’ing violaWWW” dated 1992-03-21 (Sun/SPARC)
   - **Review**: Tim Berners-Lee “Quick look” review dated 1992-04-11
   - **W3 News**: April 1992 release note about a search panel issue and fix
   - **Artifact**: “About/Status” screenshot lists “March 9 to April 20, 1992” as CERN test window (see later “About/Status screenshot” entry)
 - **What the sources support**
   - ViolaWWW circulated to the WWW team at CERN for testing during this period.
+  - Public compilation issues were reported by 1992-03-21, suggesting circulation outside CERN by late March 1992.
   - A particular April 1992 build lacked a search panel and was not generally distributed; a corrected version followed.
+- **Selected details captured in the 1992-04-11 review (Tim Berners-Lee)**
+  - Multifont text display; links highlighted with “button” boxes (single-click jump).
+  - Single-window operation with a “clone” facility; bookmark facility; online help buttons.
+  - Remote index searching via a bottom input field; source viewer for HTML markup.
+  - Navigation behavior at that time: “Up” acted like a destructive Back; “Left/Right” traversed history non-destructively.
+  - “Fuzzy clicking”: clicking near a button could trigger the action.
+  - Performance commentary: multifont version slower than an older monofont “1.0” reference; reviewer considered multifont worth the trade-off.
+  - UI note: window looked “a little cluttered”; suggestion to move the “ViolaWWW” title to the window title bar.
+- **Known issues reported in early 1992 testing notes**
+  - Stability: reviewer noted crashes when closing a clone window or the main window.
 - **Sources**
-  - [WWW-Talk 1992: compilation issues (“problem yacc’ing violaWWW”)](http://1997.webhistory.org/www.lists/www-talk.1992/0064.html)
+  - [WWW-Talk 1992: “problem yacc’ing violaWWW”](http://1997.webhistory.org/www.lists/www-talk.1992/0035.html)
   - [W3.org: “A quick look at ViolaWWW” (1992-04-11)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html)
   - [W3.org History: “Spring releases” (April 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9204.html)
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
@@ -107,11 +129,19 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
   - **Review**: Tim Berners-Lee updated review dated 1992-05-15
 - **What the sources support**
   - A widely described “beta test” version existed by mid-May 1992; TBL reviewed it and recorded both features and limitations.
+- **Selected features/behavior noted in the 1992-05-15 review**
+  - Multifont support; “clone” facility; bookmarks and history list.
+  - Index search facility (bottom input field) and bottom-row icons for History/Printing/Source Viewer.
+  - Hidden documentation (e.g., globe icon for Viola docs; question-mark icon for help).
+  - Help caching behavior: local copies preferred; remote help cached in `/usr/tmp`.
+  - Cut-and-paste was noted as not working yet (selection could be made and shown underlined).
+  - “Font hang” mentioned as a possible startup issue on some systems (example: OpenWindows).
 - **Sources**
   - [W3.org: “An updated quick look at ViolaWWW” (1992-05-15)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review.html)
   - [W3.org: Installation instructions (May 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Installation.html)
   - [CERN mirror: updated quick look](https://info.cern.ch/hypertext/Viola/Review.html)
   - [CERN mirror: installation instructions](https://info.cern.ch/hypertext/Viola/Installation.html)
+  - [CERN: Status of ViolaWWW](https://info.cern.ch/hypertext/WWW/Viola/Status.html)
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
   - [Ancient Web Browsers: About/Status page screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
 
@@ -144,6 +174,11 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
   - **README date**: 1992-07-27
   - **Archive snapshot**: 1992-07-30 (`viola920730.tar.Z`, `WWWViolaApps_920730.tar.Z`)
   - **CERN status page**: lists current release `920730` and X11R4+ requirement
+- **What the 1992-07-15 announcement says (selected)**
+  - Uses “the latest W3 library (extracted from the LineMode Browser 1.2h)”.
+  - Binaries and sources were offered via Berkeley FTP (decstation, sparc, and a source archive).
+  - Reliability and network behavior: “slightly evermore reliable” and “gentler … in regards to network traffic”.
+  - Notes an open issue: the “font metrix problem” (“eating up lots of CPU doing nothing”).
 - **Sources**
   - [WWW-Talk 1992: viola update (with latest W3 library)](http://1997.webhistory.org/www.lists/www-talk.1992/0152.html)
   - [W3.org History: `WWWViolaApps_920730.tar.Z`](https://www.w3.org/History/1992/WWWViolaApps_920730.tar.Z)
@@ -166,8 +201,8 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
   - **Announcement**: reports/discussion on WWW-Talk (Oct 1992) about memory leaks
   - **Announcement**: 1992-11-04 note about scrollable regions for `LISTING`
 - **Sources**
-  - [WWW-Talk 1992: “WWW/VIOLA ‘Memory leak’ ?”](http://1997.webhistory.org/www.lists/www-talk.1992/0212.html)
-  - [WWW-Talk 1992: “HTML” (scrollable region mention)](http://1997.webhistory.org/www.lists/www-talk.1992/0252.html)
+  - [WWW-Talk 1992: “WWW/VIOLA ‘Memory leak’ ?”](http://1997.webhistory.org/www.lists/www-talk.1992/0204.html)
+  - [WWW-Talk 1992: “HTML” (scrollable region mention)](http://1997.webhistory.org/www.lists/www-talk.1992/0266.html)
 
 ---
 
@@ -259,6 +294,17 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 - **Evidence**
   - **README date**: 1994-02-23
   - **Announcement**: 1994-02-25 (WWW-Talk)
+- **Selected details from the announcement/README excerpt**
+  - Notable features listed in the post include:
+    - HTML+ support (container paragraphs, input forms, tables; not yet exact/complete compliance).
+    - Additional extensions (e.g., column formatting and document insertion, client-side).
+    - Embeddable programmable Viola objects (in-document and in-toolbar).
+    - Motif front-end; X11 (non-Motif) version also available.
+    - Single-binary installation (compared to older multi-file setups).
+  - Build note: `BUILD` generates two binaries: `viola/src/viola/viola` and `viola/src/vw/vw`; recommendation to use `vw` as the more polished front-end at that time.
+  - Requirements: X11R5; Motif toolkit library for the Motif front-end.
+  - Networking library note: the included libwww “comes with ViolaWWW” and is modified; do not use an external libwww until changes are integrated upstream.
+  - Contact and acknowledgements are included in the announcement.
 - **Source**
   - [WWW-Talk 1994: “ViolaWWW beta release is available”](http://1997.webhistory.org/www.lists/www-talk.1994q1/0716.html)
 
@@ -267,14 +313,26 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 - **Evidence**
   - **README date**: 1994-03-23
   - **Announcement**: 1994-03-24 (WWW-Talk)
+- **Selected details (from announcement and preserved change notes)**
+  - Release note: “Another beta release of Viola is now available… Aside from the numerous bug fixes, its got a working prototype of the collapsible/expandable :-)”
+  - The `FOLD` attribute proposal suggests a foldable list attribute (with initial fold state) and a `LABEL` attribute to describe folded content.
+  - The repository’s `src/vw/changes` file (from the 1994-era `vw` code) records UI/performance-focused changes such as:
+    - Help hook for sending messages to `vw`’s active help field (e.g., HTTP progress reports).
+    - Toolbar frame under the menu bar; navigation actions moved to toolbar icons.
+    - Improved messaging between Motif front-end and Viola (string-based → object-pointer-based), improving scrolling speed.
+    - History mechanism fixes; busy/idle cursor indicators.
 - **Sources**
   - [WWW-Talk 1994: ViolaWWW Release (3.1 beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
   - [WWW-Talk 1994: FOLD attribute proposal](http://1997.webhistory.org/www.lists/www-talk.1994q1/1027.html)
+  - `src/vw/changes` (repository file)
 
 ### 1994-05-18 to 1994-05-20 — Cross-platform testing initiative
 
 - **Evidence**
   - **Announcement**: May 1994 WWW-Talk posts about platform testing accounts and status
+- **Selected details from the threads**
+  - Pei Wei requested guest testing accounts (e.g., AIX R6000, DEC Alpha, HP “Snake”, SGI) to validate portability and provide updated executables.
+  - Discussion included interest in multi-threaded libwww / “multiple independent … HTTP operations” to allow interacting with one page while another loads.
 - **Sources**
   - [WWW-Talk 1994: testing accounts request](http://1997.webhistory.org/www.lists/www-talk.1994q2/0597.html)
   - [WWW-Talk 1994: thanks for testing accounts](http://1997.webhistory.org/www.lists/www-talk.1994q2/0626.html)

@@ -41,7 +41,8 @@ In early May 1991, at least one public follow-up raised concerns about Paul Heck
 
 Wei was on the verge of an independent invention of networked hypertext. The question he had to answer was how to transport his Viola pages across the Internet. *"And that's when I read Tim's e-mail about the World Wide Web,"* he explains. *"The URL was very, very clever, it was perfectly what I needed."*[^8]
 
-At that time, the Web, Gopher, and WAIS were the three nascent information systems on the Internet. The Web made the most sense due to its concise and extensible URL and HTML concepts. HTML was initially text-only. Wei downloaded and ran the text-based browser "WorldWideWeb" (with numbered links that required typing numbers to follow). He had access to Tim Berners-Lee's NeXTSTEP browser, but lacked a NeXT workstation, so his initial experience with the Web was through the line-mode browser.[^14]
+At that time, the Web, Gopher, and WAIS were the three nascent information systems on the Internet. The Web made the most sense due to its concise and extensible URL and HTML concepts. HTML was initially text-only. Wei downloaded and ran the line-mode browser ("www"), a text-based browser with numbered links, written at CERN by student Nicola Pellow. He had access to Tim Berners-Lee's NeXTSTEP browser, but lacked a NeXT workstation, so his initial experience with the Web was through the line-mode browser.[^14][^22]
+
 
 ### Correspondence with Tim Berners-Lee (December 1991)
 
@@ -119,9 +120,9 @@ ViolaWWW is a discontinued web browser developed based on the Viola language. Re
 
 - **Probably the third web browser ever created**, after Tim Berners-Lee's WorldWideWeb and the Line Mode Browser (1991).[^9]
 - **The most popular browser in 1992**, before being surpassed by Mosaic in 1993.[^9]
-- Recommended by CERN (where the WWW was invented) as the best browser at the time.[^4]
+- Recommended by CERN (where the WWW was invented) as the best browser at the time.[^4][^22]
 - Mentioned in Ed Krol's book "Whole Internet User's Guide and Catalog" (1992).[^4]
-- **Direct inspiration for Mosaic**: When Marc Andreessen was shown ViolaWWW, it helped inspire him to start an effort at NCSA that would become Mosaic.[^7]
+- **Direct inspiration for Mosaic**: When Marc Andreessen was shown ViolaWWW, it helped inspire him to start an effort at NCSA that would become Mosaic. Tim Berners-Lee also notes that Andreessen tried Tony Johnson's "Midas" before Mosaic was written at NCSA.[^7][^22]
 - Became a model for Mosaic, Netscape Navigator, Internet Explorer, Firefox, Chrome.[^3][^4]
 - Involved in patent disputes (Eolas vs. Microsoft, 1999–2012): recognized as "prior art", which saved the web from monopoly on interactivity.[^4][^5] Wei had embedded objects working in Viola by December 1992, and in May 1993 demonstrated the browser with interactive 3D plotting objects to Sun Microsystems.[^11] Wei personally informed Michael Doyle (Eolas CEO) about Viola as prior art and provided him with documentation and source code pointers, but Doyle mentioned only Cello and Mosaic to the Patent Office — not Viola, which predated both. During the trial, Wei was not permitted to demonstrate Viola to the jury, as the judge ruled it would be "too prejudicial" against Eolas.[^11]
 
@@ -187,3 +188,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^19]: [WWW-TALK Archives: ViolaWWW Version 3.3 Beta (Apr 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)
 [^20]: [WWW-TALK Archives: Re: Java, Viola, and prior art (Aug 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
 [^21]: [WWW-TALK Archives: Stylesheet Language (Oct 1993)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0266.html)
+[^22]: [Tim Berners-Lee FAQ: "What were the first WWW browsers?"](https://www.w3.org/People/Berners-Lee/FAQ.html#browser)

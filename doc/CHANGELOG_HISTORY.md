@@ -40,7 +40,7 @@ Pei-Yuan Wei officially announced his intention to create an X11 browser by exte
 
 The initial implementation was described by Wei as "a one-night hack" — he plugged the line mode browser code into Viola to create a rudimentary X-browser to prove feasibility. In his follow-up message (December 13, 1991), which was a response to Tim Berners-Lee's announcement of a new browser architecture with a generic SGML parser, Wei detailed the technical approach and expressed interest in using the new CERN codebase for testing. Tim Berners-Lee had offered to provide a tar file of the alpha-test code, including the HTML SGML parser, and Wei responded that he was "very interested in using that code, and do the testing."
 
-- Used Viola as a frontend wrapper for the existing `www` line-mode browser
+- Used Viola as a frontend wrapper for the existing `www` line-mode browser (written at CERN by student Nicola Pellow)
 - Made only "very few and minor changes" to `www.c`
 - Created an X11 interface that displays `www` output in a scrollable text field
 - Added visual highlighting of reference numbers for better visibility
@@ -52,6 +52,7 @@ Wei also outlined future plans to "teach the parser about viola object descripti
 **Sources**:
 - [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html) (initial announcement)
 - [WWW-Talk 1991: X Browser](https://lists.w3.org/Archives/Public/www-talk/1991NovDec/0023.html) (technical implementation details)
+- [Tim Berners-Lee FAQ: "What were the first WWW browsers?"](https://www.w3.org/People/Berners-Lee/FAQ.html#browser) (line-mode browser attribution)
 
 ### Early January 1992 — Early Demonstration on Apollo and DECstation
 **Date**: January 1992 (W3 News 9201)

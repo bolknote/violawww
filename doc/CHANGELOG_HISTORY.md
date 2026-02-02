@@ -136,14 +136,28 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
   - Help caching behavior: local copies preferred; remote help cached in `/usr/tmp`.
   - Cut-and-paste was noted as not working yet (selection could be made and shown underlined).
   - “Font hang” mentioned as a possible startup issue on some systems (example: OpenWindows).
+- **Selected overview points from the ViolaWWW “About” page (CERN/W3 mirror)**
+  - Basic navigation described as: clickable hot-words, history traversal, and bookmark list.
+  - Keyword search entry and page cloning (multiple windows).
+  - A simple printer hook and an HTML source viewer (not editor).
 - **Sources**
   - [W3.org: “An updated quick look at ViolaWWW” (1992-05-15)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review.html)
   - [W3.org: Installation instructions (May 1992)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Installation.html)
   - [CERN mirror: updated quick look](https://info.cern.ch/hypertext/Viola/Review.html)
   - [CERN mirror: installation instructions](https://info.cern.ch/hypertext/Viola/Installation.html)
   - [CERN: Status of ViolaWWW](https://info.cern.ch/hypertext/WWW/Viola/Status.html)
+  - [CERN/W3: ViolaWWW About page](https://info.cern.ch/hypertext/WWW/Viola/violaWWWAbout.html)
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
   - [Ancient Web Browsers: About/Status page screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
+
+### 1992-05-21 — Embedded Viola scripts (“program links”) discussed
+
+- **Evidence**
+  - **Announcement**: WWW-Talk post dated 1992-05-21
+- **What the source says (selected)**
+  - Script embedding in HTML is described as the intent of the tag, enabling “program links” that can start subprocesses; the author also notes the scripting experiment was unfinished and that internal demonstration files might not work for external users.
+- **Source**
+  - [WWW-Talk 1992: Re: World Wide Web and Viola](http://1997.webhistory.org/www.lists/www-talk.1992/0064.html)
 
 ### 1992-05-23 — Version 2.1.0
 
@@ -160,9 +174,14 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 - **Evidence**
   - **Announcement**: WWW-Talk post dated 1992-06-30
 - **What the source says**
-  - A built-in hypertext editor was in development; the architecture was moving towards SGML parsing and mapping document structure into multiple Viola objects.
-- **Source**
-  - [WWW-Talk 1992: Re: Hypertext editor](http://1997.webhistory.org/www.lists/www-talk.1992/0137.html)
+  - A built-in hypertext editor was in development.
+  - The “current” browser version described there used output from a standard SGML parser (`sgmls`).
+  - The display model shifted from a single unstructured textfield to multiple structured objects (textfield/bitmap/etc).
+  - The approach described was a rough 1–1 mapping of SGML document structure to Viola objects, with the intention to allow editing and conversion back to SGML.
+  - A possible interim release (HTML-based) with bitmap display (XBM/XPM) was mentioned, alongside interoperability concerns.
+- **Sources**
+  - [WWW-Talk 1992: Hypertext editor (TBL)](http://1997.webhistory.org/www.lists/www-talk.1992/0127.html)
+  - [WWW-Talk 1992: Re: Hypertext editor (Pei Wei)](http://1997.webhistory.org/www.lists/www-talk.1992/0128.html)
 
 ---
 
@@ -211,10 +230,17 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 - **Evidence**
   - **Announcement**: discussions across early 1993 WWW-Talk threads
   - **Secondary note**: Internet World (1995) narrative about “generally available” in Jan 1993 (treated as non-primary dating)
+- **Selected details from the 1993 threads**
+  - Memory leaks: reports describe ViolaWWW “leaking memory” over time; Pei Wei replied that many leaks were found (via Purify) and plugged in a working copy, including issues around piling up pixmaps/fonts affecting the X server.
+  - WAIS results: Pei Wei noted that a version of ViolaWWW “forgets” the search result page after following a link; the suggested workaround was to clone the results page before navigating.
+  - libwww 2.0-alpha: Tim Berners-Lee announced new 2.0-alpha compatible sources and described feature areas such as module registration (formats, protocols, suffix mappings) and HTML generation as well as parsing.
 - **Sources**
-  - [WWW-Talk 1993: memory leak discussion](http://1997.webhistory.org/www.lists/www-talk.1993q1/0173.html)
+  - [WWW-Talk 1993: viola/www memory leak (report)](http://1997.webhistory.org/www.lists/www-talk.1993q1/0128.html)
+  - [WWW-Talk 1993: Re: viola/www memory leak (Pei Wei)](http://1997.webhistory.org/www.lists/www-talk.1993q1/0129.html)
+  - [WWW-Talk 1993: WAIS search results (question)](http://1997.webhistory.org/www.lists/www-talk.1993q1/0240.html)
+  - [WWW-Talk 1993: Re: WAIS search results (Pei Wei)](http://1997.webhistory.org/www.lists/www-talk.1993q1/0247.html)
   - [WWW-Talk 1993: “Re HMML?”](http://1997.webhistory.org/www.lists/www-talk.1993q2/0488.html)
-  - [WWW-Talk 1993: libwww 2.0-alpha usage](http://1997.webhistory.org/www.lists/www-talk.1993q1/0246.html)
+  - [WWW-Talk 1993: libwww 2.0-alpha sources announcement](http://1997.webhistory.org/www.lists/www-talk.1993q1/0246.html)
   - [Internet World (Apr 1995): “Webolution” (archived text; secondary)](https://archive.org/stream/InternetWorldV06N04/Internet_World_V06N04_djvu.txt)
 
 ### 1993-04-21 — HMML mentioned as an O’Reilly multimedia extension
@@ -355,6 +381,14 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 - **Evidence**
   - **Date in post**: 1995-04-10 (release text)
   - **Announcement**: 1995-04-17 (WWW-Talk listing header / archive)
+- **Selected details from the announcement**
+  - Described as “fundamentally HTML 3.0 … plus many extensions” (multi-column formatting, document insertion, collapsible/expandable lists).
+  - Sidebar panel for meta-information or intra-document navigation links.
+  - Dynamic toolbar with document-engaged tool applets.
+  - Rudimentary stylesheet mechanism for fonts/colors/alignments.
+  - Viola scripting language accessible from HTML for interactive scripts/applets.
+  - “Miscellaneous niceties” mentioned include a hotlist and HTTP loading progress displayed as a pie chart (when information is available).
+  - Motif front-end plus an X11 (non-Motif) version; self-contained single binary installation.
 - **Source**
   - [WWW-Talk 1995: Release of ViolaWWW 3.3](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)
 
@@ -384,6 +418,7 @@ This file is a **timeline**, not a conventional “changelog”. Wherever possib
 | 1992-01-24 | — | CERN test report (WWW-Talk) |
 | 1992-03-09 to 1992-04-20 | 2.0.x | CERN testing window (multiple sources; includes 2.0.4 by 1992-04-04) |
 | 1992-05-10 to 1992-05-15 | — | Beta phase (JENC3 demo; README/review dates) |
+| 1992-05-21 | — | Embedded Viola scripts (“program links”) discussed (WWW-Talk) |
 | 1992-05-23 | 2.1.0 | Version string date |
 | 1992-06-30 | — | Next-generation architecture described (WWW-Talk) |
 | 1992-07-14 to 1992-07-30 | 2.1.2 | Version string / announcement / archives / CERN status |

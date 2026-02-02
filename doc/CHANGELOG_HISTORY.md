@@ -245,6 +245,7 @@ Discussion on WWW-Talk during early 1993 indicates significant internal improvem
 - [WWW-Talk 1993: Re HMML?](http://1997.webhistory.org/www.lists/www-talk.1993q2/0488.html)
 - [WWW-Talk 1993: libwww 2.0-alpha usage](http://1997.webhistory.org/www.lists/www-talk.1993q1/0246.html)
 - [WWW-Talk 1995: Re: Java, Viola, and prior art](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html) (applets timeline)
+- [Internet World (Apr 1995): “Webolution” (archived text)](https://archive.org/stream/InternetWorldV06N04/Internet_World_V06N04_djvu.txt) — secondary narrative note that an X/Window Viola browser was “generally available” in January 1993, with an earlier version available in mid-1992 (treat as non-primary dating)
 
 ---
 
@@ -476,6 +477,7 @@ Work is ongoing as of **2026**.
 | Jul 14, 1992 | 2.1.2 | W3 library update, archive `viola920730.tar.Z` |
 | Sep 1992 | — | Pei Wei joins O'Reilly & Associates |
 | Nov 4, 1992 | — | Scrollable regions for `LISTING` sections |
+| Jan 1993 | — | X/Window Viola WWW browser “generally available” (secondary source; see note in Early 1993 section) |
 | Early 1993 | — | Memory/resource leak fixes, preparing "Next Release"; Feb 1993 stabilized build (no dedicated announcement) |
 | Apr–May 1993 | — | HMML discussions; May 8 applets demo at O'Reilly; About/Status screenshot key dates (not a release) |
 | Oct 22, 1993 | — | STG “Stylesheet Language” posted (prototype in Viola) |
@@ -494,6 +496,7 @@ Work is ongoing as of **2026**.
 - [WWW-Talk Archives: viola update (with latest W3 library)](http://1997.webhistory.org/www.lists/www-talk.1992/0152.html)
 - [WWW-Talk Archives: ViolaWWW beta release is available (3.0 Beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/0716.html)
 - [WWW-Talk Archives: ViolaWWW Release (3.1 Beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
+- [Scientific American (Dec 1997): “Molding the Web” profile of Tim Berners-Lee (archived)](https://web.archive.org/web/19980131090401id_/http://www.scientificamerican.com/1297issue/1297profile.html) — popular-press mention of early browsers such as ViolaWWW in the Mosaic takeoff narrative
 - [Usenet Archives: Viola Announcement (Apr 1991)](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 - [Olde Viola Montage (archived): Viola 0.8 (1991)](https://web.archive.org/web/19990830034431/http://viola.org/vintage/montage.html)
 - [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html) (Pei Wei's announcement)

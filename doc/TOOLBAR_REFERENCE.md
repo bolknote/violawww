@@ -34,6 +34,19 @@ The same chapter also describes the per-document nature of these tools:
 
 > "... the right most three text buttons on the "toolbar" are little applets which are linked to the document."
 
+### Why Put Applets in the Toolbar?
+
+The Viola book describes reasons you might want to embed an applet in the toolbar (instead of inside the scrolling document), and also calls out the trade-offs (see “The Dynamic Toolbar” in [Chapter 13 (archived)](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html)):
+
+- **Pros**
+  - **Non-scrolling region**: toolbar tools stay in view; they do not scroll out of sight with the document.
+  - **Document-engaged**: tools associated with a document “come and go” with that document.
+- **Cons / constraints**
+  - **Fixed height**: the toolbar does not adjust height (in the original implementation), so tools must be designed to fit within the available toolbar area. In this codebase, `www.doc.tools` is constrained by `maxHeight {39}` (`src/viola/objs.c`), and the built-in toolbar buttons are designed around ~32px tall assets.
+  - **Width depends on window**: available width varies with the window size, so tools should tolerate being clipped or crowded.
+
+The same section also notes that for *very simple* navigation icons it can be preferable to improve HTML rather than rely on scripts; the scripting language is meant to enable “unanticipated applications” rather than replace basic markup ([Chapter 13 (archived)](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html)).
+
 ---
 
 ## How It Works
@@ -119,6 +132,49 @@ A toolbar object is a standard Viola object file (`.v`) that typically defines a
 \
 ```
 
+### Examples From the Viola Book (Chapter 13)
+
+The “Dynamic Toolbar” section includes two concrete patterns that are useful as reference when writing toolbar tools ([Chapter 13 (archived)](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html)).
+
+#### Nav Icon (XBM button)
+
+A small clickable icon button implemented as an `XBM` object; on `buttonRelease` it navigates to a URL:
+
+```
+\class {XBM}
+\name {nav-icon-to-violaHome}
+\script {
+	if (arg[0] == "buttonRelease")
+		send("www", "show", udi);
+	usual();
+}
+\width {39}
+\maxWidth {39}
+\height {32}
+\
+```
+
+#### Book Mark (menu tool with self-removal)
+
+A `menu` tool that acts like a mini “table of contents” for the current document, and includes a “Dismiss” action that removes itself from the toolbar and frees the object:
+
+```
+\class {menu}
+\name {bookMark}
+\script {
+	switch (arg[0]) {
+	case "buttonRelease": send(parent(), "go_home"); break;
+	case "visible": set("visible", arg[1]); return; break;
+	}
+	usual();
+}
+\menuConfig {
+	.{Dismiss this menu}
+		{send(parent(), "removeTool", self()); freeSelf();}
+}
+\
+```
+
 ### Key Attributes
 
 | Attribute | Description |
@@ -154,11 +210,19 @@ send("www", "tear");
 ### Practical Constraints
 
 - A toolbar tool should expect the toolbar container to send it `visible 1` / `visible 0` when adding/removing it (see `www_script107.v`). Many tools implement a `case "visible"` handler for this.
-- The Viola book notes that the toolbar height is fixed/non-adjustable, so tools should be designed to fit within the toolbar region (see Chapter 13 “[The Dynamic Toolbar](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html)”).
+- The Viola book notes that the toolbar height is fixed/non-adjustable, so tools should be designed to fit within the toolbar region (see Chapter 13 “[The Dynamic Toolbar](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html)”).
+- In this codebase, the dynamic toolbar container is `www.doc.tools.dyna` (an `hpane`) and it lives inside `www.doc.tools`. The overall tools strip is constrained by `www.doc.tools` having `maxHeight {39}` (see `src/viola/objs.c`).
+  - The built-in system toolbar buttons are designed around **32px** tall assets (e.g. `www.doc.tools.sys` has `minHeight {32}` and the XPM button bitmaps are 32×32), so toolbar tools should generally target a **~32px** height and stay within the **39px** maximum height budget.
 
 ### `VIEW_ON` / `VIEW_OFF` for Applets
 
 The Viola book recommends that applets be sensitive to `VIEW_ON` and `VIEW_OFF` so they can stop timers/updates when not in view (see [Chapter 13](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html)). In this repository, `VIEW_OFF` is also used to detach document-engaged tools from the toolbar when navigating away.
+
+### Security Note (Historical)
+
+The Viola book discusses security implications of loading applets from documents, and describes a policy where imported objects are marked **untrusted** and therefore *should not* have system privileges (and should be restricted in what they can do) ([Chapter 13 (archived)](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html)).
+
+In this codebase (ViolaWWW 4.0), remote content and external `.v` files are assigned **`security = 1` (untrusted)** by origin, and privileged operations are guarded by **user confirmation prompts** (we do not silently block them). See `doc/SECURITY_IMPLEMENTATION.md` for the implemented rules and the exact list of protected operations.
 
 ---
 
@@ -443,7 +507,8 @@ The [W3C HTML 3.0 specification](https://www.w3.org/MarkUp/html3/dochead.html) r
   - [Chapter 1](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp1.html) — describes toolbar-plugged tools appearing/disappearing with the document
   - [Chapter 9](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp9.html) — feature description and screenshot note about toolbar applets linked to the document
   - [Chapter 11 links](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_links.html) — LINK tag note that `LINK REL="tool"` is for toolbar objects
-  - [Chapter 13](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) — “The Dynamic Toolbar” section (constraints, examples)
+  - [Chapter 13 (viola.org book snapshot)](https://web.archive.org/web/20000110225703id_/http://viola.org/book/chp13.html) — “The Dynamic Toolbar” section (constraints, examples, security notes)
+  - [Chapter 13 (xcf.berkeley.edu snapshot)](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp13.html) — alternate archive snapshot (same chapter content)
   - [`tool_violaTOC.v`](https://web.archive.org/web/20040302222006id_/http://www.xcf.berkeley.edu/~wei/viola/book/tool_violaTOC.v) — concrete example of a toolbar tool object
 
 ### W3C Documentation

@@ -178,8 +178,11 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **What the source says (selected)**
   - The intent of the `<S>` tag is to embed Viola scripts in HTML, enabling “program links” that can start subprocesses.
   - The author notes that the scripting experiment was unfinished and that internal demonstration files might not work for external users (example given: a demo that required a local Xmap program).
+- **Related discussion**
+  - A follow-up thread discusses “program links” more generally and points to document format negotiation as a possible way to deliver executable content in different languages (example given: Viola script and/or `/bin/sh`). (This is general WWW architecture discussion, not a ViolaWWW release note.)
 - **Source**
   - [WWW-Talk 1992: Re: World Wide Web and Viola](http://1997.webhistory.org/www.lists/www-talk.1992/0064.html)
+  - [WWW-Talk 1992: Program Links in WWW](http://1997.webhistory.org/www.lists/www-talk.1992/0065.html)
 
 ### 1992-05-23 — Version 2.1.0
 
@@ -283,8 +286,12 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 - **Evidence**
   - **Announcement**: WWW-Talk post dated 1993-04-21 (Tim Berners-Lee)
+- **What the source says (selected)**
+  - HMML is described as “already an extension of HTML for multimedia from O’Reilly” (and similar extensions from NCSA were noted).
+  - Mosaic and an “unreleased” O’Reilly Viola are cited as handling embedded images in hypertext.
+  - In the WWW context, embedded-image tags refer to a W3 address and the retrieval code negotiates a suitable transfer representation independently of the embedding document.
 - **Source**
-  - [WWW-Talk 1993: HTML, HMML, and HyperTeX (TBL)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/127.html)
+  - [WWW-Talk 1993: HTML, HMML, and HyperTeX (TBL)](http://1997.webhistory.org/www.lists/www-talk.1993q2/0129.html)
 
 ### 1993-05-08 — Applets demonstration (date appears in later WWW-Talk post; treat as secondary)
 
@@ -297,8 +304,11 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 - **Evidence**
   - **Announcement**: WWW-Talk post dated 1993-05-25 (Dave Raggett)
+- **What the source says (selected)**
+  - Raggett notes that “HMML” was an internal experimental DTD developed by Pei Wei, and that the term later became confusing when it was also used for a proposed replacement HTML DTD; he uses the name “HTML+” to avoid ambiguity.
 - **Source**
   - [WWW-Talk 1993: Re HMML? (D. Raggett)](https://ksi.cpsc.ucalgary.ca/archives/WWW-TALK/www-talk-1993q2.messages/383.html)
+  - [WWW-Talk 1993: Re: RE dtd2.html (HMML naming confusion; “HTML+”)](http://1997.webhistory.org/www.lists/www-talk.1993q2/0393.html)
 
 ### 1993-05-28 — `<FIGURE>` proposal in HMML (“working version”)
 
@@ -334,6 +344,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - **Announcement**: WWW-Talk post dated 1993-09-04
 - **Source**
   - [WWW-Talk 1993: Submitting input-form data to server](http://1997.webhistory.org/www.lists/www-talk.1993q3/0810.html)
+  - [WWW-Talk 1993: Submitting input-form data to server (reply; URL query syntax details)](http://1997.webhistory.org/www.lists/www-talk.1993q3/0812.html)
 
 ### 1993-10-22 — STG “stylesheet language” posted (prototype in Viola)
 
@@ -341,6 +352,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - **Announcement**: WWW-Talk post dated 1993-10-22 (Pei Wei)
 - **Source**
   - [WWW-Talk 1993: Stylesheet Language (Pei Y. Wei)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0264.html)
+  - [WWW-Talk 1993: Stylesheet Language (continuation; derived behavior and `<LINK REL=\"STYLE\">`)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0265.html)
 
 ---
 
@@ -378,6 +390,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Selected details (from announcement and preserved change notes)**
   - Release note: “Another beta release of Viola is now available… Aside from the numerous bug fixes, its got a working prototype of the collapsible/expandable :-)”
   - The `FOLD` attribute proposal suggests a foldable list attribute (with initial fold state) and a `LABEL` attribute to describe folded content.
+  - Follow-up discussion (WWW-Talk) explains why attributes were preferred over a new enclosing folding tag, and notes that ViolaWWW already had a client-side `<INCLUDE>` tag (and discusses foldable/delayable includes).
   - The repository’s `src/vw/changes` file (from the 1994-era `vw` code) records UI/performance-focused changes such as:
     - Help hook for sending messages to `vw`’s active help field (e.g., HTTP progress reports).
     - Toolbar frame under the menu bar; navigation actions moved to toolbar icons.
@@ -396,6 +409,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Sources**
   - [WWW-Talk 1994: ViolaWWW Release (3.1 beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
   - [WWW-Talk 1994: FOLD attribute proposal](http://1997.webhistory.org/www.lists/www-talk.1994q1/1027.html)
+  - [WWW-Talk 1994: Re: folding elements (attributes vs tag; `<INCLUDE>`)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1045.html)
   - [Ancient Web Browsers: ViolaWWW (secondary index; links to release posts)](https://browsers.flanigan.us/browsers/violawww/)
   - [Archive: `viola940323.tar.gz` (contains `viola940323/README` and `viola940323/README.RUN`)](https://browsers.flanigan.us/browsers/violawww/files/viola940323.tar.gz)
   - `src/vw/changes` (repository file)

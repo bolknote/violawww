@@ -66,7 +66,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Buttons corresponded to `www` commands (e.g., Back, Help).
   - Future direction: “embed viola objects … into html files” (GUI/programming objects in documents).
 - **Sources**
-  - [WWW-Talk 1991: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0046.html)
+  - [WWW-Talk 1991: Re: SGML/HTML docs, X Browser](http://1997.webhistory.org/www.lists/www-talk.1991/0026.html)
   - [WWW-Talk 1991: X Browser](https://lists.w3.org/Archives/Public/www-talk/1991NovDec/0023.html)
   - [Tim Berners-Lee FAQ: early browsers](https://www.w3.org/People/Berners-Lee/FAQ.html#browser)
 

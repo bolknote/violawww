@@ -536,13 +536,16 @@ DocViewInfo* makeBrowserInterface(Widget shell, char* shellName, DocViewInfo* pa
                                           XmNrightAttachment, XmATTACH_FORM, XmNnavigationType,
                                           XmEXCLUSIVE_TAB_GROUP, XmNheight, toolBarHeight, NULL);
 
-    /* Dynamic help area. */
+    /* Dynamic help area.  Initial non-empty label keeps the status bar visible (height). */
+    xms = XmStringCreateSimple(" ");
     messageText = XtVaCreateManagedWidget(
-        "messageText", xmLabelWidgetClass, form, XmNleftAttachment, XmATTACH_FORM,
+        "messageText", xmLabelWidgetClass, form, XmNlabelString, xms,
+        XmNleftAttachment, XmATTACH_FORM,
         XmNrightAttachment, XmATTACH_FORM, XmNbottomAttachment, XmATTACH_FORM, XmNalignment,
         XmALIGNMENT_BEGINNING, XmNtraversalOn, FALSE,
         /*					  XmNborderWidth, 1,*/
         XmNrecomputeSize, FALSE, NULL);
+    XmStringFree(xms);
     docViewInfo->msgLabel = messageText;
 
     /* this is to make sure that mainHelpWidget is set to the help widget

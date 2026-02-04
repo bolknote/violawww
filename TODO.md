@@ -9,8 +9,6 @@
   - Skipping STYLE/SCRIPT elements doesn't seem to work everywhere; needs investigation and fixes.
 - [ ] Implement file opening sandbox
   - Implement a "sandbox" mechanism for safely opening files to prevent security issues.
-- [ ] Remove default hint message at bottom of vw
-
 ### Styling
 - [ ] Make FOSI styles functional
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.

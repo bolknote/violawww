@@ -28,7 +28,7 @@
 /*static*/ Window ViewportWin = 0;
 static Colormap ImageColormap;
 
-static int AlarmWentOff = 0;
+static volatile sig_atomic_t AlarmWentOff = 0;
 
 static void delayAlarmHandler() { AlarmWentOff = 1; }
 
@@ -52,7 +52,7 @@ static int getNextEventWithTimeout(Display* disp, XEvent* event) {
     /* wait for alarm
      */
 
-    while ((AlarmWentOff == 0)) {
+    while (AlarmWentOff == 0) {
         if (XPending(disp)) {
             XNextEvent(disp, event);
             return (1);

@@ -31,10 +31,10 @@ int load_objects_slots_fromBuiltInCache(SlotStruct*, int*, long (*)[100][2], int
 #define NEWOBJ_SIZE 1000
 
 #define readFileTillChar(fp, tc)                                                                   \
-    while (c = getc(fp))                                                                           \
+    while ((c = getc(fp)))                                                                         \
         if (c == EOF || c == tc)                                                                   \
             break;
-char c;
+int c;
 
 #define VIOLA_PATH_ARRAY_SIZE 32
 char* viola_path[VIOLA_PATH_ARRAY_SIZE + 1]; /* +1 for NULL terminator */

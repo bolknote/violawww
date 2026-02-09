@@ -48,7 +48,7 @@ void memoryExhausted() {
 
 void internalError(int sig)
 {
-    static int handling_error = 0;
+    static volatile sig_atomic_t handling_error = 0;
     int a, b;
     Screen* screen;
 

@@ -27,10 +27,15 @@
 	case 'R':
 		/* arg[1]	y
 		 * arg[2]	width
+		 * arg[3]	x (optional, overrides style)
 		 */
 		if (style == 0) style = SGMLGetStyle("HTML", "P_in_listSep");
 		vspan = style[0];
-		set("x", style[2]);
+		if (arg[] >= 4) {
+			set("x", arg[3]);
+		} else {
+			set("x", style[2]);
+		}
 		set("y", arg[1] + vspan);
 		set("width", arg[2] - get("x") - style[3]);
 		set("content", get("content"));

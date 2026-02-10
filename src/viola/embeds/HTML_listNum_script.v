@@ -12,6 +12,8 @@
 	break;
 	case "label":
 		set("label", arg[1]);
+		w = textWidth(1, arg[1]) + 4;
+		if (w > get("width")) set("width", w);
 		return;
 	break;
 	case "noBullet":

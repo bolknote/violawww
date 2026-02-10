@@ -141,7 +141,8 @@
 		if (n) {
 			xx = get("width");
 			for (i = objResizeSkip; i < n; i++)
-				h += send(nthChild(i), 'R', h, xx) - saveSpace;
+				h += send(nthChild(i), 'R', h, xx,
+					  x_offset) - saveSpace;
 		}
 		vspan += h;
 		set("height", vspan);
@@ -155,6 +156,9 @@
 	break;
 	case "itemN":
 		send(nthChild(0), "label", arg[1]);
+		/* Widen x_offset if label needs more space */
+		w = textWidth(1, arg[1]) + 4;
+		if (w > x_offset) x_offset = w;
 		return;
 	break;
 	case "listDepth":

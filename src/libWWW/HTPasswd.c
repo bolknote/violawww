@@ -199,9 +199,7 @@ PUBLIC BOOL HTAA_passwdMatch ARGS2(const char*, password, const char*, encrypted
 **	the end of each field. They are ignored.
 */
 PUBLIC int HTAAFile_readPasswdRec ARGS3(FILE*, fp, char*, out_username, char*, out_password) {
-    char terminator;
-
-    terminator = HTAAFile_readField(fp, out_username, MAX_USERNAME_LEN);
+    int terminator = HTAAFile_readField(fp, out_username, MAX_USERNAME_LEN);
 
     if (terminator == EOF) { /* End of file */
         return EOF;

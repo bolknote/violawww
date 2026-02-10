@@ -285,6 +285,7 @@ MethodInfo meths_generic[] = {
     },
     {STR_STGInfo, meth_generic_STGInfo},
     {STR_STG_tagPtr, meth_generic_STG_tagPtr},
+    {STR_STG_tagPtrDepth, meth_generic_STG_tagPtrDepth},
     {STR_STG_attr, meth_generic_STG_attr},
     {STR_STG_attrEx, meth_generic_STG_attrEx},
     {STR_STG_clean, meth_generic_STG_clean},
@@ -363,6 +364,8 @@ MethodInfo meths_generic[] = {
     {STR_height, meth_generic_height},
     {STR_initialize, meth_generic_initialize},
     {STR_int, meth_generic_int},
+    {STR_intToAlpha, meth_generic_intToAlpha},
+    {STR_intToRoman, meth_generic_intToRoman},
     {STR_item, meth_generic_item},
     {STR_isBlank, meth_generic_isBlank},
     {STR_key, meth_generic_key},
@@ -1890,6 +1893,23 @@ long meth_generic_STG_tagPtr(VObj* self, Packet* result, int argc, Packet argv[]
     }
 }
 
+/*
+ * STG_tagPtrDepth(tagName, superTagName, depth)
+ *
+ * Like STG_tagPtr but builds a deeper context by repeating the
+ * tagName/superTagName pair `depth` times. This allows the STG engine
+ * to distinguish nesting levels for nested lists.
+ *
+ * Example: STG_tagPtrDepth("LI", "OL", 2) builds context
+ *          [LI, OL, LI, OL] which matches (OL (LI (OL (LI ...))))
+ */
+long meth_generic_STG_tagPtrDepth(VObj* self, Packet* result, int argc, Packet argv[]) {
+    char* tagName = PkInfo2Str(&argv[0]);
+    char* superTagName = PkInfo2Str(&argv[1]);
+    int depth = PkInfo2Int(&argv[2]);
+    return getSTGInfo_tagPtrWithDepth(result, tagName, superTagName, depth);
+}
+
 long meth_generic_STG_attr(VObj* self, Packet* result, int argc, Packet argv[]) {
     long tagPtr = PkInfo2Int(&argv[0]);
     
@@ -2087,6 +2107,98 @@ long meth_generic_asciiVal(VObj* self, Packet* result, int argc, Packet argv[]) 
     result->type = PKT_INT;
     result->canFree = 0;
     result->info.i = (int)argv[0].info.c;
+    return 1;
+}
+
+/*
+ * intToRoman(n)
+ *
+ * Converts an integer to a Roman numeral string.
+ * Values 1-3999 produce standard subtractive notation (I, IV, IX, XL, etc.).
+ * Out-of-range values are returned as decimal strings.
+ *
+ * Result: string (e.g. "I", "IV", "XIV", "XLII")
+ * Return: 1 if successful, 0 if error occured
+ *
+ * Defined in: Stylesheet RFC, Oct 23 1993 (numStyle=roman)
+ */
+long meth_generic_intToRoman(VObj* self, Packet* result, int argc, Packet argv[]) {
+    static const int values[]    = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    static const char *symbols[] = {"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+    int n;
+    int i;
+    char tempBuf[32];
+    char *p;
+
+    result->type = PKT_STR;
+    n = PkInfo2Int(&argv[0]);
+
+    if (n < 1 || n > 3999) {
+        /* Out of range for Roman numerals: return as decimal */
+        sprintf(tempBuf, "%d", n);
+        result->info.s = SaveString(tempBuf);
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+
+    p = tempBuf;
+    for (i = 0; i < 13; i++) {
+        while (n >= values[i]) {
+            const char *s = symbols[i];
+            while (*s) *p++ = *s++;
+            n -= values[i];
+        }
+    }
+    *p = '\0';
+
+    result->info.s = SaveString(tempBuf);
+    result->canFree = PK_CANFREE_STR;
+    return 1;
+}
+
+/*
+ * intToAlpha(n)
+ *
+ * Converts an integer to a lowercase alphabetic string.
+ * 1->"a", 2->"b", ..., 26->"z", 27->"aa", 28->"ab", etc.
+ *
+ * Result: string (e.g. "a", "b", "z", "aa", "ab")
+ * Return: 1 if successful, 0 if error occured
+ *
+ * Defined in: Stylesheet RFC, Oct 23 1993 (numStyle=alpha)
+ */
+long meth_generic_intToAlpha(VObj* self, Packet* result, int argc, Packet argv[]) {
+    int n;
+    char tempBuf[16];
+    char revBuf[16];
+    int len = 0;
+    int i;
+
+    result->type = PKT_STR;
+    n = PkInfo2Int(&argv[0]);
+
+    if (n < 1) {
+        sprintf(tempBuf, "%d", n);
+        result->info.s = SaveString(tempBuf);
+        result->canFree = PK_CANFREE_STR;
+        return 1;
+    }
+
+    /* Build the string in reverse: n=1->"a", n=27->"aa", n=28->"ab" */
+    while (n > 0) {
+        n--;  /* make 0-based */
+        revBuf[len++] = 'a' + (n % 26);
+        n /= 26;
+    }
+
+    /* Reverse into tempBuf */
+    for (i = 0; i < len; i++) {
+        tempBuf[i] = revBuf[len - 1 - i];
+    }
+    tempBuf[len] = '\0';
+
+    result->info.s = SaveString(tempBuf);
+    result->canFree = PK_CANFREE_STR;
     return 1;
 }
 

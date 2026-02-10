@@ -148,6 +148,9 @@ for (i=0; i<arg[]; i++) print("arg", i, " = ", arg[i], "\n");print("...end\n");
 		}
 		return 0;
 	break;
+	case "listDepth":
+		return 0;
+	break;
 	case "findTop":
 	case "findForm":
 		return send(parent(), arg[0]);

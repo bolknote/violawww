@@ -202,6 +202,66 @@ int getSTGInfo_tagPtr(Packet* result, char* tagName1, char* tagName2)
     return 0;
 }
 
+/*
+ * getSTGInfo_tagPtrWithDepth: like getSTGInfo_tagPtr but builds a
+ * deeper context by repeating the tagName1/tagName2 pair `depth` times.
+ * This allows STG_findStyle to distinguish nesting levels, e.g.
+ *   depth=1 -> context [LI, OL]        -> matches (OL (LI ...))
+ *   depth=2 -> context [LI, OL, LI, OL] -> matches (OL (LI (OL (LI ...))))
+ *   depth=3 -> context [LI, OL, LI, OL, LI, OL]
+ *
+ * Defined in: Stylesheet RFC, Oct 23 1993 (numStyle with nested OL/LI)
+ */
+int getSTGInfo_tagPtrWithDepth(Packet* result, char* tagName1, char* tagName2, int depth)
+{
+    int stat;
+    char** context;
+    STGResult* sresults;
+    int contextSize;   /* number of char* elements in context array */
+    int maxResults;
+    int i;
+    long id1, id2;
+
+    clearPacket(result);
+
+    if (!stgGroup)
+        return 0;
+
+    if (depth < 1) depth = 1;
+
+    contextSize = depth * 4;     /* each depth level = 2 pairs of (tag, attr) */
+    maxResults = depth + 1;      /* at most one candidate per nesting level + 1 */
+
+    context = (char**)calloc(contextSize, sizeof(char*));
+    sresults = (STGResult*)calloc(maxResults, sizeof(STGResult));
+    if (!context || !sresults) {
+        free(context);
+        free(sresults);
+        return 0;
+    }
+
+    id1 = tagName2ID(tagName1);
+    id2 = tagName2ID(tagName2);
+
+    for (i = 0; i < depth; i++) {
+        context[i * 4 + 0] = (char*)id1;
+        context[i * 4 + 1] = 0;
+        context[i * 4 + 2] = (char*)id2;
+        context[i * 4 + 3] = 0;
+    }
+
+    stat = STG_findStyle(stgGroup, context, depth * 2, sresults, maxResults);
+    if (stat) {
+        result->info.i = (long)sresults[0].smajor;
+        result->type = PKT_INT;
+        result->canFree = 0;
+    }
+
+    free(context);
+    free(sresults);
+    return stat ? 1 : 0;
+}
+
 /* Get attribute from STGResult (supports both major and minor) */
 int getSTGInfo_attrFromResult(long resultPtr, char* attrName, Packet* result)
 /* resultPtr: Actually STGResult* */

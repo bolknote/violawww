@@ -562,6 +562,32 @@ Gets a pointer to an STG tag.
 
 ---
 
+### STG_tagPtrDepth(tagName, superTagName, depth)
+Gets a pointer to an STG tag with depth-aware context matching. Builds a context chain by repeating the tagName/superTagName pair `depth` times. This allows the STG engine to distinguish nesting levels for elements like nested ordered lists.
+
+**Parameters:**
+- `tagName` (string) - tag name (e.g. "LI")
+- `superTagName` (string) - parent tag name (e.g. "OL")
+- `depth` (int) - nesting depth (1 or greater)
+
+**Returns:** (int) tag pointer
+
+**Example:**
+```c
+/* Top-level OL: context [LI, OL] */
+tagPtr = STG_tagPtrDepth("LI", "OL", 1);
+
+/* Nested OL (depth 2): context [LI, OL, LI, OL] */
+tagPtr = STG_tagPtrDepth("LI", "OL", 2);
+
+/* Doubly nested OL (depth 3): context [LI, OL, LI, OL, LI, OL] */
+tagPtr = STG_tagPtrDepth("LI", "OL", 3);
+```
+
+**Added in:** ViolaWWW 4.0
+
+---
+
 ### STG_attr(tagPtr, attrName)
 Gets an STG tag attribute.
 
@@ -1906,6 +1932,57 @@ Converts a character to an ASCII code.
 - `char` (char) - character
 
 **Returns:** (int) ASCII code
+
+---
+
+### intToRoman(n)
+Converts an integer to an uppercase Roman numeral string. Uses standard subtractive notation.
+
+**Parameters:**
+- `n` (int) - integer value (1-3999)
+
+**Returns:** (string) Roman numeral string
+
+**Example:**
+```c
+s = intToRoman(1);    /* s = "I" */
+s = intToRoman(4);    /* s = "IV" */
+s = intToRoman(9);    /* s = "IX" */
+s = intToRoman(14);   /* s = "XIV" */
+s = intToRoman(42);   /* s = "XLII" */
+s = intToRoman(1994); /* s = "MCMXCIV" */
+```
+
+**Note:** Values outside the range 1-3999 are returned as decimal strings (e.g. `intToRoman(0)` returns `"0"`).
+
+**Defined in:** Stylesheet RFC, Oct 23 1993 (`numStyle=roman`)
+
+**Added in:** ViolaWWW 4.0
+
+---
+
+### intToAlpha(n)
+Converts an integer to a lowercase alphabetic string. Uses base-26 encoding: 1-26 map to a-z, then 27=aa, 28=ab, etc.
+
+**Parameters:**
+- `n` (int) - integer value (1 or greater)
+
+**Returns:** (string) alphabetic string
+
+**Example:**
+```c
+s = intToAlpha(1);   /* s = "a" */
+s = intToAlpha(2);   /* s = "b" */
+s = intToAlpha(26);  /* s = "z" */
+s = intToAlpha(27);  /* s = "aa" */
+s = intToAlpha(28);  /* s = "ab" */
+```
+
+**Note:** Values less than 1 are returned as decimal strings.
+
+**Defined in:** Stylesheet RFC, Oct 23 1993 (`numStyle=alpha`)
+
+**Added in:** ViolaWWW 4.0
 
 ---
 

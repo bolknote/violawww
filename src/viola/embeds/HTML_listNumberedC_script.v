@@ -2,11 +2,24 @@
 	switch (arg[0]) {
 	case "D":
 		if (style == 0) style = SGMLGetStyle("HTML", "OLC");
+		numStyle = 0;
+		listDepthVal = send(parent(), "listDepth") + 1;
+		tagPtr = STG_tagPtrDepth("LI", "OL", listDepthVal);
+		if (tagPtr) {
+			numStyle = STG_attr(tagPtr, "numStyle");
+		}
 		n = countChildren();
 		if (n > 0) {
 			for (i = 0; i < n; i++) {
 				itemN++;
-				send(nthChild(i), "itemN", itemN);
+				if (numStyle == "roman") {
+					itemLabel = intToRoman(itemN);
+				} else if (numStyle == "alpha") {
+					itemLabel = intToAlpha(itemN);
+				} else {
+					itemLabel = itemN;
+				}
+				send(nthChild(i), "itemN", itemLabel);
 			}
 		}
 		return height() + style[1];
@@ -106,6 +119,9 @@
 			}
 		}
 		return 0;
+	break;
+	case "listDepth":
+		return send(parent(), "listDepth") + 1;
 	break;
 	case "findTop":
 		return send(parent(), "findTop");

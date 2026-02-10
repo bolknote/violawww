@@ -604,9 +604,9 @@ A boolean flag attribute. Purpose unknown — possibly related to whitespace han
 
 > **Note**: The parser comment in `libstg.c:210` also mentions `spacing` in a minor selector context: `{compact spacing}`. This suggests the author experimented with these as both flag attributes and minor selector identifiers.
 
-#### `numStyle=<style>` - List Numbering Style (NOT IMPLEMENTED)
+#### `numStyle=<style>` - List Numbering Style
 
-Intended to control list item numbering format. Defined in the [original Stylesheet RFC](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal:
+Controls list item numbering format. Defined in the [original Stylesheet RFC](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal:
 
 ```
 (OL
@@ -618,12 +618,16 @@ Intended to control list item numbering format. Defined in the [original Stylesh
 )
 ```
 
-**Planned values**:
+**Values**:
 - `roman` - Roman numerals (I, II, III, IV...)
-- `number` - Arabic numerals (1, 2, 3...)
+- `number` - Arabic numerals (1, 2, 3...) — this is the default when `numStyle` is not set
 - `alpha` - Alphabetic (a, b, c...)
 
-**Status**: The parser may accept this attribute, but the list rendering code (`HTML_listNumbered_script.v`, `HTML_listSep_script.v`) only supports Arabic numerals via a simple integer counter (`itemN`). No conversion to roman numerals or alphabetic characters is implemented.
+**How it works**: The `<OL>` rendering script queries `STG_tagPtr("LI", "OL")` and `STG_attr(tagPtr, "numStyle")` once per list. If `numStyle` is set, item numbers are converted using `intToRoman()` or `intToAlpha()` before being passed to the bullet label. If not set, plain Arabic numerals are used (original behavior).
+
+**Nesting**: The STG context sensitivity allows different numbering styles at different nesting levels. In the example above, top-level `<OL>` items use Roman numerals, second-level items use Arabic numbers, and third-level items use alphabetic characters.
+
+**Implemented in:** ViolaWWW 4.0
 
 #### Other Planned Features (from `libstg.c` comments)
 
@@ -1107,10 +1111,10 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
    - There is no structured error reporting for this.
 
 8. **Unimplemented attributes**: Some attributes from the original RFC are parsed but ignored
-   - `numStyle` - list numbering (roman/number/alpha), only Arabic numerals supported
    - `compact` - flag attribute, never queried
    - `space` - flag attribute, never queried
    - See "Unimplemented Attributes" section for details
+   - **Note**: `numStyle` (roman/number/alpha) was implemented in ViolaWWW 4.0
 
 ### Best Practices
 
@@ -1265,5 +1269,5 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 
 ---
 
-*Last updated: January 15, 2026*
+*Last updated: February 10, 2026*
 

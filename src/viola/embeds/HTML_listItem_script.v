@@ -91,6 +91,9 @@
 	case "compact":
 		return 0;
 	break;
+	case "listDepth":
+		return send(parent(), "listDepth");
+	break;
 	case "findTop":
 		return send(parent(), "findTop");
 	break;

@@ -52,6 +52,7 @@ long meth_generic_SGMLTileDoc(VObj* self, Packet* result, int argc, Packet argv[
 long meth_generic_STGInfo(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_STG_clean(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_STG_tagPtr(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_STG_tagPtrDepth(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_STG_attrEx(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_STG_attr(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_accessible(VObj* self, Packet* result, int argc, Packet argv[]);
@@ -112,6 +113,8 @@ long meth_generic_hash(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_height(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_initialize(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_int(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_intToAlpha(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_intToRoman(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_isBlank(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_item(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_key(VObj* self, Packet* result, int argc, Packet argv[]);

@@ -33,15 +33,15 @@
 					objResizeSkip = 1;
 				break;
 				case 'O':	/* OL */
-					/*bulletObj = HTML_listNum_oval("make",
-							      self());*/
-					bulletObj = HTML_listNum("make",self());
-					objectListAppend_children(bulletObj);
-					x_offset = 30;
-					objResizeSkip = 1;
-				break;
-				default:
-					x_offset = 35;
+				/*bulletObj = HTML_listNum_oval("make",
+						      self());*/
+				bulletObj = HTML_listNum("make",self());
+				objectListAppend_children(bulletObj);
+				x_offset = 30;
+				objResizeSkip = 1;
+			break;
+			default:
+				x_offset = 35;
 				break;
 				}
 			}
@@ -75,13 +75,13 @@
 				x_offset = 30;
 				objResizeSkip = 1;
 			break;
-			case 'O':	/* OL */
-				bulletObj = HTML_listNum("make", self());
-			/*bulletObj = HTML_listNum_oval("make", self());*/
-				objectListAppend_children(bulletObj);
-				x_offset = 30;
-				objResizeSkip = 1;
-			break;
+		case 'O':	/* OL */
+			bulletObj = HTML_listNum("make", self());
+		/*bulletObj = HTML_listNum_oval("make", self());*/
+			objectListAppend_children(bulletObj);
+			x_offset = 30;
+			objResizeSkip = 1;
+		break;
 			default:
 				x_offset = 30;
 			break;
@@ -156,6 +156,9 @@
 	case "itemN":
 		send(nthChild(0), "label", arg[1]);
 		return;
+	break;
+	case "listDepth":
+		return send(parent(), "listDepth");
 	break;
 	case "inPreP":
 		if (doneSetInPreP == 0) {

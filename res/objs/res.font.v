@@ -29,6 +29,25 @@
 		fonts[12] = "banner_largest";
 		fonts[13] = "any";
 
+		/*
+		 * Serif font family (Times) at IDs 14-27
+		 * Mirrors IDs 0-13 but uses Times instead of Helvetica
+		 */
+		fonts[14] = "t_fixed";
+		fonts[15] = "t_normal";
+		fonts[16] = "t_normal_large";
+		fonts[17] = "t_normal_largest";
+		fonts[18] = "t_bold";
+		fonts[19] = "t_bold_large";
+		fonts[20] = "t_bold_largest";
+		fonts[21] = "t_italic";
+		fonts[22] = "t_italic_large";
+		fonts[23] = "t_italic_largest";
+		fonts[24] = "t_banner";
+		fonts[25] = "t_banner_large";
+		fonts[26] = "t_banner_largest";
+		fonts[27] = "t_any";
+
 	/* 
 	 * font fall-back lists
 	 */
@@ -104,6 +123,77 @@
 	any[1]		= "-*-*-medium-*-*-*-*-*-*-*-*-*-*-*";
 	any[2]		= "-misc-fixed-*";
 
+	/*
+	 * Serif (Times) font fall-back lists for IDs 14-27
+	 */
+	t_fixed[0]	= "-misc-fixed-medium-r-*-*-14-*-*-*-*-*-*-*";
+	t_fixed[1]	= "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*";
+	t_fixed[2]	= "-misc-fixed-*";
+
+	t_normal[0]	= "-adobe-times-medium-r-*-*-14-*-*-*-p-*-*-*";
+	t_normal[1]	= "-*-times-medium-r-*-*-14-*-*-*-p-*-*-*";
+	t_normal[2]	= "-*-*-medium-r-*-*-14-*-*-*-p-*-*-*";
+	t_normal[3]	= "-misc-fixed-*";
+
+	t_normal_large[0] = "-adobe-times-medium-r-*-*-17-*-*-*-p-*-*-*";
+	t_normal_large[1] = "-*-times-medium-r-*-*-17-*-*-*-p-*-*-*";
+	t_normal_large[2] = "-*-*-medium-r-*-*-17-*-*-*-p-*-*-*";
+	t_normal_large[3] = "-misc-fixed-*";
+
+	t_normal_largest[0] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_normal_largest[1] = "-*-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_normal_largest[2] = "-*-*-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_normal_largest[3] = "-misc-fixed-*";
+
+	t_bold[0]	= "-adobe-times-bold-r-*-*-14-*-*-*-p-*-*-*";
+	t_bold[1]	= "-*-times-bold-r-*-*-14-*-*-*-p-*-*-*";
+	t_bold[2]	= "-*-*-bold-r-*-*-14-*-*-*-p-*-*-*";
+	t_bold[3]	= "-misc-fixed-*";
+
+	t_bold_large[0]	= "-adobe-times-bold-r-*-*-17-*-*-*-p-*-*-*";
+	t_bold_large[1]	= "-*-times-bold-r-*-*-17-*-*-*-p-*-*-*";
+	t_bold_large[2]	= "-*-*-bold-r-*-*-17-*-*-*-p-*-*-*";
+	t_bold_large[3]	= "-misc-fixed-*";
+
+	t_bold_largest[0] = "-adobe-times-bold-r-*-*-24-*-*-*-p-*-*-*";
+	t_bold_largest[1] = "-*-times-bold-r-*-*-24-*-*-*-p-*-*-*";
+	t_bold_largest[2] = "-*-*-bold-r-*-*-24-*-*-*-p-*-*-*";
+	t_bold_largest[3] = "-misc-fixed-*";
+
+	t_italic[0]	= "-adobe-times-medium-i-*-*-14-*-*-*-p-*-*-*";
+	t_italic[1]	= "-*-times-medium-i-*-*-14-*-*-*-p-*-*-*";
+	t_italic[2]	= "-*-*-medium-i-*-*-14-*-*-*-p-*-*-*";
+	t_italic[3]	= "-misc-fixed-*";
+
+	t_italic_large[0] = "-adobe-times-medium-i-*-*-17-*-*-*-p-*-*-*";
+	t_italic_large[1] = "-*-times-medium-i-*-*-17-*-*-*-p-*-*-*";
+	t_italic_large[2] = "-*-*-medium-i-*-*-17-*-*-*-p-*-*-*";
+	t_italic_large[3] = "-misc-fixed-*";
+
+	t_italic_largest[0] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
+	t_italic_largest[1] = "-*-times-medium-i-*-*-24-*-*-*-p-*-*-*";
+	t_italic_largest[2] = "-*-*-medium-i-*-*-24-*-*-*-p-*-*-*";
+	t_italic_largest[3] = "-misc-fixed-*";
+
+	t_banner[0]	= "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner[1]	= "-*-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner[2]	= "-*-*-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner[3]	= "-misc-fixed-*";
+
+	t_banner_large[0] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_large[1] = "-*-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_large[2] = "-*-*-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_large[3] = "-misc-fixed-*";
+
+	t_banner_largest[0] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_largest[1] = "-*-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_largest[2] = "-*-*-medium-r-*-*-24-*-*-*-p-*-*-*";
+	t_banner_largest[3] = "-misc-fixed-*";
+
+	t_any[0]	= "-misc-fixed-medium-r-*-*-14-*-*-*-*-*-*-*";
+	t_any[1]	= "-*-*-medium-*-*-*-*-*-*-*-*-*-*-*";
+	t_any[2]	= "-misc-fixed-*";
+
 /* for violaWWW */
 fonts_HelveticaSmall[0] = "-misc-fixed-medium-r-*-*-14-*-*-*-*-*-*-*";
 fonts_HelveticaSmall[1] = "-adobe-helvetica-medium-r-*-*-14-*-*-*-p-*-*-*";
@@ -112,9 +202,9 @@ fonts_HelveticaSmall[3] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[4] = "-adobe-helvetica-bold-r-*-*-14-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[5] = "-adobe-helvetica-bold-r-*-*-17-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[6] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_HelveticaSmall[7] = "-adobe-helvetica-medium-r-*-*-14-*-*-*-p-*-*-*";
-fonts_HelveticaSmall[8] = "-adobe-helvetica-medium-r-*-*-17-*-*-*-p-*-*-*";
-fonts_HelveticaSmall[9] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
+fonts_HelveticaSmall[7] = "-adobe-helvetica-medium-o-*-*-14-*-*-*-p-*-*-*";
+fonts_HelveticaSmall[8] = "-adobe-helvetica-medium-o-*-*-17-*-*-*-p-*-*-*";
+fonts_HelveticaSmall[9] = "-adobe-helvetica-medium-o-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[10] = "-adobe-helvetica-medium-r-*-*-16-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[11] = "-adobe-helvetica-medium-r-*-*-17-*-*-*-p-*-*-*";
 fonts_HelveticaSmall[12] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
@@ -127,9 +217,9 @@ fonts_HelveticaMedium[3] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[4] = "-adobe-helvetica-bold-r-*-*-17-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[5] = "-adobe-helvetica-bold-r-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[6] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
-fonts_HelveticaMedium[7] = "-adobe-helvetica-medium-r-*-*-17-*-*-*-p-*-*-*";
-fonts_HelveticaMedium[8] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_HelveticaMedium[9] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
+fonts_HelveticaMedium[7] = "-adobe-helvetica-medium-o-*-*-17-*-*-*-p-*-*-*";
+fonts_HelveticaMedium[8] = "-adobe-helvetica-medium-o-*-*-24-*-*-*-p-*-*-*";
+fonts_HelveticaMedium[9] = "-adobe-helvetica-medium-o-*-*-34-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[10] = "-adobe-helvetica-medium-i-*-*-20-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[11] = "-adobe-helvetica-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaMedium[12] = "-adobe-helvetica-medium-i-*-*-34-*-*-*-p-*-*-*";
@@ -142,9 +232,9 @@ fonts_HelveticaLarge[3] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[4] = "-adobe-helvetica-bold-r-*-*-20-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[5] = "-adobe-helvetica-bold-r-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[6] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
-fonts_HelveticaLarge[7] = "-adobe-helvetica-medium-r-*-*-20-*-*-*-p-*-*-*";
-fonts_HelveticaLarge[8] = "-adobe-helvetica-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_HelveticaLarge[9] = "-adobe-helvetica-medium-r-*-*-34-*-*-*-p-*-*-*";
+fonts_HelveticaLarge[7] = "-adobe-helvetica-medium-o-*-*-20-*-*-*-p-*-*-*";
+fonts_HelveticaLarge[8] = "-adobe-helvetica-medium-o-*-*-24-*-*-*-p-*-*-*";
+fonts_HelveticaLarge[9] = "-adobe-helvetica-medium-o-*-*-34-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[10] = "-adobe-helvetica-medium-i-*-*-20-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[11] = "-adobe-helvetica-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_HelveticaLarge[12] = "-adobe-helvetica-medium-i-*-*-34-*-*-*-p-*-*-*";
@@ -157,9 +247,9 @@ fonts_TimesSmall[3] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesSmall[4] = "-adobe-times-bold-r-*-*-14-*-*-*-p-*-*-*";
 fonts_TimesSmall[5] = "-adobe-times-bold-r-*-*-17-*-*-*-p-*-*-*";
 fonts_TimesSmall[6] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_TimesSmall[7] = "-adobe-times-medium-r-*-*-14-*-*-*-p-*-*-*";
-fonts_TimesSmall[8] = "-adobe-times-medium-r-*-*-17-*-*-*-p-*-*-*";
-fonts_TimesSmall[9] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
+fonts_TimesSmall[7] = "-adobe-times-medium-i-*-*-14-*-*-*-p-*-*-*";
+fonts_TimesSmall[8] = "-adobe-times-medium-i-*-*-17-*-*-*-p-*-*-*";
+fonts_TimesSmall[9] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesSmall[10] = "-adobe-times-medium-i-*-*-17-*-*-*-p-*-*-*";
 fonts_TimesSmall[11] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesSmall[12] = "-adobe-times-medium-i-*-*-34-*-*-*-p-*-*-*";
@@ -172,9 +262,9 @@ fonts_TimesMedium[3] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
 fonts_TimesMedium[4] = "-adobe-times-bold-r-*-*-20-*-*-*-p-*-*-*";
 fonts_TimesMedium[5] = "-adobe-times-bold-r-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesMedium[6] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
-fonts_TimesMedium[7] = "-adobe-times-medium-r-*-*-20-*-*-*-p-*-*-*";
-fonts_TimesMedium[8] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_TimesMedium[9] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
+fonts_TimesMedium[7] = "-adobe-times-medium-i-*-*-20-*-*-*-p-*-*-*";
+fonts_TimesMedium[8] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
+fonts_TimesMedium[9] = "-adobe-times-medium-i-*-*-34-*-*-*-p-*-*-*";
 fonts_TimesMedium[10] = "-adobe-times-medium-i-*-*-20-*-*-*-p-*-*-*";
 fonts_TimesMedium[11] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesMedium[12] = "-adobe-times-medium-i-*-*-34-*-*-*-p-*-*-*";
@@ -187,9 +277,9 @@ fonts_TimesLarge[3] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
 fonts_TimesLarge[4] = "-adobe-times-bold-r-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesLarge[5] = "-adobe-times-bold-r-*-*-27-*-*-*-p-*-*-*";
 fonts_TimesLarge[6] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
-fonts_TimesLarge[7] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
-fonts_TimesLarge[8] = "-adobe-times-medium-r-*-*-27-*-*-*-p-*-*-*";
-fonts_TimesLarge[9] = "-adobe-times-medium-r-*-*-34-*-*-*-p-*-*-*";
+fonts_TimesLarge[7] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
+fonts_TimesLarge[8] = "-adobe-times-medium-i-*-*-27-*-*-*-p-*-*-*";
+fonts_TimesLarge[9] = "-adobe-times-medium-i-*-*-34-*-*-*-p-*-*-*";
 fonts_TimesLarge[10] = "-adobe-times-medium-i-*-*-24-*-*-*-p-*-*-*";
 fonts_TimesLarge[11] = "-adobe-times-medium-i-*-*-27-*-*-*-p-*-*-*";
 fonts_TimesLarge[12] = "-adobe-times-medium-i-*-*-34-*-*-*-p-*-*-*";
@@ -198,38 +288,61 @@ fonts_TimesLarge[13] = "-adobe-times-medium-r-*-*-24-*-*-*-p-*-*-*";
 	return 1;
 	break;
 	case "useHelveticaSmallFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
+		/* Load sans-serif (Helvetica) into IDs 0-13 */
+		for (i = 13; i >= 0; i--)
 			defineNewFont(i, fonts[i], fonts_HelveticaSmall[i]);
+		/* Load serif (Times) at same size into IDs 14-27 */
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesSmall[i]);
+		setDefaultFontFamily(0);
 		return;
 	break;
 	case "useHelveticaMediumFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
+		for (i = 13; i >= 0; i--)
 			defineNewFont(i, fonts[i], fonts_HelveticaMedium[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesMedium[i]);
+		setDefaultFontFamily(0);
 		return;
 	break;
 	case "useHelveticaLargeFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
+		for (i = 13; i >= 0; i--)
 			defineNewFont(i, fonts[i], fonts_HelveticaLarge[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesLarge[i]);
+		setDefaultFontFamily(0);
 		return;
 	break;
 	case "useTimesSmallFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
-			defineNewFont(i, fonts[i], fonts_TimesSmall[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i, fonts[i], fonts_HelveticaSmall[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesSmall[i]);
+		setDefaultFontFamily(14);
 		return;
 	break;
 	case "useTimesMediumFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
-			defineNewFont(i, fonts[i], fonts_TimesMedium[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i, fonts[i], fonts_HelveticaMedium[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesMedium[i]);
+		setDefaultFontFamily(14);
 		return;
 	break;
 	case "useTimesLargeFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
-			defineNewFont(i, fonts[i], fonts_TimesLarge[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i, fonts[i], fonts_HelveticaLarge[i]);
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], fonts_TimesLarge[i]);
+		setDefaultFontFamily(14);
 		return;
 	break;
 	case "useAllFixedFonts":
-		for (i = fonts[] - 1; i >= 0; i--)
+		for (i = 13; i >= 0; i--)
 			defineNewFont(i, fonts[i], "-misc-fixed-medium-*");
+		for (i = 13; i >= 0; i--)
+			defineNewFont(i + 14, fonts[i + 14], "-misc-fixed-medium-*");
+		setDefaultFontFamily(0);
 		return;
 	break;
 	case "queryFontID":

@@ -2235,6 +2235,27 @@ Defines a new font.
 
 ---
 
+### setDefaultFontFamily(offset)
+Sets the default font family offset. The offset determines which font family range is used for elements that don't have an explicit `fontFamily` attribute in STG.
+
+**Parameters:**
+- `offset` (int) - font family offset: `0` for sans-serif (Helvetica, IDs 0-13), `14` for serif (Times, IDs 14-27)
+
+**Returns:** (int) the offset that was set
+
+**Added in:** ViolaWWW 4.0
+
+---
+
+### getDefaultFontFamily()
+Returns the current default font family offset.
+
+**Returns:** (int) current font family offset (`0` = sans-serif, `14` = serif)
+
+**Added in:** ViolaWWW 4.0
+
+---
+
 ### depth()
 Returns the depth of an object.
 

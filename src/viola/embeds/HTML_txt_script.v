@@ -371,6 +371,7 @@ print("TXT: height=", get("height"), "................................\n");
 		fontSize = 0;
 		fontSpacing = 0;
 		fontWeight = 0;
+		fontFamily = 0;
 
 		/* Check if element has a style attribute for minor matching */
 		/* Can be passed as arg[2] or from savedStyleAttr variable */
@@ -422,6 +423,7 @@ print("TXT: height=", get("height"), "................................\n");
 				fontSize = STG_attrEx(tagPtr, "fontSize");
 				fontSpacing = STG_attrEx(tagPtr, "fontSpacing");
 				fontWeight = STG_attrEx(tagPtr, "fontWeight");
+				fontFamily = STG_attrEx(tagPtr, "fontFamily");
 			} else {
 				i = STG_attr(tagPtr, "BGColor");
 				if (i) set("BGColor", i);
@@ -443,6 +445,7 @@ print("TXT: height=", get("height"), "................................\n");
 				fontSize = STG_attr(tagPtr, "fontSize");
 				fontSpacing = STG_attr(tagPtr, "fontSpacing");
 				fontWeight = STG_attr(tagPtr, "fontWeight");
+				fontFamily = STG_attr(tagPtr, "fontFamily");
 			}
 			
 			/* If mono spacing requested, use fixed font and ignore slant/size */
@@ -518,6 +521,18 @@ print("TXT: height=", get("height"), "................................\n");
 				fontID = 1; /* fallback */
 			}
 			
+			/* Apply font family offset */
+			if (fontFamily == "serif" || fontFamily == "times") {
+				fontID = fontID + 14;
+			} else if (fontFamily == "sans-serif" || fontFamily == "helvetica") {
+				/* fontID stays in 0-13 (Helvetica range) */
+			} else if (fontFamily == "fixed" || fontFamily == "monospace") {
+				fontID = 0;
+			} else {
+				/* No fontFamily in STG -- use menu default */
+				fontID = fontID + getDefaultFontFamily();
+			}
+
 			set("_font", fontID);
 			}
 			

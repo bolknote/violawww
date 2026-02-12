@@ -60,7 +60,11 @@ extern IntPair mouse;
 /*
 #define MAXFONTS 30
 */
-#define MAXFONTS 30
+#define MAXFONTS 44
+
+#define FONT_FAMILY_OFFSET 14
+#define FONT_FAMILY_SANS_SERIF 0
+#define FONT_FAMILY_SERIF 14
 
 typedef struct FontInfo {
     Font font;

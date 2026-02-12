@@ -12,8 +12,6 @@
 ### Styling
 - [ ] Make FOSI styles functional
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.
-- [ ] Add `fontFamily` in STG
-  - Define and apply the desired `fontFamily` in the STG configuration so text renders as expected.
 
 ### Core & HTML
 - [ ] Implement HTML editing functions (`src/viola/html.c`)

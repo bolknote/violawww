@@ -293,8 +293,8 @@ Properties documented in the original proposal:
 |----------|--------|-------------|
 | `fontSize` | `small`, `normal`, `large`, `largest` | Relative font size |
 | `fontSlant` | `normal`, `italic`, `bold` | Font style (italic or bold) |
-| `fontFamily` | `fixed` | Font family type |
-| `fontSpacing` | (values unknown) | Letter/word spacing |
+| `fontFamily` | `serif`, `sans-serif`, `fixed` | Font family type |
+| `fontSpacing` | `proportional`, `mono` | Font spacing (proportional or monospace) |
 | `numStyle` | `roman`, `number`, `alpha` | List numbering style (**not implemented**) |
 | `BGColor` | X11 color names | Background color |
 | `FGColor` | X11 color names | Foreground (text) color |

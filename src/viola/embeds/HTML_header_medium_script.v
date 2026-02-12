@@ -79,6 +79,7 @@
 			fontSize = STG_attr(tagPtr, "fontSize");
 			fontSpacing = STG_attr(tagPtr, "fontSpacing");
 			fontWeight = STG_attr(tagPtr, "fontWeight");
+			fontFamily = STG_attr(tagPtr, "fontFamily");
 			
 			/* If mono spacing requested, use fixed font */
 			if (fontSpacing == "mono") {
@@ -126,6 +127,17 @@
 				else fontID = 7;
 			}
 			
+			/* Apply font family offset */
+			if (fontFamily == "serif" || fontFamily == "times") {
+				fontID = fontID + 14;
+			} else if (fontFamily == "sans-serif" || fontFamily == "helvetica") {
+				/* fontID stays in 0-13 (Helvetica range) */
+			} else if (fontFamily == "fixed" || fontFamily == "monospace") {
+				fontID = 0;
+			} else {
+				fontID = fontID + getDefaultFontFamily();
+			}
+
 				set("_font", fontID);
 			}
 			

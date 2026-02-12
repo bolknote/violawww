@@ -422,6 +422,8 @@ MethodInfo meths_generic[] = {
     {STR_setLinkVisitedColor, meth_generic_setLinkVisitedColor},
     {STR_resetLinkColors, meth_generic_resetLinkColors},
     {STR_addURLToHistory, meth_generic_addURLToHistory},
+    {STR_setDefaultFontFamily, meth_generic_setDefaultFontFamily},
+    {STR_getDefaultFontFamily, meth_generic_getDefaultFontFamily},
     {STR_seta, meth_generic_set},
     {STR_setMouse, meth_generic_setMouse},
     {STR_setResource, meth_generic_setResource},
@@ -2873,6 +2875,29 @@ long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet arg
     clearPacket(result);
     result->info.i =
         GLDefineNewFont(fontInfo, PkInfo2Int(&argv[0]), PkInfo2Str(&argv[1]), PkInfo2Str(&argv[2]));
+    result->type = PKT_INT;
+    return 1;
+}
+
+/*
+ * setDefaultFontFamily(offset)
+ * Sets the default font family offset (0 = sans-serif, 14 = serif)
+ */
+long meth_generic_setDefaultFontFamily(VObj* self, Packet* result, int argc, Packet argv[]) {
+    clearPacket(result);
+    fontFamilyDefaultOffset = PkInfo2Int(&argv[0]);
+    result->info.i = fontFamilyDefaultOffset;
+    result->type = PKT_INT;
+    return 1;
+}
+
+/*
+ * getDefaultFontFamily()
+ * Returns the default font family offset (0 = sans-serif, 14 = serif)
+ */
+long meth_generic_getDefaultFontFamily(VObj* self, Packet* result, int argc, Packet argv[]) {
+    clearPacket(result);
+    result->info.i = fontFamilyDefaultOffset;
     result->type = PKT_INT;
     return 1;
 }

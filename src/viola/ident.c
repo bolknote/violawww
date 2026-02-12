@@ -1270,6 +1270,10 @@ strNIntPair symList[] = {STR_BCard,
                          "resetLinkColors", /* Reset link colors to default */
                          STR_addURLToHistory,
                          "addURLToHistory", /* Add URL to history (for standalone) */
+                         STR_setDefaultFontFamily,
+                         "setDefaultFontFamily", /* Set default font family offset */
+                         STR_getDefaultFontFamily,
+                         "getDefaultFontFamily", /* Get default font family offset */
                          0,
                          NULL};
 

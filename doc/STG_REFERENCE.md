@@ -497,8 +497,6 @@ Sets the font style. Despite the name suggesting only italic/slant control, this
 
 Sets the font to monospace.
 
-> **Historical note**: Early examples used `fontFamily=fixed` (see the 1993 WWW-Talk post above), but ViolaWWW's implementation uses `fontSpacing=mono`. The `fontFamily` attribute is not used by the current code.
-
 ```
 (CODE fontSpacing=mono)
 (KBD fontSpacing=mono)
@@ -508,6 +506,31 @@ Sets the font to monospace.
 **Values**:
 - `proportional` (default)
 - `mono` (monospace)
+
+#### `fontFamily=<family>` - Font Family
+
+Selects the font family for an element. When set in STG, this overrides the default family chosen via the Fonts menu. Both sans-serif (Helvetica) and serif (Times) font families are loaded simultaneously at startup; `fontFamily` controls which is used for a given element.
+
+> **Historical note**: Early examples used `fontFamily=fixed` (see the 1993 WWW-Talk post above), and this was the only documented value. The implementation now supports `serif`/`sans-serif` as well, allowing per-element font family selection while the Fonts menu acts as a lower-priority default.
+
+```
+(BODY fontFamily=sans-serif
+    (H1 fontFamily=serif
+        fontSize=largest
+        fontSlant=bold)
+    (PRE fontFamily=fixed)
+    (CODE fontFamily=fixed)
+)
+```
+
+**Values**:
+- `serif` or `times` -- Times font family
+- `sans-serif` or `helvetica` -- Helvetica font family
+- `fixed` or `monospace` -- Monospace font (equivalent to `fontSpacing=mono`)
+
+**Priority model**: STG `fontFamily` overrides the Fonts menu default. Elements without an explicit `fontFamily` attribute use the family selected in the Fonts menu.
+
+**Implemented in:** ViolaWWW 4.0
 
 ### Layout Attributes
 

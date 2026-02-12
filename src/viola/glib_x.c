@@ -140,6 +140,7 @@ EventMaskNameStruct eventMaskName[] = {Button1MotionMask,
                                        NULL};
 
 int numberOfFontIDs = 0;
+int fontFamilyDefaultOffset = 0;
 
 int fontID_fixed = -1;
 

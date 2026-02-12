@@ -138,6 +138,7 @@ extern int sync_event;
 extern XFontStruct* mfinfo;
 
 extern int numberOfFontIDs;
+extern int fontFamilyDefaultOffset;
 
 #define menuPixmap_width 8
 #define menuPixmap_height 8

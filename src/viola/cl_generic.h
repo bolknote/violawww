@@ -91,6 +91,8 @@ long meth_generic_cycleColors(VObj* self, Packet* result, int argc, Packet argv[
 long meth_generic_date(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_deepObjectListSend(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_setDefaultFontFamily(VObj* self, Packet* result, int argc, Packet argv[]);
+long meth_generic_getDefaultFontFamily(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_delay(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_deleteFile(VObj* self, Packet* result, int argc, Packet argv[]);
 long meth_generic_deleteSubStr(VObj* self, Packet* result, int argc, Packet argv[]);

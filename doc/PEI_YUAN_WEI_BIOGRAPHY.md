@@ -78,7 +78,7 @@ Tim was really excited about ViolaWWW and started discussions with Pei Wei about
 
 ### Working at O'Reilly Media (1992–1995)
 
-Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei began working with O'Reilly & Associates in September 1992 (announced in W3 News), and worked there through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^16][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
+Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei began working with O'Reilly & Associates in September 1992 (announced in W3 News), and worked there through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^6][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
 
 Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep working on ViolaWWW. O'Reilly was interested in stand-alone electronic versions of its books. With Viola, it took just a few lines of code to put a "button" object on the screen and have it link through to somewhere else.[^8]
 
@@ -185,7 +185,6 @@ For further study: source code, design notebooks, and video materials are stored
 [^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)
 [^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 [^14]: [Bart Eisenberg: #28 Perry Wei: creator of ViolaWWW (Software Design 2011 interview)](https://gihyo.jp/dev/serial/01/software_designers/0028)
-[^16]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0026.html)
 [^17]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0028.html)
 [^18]: [WWW-TALK Archives: ViolaWWW Version 3.0 Beta (Feb 1994)](http://1997.webhistory.org/www.lists/www-talk.1994q1/0722.html)
 [^19]: [WWW-TALK Archives: ViolaWWW Version 3.3 Beta (Apr 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)

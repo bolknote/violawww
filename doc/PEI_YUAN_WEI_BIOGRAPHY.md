@@ -60,7 +60,7 @@ Tim Berners-Lee responded enthusiastically:
 
 This correspondence marks the beginning of ViolaWWW development as a web browser and demonstrates the collaborative spirit of the early web community. Tim Berners-Lee offered to share CERN's alpha-test code, including the HTML SGML parser, to help with the project.
 
-Through his development of ViolaWWW and collaboration with Tim Berners-Lee, Wei became associated with the CERN WWW Project, which had over fifteen members working to develop applications that would expand accessibility to the World Wide Web.[^15]
+Through his development of ViolaWWW and collaboration with Tim Berners-Lee, Wei became associated with the CERN WWW Project, which had over fifteen members working to develop applications that would expand accessibility to the World Wide Web.[^9]
 
 ### The "One-Night Hack" (December 1991)
 
@@ -134,7 +134,7 @@ ViolaWWW is a discontinued web browser developed based on the Viola language. Re
 
 ViolaWWW was the first browser with:
 
-- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4] ViolaWWW pioneered the use of embedded script objects, stylesheets, and tables.[^15] In October 1993, Wei developed his own stylesheet language called STG (Stylesheet Language) and implemented it in ViolaWWW, predating the development of CSS.[^21]
+- **Scripts and Styles**: Supported a scripting language (predecessor to JavaScript) and simple style sheets (predecessor to CSS).[^4] ViolaWWW pioneered the use of embedded script objects, stylesheets, and tables.[^9] In October 1993, Wei developed his own stylesheet language called STG (Stylesheet Language) and implemented it in ViolaWWW, predating the development of CSS.[^21]
 
 - **Interactive Elements**: Bookmarks, back/forward buttons, history feature, forms, tables, client-side document insertion, sidebar panel for meta-information.[^4][^8]
 
@@ -185,7 +185,6 @@ For further study: source code, design notebooks, and video materials are stored
 [^12]: [Pei-Yuan Wei's personal home page at XCF Berkeley (archived 2010)](https://web.archive.org/web/20100526080523/http://www.xcf.berkeley.edu/~wei/)
 [^13]: [Usenet Archives: "Software Announcement: Viola" (Apr 1991), Message-ID `<9104231058.AA27453@scam.Berkeley.EDU>`](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
 [^14]: [Bart Eisenberg: #28 Perry Wei: creator of ViolaWWW (Software Design 2011 interview)](https://gihyo.jp/dev/serial/01/software_designers/0028)
-[^15]: [Internet Guide: Pei-Yuan Wei (archived 2016)](https://web.archive.org/web/20160204100329id_/http://www.internet-guide.co.uk/PeiWei.html)
 [^16]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0026.html)
 [^17]: [WWW-TALK Archives: Re: SGML/HTML docs, X Browser (Dec 1991)](http://1997.webhistory.org/www.lists/www-talk.1991/0028.html)
 [^18]: [WWW-TALK Archives: ViolaWWW Version 3.0 Beta (Feb 1994)](http://1997.webhistory.org/www.lists/www-talk.1994q1/0722.html)

@@ -383,10 +383,10 @@ void showSourceEditor(DocViewInfo* parentDVI, char* data, int editable)
      * and check event type inside the handler */
     XtAddEventHandler(shell, 0L, TRUE, sourceEditorDeleteWindowEH, (XtPointer)cd);
     
-    /* Set WM_PROTOCOLS property after window is realized */
-    XtAddCallback(shell, XmNrealizeCallback, setupWMProtocolsCB, NULL);
-
     XtPopup(shell, XtGrabNone);
+
+    /* Set WM_PROTOCOLS property now that the window is realized by XtPopup */
+    setupWMProtocolsCB(shell, NULL, NULL);
     
     /* Register resize handler to clear windows on resize */
     XtAddEventHandler(shell, StructureNotifyMask, FALSE, resizeShell, NULL);

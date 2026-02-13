@@ -211,22 +211,25 @@ test-destroy-variable: test_destroy_variable.c
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_destroy_variable test_destroy_variable.c
 	@./$(BUILD_DIR)/test_destroy_variable
 
-test-do-while: test_do_while.c $(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o $(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+# Shared interpreter objects for Viola script tests
+VIOLA_TEST_SUPPORT := support/viola_test_support.c
+VIOLA_TEST_OBJS := $(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o \
+	$(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+
+test-do-while: test_do_while.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 	@echo ""
 	@echo "Building do-while loop tests..."
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_do_while test_do_while.c \
-		$(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o \
-		$(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_do_while \
+		test_do_while.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 	@./$(BUILD_DIR)/test_do_while
 
-test-logical-not: test_logical_not.c $(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o $(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+test-logical-not: test_logical_not.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 	@echo ""
 	@echo "Building logical NOT operator tests..."
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_logical_not test_logical_not.c \
-		$(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o \
-		$(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_logical_not \
+		test_logical_not.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 	@./$(BUILD_DIR)/test_logical_not
 
 # Clean test artifacts

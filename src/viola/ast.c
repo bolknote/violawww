@@ -73,6 +73,7 @@ char* ASTTypeStr[] = {"EXPR_PLUS",  /* the EXPR's must be grouped in the front. 
                       "DEC_PRE",
                       "DEC_POST",
                       "UMINUS",
+                      "EXPR_NOT",
                       "PLUS_MOVTO_REF",
                       "MINUS_MOVTO_REF",
                       "MOD_MOVTO_REF",

@@ -177,7 +177,9 @@ The scripting language inside `\script {}` blocks is a C-like interpreted langua
 |----------|-------------|
 | `&&` | Logical AND |
 | `\|\|` | Logical OR |
-| `!` | Logical NOT |
+| `!` | Logical NOT (**ViolaWWW 4.0**) |
+
+> **Note on `!` operator:** The original code had `!` declared in the lexer keyword table (`violakeywords.h`) and in the parser's precedence declaration (`gram.y`), but no grammar production rule was ever written for it. The `not()` built-in function served as a workaround. The `!` prefix operator was implemented in ViolaWWW 4.0.
 
 #### Assignment
 | Operator | Description |

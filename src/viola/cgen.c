@@ -211,6 +211,7 @@ char* PCodeStr[] = {
     "DEC_PRE",
     "DEC_POST",
     "TOKENIZE_PUSH",
+    "NOT",
 
     "METH_SELF",
     "METH_PARENT",
@@ -969,6 +970,11 @@ int codeGen(AST* ast, union PCode* pcode, int* pc)
         XEMIT(CODE_UMINUS);
         break;
 
+    case AST_EXPR_NOT:
+        codeGen(ast->children, pcode, pc);
+        XEMIT(CODE_NOT);
+        break;
+
     case AST_EXPR_PLUS:
     case AST_EXPR_MINUS:
     case AST_EXPR_MOD:
@@ -1298,6 +1304,7 @@ void printPCode(union PCode* pcode, long* pc, long size) {
             case CODE_OR_POP:
 
             case CODE_UMINUS:
+            case CODE_NOT:
             case CODE_POP:
             case CODE_PUSH:
             case CODE_CMP:

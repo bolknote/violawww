@@ -1156,6 +1156,33 @@ Packet* codeExec(VObj* self, union PCode* pcode, union PCode* pcode_end, Attr** 
                 reg1.canFree = 0;
                 break;
 
+            case CODE_NOT:
+                switch (reg1.type) {
+                case PKT_INT:
+                    reg1.info.i = !reg1.info.i;
+                    break;
+                case PKT_CHR:
+                    reg1.info.i = !reg1.info.c;
+                    reg1.type = PKT_INT;
+                    break;
+                case PKT_FLT:
+                    reg1.info.i = (reg1.info.f == 0.0f) ? 1 : 0;
+                    reg1.type = PKT_INT;
+                    break;
+                case PKT_STR:
+                    if (reg1.canFree & PK_CANFREE_STR)
+                        free(reg1.info.s);
+                    reg1.info.i = (!reg1.info.s || !*reg1.info.s) ? 1 : 0;
+                    reg1.type = PKT_INT;
+                    break;
+                default:
+                    reg1.info.i = !reg1.info.i;
+                    reg1.type = PKT_INT;
+                    break;
+                }
+                reg1.canFree = 0;
+                break;
+
                 /* INC */
             case CODE_INC_PRE:
                 packetp = (Packet*)((*varVectorp)[(*pcode++).i]->val);

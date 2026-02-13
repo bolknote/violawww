@@ -620,6 +620,11 @@ expr	:	get_stmt
 				$$->children = $2;
 			}
 		}
+	|	'!' expr	%prec '!'
+		{
+			$$ = makeAST(AST_EXPR_NOT);
+			$$->children = $2;
+		}
 	|	call_stmt
 	|	term
 	;

@@ -198,6 +198,7 @@ enum PCodeTypes {
     CODE_DEC_PRE,
     CODE_DEC_POST,
     CODE_TOKENIZE_PUSH,
+    CODE_NOT,
 
     CODE_METH_SELF,
     CODE_METH_PARENT,

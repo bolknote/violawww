@@ -58,13 +58,11 @@ extern IntPair mouse;
 /****************************************************************************
  */
 /*
-#define MAXFONTS 30
-*/
-#define MAXFONTS 44
-
-#define FONT_FAMILY_OFFSET 14
-#define FONT_FAMILY_SANS_SERIF 0
-#define FONT_FAMILY_SERIF 14
+ * Maximum number of simultaneously loaded fonts.
+ * IDs 0-13:  sans-serif family (Helvetica)
+ * IDs 14-27: serif family (Times)
+ */
+#define MAXFONTS 28
 
 typedef struct FontInfo {
     Font font;

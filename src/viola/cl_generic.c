@@ -2884,8 +2884,16 @@ long meth_generic_defineNewFont(VObj* self, Packet* result, int argc, Packet arg
  * Sets the default font family offset (0 = sans-serif, 14 = serif)
  */
 long meth_generic_setDefaultFontFamily(VObj* self, Packet* result, int argc, Packet argv[]) {
+    int offset = PkInfo2Int(&argv[0]);
     clearPacket(result);
-    fontFamilyDefaultOffset = PkInfo2Int(&argv[0]);
+    if (offset < 0 || offset + 14 > MAXFONTS) {
+        fprintf(stderr, "setDefaultFontFamily: invalid offset %d (max %d)\n",
+                offset, MAXFONTS - 14);
+        result->info.i = fontFamilyDefaultOffset;
+        result->type = PKT_INT;
+        return 0;
+    }
+    fontFamilyDefaultOffset = offset;
     result->info.i = fontFamilyDefaultOffset;
     result->type = PKT_INT;
     return 1;

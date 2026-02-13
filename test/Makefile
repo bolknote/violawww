@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not test-do-while
 
 .PHONY: all test clean $(TESTS)
 
@@ -57,6 +57,7 @@ test:
 	-@$(MAKE) test-string-funcs >$(BUILD_DIR)/test-string-funcs.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-string-funcs: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-string-funcs: FAIL")
 	-@$(MAKE) test-destroy-variable >$(BUILD_DIR)/test-destroy-variable.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-destroy-variable: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-destroy-variable: FAIL")
 	-@$(MAKE) test-logical-not >$(BUILD_DIR)/test-logical-not.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-logical-not: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-logical-not: FAIL")
+	-@$(MAKE) test-do-while >$(BUILD_DIR)/test-do-while.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-do-while: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-do-while: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -210,6 +211,15 @@ test-destroy-variable: test_destroy_variable.c
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_destroy_variable test_destroy_variable.c
 	@./$(BUILD_DIR)/test_destroy_variable
 
+test-do-while: test_do_while.c $(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o $(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+	@echo ""
+	@echo "Building do-while loop tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_do_while test_do_while.c \
+		$(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o \
+		$(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
+	@./$(BUILD_DIR)/test_do_while
+
 test-logical-not: test_logical_not.c $(VIOLA_DIR)/gram.o $(VIOLA_DIR)/ast.o $(VIOLA_DIR)/violalex.o $(VIOLA_DIR)/cgen.o $(VIOLA_DIR)/ident.o $(VIOLA_DIR)/hash.o $(VIOLA_DIR)/mystrings.o
 	@echo ""
 	@echo "Building logical NOT operator tests..."
@@ -255,4 +265,5 @@ help:
 	@echo "  test-string-funcs    - String functions (deleteSubStr, replaceStrQ, sprintf, countWords, not, item, nthItem)"
 	@echo "  test-destroy-variable - Variable destruction tests"
 	@echo "  test-logical-not     - Logical NOT (!) operator tests"
+	@echo "  test-do-while        - Do-while loop tests"
 

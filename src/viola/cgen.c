@@ -863,6 +863,26 @@ int codeGen(AST* ast, union PCode* pcode, int* pc)
         switchHelper(ast, pcode, pc);
         break;
 
+    case AST_DO: {
+        int lpc;
+
+        /* generate init expression code */
+        codeGen(ast->children, pcode, pc);
+
+        /* mark loop body start */
+        lpc = *pc;
+
+        /* generate body code */
+        codeGen(ast->children->next, pcode, pc);
+
+        /* generate condition expression code */
+        codeGen(ast->children->next->next, pcode, pc);
+
+        /* conditional branch back to body if non-zero */
+        tempi = -(lpc - *pc - 1);
+        XEMIT(0xe0000000 | CODE_NBR2_NZERO << 16 | tempi);
+    } break;
+
     case AST_WHILE: {
         int lpc, jpc;
 

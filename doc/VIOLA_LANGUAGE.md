@@ -246,13 +246,15 @@ for (i = 0; i < count; i++) {
 }
 ```
 
-#### Do-While Loop
+#### Do-While Loop (**ViolaWWW 4.0**)
 
 ```c
 do (init) {
     /* body */
 } while (condition);
 ```
+
+> **Note on `do-while`:** The original grammar (`gram.y`) parsed this construct and built `AST_DO` nodes, but `codeGen()` in `cgen.c` had no handler for `AST_DO` — it fell through to the error case. The do-while loop was implemented in ViolaWWW 4.0.
 
 ### Keywords
 

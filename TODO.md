@@ -14,8 +14,8 @@
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.
 
 ### Viola Interpreter
-- [ ] Implement `do-while` loop code generation (`src/viola/cgen.c`)
-  - `AST_DO` is parsed by the grammar (`gram.y:342`) but has no `case AST_DO:` handler in `codeGen()`. Needs implementation analogous to `AST_WHILE`/`AST_FOR`.
+- [x] Implement `do-while` loop code generation (`src/viola/cgen.c`)
+  - `AST_DO` was parsed by the grammar (`gram.y:342`) but had no `case AST_DO:` handler in `codeGen()`. Now implemented with `CODE_NBR2_NZERO` for the conditional backward branch.
 
 ### Core & HTML
 - [ ] Implement HTML editing functions (`src/viola/html.c`)

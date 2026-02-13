@@ -492,14 +492,21 @@ static HTTag tags[] = {
     {"SAMP", no_attr, 0, SGML_MIXED, 0, 0},
     {"SCALE", scale_attr, HTML_SCALE_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SCREEN", no_attr, 0, SGML_MIXED, 0, 0},
-    {"SCRIPT", script_attr, HTML_SCRIPT_ATTRIBUTES, SGML_CDATA, 0, 0},
+    /* SGML_LITTERAL: parser treats all content as literal data and only
+     * recognizes the exact closing tag </SCRIPT>.  This prevents JS code
+     * like  if (a < b)  or  document.write("<p>")  from being mis-parsed
+     * as HTML markup.  (Was SGML_CDATA, but the parser never implemented
+     * the CDATA content model — it treated '<' as tag-open just like in
+     * SGML_MIXED, causing phantom tags inside script blocks.) */
+    {"SCRIPT", script_attr, HTML_SCRIPT_ATTRIBUTES, SGML_LITTERAL, 0, 0},
     {"SECTION", section_attr, HTML_SECTION_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SECURITY", security_attr, HTML_SECURITY_ATTRIBUTES, SGML_EMPTY, 0, 0},
     {"SELECT", select_attr, HTML_SELECT_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SIZE", size_attr, HTML_SIZE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"SQUARE", square_attr, HTML_SQUARE_ATTRIBUTES, SGML_MIXED, 0, 0},
     {"STRONG", no_attr, 0, SGML_MIXED, 0, 0},
-    {"STYLE", no_attr, 0, SGML_CDATA, 0, 0},
+    /* Same rationale as SCRIPT above — see comment there. */
+    {"STYLE", no_attr, 0, SGML_LITTERAL, 0, 0},
     {"SUB", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
     {"SUP", no_attr, 0, SGML_MIXED, style_validSubElements, style_validSubElementsCount},
     {"TABLE", table_attr, HTML_TABLE_ATTRIBUTES, SGML_MIXED, 0, 0},

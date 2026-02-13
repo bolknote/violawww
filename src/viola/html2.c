@@ -230,8 +230,15 @@ enum sgmlsAttributeTypes {
 
 int sgml_verbose = 0;
 
-/* Flag to track if we're inside SCRIPT or STYLE tags */
-static int inside_ignore_tag = 0;
+/* Element number of the SCRIPT or STYLE tag we're currently inside,
+ * or -1 when not inside either.  Storing the element number (rather than
+ * a plain boolean) prevents a mismatched close tag — e.g. </style>
+ * inside a <script> block — from accidentally clearing the guard.
+ *
+ * Primary protection comes from SGML_LITTERAL content model in the
+ * SGML parser: only the exact matching close tag triggers end_element.
+ * This flag provides defense-in-depth on the builder side. */
+static int inside_ignore_element = -1;
 
 /* Flag to track if we're inside Wayback Toolbar comments */
 static int inside_wayback_comment = 0;
@@ -378,7 +385,7 @@ void CB_HTML_new() {
     /*printf("CB_HTML_new\n");*/
 
     /* Reset ignore tag flag */
-    inside_ignore_tag = 0;
+    inside_ignore_element = -1;
     
     /* Reset Wayback comment flag */
     inside_wayback_comment = 0;
@@ -537,7 +544,7 @@ void CB_HTML_data(char* str, int size)
     }
     
     /* Ignore data inside SCRIPT and STYLE tags */
-    if (inside_ignore_tag) {
+    if (inside_ignore_element >= 0) {
         return;
     }
     
@@ -658,9 +665,22 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
     }
 #endif
 
-    /* Ignore SCRIPT and STYLE opening tags - they are handled by SGML parser */
+    /* Ignore SCRIPT and STYLE opening tags — content is suppressed until
+     * the matching close tag arrives.  The SGML parser uses SGML_LITTERAL
+     * content model for these elements, so it will not call CB_HTML_stag
+     * for any markup inside the block; only the exact close tag triggers
+     * CB_HTML_etag.  We record WHICH element we're inside so that only
+     * the matching close tag can clear the guard (defense-in-depth). */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
-        inside_ignore_tag = 1;
+        inside_ignore_element = element_number;
+        return;
+    }
+
+    /* Defense-in-depth: if the SGML parser somehow delivers a start tag
+     * while we're inside a SCRIPT/STYLE block (should never happen with
+     * SGML_LITTERAL, but guard against parser bugs), silently drop it.
+     * Returning before any stack manipulation keeps SBI.stacki consistent. */
+    if (inside_ignore_element >= 0) {
         return;
     }
 
@@ -1224,9 +1244,21 @@ void CB_HTML_etag(int element_number)
     }
 #endif
 
-    /* Ignore SCRIPT and STYLE closing tags - they are handled by SGML parser */
+    /* Ignore SCRIPT and STYLE closing tags.  Only clear the guard if
+     * the close tag matches the element that set it — this prevents a
+     * stray </style> from disabling a guard set by <script>, etc.
+     * With SGML_LITTERAL content model, the parser guarantees only the
+     * matching close tag reaches here; the element check is defense-in-depth. */
     if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
-        inside_ignore_tag = 0;
+        if (inside_ignore_element == element_number) {
+            inside_ignore_element = -1;
+        }
+        return;
+    }
+
+    /* Defense-in-depth: if the SGML parser somehow delivers an end tag
+     * while we're inside a SCRIPT/STYLE block, silently drop it. */
+    if (inside_ignore_element >= 0) {
         return;
     }
 

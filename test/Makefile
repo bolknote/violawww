@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not test-do-while
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not test-do-while test-script-style-skip
 
 .PHONY: all test clean $(TESTS)
 
@@ -58,6 +58,7 @@ test:
 	-@$(MAKE) test-destroy-variable >$(BUILD_DIR)/test-destroy-variable.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-destroy-variable: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-destroy-variable: FAIL")
 	-@$(MAKE) test-logical-not >$(BUILD_DIR)/test-logical-not.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-logical-not: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-logical-not: FAIL")
 	-@$(MAKE) test-do-while >$(BUILD_DIR)/test-do-while.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-do-while: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-do-while: FAIL")
+	-@$(MAKE) test-script-style-skip >$(BUILD_DIR)/test-script-style-skip.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-script-style-skip: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-script-style-skip: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -232,6 +233,17 @@ test-logical-not: test_logical_not.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 		test_logical_not.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
 	@./$(BUILD_DIR)/test_logical_not
 
+# SGML parser integration test for SCRIPT/STYLE skipping
+SGML_TEST_OBJS := $(LIBWWW_DIR)/SGML.o $(LIBWWW_DIR)/HTMLDTD.o $(LIBWWW_DIR)/HTChunk.o $(LIBWWW_DIR)/HTString.o
+
+test-script-style-skip: test_script_style_skip.c $(SGML_TEST_OBJS)
+	@echo ""
+	@echo "Building SCRIPT/STYLE skipping tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_script_style_skip \
+		test_script_style_skip.c $(SGML_TEST_OBJS)
+	@./$(BUILD_DIR)/test_script_style_skip
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -269,4 +281,5 @@ help:
 	@echo "  test-destroy-variable - Variable destruction tests"
 	@echo "  test-logical-not     - Logical NOT (!) operator tests"
 	@echo "  test-do-while        - Do-while loop tests"
+	@echo "  test-script-style-skip - SCRIPT/STYLE content skipping tests"
 

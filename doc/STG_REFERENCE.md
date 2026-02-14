@@ -9,12 +9,12 @@ ViolaWWW uses a hierarchical stylesheet system called **STG** that predates CSS 
 
 > **Note on the abbreviation**: The exact expansion of "STG" is not documented in the original sources. However, based on the system's data structure (which includes `STGGroup`, `STGMajor` with tag ID lists, and style assertions), it is most likely **Style Tag Group** — a group that contains style rules for HTML tags. The original author (Pei Y. Wei) used "STG" as the name for the stylesheet library and file format, but did not explicitly define what the acronym stands for in the documented sources.
 
-> **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. The initial stylesheet proposal was written by **Rob Raisch** in summer 1993. After Rob Raisch left ORA, Pei Wei inherited the work, refined the design, created a prototype implementation in Viola, and finalized the implementation. An early public example of the stylesheet language was posted to WWW-Talk on **October 22, 1993**, noting a prototype implementation in Viola. A longer “Stylesheet RFC” text is dated **Oct 23, 1993** in its own header and was later re-posted to WWW-Talk (Oct 25, 1994). Pei Wei planned to create a more formal RFC and a stand-alone library for all W3 browsers. In October 1994, Pei Wei re-published the Stylesheet RFC, noting that the code was written as a library independent of viola, making it easy for other browsers to reuse. This work predates CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
+> **Historical Note**: This stylesheet system was designed by **Pei Y. Wei** (pei@ora.com) at O'Reilly & Associates. The initial stylesheet proposal was written by **Rob Raisch** in summer 1993. After Rob Raisch left ORA, Pei Wei [inherited the work](http://1997.webhistory.org/www.lists/www-talk.1993q4/0276.html), refined the design, created a prototype implementation in Viola, and finalized the implementation. One week before going public, on [October 15, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0223.html), Pei Wei published a browser capabilities chart comparing 11 browsers (Cello, Emacs-W3, Erwise, LineMode, Lynx, MidasWWW, Mosaic-Mac/Win/X, TkWWW, ViolaWWW) — ViolaWWW was the **only browser** with any stylesheet support, marked as `uie` (unavailable to public, incomplete, experimental). An early public example of the stylesheet language was posted to WWW-Talk on **[October 22, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0265.html)**, noting a prototype implementation in Viola. A longer “Stylesheet RFC” text is dated **Oct 23, 1993** in its own header and was later re-posted to WWW-Talk ([Oct 24](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) and [Oct 25, 1994](http://1997.webhistory.org/www.lists/www-talk.1994q4/0401.html)). Pei Wei planned to create a more formal RFC and a stand-alone library for all W3 browsers. In October 1994, Pei Wei re-published the Stylesheet RFC, noting that the code was written as a library independent of viola, making it easy for other browsers to reuse. In the [ViolaWWW 3.3 release announcement (April 1995)](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html), Pei Wei described the system as a *"Rudimentary stylesheet mechanism for attaching styling information to a document. For changing document's fonts, color information, alignments."* This work predates CSS (first proposed December 1994). It was never adopted as a web standard, but represents one of the earliest attempts at separating presentation from content on the web.
 
 **References**:
 - [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - Pei Wei requests feedback on stylesheet syntax, notes prototype implementation in viola
 - [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal
-- [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- [WWW-Talk (Oct 24, 1994): Re: Cascading HTML style sheets — first posting of Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) ([mirror](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html)) - Pei Wei's first re-posting of the Stylesheet RFC with unique commentary on cascading effects, context sensitivity critique of CSS, minor selectors introduction, and conditional stylesheet ideas
 - ~~[Stylesheet RFC (Oct 23, 1993)](http://pebble.berkeley.ora.com/vdoc/style/stylesheetRFC.txt)~~ - Original RFC text (link no longer available; content included in WWW-Talk archives above)
 - ~~[Sample stylesheet demo (Oct 1994)](http://pebble.berkeley.ora.com/vdoc/style/sample.html)~~ - Example working stylesheet demonstration (link no longer available)
 - [Viola Stylesheet Specification (Chapter 14)](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Web Archive snapshot from 2000
@@ -50,7 +50,11 @@ Stylesheets are linked using the HTML `<LINK>` tag in the document head or body:
 
 ### Multiple Stylesheets and Live Switching
 
-**⚠️ CRITICAL CONCEPT**: Unlike CSS, STG stylesheets apply **only from the point of inclusion downward** in the document. Viola processes `<link rel="style">` by freeing the currently loaded stylesheet (`STG_clean()` in `HTML_link_script.v`) and then loading the new file, so only **one** stylesheet is active at any time. This means:
+**⚠️ CRITICAL CONCEPT**: Unlike CSS, STG stylesheets apply **only from the point of inclusion downward** in the document. Viola processes `<link rel="style">` by freeing the currently loaded stylesheet (`STG_clean()` in `HTML_link_script.v`) and then loading the new file, so only **one** stylesheet is active at any time.
+
+> **Design rationale**: This replacement-based approach was a deliberate choice. Pei Wei [explained](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html): *"As I'm experimenting with the stylesheets in violaWWW, I noticed that by mixing different stylesheets, it's very easy to have the styles clashing in a bad way. Consequently I end up using stylesheets to take over the entire styling effects, or have to be very conscious of the effects of the mixing."*
+
+This means:
 
 1. **Position matters**: A `<link>` tag only affects HTML elements that appear **after** it in the document
 2. **Multiple stylesheets**: You can include many `<link>` tags throughout your document to swap styles mid-stream
@@ -236,6 +240,8 @@ Attributes are **inherited** down the tree unless explicitly overridden:
 ---
 
 ## Minor Selectors (Attribute-Based)
+
+> **Historical Note**: Minor selectors were **not** part of the original Stylesheet RFC (Oct 23, 1993). They were introduced by Pei Wei a year later, on [October 24, 1994](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html), with the words: *"One more thing not mentioned in the above RFC. There should be a way to take attributes into account."* He then demonstrated the `{STYLE "WARNING"}` syntax for the first time.
 
 ### Syntax
 
@@ -511,7 +517,7 @@ Sets the font to monospace.
 
 Selects the font family for an element. When set in STG, this overrides the default family chosen via the Fonts menu. Both sans-serif (Helvetica) and serif (Times) font families are loaded simultaneously at startup; `fontFamily` controls which is used for a given element.
 
-> **Historical note**: Early examples used `fontFamily=fixed` (see the 1993 WWW-Talk post above), and this was the only documented value. The implementation now supports `serif`/`sans-serif` as well, allowing per-element font family selection while the Fonts menu acts as a lower-priority default.
+> **Historical note**: In the [original posting on October 22, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0266.html), Pei Wei used `fontFamily=fixed` for monospace elements: `(CMD,KBD,SCREEN,LISTING,EXAMPLE fontFamily=fixed)`. The very next day (Oct 23), in the Stylesheet RFC, this was changed to `fontSpacing=mono` — introducing `fontSpacing` as a separate concept. The `fontFamily` attribute was later re-purposed for serif/sans-serif selection (implemented in ViolaWWW 4.0).
 
 ```
 (BODY fontFamily=sans-serif
@@ -681,6 +687,18 @@ The TODO list in `libstg.c:5-10` also mentions:
 - Input from file descriptors
 - Cached lookups
 - Support for `ROLE` attribute in minors (e.g., `<EM role="WARNING">`)
+
+#### Conditional/Macro Stylesheet Language (NOT IMPLEMENTED)
+
+In his [October 1994 posting](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html), responding to Håkon Lie's CSS proposal which included a macro/scripting language, Pei Wei considered browser-conditional styling — an early analog of what later became CSS media queries:
+
+> *"Also, the macro language could perhaps help to decide certain things. Like it could help to decide switching to different presentation styles depending on the condition of the browser?"*
+
+However, he deliberately postponed this feature:
+
+> *"Neat as it is, though, it seems like a big can of worms, especially at this early point when we're trying to get people to use it at all. I suggest such macro/scripting language be kept in mind, but postponed for the first cut. At least until we've some experience with it a little."*
+
+**Status**: Never implemented. The concept of conditional styling based on browser capabilities was later standardized as [CSS Media Queries](https://www.w3.org/TR/mediaqueries-3/) (CSS3, 2012).
 
 ---
 
@@ -1152,6 +1170,7 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 1. **Tag and attribute matching is case-sensitive in ViolaWWW**
    - In the ViolaWWW integration (`src/viola/stgcall.c`), tag names are interned exactly as seen; no case-folding is performed.
    - Practical rule: write selectors in the same case as the HTML parser provides (typically uppercase: `BODY`, `P`, `H1`).
+   - **Note**: The original [Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) states *"Everything not in quotes is case insensitive"*, indicating the design intent was case-insensitive matching. This was never implemented — the `tagName2ID()` function in `stgcall.c` uses case-sensitive string hashing.
    
 2. **No error reporting**: Invalid syntax may be silently ignored
    - Parser prints errors to stdout with `printf()` but continues parsing
@@ -1279,11 +1298,18 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 ### Primary Sources
 - [WWW-Talk (Oct 22, 1993): "Stylesheet Language" sample stylesheet](https://www.wiumlie.no/2006/phd/archive/www.webhistory.org/www.lists/www-talk.1993q4/0264.html) - Pei Wei requests feedback on stylesheet syntax, notes prototype implementation in viola
 - [WWW-Talk (Oct 25, 1994): Re: Cascading HTML style sheets — includes “Stylesheet RFC, Oct 23 1993”](https://www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0401.html) - discusses library implementation (independent of viola), mixing stylesheets and conflicts, context sensitivity, and comments on Håkon Lie's CSS proposal
-- [Stylesheet RFC archive (wiumlie.no)](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html) - Håkon Wium Lie's CSS history archive
+- [WWW-Talk (Oct 24, 1994): Re: Cascading HTML style sheets — first posting of Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) ([mirror](https://www.wiumlie.no/2006/phd/archive/www.w3.org/Style/History/www.eit.com/www.lists/www-talk.1994q4/0387.html)) - Pei Wei's first re-posting of the Stylesheet RFC with unique commentary on cascading effects, context sensitivity critique of CSS, minor selectors introduction, and conditional stylesheet ideas
 - ~~[Stylesheet RFC (Oct 23, 1993)](http://pebble.berkeley.ora.com/vdoc/style/stylesheetRFC.txt)~~ - Original RFC text (link no longer available; content included in WWW-Talk archives above)
 - ~~[Sample stylesheet demo (Oct 1994)](http://pebble.berkeley.ora.com/vdoc/style/sample.html)~~ - Example working stylesheet demonstration (link no longer available)
 - [Web Archive: Viola Stylesheet Specification](https://web.archive.org/web/20000111003334/http://viola.org/book/chp14.html) - Chapter 14 of Viola documentation
 - [Web Archive: Viola Styles Directory](https://web.archive.org/web/20040427234619id_/http://www.xcf.berkeley.edu/~wei/viola/styles/) - Original `.stg` files from Pei Wei
+
+### WWW-Talk Mailing List Posts (webhistory.org)
+- [WWW-Talk (Oct 15, 1993): Browser capabilities chart](http://1997.webhistory.org/www.lists/www-talk.1993q4/0223.html) - Pei Wei's chart showing ViolaWWW as the only browser with stylesheet support (`uie` status)
+- [WWW-Talk (Oct 22, 1993): "Stylesheet Language" — explanatory text](http://1997.webhistory.org/www.lists/www-talk.1993q4/0265.html) - Context-sensitive styling explanation, inheritance, `<LINK>` syntax
+- [WWW-Talk (Oct 22, 1993): Marc Andreessen's reply with full quote of original post](http://1997.webhistory.org/www.lists/www-talk.1993q4/0266.html) - Preserves the original sample stylesheet (0264 is empty in archives); shows `fontFamily=fixed` before rename to `fontSpacing=mono`
+- [WWW-Talk (Oct 23, 1993): Pei Wei on inheriting the work from Rob Raisch](http://1997.webhistory.org/www.lists/www-talk.1993q4/0276.html) - *"After Rob left ORA I've basically inherited the stylesheet problem"*
+- [WWW-Talk (Apr 17, 1995): Release of ViolaWWW 3.3](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html) - Official release describing stylesheet as "rudimentary"
 
 ### Related Documentation
 - `HMML_REFERENCE.md` - HMML markup language reference
@@ -1292,5 +1318,5 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 
 ---
 
-*Last updated: February 10, 2026*
+*Last updated: February 14, 2026*
 

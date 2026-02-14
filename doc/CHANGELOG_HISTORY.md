@@ -324,20 +324,6 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Source**
   - [WWW-Talk 1995: Re: Java, Viola, and prior art](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
 
-### Circa 1993 — About/Status screenshot (use only the dated “Status” list items)
-
-- **Evidence**
-  - **Artifact**: archived viola.org home page includes a “circa 1993” screenshot of the About/Status page
-- **What we use it for (and what we do not)**
-  - We treat only the screenshot’s **Status list** entries as dated claims:
-    - “April 1993: Alpha release…”
-    - “May 10, 1992: Beta release…”
-    - “March 9 to April 20, 1992: Releases to the WWW people at CERN for tests.”
-- **Source**
-  - [Viola home page (archived)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
-
----
-
 ### 1993-09-04 — HTML forms discussion (URL query syntax)
 
 - **Evidence**
@@ -353,6 +339,18 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Source**
   - [WWW-Talk 1993: Stylesheet Language (Pei Y. Wei)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0264.html)
   - [WWW-Talk 1993: Stylesheet Language (continuation; derived behavior and `<LINK REL=\"STYLE\">`)](http://1997.webhistory.org/www.lists/www-talk.1993q4/0265.html)
+
+### Circa 1993 — About/Status screenshot (use only the dated “Status” list items)
+
+- **Evidence**
+  - **Artifact**: archived viola.org home page includes a “circa 1993” screenshot of the About/Status page
+- **What we use it for (and what we do not)**
+  - We treat only the screenshot’s **Status list** entries as dated claims:
+    - “April 1993: Alpha release…”
+    - “May 10, 1992: Beta release…”
+    - “March 9 to April 20, 1992: Releases to the WWW people at CERN for tests.”
+- **Source**
+  - [Viola home page (archived)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
 
 ---
 
@@ -499,7 +497,13 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1992-10 to 1992-11 | — | Memory leak and scrollable region discussions |
 | Early 1993 | — | “Next release” preparation threads; some secondary dating exists |
 | 1993-04-21 | — | HMML mention (WWW-Talk) |
+| 1993-05-08 | — | Applets demonstration (secondary source) |
+| 1993-05-25 | — | HMML DTD / “HTML+” mention (WWW-Talk) |
+| 1993-05-28 | — | `<FIGURE>` proposal in HMML (WWW-Talk) |
+| 1993-08 | — | First Web Conference demonstrations (secondary source) |
+| 1993-09-04 | — | HTML forms discussion (WWW-Talk) |
 | 1993-10-22 | — | STG stylesheet language post (WWW-Talk) |
+| Circa 1993 | — | About/Status screenshot (artifact; Status list entries only) |
 | 1994-01 | — | FIGA support (WWW-Talk) |
 | 1994-02-23 to 1994-02-25 | 3.0 Beta | README date + announcement |
 | 1994-03-23 to 1994-03-24 | 3.1 Beta | README date + announcement |

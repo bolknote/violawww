@@ -240,6 +240,15 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - `tmp/viola920730/viola/README` (archive README; dated “July 27, 1992”)
   - `tmp/viola920730/viola/apps/www.v` (“Overview, ViolaWWW” content with Status list)
 
+### 1992 summer — Viola at Xerox PARC (secondary source)
+
+- **Evidence**
+  - **Secondary source**: Tim Berners-Lee, *Weaving the Web* (1999)
+- **What the source says**
+  - When Berners-Lee visited Xerox PARC in summer 1992, the lab was not using Viola because it had to be compiled with special code to work through PARC’s firewall. “The first thing I did on arrival was to do that” so the team could use the browser.
+- **Source**
+  - Tim Berners-Lee, *Weaving the Web* (HarperCollins, 1999), Ch. 5
+
 ### 1992-09 — Pei Wei joins O’Reilly & Associates (W3 News)
 
 - **Evidence**
@@ -247,8 +256,10 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Note**
   - This marks the start of O’Reilly-era work referenced in later WWW-Talk posts and in the 1994 beta announcements.
   - W3 News notes he had a “prototype W3 browser” with features including embedded graphics, scrollable lists, and generic SGML parsing, and adds: “we hope an editor will come out of that work.”
+  - **Secondary source**: Tim Berners-Lee’s May 1992 CERN review of ViolaWWW already stated that Pei Wei was “finishing his degree at UC Berkeley” and “will be with O’Reilly Associates” — the O’Reilly arrangement was thus known before the September W3 News announcement.
 - **Source**
   - [W3.org History: W3 News (September ’92)](https://www.w3.org/History/19921103-hypertext/hypertext/WWW/News/9209.html)
+  - [CERN/W3: An updated quick look at ViolaWWW (May 1992)](https://info.cern.ch/hypertext/Viola/Review.html)
 
 ### 1992-10 to 1992-11 — Stability and rendering notes (memory leaks; scrollable regions)
 
@@ -268,6 +279,8 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **Evidence**
   - **Announcement**: discussions across early 1993 WWW-Talk threads
   - **Secondary note**: Internet World (1995) narrative about “generally available” in Jan 1993 (treated as non-primary dating)
+- **Context (secondary source)**
+  - Tim Berners-Lee (*Weaving the Web*, 1999) reports that David Thompson, a manager at NCSA, had downloaded Viola, got it running, and demonstrated its use with the CERN server to NCSA’s Software Design Group. It was after this demonstration that Marc Andreessen and Eric Bina decided to create a browser for X — which became Mosaic (first alpha released February 1993).
 - **Selected details from the 1993 threads**
   - Memory leaks: reports describe ViolaWWW “leaking memory” over time; Pei Wei replied that many leaks were found (via Purify) and plugged in a working copy, including issues around piling up pixmaps/fonts affecting the X server.
   - WAIS results: Pei Wei noted that a version of ViolaWWW “forgets” the search result page after following a link; the suggested workaround was to clone the results page before navigating.
@@ -281,6 +294,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [WWW-Talk 1993: libwww 2.0-alpha sources announcement](http://1997.webhistory.org/www.lists/www-talk.1993q1/0246.html)
   - [WWW-Talk 1995: Re: Java, Viola, and prior art (author retrospective; applets timeline)](http://1997.webhistory.org/www.lists/www-talk.1995q3/0437.html)
   - [Internet World (Apr 1995): “Webolution” (archived text; secondary)](https://archive.org/stream/InternetWorldV06N04/Internet_World_V06N04_djvu.txt)
+  - Tim Berners-Lee, *Weaving the Web* (HarperCollins, 1999), Ch. 6 — NCSA / Viola demonstration (secondary)
 
 ### 1993-04-21 — HMML mentioned as an O’Reilly multimedia extension
 

@@ -76,9 +76,15 @@ ViolaWWW was created alongside other early browsers including Erwise (by Finnish
 
 Tim was really excited about ViolaWWW and started discussions with Pei Wei about cross-licensing software. Wei could make free use of the CERN code and CERN could use Viola as long as neither tried to make a profit at the other's expense. It was an arrangement in the spirit of GNU General Public License and it was just what the Web needed. CERN soon had the ViolaWWW code sitting on the info.cern.ch server free for anyone to download.[^8]
 
+### Summer 1992 — Meeting with Tim Berners-Lee
+
+During his 1992 visit to the United States, Tim Berners-Lee met Pei Wei at a café outside San Francisco. Berners-Lee tried to persuade him to make installation easier and to add editing capabilities to the browser — still his ideal for the Web. Wei's interest, however, remained in Viola as a computer language; he saw the Web as one application of it.[^25] When Berners-Lee told him that further development would make Viola *"the flagship of Web browsers,"* Pei smiled but chose to keep the program as his own research tool.[^25]
+
 ### Working at O'Reilly Media (1992–1995)
 
-Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei began working with O'Reilly & Associates in September 1992 (announced in W3 News), and worked there through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^6][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
+Dale Dougherty at O'Reilly Associates saw the browser: *"so we went to lunch and he hired me."*[^8] Wei joined the **Digital Media group** at O'Reilly Associates in Sebastopol, California, run by Dale Dougherty.[^25] He began working there in September 1992 (announced in W3 News), and worked through at least August 1995, having previously worked at UC Berkeley from December 1991 to May 1993.[^6][^17][^18][^19] Wei's policy of eschewing a real job was paying off — now he had a real job where he could continue to play with computers.
+
+Tim Berners-Lee's May 1992 review of ViolaWWW for the CERN/W3 site already noted that Wei was *"finishing his degree at UC Berkeley"* and *"will be with O'Reilly Associates"* — the arrangement was in place before the formal September 1992 announcement in W3 News.[^28] Wei participated in the first **WWW Wizards Workshop** in Cambridge, Massachusetts (organized by Dale Dougherty of O'Reilly), alongside Lou Montulli, Eric Bina, Marc Andreessen, Tom Bruce, Steve Putz, and other early Web developers — a key gathering of the nascent Web community.[^25]
 
 Viola made the task O'Reilly gave Wei easy, so he had plenty of time to keep working on ViolaWWW. O'Reilly was interested in stand-alone electronic versions of its books. With Viola, it took just a few lines of code to put a "button" object on the screen and have it link through to somewhere else.[^8]
 
@@ -103,7 +109,7 @@ Wei donated his Viola design notebooks, software, and video materials to the Com
 
 ### Recognition by Tim Berners-Lee
 
-Tim Berners-Lee spoke about Pei Wei in glowing terms in his book "Weaving the Web" and in numerous interviews.[^7] In his address at CERN in 1998, upon accepting a fellowship, he said:
+Tim Berners-Lee spoke about Pei Wei in glowing terms in his book *Weaving the Web* (1999) and in numerous interviews.[^7][^25] In his address at CERN in 1998, upon accepting a fellowship, he said:
 
 > *"It's worth saying that I feel a little embarrassed accepting a fellowship when there are people like Pei Wei ...[who] read about the World Wide Web on a newsgroup somewhere and had some interesting software of his own; an interpreted language which could be moved across the NET and could talk to a screen.. in fact what he did was really ahead of his time."*[^7]
 
@@ -126,7 +132,10 @@ ViolaWWW is a discontinued web browser developed based on the Viola language. Re
 - Mentioned in Ed Krol's book "Whole Internet User's Guide and Catalog" (1992).[^4]
 - Mentioned in popular press: a 1997 Scientific American profile of Tim Berners-Lee notes that Mosaic's creators had seen early browsers such as ViolaWWW, and credits Mosaic (1993) with the Web's takeoff.[^23]
 - A mid-1990s secondary overview in *Internet World* describes Viola as one of the earliest full-screen WWW browsers, and reports (as a narrative timeline summary) that an early version was available in mid-1992 and that the X/Window browser was generally available in January 1993.[^24]
-- **Direct inspiration for Mosaic**: When Marc Andreessen was shown ViolaWWW, it helped inspire him to start an effort at NCSA that would become Mosaic. Tim Berners-Lee also notes that Andreessen tried Tony Johnson's "Midas" before Mosaic was written at NCSA.[^7][^22]
+- **Direct inspiration for Mosaic**: David Thompson, a manager at NCSA, downloaded Viola, got it running, and demonstrated its use with the CERN server to the rest of NCSA's Software Design Group. It was after this demonstration that Marc Andreessen (a student) and Eric Bina (a staff member) decided to create a browser for X — which became Mosaic.[^25] Tim Berners-Lee also notes that Andreessen had tried Tony Johnson's "Midas" before Mosaic was written at NCSA.[^7][^22] NCSA itself later acknowledged that *"the initial version of Mosaic drew on the innovations of earlier browsers,"* including icon buttons, bookmarks, and varied fonts — features that Viola had pioneered.[^26]
+- **Inspiration for Cello**: Thomas R. Bruce, creator of Cello (the first significant Web browser for Windows), stated that when he saw the CERN line-mode browser and the Viola client, he concluded that the Web concept was important but that a Windows browser with high functionality was needed — and went on to build Cello.[^24]
+- **"Early leader" and "productize"**: A 1995 *Internet World* overview described Viola as *"one of the earliest full-screen browsers"* and reported that Berners-Lee said it easily *"could have attained the important role later assumed by Mosaic if Wei had chosen to 'productize' it."*[^24] The 1995 book *Discover the World Wide Web with Your Sportster* called Viola *"the early leader in Web browsing technology, offering the first glimpse of the graphical, mouse-based hypertext system"* originally conceived by the Web proposal.[^27]
+- **Use at Xerox PARC**: When Tim Berners-Lee visited Xerox PARC in summer 1992, the lab was not using Viola because it had to be compiled with special code to work through PARC's firewall. The first thing Berners-Lee did on arrival was to compile Viola for that environment so the team could use it.[^25]
 - Became a model for Mosaic, Netscape Navigator, Internet Explorer, Firefox, Chrome.[^3][^4]
 - Involved in patent disputes (Eolas vs. Microsoft, 1999–2012): recognized as "prior art", which saved the web from monopoly on interactivity.[^4][^5] Wei had embedded objects working in Viola by December 1992, and in May 1993 demonstrated the browser with interactive 3D plotting objects to Sun Microsystems.[^11] Wei personally informed Michael Doyle (Eolas CEO) about Viola as prior art and provided him with documentation and source code pointers, but Doyle mentioned only Cello and Mosaic to the Patent Office — not Viola, which predated both. During the trial, Wei was not permitted to demonstrate Viola to the jury, as the judge ruled it would be "too prejudicial" against Eolas.[^11]
 
@@ -193,3 +202,7 @@ For further study: source code, design notebooks, and video materials are stored
 [^22]: [Tim Berners-Lee FAQ: "What were the first WWW browsers?"](https://www.w3.org/People/Berners-Lee/FAQ.html#browser)
 [^23]: [Scientific American (Dec 1997): “Molding the Web” profile of Tim Berners-Lee (archived)](https://web.archive.org/web/19980131090401id_/http://www.scientificamerican.com/1297issue/1297profile.html)
 [^24]: [Internet World (Apr 1995): “Internet World Vol 06 Num 04” (archived text)](https://archive.org/stream/InternetWorldV06N04/Internet_World_V06N04_djvu.txt)
+[^25]: Tim Berners-Lee, *Weaving the Web: The Original Design and Ultimate Destiny of the World Wide Web* (HarperCollins, 1999), chapters 5–6 and related passages
+[^26]: [NCSA Mosaic: Project Highlights](https://www.ncsa.illinois.edu/research/project-highlights/ncsa-mosaic/)
+[^27]: John December, Neil Randall, Wes Tatters, *Discover the World Wide Web with Your Sportster* (Sams.net, 1995), p. 12
+[^28]: [CERN/W3: An updated quick look at ViolaWWW (May 1992)](https://info.cern.ch/hypertext/Viola/Review.html)

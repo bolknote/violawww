@@ -93,7 +93,7 @@ rm -f "$PROJECT_DIR/ViolaWWW.dmg"
 echo "Creating DMG..."
 create-dmg \
     --volname "ViolaWWW" \
-    --volicon "$PROJECT_DIR/resources/ViolaWWW.icns" \
+    --volicon "$PROJECT_DIR/res/ViolaWWW.icns" \
     --format ULMO \
     --background "$BACKGROUND_PNG" \
     --window-pos 200 100 \
@@ -109,10 +109,10 @@ create-dmg \
 
 # Set custom icon on DMG file itself
 echo "Setting DMG icon..."
-if [ -f "$PROJECT_DIR/resources/ViolaWWW.icns" ]; then
+if [ -f "$PROJECT_DIR/res/ViolaWWW.icns" ]; then
     # Create icon resource
-    sips -i "$PROJECT_DIR/resources/ViolaWWW.icns" >/dev/null 2>&1 || true
-    DeRez -only icns "$PROJECT_DIR/resources/ViolaWWW.icns" > /tmp/icns.rsrc 2>/dev/null || true
+    sips -i "$PROJECT_DIR/res/ViolaWWW.icns" >/dev/null 2>&1 || true
+    DeRez -only icns "$PROJECT_DIR/res/ViolaWWW.icns" > /tmp/icns.rsrc 2>/dev/null || true
     Rez -append /tmp/icns.rsrc -o "$PROJECT_DIR/ViolaWWW.dmg" 2>/dev/null || true
     SetFile -a C "$PROJECT_DIR/ViolaWWW.dmg" 2>/dev/null || true
     rm -f /tmp/icns.rsrc

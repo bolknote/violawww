@@ -7,7 +7,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 XBM_FILE="$PROJECT_DIR/src/viola/violaIcon.xbm"
-OUTPUT_DIR="$PROJECT_DIR/resources"
+OUTPUT_DIR="$PROJECT_DIR/res"
 ICONSET_DIR="$OUTPUT_DIR/ViolaWWW.iconset"
 ICNS_FILE="$OUTPUT_DIR/ViolaWWW.icns"
 

@@ -910,16 +910,16 @@ app: $(VW) $(LAUNCHER)
 		cp -r vplot_dir $(APP_RESOURCES)/; \
 	fi
 	@# Copy icon if exists, or generate it
-	@if [ -f resources/ViolaWWW.icns ]; then \
+	@if [ -f res/ViolaWWW.icns ]; then \
 		echo "Copying icon..."; \
-		cp resources/ViolaWWW.icns $(APP_RESOURCES)/; \
+		cp res/ViolaWWW.icns $(APP_RESOURCES)/; \
 	elif [ -x scripts/make-icon.sh ]; then \
 		echo "Generating icon..."; \
 		ICONSET_DIR=$(APP_RESOURCES)/ViolaWWW.iconset scripts/make-icon.sh; \
-		mv resources/ViolaWWW.icns $(APP_RESOURCES)/; \
+		mv res/ViolaWWW.icns $(APP_RESOURCES)/; \
 	fi
 	@echo "Creating Info.plist..."
-	@cp resources/Info.plist $(APP_CONTENTS)/Info.plist
+	@cp res/Info.plist $(APP_CONTENTS)/Info.plist
 	@printf 'APPL????' > $(APP_CONTENTS)/PkgInfo
 	@echo ""
 	@echo "Bundling dynamic libraries..."

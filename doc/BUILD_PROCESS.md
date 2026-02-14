@@ -261,7 +261,7 @@ magick background.png globe.png -composite background.png
 ```bash
 create-dmg \
     --volname "ViolaWWW" \
-    --volicon "resources/ViolaWWW.icns" \
+    --volicon "res/ViolaWWW.icns" \
     --format ULMO \                    # LZMA compression
     --background "background.png" \
     --window-size 640 580 \
@@ -276,7 +276,7 @@ create-dmg \
 
 ```bash
 # Embed icon resource in DMG file
-sips -i resources/ViolaWWW.icns
+sips -i res/ViolaWWW.icns
 DeRez -only icns ViolaWWW.icns > icns.rsrc
 Rez -append icns.rsrc -o ViolaWWW.dmg
 SetFile -a C ViolaWWW.dmg

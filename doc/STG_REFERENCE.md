@@ -1,11 +1,13 @@
 # ViolaWWW Stylesheet (STG) Reference
 
 > **Documentation created in: ViolaWWW 4.0**  
-> This document describes the original STG stylesheet system from ViolaWWW v3.x (1992-1995). Minor selectors and `traversedForegroundColor` support were restored/enhanced in v4.0.
+> This document describes the original STG stylesheet system from ViolaWWW v3.x (1993-1995). Minor selectors and `traversedForegroundColor` support were restored/enhanced in v4.0.
 
 ## Introduction
 
 ViolaWWW uses a hierarchical stylesheet system called **STG** that predates CSS and has its own unique syntax and capabilities. STG files have the `.stg` extension and provide context-sensitive styling for HTML documents.
+
+> **Earliest surviving implementation**: The earliest surviving source archive containing STG support is **ViolaWWW 3.1 Beta** (`viola940323.tar.gz`, March 23, 1994). It includes the standalone library (`src/libStyle/libstg.c`, `libstg.h`), Viola integration (`src/viola/stgcall.c`, `stgcall.h`), and sample `.stg` stylesheet files (`sgml/styles/hmml.stg`, `HMML_default.stg`, etc.). No STG-related code exists in any earlier surviving archives: v2.0.4 (`viola-2.0.4.tar`, May 1992), v2.1.0 (`viola92src.tar`, July 1992), or v2.1.2 (`viola920730.tar.gz`, July 1992). The STG "Stylesheet Language" was first publicly described on [October 22, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0264.html), and the v3.1 Beta archive is the earliest known source code containing the implementation.
 
 > **Note on the abbreviation**: The exact expansion of "STG" is not documented in the original sources. However, based on the system's data structure (which includes `STGGroup`, `STGMajor` with tag ID lists, and style assertions), it is most likely **Style Tag Group** — a group that contains style rules for HTML tags. The original author (Pei Y. Wei) used "STG" as the name for the stylesheet library and file format, but did not explicitly define what the acronym stands for in the documented sources.
 

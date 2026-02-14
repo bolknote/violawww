@@ -406,6 +406,11 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Platform/build: “I’d appreciate hearing about compilation success stories (and patches) for platforms other than SunOS and Ultrix.”
   - Packaging note: Motif front-end; an X11 (non-Motif) version was also available; described as a single-binary installation (compared to older multi-file setups).
   - Requirements note: Viola requires X11R5; Motif version requires a Motif toolkit library; libwww bundled with ViolaWWW is modified.
+- **Archive source code contents (earliest surviving implementation of FOSI and STG)**
+  - The `viola940323.tar.gz` archive is the **earliest surviving source code** that contains both FOSI and STG support. Neither FOSI nor STG appears in any earlier surviving archives (`viola-2.0.4.tar` / v2.0.4, `viola92src.tar` / v2.1.0, `viola920730.tar.gz` / v2.1.2).
+  - **FOSI files**: `src/libWWW/Library/Implementation/FOSI.c`, `FOSI.h`, `FOSIDTD.c`, `FOSIDTD.h` (SGML parser infrastructure for FOSI DTD), and `src/viola/fosi.c` (Viola callback stubs for FOSI events).
+  - **STG files**: `src/libStyle/libstg.c`, `libstg.h` (standalone stylesheet parsing library with `STGMajor`/`STGMinor`/`STGAssert` structures), and `src/viola/stgcall.c`, `stgcall.h` (Viola integration for STG lookups). The `sgml/styles/` directory contains `.stg` stylesheet files (e.g., `hmml.stg`, `HMML_default.stg`, `test.stg`) — tree-structured stylesheets with properties such as `fontSize`, `FGColor`, `BGColor`, `fontSlant`.
+  - **Note**: The STG "Stylesheet Language" was first publicly discussed on [October 22, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0264.html), and FOSI support dates from the same development period (late 1993 to early 1994). See [STG_REFERENCE.md](STG_REFERENCE.md) and [FOSI_REFERENCE.md](FOSI_REFERENCE.md) for detailed documentation.
 - **Sources**
   - [WWW-Talk 1994: ViolaWWW Release (3.1 beta)](http://1997.webhistory.org/www.lists/www-talk.1994q1/1031.html)
   - [WWW-Talk 1994: FOLD attribute proposal](http://1997.webhistory.org/www.lists/www-talk.1994q1/1027.html)

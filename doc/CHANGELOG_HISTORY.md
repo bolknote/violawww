@@ -443,6 +443,16 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [WWW-Talk 1994: Stylesheet Language](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) (Oct 24)
   - [WWW-Talk 1994: Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0401.html) (Oct 25)
 
+### 1995-03-29 — W3C Clients page lists ViolaWWW as unsupported
+
+- **Evidence**
+  - **Archive snapshot**: W3C page “World Wide Web Client Software products” ([Clients.html](https://web.archive.org/web/20100616002711id_/http://www.w3.org/Clients.html)) states “This information has not been updated since 29 March 1995” and “Last updated 29 March 1995”.
+  - Under X-Windows, ViolaWWW is listed as: *“ViolaWWW” Browser for X11 — Browser for X11. (Beta, unsupported).*
+- **Note**
+  - By this date the official W3C client list already marked ViolaWWW as unsupported; the final known release (3.3 Beta) was announced in April 1995.
+- **Source**
+  - [W3C Clients (archived 2010; page last updated 29 March 1995)](https://web.archive.org/web/20100616002711id_/http://www.w3.org/Clients.html)
+
 ---
 
 ### 1995-04-10 to 1995-04-17 — Version 3.3 Beta (final known release)
@@ -511,6 +521,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1994-02-23 to 1994-02-25 | 3.0 Beta | README date + announcement |
 | 1994-03-23 to 1994-03-24 | 3.1 Beta | README date + announcement |
 | 1994-10-24 to 1994-10-25 | — | Stylesheet RFC re-published (WWW-Talk) |
+| 1995-03-29 | — | W3C Clients page lists ViolaWWW as (Beta, unsupported) |
 | 1995-04-10 to 1995-04-17 | 3.3 Beta | Final known release |
 | 2025-10-17 | 4.0 (revival) | Project revival in this repo |
 
@@ -524,5 +535,6 @@ This list is intentionally non-exhaustive; entries above should cite the primary
 - [Ancient Web Browsers: ViolaWWW About/Status screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
 - [W3.org History: www-talk archive 1991–1992](https://www.w3.org/History/1992/www-talk.archive.Z)
 - [W3.org History: www-talk archive Jan–Jun 1993](https://www.w3.org/History/1992/www-talk.9301-9306.Z)
+- [W3C Clients (archived; page last updated 29 March 1995)](https://web.archive.org/web/20100616002711id_/http://www.w3.org/Clients.html)
 
 *Last updated: February 2026*

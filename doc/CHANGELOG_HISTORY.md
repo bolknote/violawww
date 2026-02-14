@@ -432,13 +432,16 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [WWW-Talk 1994: multithreaded libwww inquiry](http://1997.webhistory.org/www.lists/www-talk.1994q2/0519.html)
   - [WWW-Talk 1994: multiple HTTP operations](http://1997.webhistory.org/www.lists/www-talk.1994q2/0542.html)
 
-### 1994-10 — Stylesheet RFC re-published
+### 1994-10-24 to 1994-10-25 — Stylesheet RFC re-published (WWW-Talk)
 
 - **Evidence**
-  - **Announcement**: WWW-Talk posts in October 1994
+  - **Announcement**: 1994-10-24 — first re-posting of Stylesheet RFC (with commentary on cascading, context sensitivity, minor selectors)
+  - **Announcement**: 1994-10-25 — follow-up mentioning “Stylesheet RFC, Oct 23 1993”, library implementation, and Håkon Lie’s CSS proposal
+- **Note**
+  - Same evidence and dates as in [STG_REFERENCE.md](STG_REFERENCE.md) (WWW-Talk archive message dates).
 - **Sources**
-  - [WWW-Talk 1994: Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0401.html)
-  - [WWW-Talk 1994: Stylesheet Language](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html)
+  - [WWW-Talk 1994: Stylesheet Language](http://1997.webhistory.org/www.lists/www-talk.1994q4/0387.html) (Oct 24)
+  - [WWW-Talk 1994: Stylesheet RFC](http://1997.webhistory.org/www.lists/www-talk.1994q4/0401.html) (Oct 25)
 
 ---
 
@@ -507,7 +510,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1994-01 | — | FIGA support (WWW-Talk) |
 | 1994-02-23 to 1994-02-25 | 3.0 Beta | README date + announcement |
 | 1994-03-23 to 1994-03-24 | 3.1 Beta | README date + announcement |
-| 1994-10 | — | Stylesheet RFC re-published |
+| 1994-10-24 to 1994-10-25 | — | Stylesheet RFC re-published (WWW-Talk) |
 | 1995-04-10 to 1995-04-17 | 3.3 Beta | Final known release |
 | 2025-10-17 | 4.0 (revival) | Project revival in this repo |
 

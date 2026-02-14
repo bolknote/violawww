@@ -1314,9 +1314,9 @@ void STG_dumpAssert(STGAssert* assert, int level); // Print style assertion
 - [WWW-Talk (Apr 17, 1995): Release of ViolaWWW 3.3](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html) - Official release describing stylesheet as "rudimentary"
 
 ### Related Documentation
-- `HMML_REFERENCE.md` - HMML markup language reference
-- `MATH_REFERENCE.md` - Mathematical notation in ViolaWWW
-- `README.md` - Project overview
+- [HMML_REFERENCE.md](HMML_REFERENCE.md) - HMML markup language reference
+- [MATH_REFERENCE.md](MATH_REFERENCE.md) - Mathematical notation in ViolaWWW
+- [README.md](README.md) - Project overview
 
 ---
 

@@ -49,15 +49,18 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [Usenet Archives: Viola announcement (Apr 1991)](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
   - [Usenet repost (comp.unix.sysv386, Jun 1991): “X based HyperCard like application” (includes Viola 0.8 README)](https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.unix.sysv386/1991-June/004194.html)
 
-### 1991 — Viola 0.8 (date uncertain)
+### 1991-04-23 — Viola 0.8
 
 - **Evidence**
+  - **Announcement**: Usenet (comp.windows.x), 1991-04-23 (see preview release entry above)
+  - **README (from distribution)**: header reads "VIOLA VERSION 0.8 (pre-release version)"
+  - **README archive date**: 1991-04-25 (from archived copy URL)
   - **Retrospective (author statement)**: “first version of viola (0.8) released in 1991”
-  - **README (from distribution)**: header reads “VIOLA VERSION 0.8 (pre-release version)”
 - **Note**
-  - This confirms the **year (1991)** as stated by the author, but does not provide an exact release date or an original announcement/packaging timestamp. The README explicitly labels 0.8 as a “pre-release version.”
-- **Source**
+  - The Usenet announcement on April 23 directed users to FTP the Viola 0.8 distribution; the README was archived two days later (April 25). The README explicitly labels 0.8 as a “pre-release version.”
+- **Sources**
   - [Olde Viola Montage (archived; author retrospective note)](https://web.archive.org/web/19990830034431id_/http://viola.org/vintage/montage.html)
+  - [Viola 0.8 README (archived, dated Apr 25, 1991)](https://www.krsaborio.net/internet/research/1991/0425.htm)
 
 ---
 
@@ -589,7 +592,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | Date / Range | Version | Notes (evidence-driven) |
 |---|---:|---|
 | 1991-04-23 | Viola Preview | Usenet announcement (pre-WWW) |
-| 1991 | Viola 0.8 | Secondary source; exact date unclear |
+| 1991-04-23 | Viola 0.8 | Usenet announcement; README archived Apr 25 |
 | 1991-12-09 to 1991-12-13 | — | “One-night hack” announcements on WWW-Talk |
 | Early 1992-01 | — | Demonstration observed (W3 News 9201) |
 | 1992-01-24 | — | CERN test report (WWW-Talk) |

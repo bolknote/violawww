@@ -17,9 +17,9 @@ Pei-Yuan "Perry" Wei (Chinese: 魏培源; Pinyin: Wèi Péiyuán) was a Taiwanes
 - At age 12, had his first contact with a computer — a Commodore PET at Willard Jr. High School. He wrote a Frogger-like game that won an award for the school and got to shake hands with the Mayor of Berkeley: *"It basically encouraged me a great deal, and got me started down the road of creating things with a computer."*[^12]
 - Graduated from Berkeley High School (California, USA) in 1986.[^1] In high school, wrote a game called "Pinnacle" — a combination of *The Seven Cities of Gold* and *Archon* with a world map editor — entirely in 6502 machine language using only hexadecimals, without an assembler.[^12]
 - Studied geography at UC Berkeley as "a meeting point between the sciences and the arts," but computing was his true love.[^8] Wei described himself as *"basically an artist at heart, with a bent for technology."*[^12]
-- Received a bachelor's degree from the University of California, Berkeley (UC Berkeley).[^1]
+- Received a bachelor's degree from the University of California, Berkeley (UC Berkeley) in May 1991.[^1][^29]
 - Was a member of the student club XCF (eXperimental Computing Facility) — a group engaged in experimental technologies. XCF consisted of computer science-minded students, but half of them were not CS majors, just people interested in doing their own projects for fun, not for academic credit.[^14]
-- After graduating in 1991, rather than getting a "real job," Wei continued working at XCF: *"If you made them a proposal they liked, they would let you loose on their computers. That was all the salary Pei Wei needed."*[^8]
+- After graduating in May 1991, rather than getting a "real job," Wei continued working at XCF: *"If you made them a proposal they liked, they would let you loose on their computers. That was all the salary Pei Wei needed."*[^8]
 
 ### Creating Viola (1989–1991)
 
@@ -33,7 +33,7 @@ Wei's vision was to create something generalized and network-portable, where it 
 
 #### Preview Release Announcement (April 1991)
 
-On April 23, 1991, Wei publicly announced a *"preview release"* of Viola on Usenet as a highly manipulable interactive-media authoring tool for UNIX/X11, describing it as the closest thing to Apple's HyperCard for that environment.[^13] In the announcement he stated that Viola binary and source were available via anonymous FTP on `scam.berkeley.edu` (IP `128.32.138.1`) in `src/local/viola` (see the README in that directory).[^13] The post was signed *"Director, Experimental Computing Facility, University of California, Berkeley"* and included a physical address at XCF in Cory Hall.[^13]
+On April 23, 1991, Wei publicly announced a *"preview release"* of Viola on Usenet as a highly manipulable interactive-media authoring tool for UNIX/X11, describing it as the closest thing to Apple's HyperCard for that environment.[^13] In the announcement he stated that Viola binary and source were available via anonymous FTP on `scam.berkeley.edu` (IP `128.32.138.1`) in `src/local/viola` (see the README in that directory).[^13] The post was signed *"Director, Experimental Computing Facility, University of California, Berkeley"* and included a physical address at XCF in Cory Hall.[^13] Despite this title, the README bundled with Viola 0.8 stated explicitly: *"Viola is unofficially supported only by me, not by the Experimental Computing Facility."*[^29]
 
 In early May 1991, at least one public follow-up raised concerns about Paul Heckel's HyperCard-related patent and potential infringement questions for HyperCard-like systems, including Viola.[^13]
 
@@ -206,3 +206,4 @@ For further study: source code, design notebooks, and video materials are stored
 [^26]: [NCSA Mosaic: Project Highlights](https://www.ncsa.illinois.edu/research/project-highlights/ncsa-mosaic/)
 [^27]: John December, Neil Randall, Wes Tatters, *Discover the World Wide Web with Your Sportster* (Sams.net, 1995), p. 12
 [^28]: [CERN/W3: An updated quick look at ViolaWWW (May 1992)](https://info.cern.ch/hypertext/Viola/Review.html)
+[^29]: [Usenet repost (comp.unix.sysv386, Jun 1991): "X based HyperCard like application" (includes Viola 0.8 README)](https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.unix.sysv386/1991-June/004194.html)

@@ -35,15 +35,27 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Mentions anonymous FTP availability on `scam.berkeley.edu`
 - **What the source says**
   - First public announcement of the Viola system (before WWW support). Described as a “highly manipulable interactive-media authoring tool for UNIX/X11”.
-- **Source**
+- **Selected details from the Viola 0.8 README** (preserved in a June 1991 Usenet repost on comp.unix.sysv386)
+  - README header: “VIOLA VERSION 0.8 (pre-release version)”.
+  - Self-description: “a graphical user interface toolkit with an embedded command language. The interpretive nature of Viola enables it to be highly interactive.”
+  - Supported binaries: DECstation 3100 (Ultrix T4.0-1), SparcStation (SunOS Release 4.0.3c).
+  - Written in “plain C”, uses X11R4.
+  - License: free public use with attribution; fees only with written permission of the copyright holder.
+  - Mailing list: `viola-users@ic.berkeley.edu`.
+  - Development status note: “Viola is unofficially supported only by me, not by the Experimental Computing Facility. Also, since I’m graduating next month (May’91), Viola’s future development is uncertain.”
+- **Early third-party reception**
+  - By June 1991, Chin Fang (Stanford University, Mechanical Engineering) had ported Viola to IBM RISC 6000 systems, describing it as a “tremendous pkg” and reporting the port required “just one line hack.”
+- **Sources**
   - [Usenet Archives: Viola announcement (Apr 1991)](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
+  - [Usenet repost (comp.unix.sysv386, Jun 1991): “X based HyperCard like application” (includes Viola 0.8 README)](https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.unix.sysv386/1991-June/004194.html)
 
 ### 1991 — Viola 0.8 (date uncertain)
 
 - **Evidence**
   - **Retrospective (author statement)**: “first version of viola (0.8) released in 1991”
+  - **README (from distribution)**: header reads “VIOLA VERSION 0.8 (pre-release version)”
 - **Note**
-  - This confirms the **year (1991)** as stated by the author, but does not provide an exact release date or an original announcement/packaging timestamp.
+  - This confirms the **year (1991)** as stated by the author, but does not provide an exact release date or an original announcement/packaging timestamp. The README explicitly labels 0.8 as a “pre-release version.”
 - **Source**
   - [Olde Viola Montage (archived; author retrospective note)](https://web.archive.org/web/19990830034431id_/http://viola.org/vintage/montage.html)
 

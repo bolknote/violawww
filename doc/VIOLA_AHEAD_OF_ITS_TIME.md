@@ -1,6 +1,6 @@
 # ViolaWWW: Ahead of Its Time
 
-> This document summarizes technologies and ideas that ViolaWWW introduced or implemented **before** they became mainstream on the Web. It is intended for historical context and for discussions (e.g. issues) about Viola's place in browser history.
+> ViolaWWW is **the first X Window System based World Wide Web browser** made available to the WWW community (mid 1992). This document summarizes technologies and ideas that ViolaWWW introduced or implemented **before** they became mainstream on the Web. It is intended for historical context and for discussions (e.g. issues) about Viola's place in browser history.
 >
 > For the origins of Viola and ViolaWWW at UC Berkeley's XCF (eXperimental Computing Facility), see the [XCF historical page](https://xcf.berkeley.edu/historical/) and [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md).
 
@@ -21,6 +21,7 @@
 | 11 | Sidebar panel | `<LINK REL="sidebar">` (1994–1995) | Opera/Firefox sidebar panels (2000s) |
 | 12 | Multi-column layout | HPANE, COL2/COL3/COL4 (1994) | CSS Multi-column Layout (~2011) |
 | 13 | Browser as application platform | Wei's vision (1992–1994) | Web apps, Chrome OS (2011) |
+| 14 | Interactive drawing / canvas | Doodle widget, drawing primitives (1993–1994) | HTML5 `<canvas>` (2004 spec, ~2011 widespread) |
 
 ---
 
@@ -188,8 +189,32 @@ This vision — the browser as the operating system, with code delivered over th
 
 ---
 
+## 14. Interactive Drawing / Canvas Before `<canvas>`
+
+ViolaWWW provided an interactive drawing surface embedded in web documents — conceptually identical to what HTML5 later standardized as the `<canvas>` element. The **Doodle** widget (`HTML_input_doodle`) allowed users to draw directly on a web page using mouse events, with line segments stored for redraw on expose events, and a `clearWindow()` method to reset the canvas.
+
+Beyond the Doodle widget, the Viola `field` class exposed a rich set of **drawing primitives** available to any Viola script:
+
+- **Lines**: `drawLine(x0, y0, x1, y1)`
+- **Rectangles**: `drawRect()`, `drawFillRect()`
+- **Ovals/circles**: `drawOval()`, `drawFillOval()`
+- **Arcs**: `fillArc(x0, y0, x1, y1, degree1, degree2)`
+- **Text**: `drawText(x, y, fontID, string)`
+- **Utility**: `clearWindow()`, `clearArea()`, `mouseX()`, `mouseY()`
+
+The [ViolaWWW Demo Documents](https://web.archive.org/web/20040328124112id_/http://www.xcf.berkeley.edu/~wei/viola/vw/violaWWWDemo.html) page listed "Doodle — A doodling 'program' as WWW 'document'" and "Wave — Sine wave ploting gadget as WWW doc" among the demos.
+
+- **In Viola**: Doodle widget and drawing primitives from **1993–1994**; `xplot` drawing tool demonstrated **May 1993**.
+- **Mainstream**: **HTML5 `<canvas>`** element was proposed in **2004** (by Apple for Safari/Dashboard) and gained widespread browser support around **2011**.
+
+**Reference**: `src/viola/embeds/HTML_input_doodle_script.v` (extracted from original `objs.c`), `src/viola/cl_field.c` (drawing primitives), [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md) (drawing functions section).
+
+---
+
 ## Other Notable Firsts
 
+- **First graphical web browser (X Window System)** — ViolaWWW was *"the first X Windows based World Wide Web hypertext browser made available to the WWW community"* (mid 1992), predating NCSA Mosaic (early 1993). It pioneered the graphical browser paradigm that Mosaic and later Netscape would popularize. ([violaIntro, 1994](https://web.archive.org/web/19981202164132/http://scam.XCF.berkeley.edu/~wei/viola/violaintro.html))
+- **First browser games** — By May 1993, ViolaWWW could embed interactive game-like applications directly in web pages. The chess board applet (`inset_chess.v`) had *"chess pieces [that] are actually active and movable"* — an interactive board embedded in an HTML document. The Viola platform's scripting capabilities meant that such applets could potentially be extended with game logic and even networked play via sockets. This is arguably the earliest browser-based game — an interactive application embedded in a web page, over a decade before browser games became a cultural phenomenon. ([violaIntro, 1994](https://web.archive.org/web/19981202164132/http://scam.XCF.berkeley.edu/~wei/viola/violaintro.html))
 - **Bookmarks, Back/Forward, History** — Viola had these in 1992; they became standard browser UI. NCSA acknowledged that *"the initial version of Mosaic drew on the innovations of earlier browsers,"* including icon buttons, bookmarks, and varied fonts.
 - **Tables** — Early support in a graphical browser, before HTML tables were standardized (HTML 3.2, 1997).
 - **Multiple windows, clone** — Multi-window browsing and page cloning.

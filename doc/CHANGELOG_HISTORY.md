@@ -474,6 +474,19 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [WWW-Talk 1994: multithreaded libwww inquiry](http://1997.webhistory.org/www.lists/www-talk.1994q2/0519.html)
   - [WWW-Talk 1994: multiple HTTP operations](http://1997.webhistory.org/www.lists/www-talk.1994q2/0542.html)
 
+### 1994-09-20 to 1994-09-21 — Pei Wei speaks on "Browsers" at Stanford WWW Workshop
+
+- **Evidence**
+  - **Primary source**: Stanford WWW Workshop program (Stanford Computer Forum, September 20–21, 1994)
+- **What the source says**
+  - Pei Wei is listed as a speaker in **Session 2: Browsers and presentation**, with the topic **"Browsers"** and affiliation "O'Reilly Associates - wei@ora.com (author of Viola)".
+  - Other speakers in the same session included Steve Zilles (Adobe, "Page Layout and portability"), Ev Shafrir (Hewlett-Packard, "A Visual Design Perspective"), and Tom Gruber (Stanford, "Virtual documents on the web").
+  - The workshop also featured Larry Masinter (Xerox PARC), Brewster Kahle (WAIS Inc), Terry Winograd (Stanford), Allan Schiffman (EIT), and Hector Garcia-Molina (Stanford) in other sessions.
+- **Note**
+  - This confirms that Wei was still recognized as a leading authority on web browsers in September 1994, during the period between the ViolaWWW 3.1 Beta (March 1994) and the Stylesheet RFC re-publication (October 1994).
+- **Source**
+  - [Stanford WWW Workshop program (archived)](https://www.krsaborio.net/internet/research/1994/0920-b.htm)
+
 ### 1994-10-24 to 1994-10-25 — Stylesheet RFC re-published (WWW-Talk)
 
 - **Evidence**
@@ -562,6 +575,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1994-01 | — | FIGA support (WWW-Talk) |
 | 1994-02-23 to 1994-02-25 | 3.0 Beta | README date + announcement |
 | 1994-03-23 to 1994-03-24 | 3.1 Beta | README date + announcement |
+| 1994-09-20 to 1994-09-21 | — | Pei Wei speaks on "Browsers" at Stanford WWW Workshop |
 | 1994-10-24 to 1994-10-25 | — | Stylesheet RFC re-published (WWW-Talk) |
 | 1995-03-29 | — | W3C Clients page lists ViolaWWW as (Beta, unsupported) |
 | 1995-04-10 to 1995-04-17 | 3.3 Beta | Final known release |

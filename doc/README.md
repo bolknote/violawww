@@ -9,9 +9,10 @@ This directory contains technical documentation for ViolaWWW.
 ## Ahead of Its Time
 
 ### [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md)
-How ViolaWWW predated frames, CSS, JavaScript, Java applets, MathML, browser extensions, and more.
+How ViolaWWW — the first X Window graphical web browser — predated frames, CSS, JavaScript, Java applets, MathML, browser extensions, and more.
 
 Topics covered:
+- First graphical web browser (X Window System, mid 1992) and first browser games (chess applet, 1993)
 - `<INSERT>` before frames and `<iframe>` (1992 vs 1996)
 - STG stylesheets before CSS (1993 vs 1994)
 - Viola scripting and applets before JavaScript and Java (1991 vs 1995)
@@ -22,6 +23,7 @@ Topics covered:
 - `<FIGURE>` with captions and image maps before HTML5 (1993 vs 2014)
 - Browser UI built in a scripting language before Mozilla XUL (1992 vs 1998)
 - Dynamic toolbar (`<LINK REL="tool">`) before browser extensions (1994 vs 2004)
+- Interactive drawing / canvas (Doodle widget, drawing primitives) before HTML5 `<canvas>` (1993 vs 2004)
 - Sidebar panel, multi-column layout, browser as app platform
 
 ---
@@ -347,7 +349,7 @@ Topics covered:
 
 ## Historical Context
 
-ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered many features that later reappeared in other systems and standards. See [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md) for the full analysis.
+ViolaWWW (1991–1994) was the first X Window System based graphical web browser and pioneered many features that later reappeared in other systems and standards. See [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md) for the full analysis.
 
 | ViolaWWW Feature | Rough modern analogue |
 |------------------|----------------|
@@ -363,6 +365,7 @@ ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered
 | VPLOT (3D visualization) | WebGL, Three.js |
 | CHANGED (revision tracking) | Track Changes (Word), Git diff |
 | Dynamic Toolbar (`<LINK REL="tool">`) | Browser extensions, per-site actions |
+| Doodle widget, drawing primitives | HTML5 `<canvas>` |
 
 Modern enhancements (TLS, transliteration, Wayback, etc.) are documented in the main [README.md](../README.md) under “Modern Enhancements.”
 

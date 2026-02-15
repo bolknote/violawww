@@ -6,6 +6,25 @@ This directory contains technical documentation for ViolaWWW.
 
 ---
 
+## Ahead of Its Time
+
+### [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md)
+How ViolaWWW predated frames, CSS, JavaScript, Java applets, MathML, browser extensions, and more.
+
+Topics covered:
+- `<INSERT>` before frames and `<iframe>` (1992 vs 1996)
+- STG stylesheets before CSS (1993 vs 1994)
+- Viola scripting and applets before JavaScript and Java (1991 vs 1995)
+- Bytecode VM and network-portable code before Java VM (1991 vs 1995)
+- `<math>` before MathML
+- Console, file system, and socket access from script (before AJAX/Fetch)
+- Collapsible/expandable content (`FOLD`) before `<details>`/`<summary>` (1994 vs 2014)
+- `<FIGURE>` with captions and image maps before HTML5 (1993 vs 2014)
+- Dynamic toolbar (`<LINK REL="tool">`) before browser extensions (1994 vs 2004)
+- Sidebar panel, multi-column layout, real-time peer sync, browser as app platform
+
+---
+
 ## Creator Biography and Development History
 
 ### [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md)
@@ -327,7 +346,7 @@ Topics covered:
 
 ## Historical Context
 
-ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered many features that later reappeared in other systems and standards:
+ViolaWWW (1991–1994) was one of the first graphical web browsers and pioneered many features that later reappeared in other systems and standards. See [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md) for the full analysis.
 
 | ViolaWWW Feature | Rough modern analogue |
 |------------------|----------------|
@@ -356,5 +375,6 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 - [TODO](../TODO.md) - Known issues and future enhancements
 - [LICENSE](../LICENSE.md) - Licensing information
 - [PEI_YUAN_WEI_BIOGRAPHY.md](PEI_YUAN_WEI_BIOGRAPHY.md) - Biography of Pei-Yuan Wei and ViolaWWW history
+- [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md) - How Viola predated frames, CSS, JavaScript, MathML, and more
 - [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md) - Comprehensive release history (1991–1995)
 - [CHARSET_TRANSLITERATION.md](CHARSET_TRANSLITERATION.md) - Encoding/transliteration pipeline

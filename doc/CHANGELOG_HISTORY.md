@@ -172,8 +172,9 @@ These rules are here to keep future edits evidence-based and to avoid silently �
     | NeXT | `viola` | 1992-06-23 | 2.2M |
     | RS/6000 | `viola` | 1992-06-19 | 407K |
     | SPARC | `viola` | 1994-06-23 | 1.1M |
+    | HP PA-RISC ("Snake") | *(build dir only)* | 1992-11 to 1993-01 | — |
 
-  - The **NeXT binary** (1992-06-23) is notable because ViolaWWW is an X11 browser; NeXT supported X11 as a compatibility layer. The DECstation `viola.old` (1992-06-06) is the earliest surviving binary.
+  - The **NeXT binary** (1992-06-23) is notable because ViolaWWW is an X11 browser; NeXT supported X11 as a compatibility layer. The DECstation `viola.old` (1992-06-06) is the earliest surviving binary. An **HP PA-RISC ("Snake")** build directory also survives at `/History/1995/WWW/Viola/snake/` (with Makefiles from November 1992 and January 1993, symlinked to the shared `src/` tree), but no binary is present.
 
 ### 1992-05-10 to 1992-05-15 — Beta release phase (JENC3 demo; packaging dates)
 

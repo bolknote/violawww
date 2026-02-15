@@ -591,8 +591,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 | Date / Range | Version | Notes (evidence-driven) |
 |---|---:|---|
-| 1991-04-23 | Viola Preview | Usenet announcement (pre-WWW) |
-| 1991-04-23 | Viola 0.8 | Usenet announcement; README archived Apr 25 |
+| 1991-04-23 | Viola 0.8 | Usenet announcement (pre-WWW); README archived Apr 25 |
 | 1991-12-09 to 1991-12-13 | — | “One-night hack” announcements on WWW-Talk |
 | Early 1992-01 | — | Demonstration observed (W3 News 9201) |
 | 1992-01-24 | — | CERN test report (WWW-Talk) |

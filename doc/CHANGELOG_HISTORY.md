@@ -8,6 +8,8 @@
 
 This file is a **timeline**, not a conventional “changelog”. Wherever possible, each entry includes **direct evidence** and is written to avoid speculation.
 
+This repository does **not** bundle historical tarballs. When we cite a file path from an external archive, the path is meant **inside that archive** (the archive link is provided in the same entry).
+
 ### Evidence labels
 
 - **Announcement**: date of a public mailing list / Usenet post.
@@ -106,24 +108,34 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Public compilation issues were reported by 1992-03-21, suggesting circulation outside CERN by late March 1992.
   - A particular April 1992 build lacked a search panel and was not generally distributed; a corrected version followed.
 - **Selected details captured in the 1992-04-11 review (Tim Berners-Lee)**
-  - Tested on a NeXT with CubeX (grayscale and color versions).
-  - Multifont text display; links highlighted with “button” boxes (single-click jump).
-  - “Home”, “Back” and “Forward” buttons are listed among features.
-  - Single-window operation with a “clone” facility; bookmark facility; online help buttons.
-  - Remote index searching via a bottom input field; source viewer for HTML markup.
-  - Navigation behavior at that time: “Up” acted like a destructive Back; “Left/Right” traversed history non-destructively.
-  - “Fuzzy clicking”: clicking near a button could trigger the action.
-  - Performance commentary: multifont version slower than an older monofont “1.0” reference; reviewer considered multifont worth the trade-off.
-  - UI note: window looked “a little cluttered”; suggestion to move the “ViolaWWW” title to the window title bar.
-  - Formatting note: the `LI` list style was described as too close to normal text; reviewer suggested indentation and whitespace between list elements.
-  - Ease-of-use note: installation described as (binary + Viola scripts directory + shell script setting an environment variable), and starting the program by typing `vw` (default home page).
-  - “Bells and whistles”: three small icons after the index search field (history, print, and source viewer); history and print were described as close to working at that time.
-  - Clone UI detail: the clone button icon is described as “tearing a sheet off a pad”; clone windows were described as intentionally uncluttered (few/no buttons) while links opened in the master window.
+  - **Environment**
+    - Tested on a NeXT with CubeX (grayscale and color versions).
+  - **UI and navigation**
+    - Multifont text display; links highlighted with “button” boxes (single-click jump).
+    - Navigation behavior at that time: “Up” acted like a destructive Back; “Left/Right” traversed history non-destructively.
+    - “Fuzzy clicking”: clicking near a button could trigger the action.
+    - UI note: window looked “a little cluttered”; suggestion to move the “ViolaWWW” title to the window title bar.
+  - **Features and tools**
+    - “Home”, “Back” and “Forward” buttons are listed among features.
+    - Single-window operation with a “clone” facility; bookmark facility; online help buttons.
+    - Remote index searching via a bottom input field; source viewer for HTML markup.
+    - “Bells and whistles”: three small icons after the index search field (history, print, and source viewer); history and print were described as close to working at that time.
+  - **Formatting and performance**
+    - Formatting note: the `LI` list style was described as too close to normal text; reviewer suggested indentation and whitespace between list elements.
+    - Performance commentary: multifont version slower than an older monofont “1.0” reference; reviewer considered multifont worth the trade-off.
+  - **Installation**
+    - Ease-of-use note: installation described as (binary + Viola scripts directory + shell script setting an environment variable), and starting the program by typing `vw` (default home page).
+  - **Clone behavior (UI detail)**
+    - The clone button icon is described as “tearing a sheet off a pad”; clone windows were described as intentionally uncluttered (few/no buttons) while links opened in the master window.
 - **Known issues reported in early 1992 testing notes**
-  - Stability: reviewer noted crashes when closing a clone window or the main window.
-  - UI: scroll bar and left-side icon buttons sometimes did not appear; resizing the window vertically made them reappear.
-  - Color: a “minor bug” was reported to crash the program on color screens; “crashes on first jump” on a color display was also noted.
-  - Documentation: reviewer noted there “isn't much documentation on the product.”
+  - **Stability**
+    - Crashes when closing a clone window or the main window.
+  - **UI**
+    - Scroll bar and left-side icon buttons sometimes did not appear; resizing the window vertically made them reappear.
+  - **Color**
+    - A “minor bug” was reported to crash the program on color screens; “crashes on first jump” on a color display was also noted.
+  - **Documentation**
+    - Reviewer noted there “isn't much documentation on the product.”
 - **Sources**
   - [WWW-Talk 1992: “problem yacc’ing violaWWW”](http://1997.webhistory.org/www.lists/www-talk.1992/0035.html)
   - [W3.org: “A quick look at ViolaWWW” (1992-04-11)](https://www.w3.org/History/19921103-hypertext/hypertext/Viola/Review_0.html)
@@ -145,17 +157,23 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 - **What the sources support**
   - A widely described “beta test” version existed by mid-May 1992; TBL reviewed it and recorded both features and limitations.
 - **Selected features/behavior noted in the 1992-05-15 review**
-  - Multifont support; “clone” facility; bookmarks and history list.
-  - “Home”, “Back” and “Forward” buttons are listed among features.
-  - Index search facility (bottom input field) and bottom-row icons for History/Printing/Source Viewer.
-  - Hidden documentation (e.g., globe icon for Viola docs; question-mark icon for help).
-  - Help caching behavior: local copies preferred; remote help cached in `/usr/tmp`.
-  - Cut-and-paste was noted as not working yet (selection could be made and shown underlined).
-  - “Font hang” mentioned as a possible startup issue on some systems (example: OpenWindows).
-  - Formatting note: the `LI` list style was described as too close to normal text; reviewer suggested indentation and whitespace between list elements.
-  - Clone UI detail: the clone button icon is described as “tearing a sheet off a pad”; clone windows were described as intentionally uncluttered (few/no buttons) while links opened in the master window.
-  - Platform note: the updated review mentions it had been run on Sun4 and DECstation (in addition to NeXT used for testing).
-  - Reviewer conclusion (from the April/May reviews): “A very neat browser … very intuitive and straightforward…”
+  - **Core features**
+    - Multifont support; “clone” facility; bookmarks and history list.
+    - “Home”, “Back” and “Forward” buttons are listed among features.
+    - Index search facility (bottom input field) and bottom-row icons for History/Printing/Source Viewer.
+  - **Documentation/help**
+    - Hidden documentation (e.g., globe icon for Viola docs; question-mark icon for help).
+    - Help caching behavior: local copies preferred; remote help cached in `/usr/tmp`.
+  - **Notes and limitations**
+    - Cut-and-paste was noted as not working yet (selection could be made and shown underlined).
+    - “Font hang” mentioned as a possible startup issue on some systems (example: OpenWindows).
+    - Formatting note: the `LI` list style was described as too close to normal text; reviewer suggested indentation and whitespace between list elements.
+  - **Clone behavior (UI detail)**
+    - The clone button icon is described as “tearing a sheet off a pad”; clone windows were described as intentionally uncluttered (few/no buttons) while links opened in the master window.
+  - **Platforms**
+    - The updated review mentions it had been run on Sun4 and DECstation (in addition to NeXT used for testing).
+  - **Reviewer conclusion (quoted)**
+    - “A very neat browser … very intuitive and straightforward…”
 - **Selected overview points from the ViolaWWW “About” page (CERN/W3 mirror)**
   - Basic navigation described as: clickable hot-words, history traversal, and bookmark list.
   - Keyword search entry and page cloning (multiple windows).
@@ -237,8 +255,8 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [Ancient Web Browsers: About/Status page screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
   - [Archive: `viola92src.tar` (combined sources; includes `Viola/src/main.c` and `Viola/apps/res.HTMLStyle.v`)](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar)
   - [Archive snapshot: `viola920730.tar.gz` (includes `viola/README` dated “July 27, 1992” and `src/main.c` version string)](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz)
-  - `tmp/viola920730/viola/README` (archive README; dated “July 27, 1992”)
-  - `tmp/viola920730/viola/apps/www.v` (“Overview, ViolaWWW” content with Status list)
+  - (inside `viola920730.tar.gz`) `viola/README` (archive README; dated “July 27, 1992”)
+  - (inside `viola920730.tar.gz`) `viola/apps/www.v` (“Overview, ViolaWWW” content with Status list)
 
 ### 1992 summer — Viola at Xerox PARC (secondary source)
 

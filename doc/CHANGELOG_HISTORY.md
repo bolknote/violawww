@@ -155,6 +155,25 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [Archive: `viola-2.0.4.tar` (contains `ViolaWWW_920515/src/main.c` version string)](https://browsers.flanigan.us/browsers/violawww/files/viola-2.0.4.tar)
   - [Archive snapshot: `viola920730.tar.gz` (contains `apps/www.v` “Overview, ViolaWWW”)](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz)
   - [Viola home page (archived; retrospective note “first released around April 1992”)](https://web.archive.org/web/20180203005145/http://www.viola.org/)
+  - [W3C: CERN-hosted ViolaWWW RS/6000 distribution](https://www.w3.org/History/1995/WWW/Viola/bin/rs6000/)
+  - [W3C: CERN-hosted ViolaWWW RS/6000 source tree](https://www.w3.org/History/1995/WWW/Viola/bin/rs6000/ViolaWWW_920515/src/)
+  - [W3C: CERN-hosted ViolaWWW multi-platform binaries](https://www.w3.org/History/1995/WWW/Viola/bin/)
+- **CERN/W3-hosted source and binary trees**
+  - The same `ViolaWWW_920515` distribution survives on the W3C server at `/History/1995/WWW/Viola/bin/rs6000/ViolaWWW_920515/` — an **IBM RS/6000 port** of ViolaWWW 2.0.4, with source, compiled objects, and apps. A tar archive (`ViolaWWW_920515.tar`, 2.8M, 1994-06-23) and a standalone RS/6000 binary (`viola`, 407K, 1992-06-19) are also at the parent level.
+  - Base source files are dated **1992-05-10** (matching the JENC3 demo date). The RS/6000 port was patched on **1992-05-20 to 1992-05-21**; `.orig` files survive alongside the patched versions (`main.c.orig`, `cgen.c.orig`, `cl_cosmic.c.orig`, `class.c.orig`, `cl_pane.c.orig`, `event_x.c.orig`, `event_x.h.orig`, `ast.h.orig`, `mystrings.h.orig`, `slotaccess.h.orig`, `scanutils.c.orig`), documenting what was changed for the port.
+  - The `main.c` (3.9K) is notably simpler than the later 2.1.0 version (4.9K): no `-snipet`/`-s` option, no `-obj`/`-o` option, no `setHTMLStyle()` call, no `scriptSnipet` support. Uses `-f` and `-i` instead of the later `-cli`/`-c`.
+  - Contains the same double `init_sys()` bug (exit codes 2 and 3) that persists in 2.1.0 and is fixed in 2.1.2.
+  - **Multi-platform binaries** survive at `/History/1995/WWW/Viola/bin/` for five platforms:
+
+    | Platform | File | Date | Size |
+    |---|---|---|---|
+    | DECstation | `viola` | 1992-07-16 | 1.9M |
+    | DECstation | `viola.old` | 1992-06-06 | 1.7M |
+    | NeXT | `viola` | 1992-06-23 | 2.2M |
+    | RS/6000 | `viola` | 1992-06-19 | 407K |
+    | SPARC | `viola` | 1994-06-23 | 1.1M |
+
+  - The **NeXT binary** (1992-06-23) is notable because ViolaWWW is an X11 browser; NeXT supported X11 as a compatibility layer. The DECstation `viola.old` (1992-06-06) is the earliest surviving binary.
 
 ### 1992-05-10 to 1992-05-15 — Beta release phase (JENC3 demo; packaging dates)
 
@@ -218,9 +237,17 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - **Version string**: `Viola=2.1.0, date=May 23, 1992` (from surviving source)
 - **Note**
   - Described as an early public release with sources and binaries for multiple platforms.
+- **CERN/W3-hosted source tree**
+  - The complete ViolaWWW 2.1.0 source and apps survive on the W3C server at `/History/1995/WWW/Viola/old/` (with `src/`, `apps/`, and `xpm/` subdirectories). Base files are dated 1992-06-04 (upload to CERN, ~12 days after the version date); several source files were patched on 1992-06-23: `Makefile`, `ast.h`, `cl_pane.c`, `cl_PS.c`, `event_x.c`, `gram.c`, `html.c`, `mystrings.c` — interim fixes before the 2.1.2 release (July 14).
+  - The `main.c` has two notable bugs absent from 2.1.2: `init_sys()` called twice (exit codes 2 and 3) and `init_html()` called twice (both exit code 13). It also lacks the `WWW_TraceFlag` integration and the Bede McCall / MITRE `initUserWWW()` patch that appear in 2.1.2.
+  - The `apps/` directory contains a rich set of Viola applications: `www.v` (43K, the browser), `www.org.v` (29K, possibly the original unmodified version), `vw.v` (40K), `doodle.v` (drawing widget), `paint.v`, `clock.v`, `shell.v` (terminal), `wais.v` (WAIS integration), `map.v`, `edit.v` and `ed_*.v` (editor components), `xcf.v`, `lurnix.v`, and `picture.v` (336K).
+  - The `src/` directory includes a `stylesheet` file (947 bytes, 1992-06-04) — an early stylesheet artifact, and a `www/Implementation/` subdirectory containing the bundled W3 library.
+  - Platform-specific Imakefiles: `Imakefile.decstation`, `Imakefile.sparc`, `Imakefile.org`.
 - **Sources**
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
   - (from surviving archives) ViolaWWW 2.1.0 source code (`Viola/old/src/main.c` in [`viola92src.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar))
+  - [W3C: CERN-hosted ViolaWWW 2.1.0 source tree](https://www.w3.org/History/1995/WWW/Viola/old/src/)
+  - [W3C: CERN-hosted ViolaWWW 2.1.0 apps directory](https://www.w3.org/History/1995/WWW/Viola/old/apps/)
 
 ### 1992-06-30 — “Next generation” architecture described (SGML/multi-object)
 
@@ -257,10 +284,20 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - The README lists core ViolaWWW app files in the `apps` directory: `res.HTMLStyle.v`, `res.font.v`, `res.v`, `www.v`, `wwwHistory.v`, `wwwSrc.v` (and the snapshot also includes other `.v` files such as `hello.v`, `shell.v`, and `wais.v`).
   - The README notes that startup hangs may be due to a “Font Problem” (and suggests adjusting `apps/res.font.v`).
   - `Viola/apps/res.HTMLStyle.v` includes style entries for tags including `UL`, `DL`, `DIR`, `MENU`, `XMP`, `LISTING`, `ADDRESS`, and headers `H1`–`H7`.
+- **CERN/W3-hosted source tree** (separate from the distribution archives above)
+  - A patched working copy of ViolaWWW 2.1.2 source code survives on the W3C server at `/History/1995/WWW/Viola/sun4/` (with an `sgi/` subdirectory for SGI platform). The base files are dated 1992-07-15 (matching the 2.1.2 release), but several files carry later modification dates, indicating continued maintenance at CERN:
+    - **1992-10-06 to 1992-10-15**: `BUILD`, `gram.c`, `scan.c` (parser regenerated), `main.c`, `HTFont.h`, `cl_TTY.c`, `cl_menu.c`, `html.c` — patches during the memory leak / stability period (see Oct–Nov 1992 entry below).
+    - **1993-01-18 to 1993-03-16**: `DefaultStyles.c` (Viola-specific style additions: VObj, PMenu, XPM, XBM, Icon, PS), `Imakefile`, `Makefile`, `Version.make` — build and style updates during the "next release" preparation period.
+    - **1994-06-23**: `Makefile-dec` and `viola` binary (1.1M) — a DEC platform build, indicating CERN was still compiling 2.1.2-based code as late as June 1994, while Pei Wei had already released version 3.1 Beta (March 1994).
+  - The `main.c` in this tree includes a **patch by Bede McCall, MITRE Corp** (`initUserWWW()` function, which creates a `~/WWW` directory for the user). The same function exists in the repository's `src/viola/viola.c` (line 687), though the call is commented out in the later 3.x code.
+  - The CERN status page at the parent URL (`/History/1995/WWW/Viola/`) states: *"Long pause and new releases appearing again. Now ('94) available for Motif or non-Motif X."*
 - **Sources**
   - [WWW-Talk 1992: viola update (with latest W3 library)](http://1997.webhistory.org/www.lists/www-talk.1992/0152.html)
   - [W3.org History: `WWWViolaApps_920730.tar.Z`](https://www.w3.org/History/1992/WWWViolaApps_920730.tar.Z)
   - [CERN: Status of ViolaWWW](https://info.cern.ch/hypertext/WWW/Viola/Status.html)
+  - [W3C: CERN-hosted ViolaWWW source tree (sun4)](https://www.w3.org/History/1995/WWW/Viola/sun4/)
+  - [W3C: CERN-hosted ViolaWWW source tree (sgi)](https://www.w3.org/History/1995/WWW/Viola/sun4/sgi/)
+  - [W3C: ViolaWWW Status page](https://www.w3.org/History/1995/WWW/Viola/)
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
   - [Ancient Web Browsers: About/Status page screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
   - [Archive: `viola92src.tar` (combined sources; includes `Viola/src/main.c` and `Viola/apps/res.HTMLStyle.v`)](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar)
@@ -591,6 +628,7 @@ This list is intentionally non-exhaustive; entries above should cite the primary
 - [Ancient Web Browsers: ViolaWWW About/Status screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
 - [W3.org History: www-talk archive 1991–1992](https://www.w3.org/History/1992/www-talk.archive.Z)
 - [W3.org History: www-talk archive Jan–Jun 1993](https://www.w3.org/History/1992/www-talk.9301-9306.Z)
+- [W3C: CERN-hosted ViolaWWW source tree and status page](https://www.w3.org/History/1995/WWW/Viola/)
 - [W3C Clients (archived; page last updated 29 March 1995)](https://web.archive.org/web/20100616002711id_/http://www.w3.org/Clients.html)
 
 *Last updated: February 2026*

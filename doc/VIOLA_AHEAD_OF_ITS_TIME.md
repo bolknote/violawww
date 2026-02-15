@@ -16,10 +16,10 @@
 | 6 | Console, file system, network | TTY, `system()`, `loadFile()`, `socket` | AJAX (2000s), Fetch API (2015); FS sandboxed |
 | 7 | Collapsible/expandable content | `FOLD` attribute (Mar 1994) | HTML5 `<details>`/`<summary>` (~2011–2014) |
 | 8 | `<FIGURE>` with captions and image maps | `<FIGURE>`, `<FIGA>`, `<FIGCAP>` (May 1993) | HTML5 `<figure>`/`<figcaption>` (2014); `<map>`/`<area>` |
-| 9 | Dynamic toolbar (per-document) | `<LINK REL="tool">` (1994) | Browser extensions (Firefox 2004, Chrome 2009) |
-| 10 | Sidebar panel | `<LINK REL="sidebar">` (1994–1995) | Opera/Firefox sidebar panels (2000s) |
-| 11 | Multi-column layout | HPANE, COL2/COL3/COL4 (1994) | CSS Multi-column Layout (~2011) |
-| 12 | Real-time peer sync | `discoveryBroadcast()` (1994–1995) | WebSocket (2011), WebRTC (2017) |
+| 9 | Browser UI in a scripting language | Viola `.v` objects (1992–1994) | Mozilla XUL (1998–1999), Electron (2013) |
+| 10 | Dynamic toolbar (per-document) | `<LINK REL="tool">` (1994) | Browser extensions (Firefox 2004, Chrome 2009) |
+| 11 | Sidebar panel | `<LINK REL="sidebar">` (1994–1995) | Opera/Firefox sidebar panels (2000s) |
+| 12 | Multi-column layout | HPANE, COL2/COL3/COL4 (1994) | CSS Multi-column Layout (~2011) |
 | 13 | Browser as application platform | Wei's vision (1992–1994) | Web apps, Chrome OS (2011) |
 
 ---
@@ -123,7 +123,20 @@ The proposal was later included in the HTML+ DTD specification by Dave Raggett.
 
 ---
 
-## 9. Dynamic Toolbar — Per-Document Browser Extensions Before Extensions
+## 9. Browser UI Built in a Scripting Language Before XUL
+
+The entire ViolaWWW user interface — menus, toolbar, URL bar, navigation buttons, document view, title bar, sidebar — is defined as a tree of **Viola objects** (`www`, `www.doc`, `www.doc.tools`, `www.doc.tools.sys.home`, `www.doc.view`, `www.url`, etc.) in `.v` files and `objs.c`. Each object has a class (`vpane`, `hpane`, `txtButton`, `txtEditLine`, `menu`, etc.), layout attributes, and behavior defined by Viola scripts. The browser is literally a Viola application: *"much of the browser constructed in a high-level scripting language; customization emphasized"* (v3.3 release announcement).
+
+This means anyone could modify or extend the browser by editing `.v` files — changing layouts, adding buttons, rewriting event handlers — without touching C code. The same model was later used by **Mozilla's XUL** (XML User Interface Language), where the Firefox UI was built from XUL markup + JavaScript instead of being hardwired in C++.
+
+- **In Viola**: Browser UI built from Viola objects since **1992**; explicitly emphasized as an extensibility feature in **1994–1995**.
+- **Mainstream**: **Mozilla XUL** introduced in **1998–1999** for Netscape 6 / Mozilla Suite; used in Firefox until 2017. **Electron** (2013) similarly builds desktop app UIs with web technologies.
+
+**Reference**: `src/viola/objs.c` (browser UI object tree), [VIOLA_LANGUAGE.md](VIOLA_LANGUAGE.md) (widget classes), [TOOLBAR_REFERENCE.md](TOOLBAR_REFERENCE.md) (how `.v` objects extend the toolbar).
+
+---
+
+## 10. Dynamic Toolbar — Per-Document Browser Extensions Before Extensions
 
 ViolaWWW's **`<LINK REL="tool">`** tag allowed HTML documents to install **toolbar applets** — interactive Viola objects that appeared in the browser toolbar while the document was being viewed, and were removed when navigating away. These could be navigation aids, slideshow controllers, live network monitors, or any custom widget.
 
@@ -136,7 +149,7 @@ ViolaWWW's **`<LINK REL="tool">`** tag allowed HTML documents to install **toolb
 
 ---
 
-## 10. Sidebar Panel Before Browser Sidebars
+## 11. Sidebar Panel Before Browser Sidebars
 
 Viola's **`<LINK REL="sidebar">`** tag declared a sidebar document (e.g. a table of contents) that the browser displayed alongside the main content, with a configurable width ratio via the `ARG` attribute. This gave documents a built-in navigation panel.
 
@@ -147,7 +160,7 @@ Viola's **`<LINK REL="sidebar">`** tag declared a sidebar document (e.g. a table
 
 ---
 
-## 11. Multi-Column Layout Before CSS Columns
+## 12. Multi-Column Layout Before CSS Columns
 
 ViolaWWW provided several mechanisms for multi-column layout: the **`<HPANE>`** tag (horizontal columns formatter for side-by-side content), and **`<COL2>`**, **`<COL3>`**, **`<COL4>`** tags for 2-, 3-, and 4-column grids. The v3.3 release announcement listed *"multi-column formatting"* as an extension.
 
@@ -155,17 +168,6 @@ ViolaWWW provided several mechanisms for multi-column layout: the **`<HPANE>`** 
 - **Mainstream**: **CSS Multi-column Layout** (W3C Working Draft 2001, widespread browser support ~2011).
 
 **Reference**: [PANELS_REFERENCE.md](PANELS_REFERENCE.md) (HPANE, COL2/COL3/COL4 sections).
-
----
-
-## 12. Real-Time Peer Sync Before WebSocket and WebRTC
-
-ViolaWWW included a **peer discovery and synchronization** system. When HTML elements had the `SC` attribute, ViolaWWW could broadcast property changes (position, color, rotation, scale) to **all other ViolaWWW instances viewing the same page** via `discoveryBroadcast()`. This enabled collaborative interactive content — games, demos, shared 3D views — without a central server managing state.
-
-- **In Viola**: Discovery/sync system in **ViolaWWW 3.x (1994–1995)**.
-- **Mainstream**: **WebSocket** (2011), **WebRTC** (2017), collaborative editing (Google Docs, 2006).
-
-**Reference**: [VIOLA_FUNCTIONS.md](VIOLA_FUNCTIONS.md) (Peer Discovery Functions), [SECURITY_IMPLEMENTATION.md](SECURITY_IMPLEMENTATION.md) (Discovery Broadcast section).
 
 ---
 

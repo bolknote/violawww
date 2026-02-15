@@ -20,8 +20,9 @@ Topics covered:
 - Console, file system, and socket access from script (before AJAX/Fetch)
 - Collapsible/expandable content (`FOLD`) before `<details>`/`<summary>` (1994 vs 2014)
 - `<FIGURE>` with captions and image maps before HTML5 (1993 vs 2014)
+- Browser UI built in a scripting language before Mozilla XUL (1992 vs 1998)
 - Dynamic toolbar (`<LINK REL="tool">`) before browser extensions (1994 vs 2004)
-- Sidebar panel, multi-column layout, real-time peer sync, browser as app platform
+- Sidebar panel, multi-column layout, browser as app platform
 
 ---
 

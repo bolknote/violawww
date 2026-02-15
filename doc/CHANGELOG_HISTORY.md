@@ -8,8 +8,6 @@
 
 This file is a **timeline**, not a conventional “changelog”. Wherever possible, each entry includes **direct evidence** and is written to avoid speculation.
 
-This repository does **not** bundle historical tarballs. When we cite a file path from an external archive, the path is meant **inside that archive** (the archive link is provided in the same entry).
-
 ### Evidence labels
 
 - **Announcement**: date of a public mailing list / Usenet post.
@@ -97,7 +95,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 ### 1992-03-09 to 1992-04-20 — CERN testing phase (2.0.x)
 
 - **Evidence**
-  - **Version string (known by 1992-04-04)**: `Viola=2.0.4, date=April 4, 1992` (from surviving source; see `ViolaWWW_920515/src/main.c` in `viola-2.0.4.tar`)
+  - **Version string (known by 1992-04-04)**: `Viola=2.0.4, date=April 4, 1992` (from surviving source; see `ViolaWWW_920515/src/main.c` in [`viola-2.0.4.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola-2.0.4.tar))
   - **Compilation report**: “problem yacc’ing violaWWW” dated 1992-03-21 (Sun/SPARC)
   - **Review**: Tim Berners-Lee “Quick look” review dated 1992-04-11
   - **W3 News**: April 1992 release note about a search panel issue and fix
@@ -210,7 +208,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Described as an early public release with sources and binaries for multiple platforms.
 - **Sources**
   - [Ancient Web Browsers: ViolaWWW](https://browsers.flanigan.us/browsers/violawww/)
-  - (from surviving archives) ViolaWWW 2.1.0 source code (`Viola/old/src/main.c` in `viola92src.tar`)
+  - (from surviving archives) ViolaWWW 2.1.0 source code (`Viola/old/src/main.c` in [`viola92src.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar))
 
 ### 1992-06-30 — “Next generation” architecture described (SGML/multi-object)
 
@@ -228,13 +226,13 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 ---
 
-### 1992-07-14 to 1992-07-30 — Version 2.1.2 (archives `viola920730.tar.Z`, `WWWViolaApps_920730.tar.Z`)
+### 1992-07-14 to 1992-07-30 — Version 2.1.2 (archives [`viola920730.tar.Z`](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz), `WWWViolaApps_920730.tar.Z`)
 
 - **Evidence**
-  - **Version string**: `Viola=2.1.2, date=July 14, 1992` (see `Viola/src/main.c` in `viola92src.tar`)
+  - **Version string**: `Viola=2.1.2, date=July 14, 1992` (see `Viola/src/main.c` in [`viola92src.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar))
   - **Announcement**: 1992-07-15 on WWW-Talk
   - **README date**: 1992-07-27
-  - **Archive snapshot**: 1992-07-30 (`viola920730.tar.Z`, `WWWViolaApps_920730.tar.Z`)
+  - **Archive snapshot**: 1992-07-30 ([`viola920730.tar.Z`](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz), `WWWViolaApps_920730.tar.Z`)
   - **CERN status page**: lists current release `920730`, requires X11R4+, notes monochrome+colour support, and lists binaries for sun4/decstation/SGI (15-Jul-92)
   - **Archive artifact (920730 snapshot)**: `apps/www.v` Status list includes “July 14, 1992 — Upgrade with latest W3 library.”
 - **What the 1992-07-15 announcement says (selected)**
@@ -255,8 +253,8 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [Ancient Web Browsers: About/Status page screenshot](https://browsers.flanigan.us/browsers/violawww/img/Viola-2.1.0_notes.jpg)
   - [Archive: `viola92src.tar` (combined sources; includes `Viola/src/main.c` and `Viola/apps/res.HTMLStyle.v`)](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar)
   - [Archive snapshot: `viola920730.tar.gz` (includes `viola/README` dated “July 27, 1992” and `src/main.c` version string)](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz)
-  - (inside `viola920730.tar.gz`) `viola/README` (archive README; dated “July 27, 1992”)
-  - (inside `viola920730.tar.gz`) `viola/apps/www.v` (“Overview, ViolaWWW” content with Status list)
+  - (inside [`viola920730.tar.gz`](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz)) `viola/README` (archive README; dated “July 27, 1992”)
+  - (inside [`viola920730.tar.gz`](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz)) `viola/apps/www.v` (“Overview, ViolaWWW” content with Status list)
 
 ### 1992 summer — Viola at Xerox PARC (secondary source)
 
@@ -437,7 +435,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Packaging note: Motif front-end; an X11 (non-Motif) version was also available; described as a single-binary installation (compared to older multi-file setups).
   - Requirements note: Viola requires X11R5; Motif version requires a Motif toolkit library; libwww bundled with ViolaWWW is modified.
 - **Archive source code contents (earliest surviving implementation of FOSI and STG)**
-  - The `viola940323.tar.gz` archive is the **earliest surviving source code** that contains both FOSI and STG support. Neither FOSI nor STG appears in any earlier surviving archives (`viola-2.0.4.tar` / v2.0.4, `viola92src.tar` / v2.1.0, `viola920730.tar.gz` / v2.1.2).
+  - The [`viola940323.tar.gz`](https://browsers.flanigan.us/browsers/violawww/files/viola940323.tar.gz) archive is the **earliest surviving source code** that contains both FOSI and STG support. Neither FOSI nor STG appears in any earlier surviving archives ([`viola-2.0.4.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola-2.0.4.tar) / v2.0.4, [`viola92src.tar`](https://browsers.flanigan.us/browsers/violawww/files/viola92src.tar) / v2.1.0, [`viola920730.tar.gz`](https://browsers.flanigan.us/browsers/violawww/files/viola920730.tar.gz) / v2.1.2).
   - **FOSI files**: `src/libWWW/Library/Implementation/FOSI.c`, `FOSI.h`, `FOSIDTD.c`, `FOSIDTD.h` (SGML parser infrastructure for FOSI DTD), and `src/viola/fosi.c` (Viola callback stubs for FOSI events).
   - **STG files**: `src/libStyle/libstg.c`, `libstg.h` (standalone stylesheet parsing library with `STGMajor`/`STGMinor`/`STGAssert` structures), and `src/viola/stgcall.c`, `stgcall.h` (Viola integration for STG lookups). The `sgml/styles/` directory contains `.stg` stylesheet files (e.g., `hmml.stg`, `HMML_default.stg`, `test.stg`) — tree-structured stylesheets with properties such as `fontSize`, `FGColor`, `BGColor`, `fontSlant`.
   - **Note**: The STG "Stylesheet Language" was first publicly discussed on [October 22, 1993](http://1997.webhistory.org/www.lists/www-talk.1993q4/0264.html), and FOSI support dates from the same development period (late 1993 to early 1994). See [STG_REFERENCE.md](STG_REFERENCE.md) and [FOSI_REFERENCE.md](FOSI_REFERENCE.md) for detailed documentation.

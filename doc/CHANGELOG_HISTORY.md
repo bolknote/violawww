@@ -28,6 +28,17 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 ## Viola (Pre-WWW Era)
 
+### Viola 0.5 (version number known; release date unknown)
+
+- **Evidence**
+  - **Usenet repost (alt.hypertext)**: 1991-04-30 — Lee Moore (Webster Research Center, Xerox Corp.) shared the Viola README on alt.hypertext with the note: “For those of you who didn’t see it, there is a hypercard-like prototype system for X11 that is now available.” The README header reads “VIOLA VERSION 0.5 (pre-release version).”
+  - **Usenet repost (comp.archives)**: 1991-05-24 — Randolph K. Zeitvogel (Symbolics MACSYMA division) also cited the 0.5 README. The comp.archives verification of `scam.berkeley.edu:/src/local/viola/` lists `viola.0.8.tar.Z` (dated Apr 25, 17:41) and a `README` (dated Apr 26, 06:09). The cited README text reads “VERSION 0.5.”
+- **Note**
+  - Two independent Usenet reposters cited a README reading “VERSION 0.5 (pre-release version).” The README content is otherwise identical to the known 0.8 README (same platforms, same copyright, same development status note).
+- **Sources**
+  - [Usenet Archives: alt.hypertext repost (Apr 30, 1991) — Lee Moore, Xerox Corp.](https://usenetarchives.com/view.php?id=alt.hypertext&mid=PDc5NkByb2Nrc2FubmUuV1JDLlhFUk9YLkNPTT4)
+  - [Usenet Archives: comp.archives verification (May 24, 1991) — FTP directory listing](https://usenetarchives.com/view.php?id=comp.archives&mid=PDkxMDUyNDAwMDYuQUEwNTAyMkB2aW9sZXQuYXJib3J0ZXh0LmNvbT4)
+
 ### 1991-04-23 — Viola preview release (pre-WWW)
 
 - **Evidence**
@@ -45,9 +56,14 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - Development status note: “Viola is unofficially supported only by me, not by the Experimental Computing Facility. Also, since I’m graduating next month (May’91), Viola’s future development is uncertain.”
 - **Early third-party reception**
   - By June 1991, Chin Fang (Stanford University, Mechanical Engineering) had ported Viola to IBM RISC 6000 systems, describing it as a “tremendous pkg” and reporting the port required “just one line hack.”
+  - By July 1991, a comp.windows.x thread (started by Dan Warburton, FAA Technical Center, NJ) shows international adoption within three months of the initial release:
+    - A user at a Japanese institution reported making a **Japanese version** of Viola for his students — the earliest known internationalization/localization effort.
+    - Dr Ray Saffin (Crosfield Electronics, UK) had already ported Viola to **IBM RS/6000-530** and **Intel 386 running ISC Unix 2.2** (noting the 14-character filename limit required renaming include files), and planned a port to **HP 9000-720**.
+    - The thread also notes the lack of documentation — a problem later observed by Tim Berners-Lee in his 1992 review.
 - **Sources**
   - [Usenet Archives: Viola announcement (Apr 1991)](https://www.usenetarchives.com/view.php?id=comp.windows.x&mid=PDkxMDQyMzEwNTguQUEyNzQ1M0BzY2FtLkJlcmtlbGV5LkVEVT4)
   - [Usenet repost (comp.unix.sysv386, Jun 1991): “X based HyperCard like application” (includes Viola 0.8 README)](https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.unix.sysv386/1991-June/004194.html)
+  - [Usenet Archives: comp.windows.x thread (Jul 1991) — documentation, Japanese version, platform ports](https://usenetarchives.com/view.php?id=comp.windows.x&mid=PDE1NDBAZmFhdGNybC5VVUNQPg)
 
 ### 1991-04-23 — Viola 0.8
 
@@ -55,12 +71,14 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - **Announcement**: Usenet (comp.windows.x), 1991-04-23 (see preview release entry above)
   - **README (from distribution)**: header reads "VIOLA VERSION 0.8 (pre-release version)"
   - **README archive date**: 1991-04-25 (from archived copy URL)
+  - **FTP directory listing** (comp.archives verification, 1991-05-24): `viola.0.8.tar.Z` dated Apr 25, 17:41; `README` dated Apr 26, 06:09
   - **Retrospective (author statement)**: “first version of viola (0.8) released in 1991”
 - **Note**
   - The Usenet announcement on April 23 directed users to FTP the Viola 0.8 distribution; the README was archived two days later (April 25). The README explicitly labels 0.8 as a “pre-release version.”
 - **Sources**
   - [Olde Viola Montage (archived; author retrospective note)](https://web.archive.org/web/19990830034431id_/http://viola.org/vintage/montage.html)
   - [Viola 0.8 README (archived, dated Apr 25, 1991)](https://www.krsaborio.net/internet/research/1991/0425.htm)
+  - [Usenet Archives: comp.archives FTP verification (May 1991) — directory listing of `scam.berkeley.edu`](https://usenetarchives.com/view.php?id=comp.archives&mid=PDkxMDUyNDAwMDYuQUEwNTAyMkB2aW9sZXQuYXJib3J0ZXh0LmNvbT4)
 
 ---
 
@@ -603,6 +621,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 
 | Date / Range | Version | Notes (evidence-driven) |
 |---|---:|---|
+| pre-1991-04-25 | Viola 0.5 | Version number cited in two independent Usenet reposts |
 | 1991-04-23 | Viola 0.8 | Usenet announcement (pre-WWW); README archived Apr 25 |
 | 1991-12-09 to 1991-12-13 | — | “One-night hack” announcements on WWW-Talk |
 | Early 1992-01 | — | Demonstration observed (W3 News 9201) |

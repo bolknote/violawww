@@ -572,6 +572,18 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [WWW-Talk 1995: Release of ViolaWWW 3.3](http://1997.webhistory.org/www.lists/www-talk.1995q2/0128.html)
   - [Ancient Web Browsers: ViolaWWW (secondary index; links to release posts)](https://browsers.flanigan.us/browsers/violawww/)
 
+### 1996-01-23 — DEC Alpha (OSF/1) compilation attempt (Usenet report)
+
+- **Evidence**
+  - **Announcement**: Usenet (comp.infosystems.www.browsers.x), 1996-01-23, Message-ID `<4e57tg$iae@ftp.univie.ac.at>`
+- **What the source says**
+  - Andreas Ulovec (Institute for Mathematics, University of Vienna) reported attempting to compile ViolaWWW on a DEC Alpha running OSF/1. He encountered compilation errors, partially fixed them, but the resulting binary produced runtime errors. He asked whether precompiled binaries were available or whether anyone had successfully built ViolaWWW on DEC Alpha.
+- **Note**
+  - This is the latest known evidence of someone actively trying to use ViolaWWW — approximately 9 months after the final known release (3.3 Beta, April 1995).
+  - DEC Alpha was a 64-bit platform; the compilation and runtime errors described are consistent with 32-bit to 64-bit portability issues (pointer size, integer width, etc.) — the same class of problems addressed by the 2025 revival of this project.
+- **Source**
+  - [Usenet Archives: comp.infosystems.www.browsers.x (Jan 1996)](https://usenetarchives.com/view.php?id=comp.infosystems.www.browsers.x&mid=PDRlNTd0ZyRpYWVAZnRwLnVuaXZpZS5hYy5hdD4)
+
 ---
 
 ## ViolaWWW 4.0 (Modern Era)
@@ -619,6 +631,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1994-10-24 to 1994-10-25 | — | Stylesheet RFC re-published (WWW-Talk) |
 | 1995-03-29 | — | W3C Clients page lists ViolaWWW as (Beta, unsupported) |
 | 1995-04-10 to 1995-04-17 | 3.3 Beta | Final known release |
+| 1996-01-23 | — | DEC Alpha (OSF/1) compilation attempt reported (Usenet) |
 | 2025-10-17 | 4.0 (revival) | Project revival in this repo |
 
 ---

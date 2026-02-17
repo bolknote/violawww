@@ -518,6 +518,24 @@ These rules are here to keep future edits evidence-based and to avoid silently �
   - [Archive: `viola940323.tar.gz` (contains `viola940323/README` and `viola940323/README.RUN`)](https://browsers.flanigan.us/browsers/violawww/files/viola940323.tar.gz)
   - `src/vw/changes` (repository file)
 
+### 1994-04-19 — SIGWEB panel at SLAC with Andreessen, Altis, Johnson, and Wei
+
+- **Evidence**
+  - **Announcement**: Usenet (ba.seminars), 1994-04-12, posted by Dave Lewis (SIGWEB meeting coordinator)
+- **What the source says**
+  - A SIGWEB panel discussion “Desktop Interfaces to Information Sources on the Internet: Perspectives from World Wide Web client interface developers” was held on April 19, 1994, 2:00–5:00 p.m. at the SLAC Auditorium (Stanford Linear Accelerator Center, 2575 Sand Hill Road, Menlo Park, CA).
+  - Panelists:
+    - Kevin Altis, Intel — creator of the Proxy Server
+    - Marc Andreessen, Enterprise Integration Technologies — creator of Mosaic
+    - Tony Johnson, Stanford Linear Accelerator Center — creator of MidasWWW
+    - Pei Wei, O’Reilly & Associates — creator of violaWWW
+  - Moderator: Bebo White, SLAC.
+- **Note**
+  - SIGWEB was an organization founded at the end of 1993 by Chris McRae (O’Reilly & Associates) to facilitate communication between practitioners of Networked Information Delivery and Retrieval (NIDR) in the Bay Area, with several hundred participants at its monthly events.
+  - This panel places Pei Wei alongside Marc Andreessen — five months before the September 1994 Stanford WWW Workshop where Wei also spoke.
+- **Source**
+  - [Google Groups: ba.seminars — April 19th SIGWEB meeting announcement](https://groups.google.com/g/ba.seminars/c/gJDV-Owoo_A/m/4FAf_oQMAH4J)
+
 ### 1994-05-18 to 1994-05-20 — Cross-platform testing initiative
 
 - **Evidence**
@@ -646,6 +664,7 @@ These rules are here to keep future edits evidence-based and to avoid silently �
 | 1994-01 | — | FIGA support (WWW-Talk) |
 | 1994-02-23 to 1994-02-25 | 3.0 Beta | README date + announcement |
 | 1994-03-23 to 1994-03-24 | 3.1 Beta | README date + announcement |
+| 1994-04-19 | — | SIGWEB panel at SLAC (Wei, Andreessen, Altis, Johnson) |
 | 1994-09-20 to 1994-09-21 | — | Pei Wei speaks on "Browsers" at Stanford WWW Workshop |
 | 1994-10-24 to 1994-10-25 | — | Stylesheet RFC re-published (WWW-Talk) |
 | 1995-03-29 | — | W3C Clients page lists ViolaWWW as (Beta, unsupported) |

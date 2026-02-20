@@ -311,17 +311,19 @@ PRIVATE BOOL HTLoadDocument ARGS4(const char*, full_address, HTParentAnchor*, an
             }
             
             /* Check if hostname is local */
-            if (strncasecmp(hostname, "localhost", 9) == 0 ||
-                strncmp(hostname, "127.", 4) == 0 ||
-                strncmp(hostname, "10.", 3) == 0 ||
-                strncmp(hostname, "192.168.", 8) == 0 ||
-                strncmp(hostname, "0.0.0.0", 7) == 0) {
+            if (strncasecmp(hostname, "localhost", 9) == 0 &&
+                (hostname[9] == '\0' || hostname[9] == ':' || hostname[9] == '.')) {
                 is_local = 1;
-            } else if (strncmp(hostname, "172.", 4) == 0) {
-                int second_octet = 0;
-                if (sscanf(hostname + 4, "%d", &second_octet) == 1 && 
-                    second_octet >= 16 && second_octet <= 31) {
-                    is_local = 1;
+            } else {
+                int o1, o2, o3, o4;
+                if (sscanf(hostname, "%d.%d.%d.%d", &o1, &o2, &o3, &o4) == 4) {
+                    if (o1 == 127 || 
+                        o1 == 10 || 
+                        (o1 == 192 && o2 == 168) || 
+                        (o1 == 172 && o2 >= 16 && o2 <= 31) ||
+                        (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0)) {
+                        is_local = 1;
+                    }
                 }
             }
             free(hostname);

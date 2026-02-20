@@ -291,6 +291,7 @@ PRIVATE BOOL HTLoadDocument ARGS4(const char*, full_address, HTParentAnchor*, an
         char* protocol = HTParse(full_address, "", PARSE_ACCESS);
         char* hostname = HTParse(full_address, "", PARSE_HOST);
         int is_archive = 0;
+        int is_local = 0;
         int is_http_protocol = 0;
         
         /* Web Archive only works with HTTP and HTTPS protocols */
@@ -308,6 +309,21 @@ PRIVATE BOOL HTLoadDocument ARGS4(const char*, full_address, HTParentAnchor*, an
                 strncmp(hostname, WAYBACK_API_HOST, strlen(WAYBACK_API_HOST)) == 0) {
                 is_archive = 1;
             }
+            
+            /* Check if hostname is local */
+            if (strncasecmp(hostname, "localhost", 9) == 0 ||
+                strncmp(hostname, "127.", 4) == 0 ||
+                strncmp(hostname, "10.", 3) == 0 ||
+                strncmp(hostname, "192.168.", 8) == 0 ||
+                strncmp(hostname, "0.0.0.0", 7) == 0) {
+                is_local = 1;
+            } else if (strncmp(hostname, "172.", 4) == 0) {
+                int second_octet = 0;
+                if (sscanf(hostname + 4, "%d", &second_octet) == 1 && 
+                    second_octet >= 16 && second_octet <= 31) {
+                    is_local = 1;
+                }
+            }
             free(hostname);
         }
         
@@ -322,7 +338,13 @@ PRIVATE BOOL HTLoadDocument ARGS4(const char*, full_address, HTParentAnchor*, an
             }
         }
         
-        if (!is_archive && is_http_protocol) {
+        if (!is_archive && is_local && is_http_protocol) {
+            if (TRACE) {
+                fprintf(stderr, "HTAccess: Detected local IP/hostname, skipping Wayback fallback\n");
+            }
+        }
+        
+        if (!is_archive && !is_local && is_http_protocol) {
             if (TRACE) {
                 fprintf(stderr, "HTAccess: Primary load failed (status=%d), trying Wayback Machine for %s\n", 
                         status, full_address);

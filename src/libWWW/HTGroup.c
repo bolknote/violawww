@@ -68,7 +68,7 @@ typedef struct {
 PRIVATE void syntax_error ARGS3(FILE*, fp, char*, msg, LexItem, lex_item) {
     char buffer[41];
     int cnt = 0;
-    char ch;
+    int ch;
 
     while ((ch = getc(fp)) != EOF && ch != '\n')
         if (cnt < 40)

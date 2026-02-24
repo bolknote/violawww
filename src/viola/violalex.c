@@ -806,7 +806,7 @@ int grabop(char c)
         } else if (tp[0]) { /* Illegal char, but accept */
             io_ungetc(c);
             /*	        printf("Accept %c\n", c);*/
-            i = (unsigned long)tp[0];
+            i = (int)(uintptr_t)tp[0];
             if (i == SPECIAL_COMMENT)
                 return snarf_comment2();
             return (yylval.i = i);
@@ -818,7 +818,8 @@ int grabop(char c)
         }
         c = io_getc();
     }
-    return (yylval.i = (unsigned int)tp[0]);
+    /* Trie element 0 stores token ID as pointer (see init_scanutils). */
+    return (yylval.i = (int)(uintptr_t)tp[0]);
 }
 
 #define MAXNLEN 38

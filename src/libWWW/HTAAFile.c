@@ -159,7 +159,7 @@ PUBLIC int HTAAFile_readField ARGS3(FILE*, fp, char*, contents, int, max_len) {
 */
 PUBLIC int HTAAFile_readList ARGS3(FILE*, fp, HTList*, result, int, max_len) {
     char* item = NULL;
-    char terminator;
+    int terminator;
     int cnt = 0;
 
     do {

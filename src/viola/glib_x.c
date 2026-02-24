@@ -1441,7 +1441,8 @@ int GLUpdateFontInfo(FontInfo* fontInfo, int id)
     static XFontStruct* xfontStruct = NULL;
     int i;
 
-    if (id < 0 || id >= MAXFONTS || (FontFont(id)) == NULL) {
+    /* Font is X11 XID (opaque uint), not a pointer; 0 means unloaded. */
+    if (id < 0 || id >= MAXFONTS || FontFont(id) == (Font)0) {
         sprintf(buff, "setFontInfo(id=%d): Invalid font id.\n", id);
         messageToUser(NULL, MESSAGE_ERROR, buff);
         return 0;

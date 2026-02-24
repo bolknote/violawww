@@ -353,8 +353,10 @@ Image* pbmLoad(char* fullname, char* name, unsigned int verbose)
              */
 
             destptr = image->data;
-            for (y = 0; y < size; y++)
-                *(destptr++) = PM_SCALE(*destptr, maxval, 0xff);
+            for (y = 0; y < size; y++) {
+                *destptr = (byte)PM_SCALE(*destptr, maxval, 0xff);
+                destptr++;
+            }
             break;
 
         case ITRUE:

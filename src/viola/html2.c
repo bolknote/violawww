@@ -1019,18 +1019,18 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
     }
 
     if (bstate->obj && tagInfo && tagInfo->number_of_attributes && present && value) {
-        char** tagAttrNames = tagInfo->attributes;
+        attr* tagAttrs = tagInfo->attributes;
         for (i = 0; i < tagInfo->number_of_attributes; i++) {
             if (present[i]) {
                 /* Save STYLE attribute for later use in minor matching */
-                if (!strcasecmp(tagAttrNames[i], "STYLE")) {
+                if (!strcasecmp(tagAttrs[i].name, "STYLE")) {
                     /* Copy the string since value[i] will be freed by SGML parser */
                     if (bstate->styleAttr)
                         free(bstate->styleAttr);
                     bstate->styleAttr = saveString(value[i]);
                     /* Don't send AA for STYLE - will be sent as setStyleAttr in etag */
                 } else {
-                    sendMessage1N2str(bstate->obj, "AA", tagAttrNames[i], value[i]);
+                    sendMessage1N2str(bstate->obj, "AA", tagAttrs[i].name, value[i]);
                 }
             }
         }
@@ -1546,7 +1546,7 @@ void CB_HTML_etag(int element_number)
                 bstate->styleAttr = NULL; /* Reset after use to avoid reuse */
             }
 
-            if (parent_bstate != bstate->obj)
+            if (parent_bstate->obj != bstate->obj)
                 span = getVSpan(bstate->obj, STR_D);
             else
                 span = 0;

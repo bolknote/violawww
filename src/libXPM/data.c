@@ -173,6 +173,8 @@ int xpmGetC(xpmData* mdata) {
             c = xpmGetC(mdata);
         }
         return (c);
+    default:
+        return EOF;
     }
 }
 

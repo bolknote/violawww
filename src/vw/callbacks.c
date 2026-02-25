@@ -834,7 +834,7 @@ void scrollBarDrag(Widget sbar, XtPointer clientData, XtPointer callData) {
 
 void scrollBarValueChanged(Widget sbar, XtPointer clientData, XtPointer callData) {
     XmScrollBarCallbackStruct* sbData = (XmScrollBarCallbackStruct*)callData;
-    char* violaObj = (char*)clientData;
+    VObj* violaObj = (VObj*)clientData;
     extern int calledDrag;
 
     if (calledDrag)

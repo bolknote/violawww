@@ -41,7 +41,7 @@
 #include "tfed.h"
 #include "tfed_i.h"
 
-extern void process_event(VObj* self, Packet* packet);
+extern void process_event(XEvent* ep, int tool);
 extern int countBreaks(TFChar* tfcp);
 extern int insertStr(TFStruct* tf, int split, TFLineNode* source);
 extern int replaceNodeLine2(TFLineNode* to, TFLineNode* from, int start, int length, int freeOldSpaceP, MemoryGroup* mg);

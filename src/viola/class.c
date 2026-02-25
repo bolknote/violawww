@@ -286,7 +286,7 @@ int load_classScripts(char* classScriptPath)
     char* classScript;
     int i;
 
-    for (cip = classList; cip; cip++) {
+    for (i = 0; (cip = classList[i]); i++) {
         if ((entry = symID2Str->get(symID2Str, (intptr_t)cip->id))) {
             sprintf(buff, "%s/cs_%s.vs", classScriptPath, (char*)entry->val);
             if (loadFile(buff, &classScript) >= 0) {
@@ -336,7 +336,8 @@ long initSlot(VObj* self, long* slotp, SlotInfo* sip, long val)
             Array* array = (Array*)malloc(sizeof(struct Array));
             array->size = transferNumList2Array((char*)val, intArrayBuff, INTARRAYBUFF_SIZE);
             array->info = (long*)malloc(sizeof(long) * array->size);
-            bcopy(intArrayBuff, array->info, sizeof(int) * array->size);
+            for (int j = 0; j < array->size; j++)
+                array->info[j] = intArrayBuff[j];
             return *slotp = (long)array;
         }
         return 0;
@@ -807,8 +808,9 @@ VObj* clone(VObj* original)
                 array = (Array*)malloc(sizeof(struct Array));
                 array->size =
                     transferNumList2Array((char*)(*originalp), intArrayBuff, INTARRAYBUFF_SIZE);
-                array->info = (int*)malloc(sizeof(int) * array->size);
-                bcopy(intArrayBuff, array->info, sizeof(int) * array->size);
+                array->info = (long*)malloc(sizeof(long) * array->size);
+                for (long j = 0; j < array->size; j++)
+                    array->info[j] = intArrayBuff[j];
                 *clonep = (long)array;
             }
             break;
@@ -844,7 +846,7 @@ void methodMembershipProfile() {
     int i;
 
     printf("Method Calls Profile:\n");
-    for (cip = classList; cip; cip++) {
+    for (i = 0; (cip = classList[i]); i++) {
         mhp = &cip->mhp;
 
         entry = symID2Str->get(symID2Str, (long)cip->id);

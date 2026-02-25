@@ -187,8 +187,8 @@ void History_List NOPARAMS;
 TFChar tbuff[TBUFFSIZE];
 
 #define HBUFFSIZE 100000 /* buffer for hidden/embedding text (scripts) */
-char hbuff[HBUFFSIZE];
-int hbuffi;
+static char hbuff[HBUFFSIZE];
+static int hbuffi;
 int inHiddenState = 0;
 
 int init_html(void) {

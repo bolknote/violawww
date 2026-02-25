@@ -39,8 +39,8 @@ PRIVATE HTStyle* styles[FOSI_ELEMENTS];
 PRIVATE HTStyle* default_style;
 
 #define MAJORBUFF 20000
-char majorBuff[MAJORBUFF];
-int majorBuffi;
+extern char majorBuff[MAJORBUFF];
+extern int majorBuffi;
 
 /*		FOSI Object
 **		-----------

@@ -35,4 +35,4 @@ VObj* findObject(long objNameStrID);
 VObjList* appendObjToList(VObjList*, VObj*);
 void freeAllObjects(void);
 
-int exitingViola;
+extern int exitingViola;

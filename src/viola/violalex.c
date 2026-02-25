@@ -303,7 +303,6 @@ FILE* datastream;
 
 #ifdef TEST
 
-YYSTYPE yylval;
 /*#define scanString grabstring*/
 
 #define make_strn alloc_stringn

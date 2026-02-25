@@ -20,8 +20,8 @@ char* HTAppVersion = "4.0";
 #define PRINT_TAG_DELIMS
 int printTagDelims = 0;
 
-int http_method;
-char* http_dataToPost;
+extern int http_method;
+extern char* http_dataToPost;
 
 int http_progress_reporter_level = 0;
 int http_progress_expected_total_bytes = 0;
@@ -272,9 +272,9 @@ char URLEncodeBuff[1000];
 /***** hot list defs/decls *****/
 
 #define HBUFF_SIZE 100
-char hbuff[HBUFF_SIZE];
+static char hbuff[HBUFF_SIZE];
 
-int hbuffi = 0, hbuffLimit = 0;
+static int hbuffi = 0, hbuffLimit = 0;
 char line[500];
 int linei;
 

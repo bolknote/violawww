@@ -72,14 +72,12 @@ SGMLS_AVAILABLE := $(shell test -x "$(SGMLS_PATH)" && echo yes || echo no)
 ifeq ($(UNAME_S),Darwin)
   # macOS: use -arch flag and clang-specific options
   ARCH_FLAGS = -arch $(UNAME_M)
-  # -fcommon allows legacy code with tentative definitions in headers (pre-GCC 10 behavior)
-  CFLAGS_COMMON = -no-cpp-precomp -fcommon
+  CFLAGS_COMMON = -no-cpp-precomp -fno-common
   WARNING_FLAGS = -Wno-everything
 else
   # Linux: no -arch flag, use gcc-compatible warnings
   ARCH_FLAGS =
-  # -fcommon for legacy code compatibility (multiple definitions in headers)
-  CFLAGS_COMMON = -fcommon
+  CFLAGS_COMMON = -fno-common
   # Use moderate warnings; can be overridden with WARN_64BIT=1 for detailed analysis
   WARNING_FLAGS = -Wall -Wextra
 endif

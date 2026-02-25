@@ -33,8 +33,8 @@ static inline unsigned int dist(unsigned int a, unsigned int b) {
  * to help speed this up; it's an O(exp(n,2)) algorithm.
  */
 
-unsigned int squareInit = 0;
-unsigned long squareTable[32768];
+static unsigned int squareInit = 0;
+static unsigned long squareTable[32768];
 
 void initSquareTable() {
     unsigned long a;

@@ -95,8 +95,8 @@ extern char keybuf[];
 extern Display* display;
 extern int screen_number;
 extern Screen* screen;
-int displayWidth;
-int displayHeight;
+extern int displayWidth;
+extern int displayHeight;
 
 extern unsigned long FGPixel, BGPixel, BDPixel, CRPixel, InvertPixel;
 extern GC gc;

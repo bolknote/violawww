@@ -46,7 +46,7 @@
 int total_secs = 0;
 int total_usecs = 0;
 
-char tokenBuff[2];
+extern char tokenBuff[2];
 
 long i;
 int j;
@@ -78,7 +78,7 @@ Packet* execStack = NULL;
 long stackExecIdx = -1;
 long stackBaseIdx = -1;
 
-union PCode pcode_buff[5000]; /* limit on maximum opcode size */
+static union PCode pcode_buff[5000]; /* limit on maximum opcode size */
 
 #define ARG_STACK_SIZE 1024
 Attr argAttrStack[ARG_STACK_SIZE];

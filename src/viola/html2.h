@@ -59,10 +59,10 @@ char* decodeURL(char*);
 
 /* for libwww to call */
 
-int http_progress_reporter_level;
-int http_progress_expected_total_bytes;
-int http_progress_total_bytes;
-int http_progress_subtotal_bytes;
+extern int http_progress_reporter_level;
+extern int http_progress_expected_total_bytes;
+extern int http_progress_total_bytes;
+extern int http_progress_subtotal_bytes;
 
 int http_progress_notify(int);
 void user_alert(char*);

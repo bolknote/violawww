@@ -192,7 +192,7 @@ void SGMLBuildDoc_leaveChanged() {
  ****************************************************/
 
 #define INPUT_BUFFSIZE 100000
-char INPUT_buff[INPUT_BUFFSIZE + 1];
+static char INPUT_buff[INPUT_BUFFSIZE + 1];
 int INPUT_idxLow = 0;
 int INPUT_idxHigh = 0;
 FILE* INPUT_fp;

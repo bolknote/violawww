@@ -31,6 +31,6 @@ VObj* findObject();
 VObjList* appendObjToList();
 void freeAllObjects();
 
-int exitingViola;
+extern int exitingViola;
 
 #endif /* _VIOLA_OBJ_H_ */

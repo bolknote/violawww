@@ -72,8 +72,8 @@ typedef struct folderStruct {
 
     char* commentURL;
     Item** items;
-    short nItems;
-    short allocedItems;
+    int nItems;
+    int allocedItems;
     short cw, ch; /* size of folder canvas area (when open) */
 
     XmString nItemsXMS;

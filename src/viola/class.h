@@ -94,7 +94,7 @@ typedef struct ClassInfo {
 extern int init_class(void);
 extern ClassInfo* getClassInfoByID(int);
 extern ClassInfo* getClassInfoByName(char*);
-extern VObj* buildObjWithLoadedSlots(ClassInfo*, long [100][2], int);
+extern VObj* buildObjWithLoadedSlots(ClassInfo*, long (*)[100][2], int);
 extern VObj* instantiateObj(long (*)[100][2], int*);
 extern long* searchSlot(long (*)[100][2], int, int);
 extern int saveSelfAndChildren(VObj*, FILE*);

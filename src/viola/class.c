@@ -460,7 +460,7 @@ ClassInfo* getClassInfoByName(char* className)
     int classid, i;
 
     if ((entry = symStr2ID->get(symStr2ID, (long)className))) {
-        classid = entry->val;
+        classid = (int)entry->val;
         for (i = 0; (cip = classList[i++]); cip++)
             if (classid == cip->id)
                 return cip;
@@ -468,7 +468,7 @@ ClassInfo* getClassInfoByName(char* className)
     return 0;
 }
 
-VObj* buildObjWithLoadedSlots(ClassInfo* cip, long slotv[100][2], int slotc)
+VObj* buildObjWithLoadedSlots(ClassInfo* cip, long (*slotv)[100][2], int slotc)
 {
     VObj* obj = (VObj*)malloc(sizeof(long) * cip->totalcount);
     SlotInfo* sip;
@@ -481,8 +481,8 @@ VObj* buildObjWithLoadedSlots(ClassInfo* cip, long slotv[100][2], int slotc)
     for (i = 0; i < cip->totalcount; i++) {
         sip = cip->slookup[i];
         for (j = 0; j < slotc; j++) {
-            if (sip->id == slotv[j][0]) {
-                sip->tmp = (long)slotv[j];
+            if (sip->id == (*slotv)[j][0]) {
+                sip->tmp = (long)(*slotv)[j];
                 goto next;
             }
         }
@@ -560,7 +560,7 @@ VObj* instantiateObj(long (*slotv)[100][2], int* slotc)
         fprintf(stderr, "unknown class \"%s\" (not in symbolic table).\n", (char*)slotp[1]);
         return NULL;
     }
-    cip = getClassInfoByID(entry->val);
+    cip = getClassInfoByID((int)entry->val);
     if (!cip) {
         fprintf(stderr, "unknown class \"%s\" (not in class info list).\n", (char*)slotp[1]);
         return NULL;

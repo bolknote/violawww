@@ -292,11 +292,16 @@ int init_html2() {
     return 1; 
 }
 
-SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo* tagMappingInfo, char* tag)
+SGMLTagMappingInfo* findTMI(SGMLDocMappingInfo* dmi, char* tag)
 {
-    int i;
-
-    for (i = 0; tagMappingInfo[i].tag; i++)
+    if (dmi->tagHashMap) {
+        HashEntry* entry = dmi->tagHashMap->get(dmi->tagHashMap, (intptr_t)tag);
+        if (entry)
+            return (SGMLTagMappingInfo*)entry->val;
+        return NULL;
+    }
+    SGMLTagMappingInfo* tagMappingInfo = dmi->tagMap;
+    for (int i = 0; tagMappingInfo[i].tag; i++)
         if (!strcmp(tag, tagMappingInfo[i].tag))
             return &tagMappingInfo[i];
     return NULL;
@@ -489,7 +494,7 @@ void CB_HTML_new() {
     bstate->parent = SBI.caller;
     bstate->dataBuffIdx_localStart = dataBuffIdx;
     bstate->tag = "_HTML";
-    bstate->tmi = findTMI(SBI.dmi->tagMap, bstate->tag);
+    bstate->tmi = findTMI(SBI.dmi, bstate->tag);
 
     if (!bstate->tmi) {
         fprintf(stderr, "CB_HTML_new: internal error: no tmi struct for tag=%s\n", tag);
@@ -623,7 +628,7 @@ void CB_HTML_special_entity(int entity_number, char* data, int dataLength)
 
         if (dataLength > 0) {
             cp = (char*)malloc(sizeof(char) * (dataLength + 1));
-            strncpy(cp, data, dataLength);
+            memcpy(cp, data, dataLength);
             cp[dataLength] = '\0';
         } else {
             cp = (char*)malloc(sizeof(char));
@@ -833,36 +838,32 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
          * container, n-2 level object needs to be told to flush
          */
         {
-            if (dataBuffIdxStackIdx >= 2) {
-                src_starti = dataBuffIdxStack[dataBuffIdxStackIdx - 2];
-                src_endi = dataBuffIdxStack[dataBuffIdxStackIdx - 1];
-
-                dataBuffIdxStack[dataBuffIdxStackIdx - 2] = src_endi;
-                size = src_endi - src_starti;
-                /*
-                printf("COPY (for n-2) src_starti=%d\n", src_starti);
-                printf("COPY (for n-2) src_endi=%d\n", src_endi);
-                */
-            } else {
-                size = 0;
-            }
-            if (size < 0) {
-                cp = (char*)malloc(sizeof(char));
-                *cp = '\0';
-            } else {
-                cp = (char*)malloc(sizeof(char) * (size + 1));
-                strncpy(cp, &dataBuff[src_starti], size);
-                cp[size] = '\0';
-            }
-            /*printf("COPY (for n-2) str={%s}\n", cp);*/
-
             /* Bounds check before accessing stack[SBI.stacki - 2] */
             if (SBI.stacki >= 2 && SBI.stacki < 100) {
                 parent_parent_bstate = &SBI.stack[SBI.stacki - 2];
             } else {
                 parent_parent_bstate = NULL;
             }
+
             if (parent_parent_bstate && parent_parent_bstate->obj) {
+                if (dataBuffIdxStackIdx >= 2) {
+                    src_starti = dataBuffIdxStack[dataBuffIdxStackIdx - 2];
+                    src_endi = dataBuffIdxStack[dataBuffIdxStackIdx - 1];
+
+                    dataBuffIdxStack[dataBuffIdxStackIdx - 2] = src_endi;
+                    size = src_endi - src_starti;
+                } else {
+                    size = 0;
+                }
+                if (size > 0) {
+                    cp = (char*)malloc(sizeof(char) * (size + 1));
+                    memcpy(cp, &dataBuff[src_starti], size);
+                    cp[size] = '\0';
+                } else {
+                    cp = (char*)malloc(sizeof(char));
+                    *cp = '\0';
+                }
+
                 if (GET_label(parent_parent_bstate->obj))
                     free(GET_label(parent_parent_bstate->obj));
                 SET_label(parent_parent_bstate->obj, cp);
@@ -870,8 +871,6 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
                 /* in case obj needs this information */
                 SGMLBuildDoc_span = parent_parent_bstate->sub_y;
                 span = getVSpan(parent_parent_bstate->obj, STR_F);
-            } else {
-                free(cp);  /* Free allocated string if not used */
             }
         }
     }
@@ -899,7 +898,7 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
                 *cp = '\0';
             } else {
                 cp = (char*)malloc(sizeof(char) * (size + 1));
-                strncpy(cp, &dataBuff[src_starti], size);
+                memcpy(cp, &dataBuff[src_starti], size);
                 cp[size] = '\0';
             }
             printf("COPY (for n-1) str={%s}\n", cp);
@@ -1060,85 +1059,52 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
 
             dataBuffIdxStack[dataBuffIdxStackIdx - 1] = src_starti;
 
-            /*
-             * XXX THIS MALLOCing is NOT necessary for HTML, but needed for HMML.
-             * UNIFY THIS DUDE. BUT, MALLOC (AND FREE) PROPPERLY. MUST FIX THIS.?
-             */
             size = src_endi - src_starti;
-            if (size < 0) {
+            if (size < 0)
                 size = 0;
-            }
-            if (size) {
-                cp = (char*)malloc(sizeof(char) * (size + 1));
-                strncpy(cp, &dataBuff[src_starti], size);
-                cp[size] = '\0';
-            } else {
-                cp = (char*)malloc(sizeof(char));
-                *cp = '\0';
-            }
 
-            if (parent_bstate->obj) {
+            /* Null-terminate dataBuff in place to avoid malloc+memcpy.
+             * The label is consumed synchronously by getVSpan; we only
+             * copy to heap if the object survives (span != 0).
+             */
+            {
+                char saved_char = dataBuff[src_endi];
+                dataBuff[src_endi] = '\0';
+
                 if (GET_label(parent_bstate->obj))
                     free(GET_label(parent_bstate->obj));
-                SET_label(parent_bstate->obj, cp);
-            } else {
-                free(cp);  /* Free allocated string if not used */
-            }
+                SET_label(parent_bstate->obj, &dataBuff[src_starti]);
 
-            /*
-            printf("FLUSH as parent: obj=%s lidx=%d idx=%d DATA {%s}\n",
-              GET_name(parent_bstate->obj), dataBuffIdxStack[dataBuffIdxStackIdx - 1],
-              dataBuffIdx, GET_label(parent_bstate->obj));
-
-            printf("FLUSH1 as parent: obj=%s height=%d sub_y=%d\n",
-              GET_name(parent_bstate->obj),
-              parent_bstate->height, parent_bstate->sub_y);
-            */
-
-            if (1 /*!hadFlushed*/) {
-                /* in case obj needs this information */
                 SGMLBuildDoc_span = parent_bstate->sub_y;
-
-                /* Tell parent object to flush out any data (and
-                 * create  objects to process that data, if necessary).
-                 * Return any vspan to insert.
-                 */
                 span = getVSpan(parent_bstate->obj, STR_F);
+
+                dataBuff[src_endi] = saved_char;
             }
-            /*
-            printf("FLUSH2 as parent: obj=%s height=%d sub_y=%d span=%d\n",
-              GET_name(parent_bstate->obj),
-              parent_bstate->height, parent_bstate->sub_y, span);
-            */
-            /* Flush action might have caused object insertion,
-             * and thus affected sub_y
-             */
+
             if (bstate->obj)
                 SET_y(bstate->obj, parent_bstate->sub_y + span + bstate->tmi->top);
 
             if (span == 0) {
-                /* destroy object -- it's useless */
-                /*
-                printf("DESTROYING obj=%s data={%s}\n",
-                GET_name(parent_bstate->obj), GET_label(parent_bstate->obj));
-                */
+                SET_label(parent_bstate->obj, NULL);
                 parent_bstate->obj = NULL;
                 dataBuffIdx = parent_bstate->dataBuffIdx_localStart;
-                /*???*/
+            } else {
+                /* Object survives -- copy label to heap for persistence */
+                if (size > 0) {
+                    cp = (char*)malloc(sizeof(char) * (size + 1));
+                    memcpy(cp, &dataBuff[src_starti], size);
+                    cp[size] = '\0';
+                } else {
+                    cp = (char*)malloc(sizeof(char));
+                    *cp = '\0';
+                }
+                SET_label(parent_bstate->obj, cp);
 
-            } else if (span != -1 && parent_bstate->obj) {
-
-                /*			span += bstate->tmi->top + bstate->tmi->bottom;*/
-
-                parent_bstate->sub_y += span;
-                parent_bstate->height += span;
-
-                SET_height(parent_bstate->obj, parent_bstate->height);
-                /*
-                printf("FLUSH3 as parent: obj=%s height=%d sub_y=%d span=%d\n",
-                GET_name(parent_bstate->obj),
-                parent_bstate->height, parent_bstate->sub_y, span);
-                */
+                if (span != -1) {
+                    parent_bstate->sub_y += span;
+                    parent_bstate->height += span;
+                    SET_height(parent_bstate->obj, parent_bstate->height);
+                }
             }
             /* if obj is a hpane, then postpone its and
              * its children's geometry till the end of
@@ -1438,7 +1404,7 @@ void CB_HTML_etag(int element_number)
             }
             if (size) {
                 cp = (char*)malloc(sizeof(char) * (size + 1));
-                strncpy(cp, &dataBuff[src_starti], size);
+                memcpy(cp, &dataBuff[src_starti], size);
                 cp[size] = '\0';
             } else {
                 cp = (char*)malloc(sizeof(char));
@@ -1509,7 +1475,7 @@ void CB_HTML_etag(int element_number)
                     perror("malloc failed");
                     return;
                 }
-                strncpy(cp, &dataBuff[src_starti], size);
+                memcpy(cp, &dataBuff[src_starti], size);
                 cp[size] = '\0';
                 /* Don't overwrite label if it was already set by inline child (e.g. FIGDATA) */
                 char* existing_label = GET_label(bstate->obj);
@@ -1682,7 +1648,7 @@ VObj* HTMLBuildObj(SGMLBuildInfoState* bstate, int parentWidth, SGMLTagMappingIn
     /*
             bstate->tmi = &(bstate->tagMappingInfo[
                             bstate->localizingTagIDMap[bstate->tagID]]);
-            bstate->tmi = findTMI(SBI.dmi->tagMap, bstate->tag);
+            bstate->tmi = findTMI(SBI.dmi, bstate->tag);
     */
     /*
             fprintf(stderr,
@@ -2126,7 +2092,7 @@ char* dumpHotList(int mode)
         list = cp = (char*)malloc(sizeof(char) * size);
         for (hip = theHotList; hip; hip = hip->next) {
             size = strlen(hip->url);
-            strncpy(cp, hip->url, size);
+            memcpy(cp, hip->url, size);
             cp[size] = '\n';
             cp += size + 1;
         }
@@ -2138,7 +2104,7 @@ char* dumpHotList(int mode)
         list = cp = (char*)malloc(sizeof(char) * size);
         for (hip = theHotList; hip; hip = hip->next) {
             size = strlen(hip->comment);
-            strncpy(cp, hip->comment, size);
+            memcpy(cp, hip->comment, size);
             cp[size] = '\n';
             cp += size + 1;
         }

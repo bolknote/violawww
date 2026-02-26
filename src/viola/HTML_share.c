@@ -231,7 +231,7 @@ int txtDisp_HTML_header_R(VObj* self, Packet* result, Packet* argv, char* tag)
                 break;
             }
         }
-        tmi = findTMI(dmi->tagMap, tag);
+        tmi = findTMI(dmi, tag);
         SET__content2(self, tmi);
     }
 

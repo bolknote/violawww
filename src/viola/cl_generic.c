@@ -5903,7 +5903,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
                     break;
                 }
             }
-            tmi = findTMI(dmi->tagMap, "P");
+            tmi = findTMI(dmi, "P");
             SET__content2(self, tmi);
         }
 
@@ -6057,7 +6057,7 @@ long meth_generic_code_HTML_txt(VObj* self, Packet* result, int argc, Packet arg
                     break;
                 }
             }
-            tmi = findTMI(dmi->tagMap, "P");
+            tmi = findTMI(dmi, "P");
             SET__content2(self, tmi);
         }
 

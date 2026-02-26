@@ -53,11 +53,11 @@ char* tagID2Name(int id)
 }
 
 int stgcall_init() {
-    HT_str2token = initHashTable(100, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
+    HT_str2token = initHashTable(251, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
                                  putHashEntry_str, putHashEntry_replace_str, removeHashEntry_str);
     if (!HT_str2token)
         return 0;
-    HT_token2str = initHashTable(100, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
+    HT_token2str = initHashTable(251, hash_int, cmp_int, NULL, NULL, getHashEntry_int,
                                  putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
     if (!HT_token2str)
         return 0;

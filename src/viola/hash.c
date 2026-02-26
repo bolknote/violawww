@@ -19,18 +19,81 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
-/*
-static int scatter[] = {
-112269159,      1414846676,     156382461,      1455714,
-872078403,      1874748096,     916896761,      769267518,
-820312479,      92728044,       344858293,      1121741130,
-1495896251,     208521688,      860811569,      1660932118,
-525761943,      736209796,      493907821,      639686562,
-654007347,      1905261552,     78746985,       1398328302,
-856000655,      1452336924,     1573199653,     2013903098,
-500965035,      1800624392,     2077067425,     1672112838
+static const unsigned int scatter[256] = {
+     254970132,  2009114045,  1555322802,  1898824451,
+     960045696,  1960239289,      802046,  1782549599,
+    1246619308,  1954271093,  2070620938,   125472635,
+     990429592,   558296561,    18410966,  1503176791,
+    1939103556,  1573615661,  1309544802,  1494577907,
+     303705008,   680815145,    71295406,     9063247,
+     737039068,  1138786277,  1571580602,   818564459,
+    1971044552,   488519009,    69630086,   985552199,
+    2096111988,   807913117,   434214674,   721485539,
+    1671946464,  1648308121,  1052643934,   859481663,
+    1113205516,   281685077,   508884586,  1295869787,
+     604302328,  1338915025,  1388580662,  1944133175,
+    1134088100,   338465037,   674883778,   228550355,
+    2019901968,  1167995145,   222416654,  1693424943,
+    2101636924,  1953486021,  1003474458,  1247993163,
+    2122793768,   788396097,  1728885222,  1015022375,
+     446786004,   854644605,  2044855922,   828353219,
+    1100304192,  1983409785,   843454398,  1577594911,
+     522198892,  1137211701,   625471946,   394899259,
+    2074461784,  1746170801,  2010865814,   702153751,
+    1071443972,   692820461,  1483010082,  1081133747,
+     121309296,   123004905,    84274286,  1017339663,
+    1830828956,  2139822501,  1789419898,   364961067,
+      12809608,  1345891105,   684399430,   518922503,
+     199123508,  2010372189,   101557714,  1321322147,
+     404319648,  1811586393,   561794334,  1688218111,
+    1597490124,  1143911957,  1822170410,   131557147,
+     302207160,  1414635153,   976675318,  1014716919,
+     569950308,  1927320269,  1843865474,  1241620115,
+    2041806544,  1727041225,   409221582,  1872597231,
+    1343862780,   971656837,   210642138,    39603467,
+      38295528,  1762020865,   960083110,  1358999271,
+     541002388,   847825213,  1404859698,  1772049027,
+     407649280,  2059254841,   523809406,   486183903,
+     758716460,    78963445,  1554610314,  1537117947,
+     590711576,  2059254129,   799970134,  1220354007,
+    1334067396,    44268461,    68718306,   516547187,
+    1994827056,  1504257449,  1077196590,  1104556751,
+     650699868,   876966757,  1339627578,   464334059,
+    1965943368,  1570693345,  1412464134,   498052295,
+    1398498036,  1388816925,    71726226,    74468963,
+    1598405216,  1438239513,   173230046,   957312447,
+    1606163596,   873660373,  1774715882,  1817650907,
+    1465152888,  1032897617,   974812342,  1201100215,
+    1511485732,   642536589,  1112614466,  1329698387,
+     300710800,  1354149001,  1095722126,  1397048495,
+     499499196,   995395653,  1860254618,   153844939,
+     931933352,   238707649,    25655142,   737352359,
+    1288399700,    71858941,  1157866482,  1034730051,
+    1981671616,   740739577,   228855102,  1188476831,
+    2035863788,  1023478965,   340770634,   796470971,
+    1115164632,  2063777585,   122848790,   235010967,
+    2135576964,  1737694573,  1541991842,   132168243,
+    1239220720,   961618793,   747389422,   534955663,
+     229133596,  1473219877,   805211898,   240073899,
+     326835976,  1460721313,   353804486,  2126706823,
+    1613177780,   784546781,  1330381650,  1338807843,
+    1374471968,   691845337,   537068190,   810054015,
+     682046796,  1178012053,  1754835626,   914138779,
+    1689803320,   223062545,   288278390,  1291129207,
+     682942948,   204461645,   272098562,   287264275,
+     164640848,  2091944521,  1589858126,  2141632623,
+    2064157052,  1315865093,  1703481946,   177237131,
+    1058193768,   274348417,   783677990,  1964459623
 };
-*/
+
+static inline int compute_str_hash(const char* str, int size)
+{
+    unsigned int key = 0;
+    while (*str)
+        key = (key << 1) + scatter[(unsigned char)*str++];
+    return (int)(key % (unsigned int)size);
+}
+
 int hash_int(HashTable* ht, intptr_t n)
 {
     /* Use unsigned to avoid issues with negative values */
@@ -41,29 +104,12 @@ int hash_int(HashTable* ht, intptr_t n)
 int hash_str(HashTable* ht, intptr_t label)
 {
     char* str = (char*)label;
-    int key = 0;
 
     if (!str)
         return 0;
-    
-    while (*str)
-        key += (unsigned char)*str++;
-    key = key % ht->size;
 
-    return key;
+    return compute_str_hash(str, ht->size);
 }
-
-/*
-int hash_str(HashTable * ht, char * str)
-{
-        int key = 0;
-
-        while (*str) key = (key << 1) + scatter[*str++];
-        key &= ht->size - 1;
-
-        return key;
-}
-*/
 HashTable* initHashTable(int size, 
                          int (*func_hash)(HashTable*, intptr_t), 
                          intptr_t (*func_cmp)(intptr_t, intptr_t), 
@@ -170,17 +216,12 @@ HashEntry* putHashEntry_int(HashTable* ht, intptr_t label, intptr_t val)
 
 HashEntry* putHashEntry_str(HashTable* ht, intptr_t label, intptr_t val)
 {
-    int key = 0;
     char* str = (char*)label;
 
     if (!str)
         return NULL;
 
-    while (*str)
-        key += *str++;
-    key = key % ht->size;
-
-    return put_hash_entry_block(ht, key, label, val);
+    return put_hash_entry_block(ht, compute_str_hash(str, ht->size), label, val);
 }
 
 HashEntry* putHashEntry_cancelable_int(HashTable* ht, intptr_t label, intptr_t val)
@@ -271,17 +312,12 @@ HashEntry* putHashEntry_replace_int(HashTable* ht, intptr_t label, intptr_t val)
 
 HashEntry* putHashEntry_replace_str(HashTable* ht, intptr_t label, intptr_t val)
 {
-    int key = 0;
     char* str = (char*)label;
 
     if (!str)
         return NULL;
 
-    while (*str)
-        key += *str++;
-    key = key % ht->size;
-
-    return put_hash_entry_replace(ht, key, label, val);
+    return put_hash_entry_replace(ht, compute_str_hash(str, ht->size), label, val);
 }
 
 #ifdef NOT_USED
@@ -298,17 +334,7 @@ HashEntry* getHashEntry(HashTable* ht, long label)
     /*	key = ht->func_hash(ht, label);*/
 
     if (ht->func_hash == hash_str) {
-        char* str = label;
-
-        key = 0;
-        while (*str)
-            key += *str++;
-        key = key % ht->size;
-        /*
-                        key = 0;
-                        while (*str) key = (key << 1) + scatter[*str++];
-                        key &= ht->size - 1;
-        */
+        key = compute_str_hash((char*)label, ht->size);
     } else if (ht->func_hash == hash_int) {
         key = (int)((uintptr_t)label % (uintptr_t)ht->size);
     }
@@ -357,11 +383,7 @@ HashEntry* getHashEntry_str(HashTable* ht, intptr_t label)
     if (!labelStr)
         return NULL;
 
-    int key = 0;
-    char* str = labelStr;
-    while (*str)
-        key += *str++;
-    key = key % ht->size;
+    int key = compute_str_hash(labelStr, ht->size);
 
     for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next)
         if (entry->label)
@@ -477,11 +499,7 @@ int removeHashEntry_str(HashTable* ht, intptr_t label)
     if (!labelStr)
         return 0;
 
-    char* str = labelStr;
-    int key = 0;
-    while (*str)
-        key += *str++;
-    key = key % ht->size;
+    int key = compute_str_hash(labelStr, ht->size);
 
     HashEntry* prevEntry = NULL;
     for (HashEntry* entry = &(ht->entries[key]); entry; entry = entry->next) {

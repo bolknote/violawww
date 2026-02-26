@@ -37,7 +37,7 @@ typedef struct SGMLBuildInfo {
     VObj* caller;
 } SGMLBuildInfo;
 
-SGMLTagMappingInfo* findTMI(SGMLTagMappingInfo*, char*);
+SGMLTagMappingInfo* findTMI(SGMLDocMappingInfo*, char*);
 
 int init_html2(void);
 

@@ -1283,10 +1283,10 @@ int init_ident() {
     int i;
     strNIntPair* symp;
 
-    symStr2ID = initHashTable(300, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
+    symStr2ID = initHashTable(1021, hash_str, cmp_str, NULL, NULL, getHashEntry_str,
                               putHashEntry_str, putHashEntry_replace_str, removeHashEntry_str);
 
-    symID2Str = initHashTable(300, hash_int, cmp_int, NULL, free_intptr, getHashEntry_int,
+    symID2Str = initHashTable(1021, hash_int, cmp_int, NULL, free_intptr, getHashEntry_int,
                               putHashEntry_int, putHashEntry_replace_int, removeHashEntry_int);
 
     for (symp = symList; symp->s; symp++) {

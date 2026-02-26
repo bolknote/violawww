@@ -29,6 +29,7 @@ typedef struct SGMLTagMappingInfo {
 typedef struct SGMLDocMappingInfo {
     char* DTDName;
     SGMLTagMappingInfo* tagMap;
+    struct HashTable* tagHashMap;
     int* tag2StyleIndexMap;
 } SGMLDocMappingInfo;
 

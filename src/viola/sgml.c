@@ -1931,6 +1931,23 @@ SGMLDocMappingInfo* setSGMLStylesheet(char* dtd, char* stylesheet)
     tmi = &tagMappingInfo[tmiIdx];
     tmi->tag = NULL;
 
+    /* Build hash table for O(1) tag lookup */
+    {
+        int hashSize = tmiIdx * 2 + 1;
+        if (hashSize < 31)
+            hashSize = 31;
+        dmi->tagHashMap = initHashTable(hashSize, hash_str, cmp_str, NULL, NULL,
+                                        getHashEntry_str, putHashEntry_str,
+                                        putHashEntry_replace_str, removeHashEntry_str);
+        if (dmi->tagHashMap) {
+            for (int j = 0; j < tmiIdx; j++) {
+                dmi->tagHashMap->put(dmi->tagHashMap,
+                                     (intptr_t)tagMappingInfo[j].tag,
+                                     (intptr_t)&tagMappingInfo[j]);
+            }
+        }
+    }
+
     if (strcmp(dtd, "HTML")) {
         free(retStrp);
     }

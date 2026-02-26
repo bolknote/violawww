@@ -5426,6 +5426,27 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         return 1;
     }
 
+    /* draws a line when the node pointer and yoffset are already known,
+     * avoiding the O(k) traversal that drawLineOffset() performs
+     */
+    int drawLineNode(TFStruct *tf, TFLineNode *currentp, int yoffset, int clearBG)
+    {
+        int fontyoffset;
+
+        if (!TFWINDOW || !GET_visible(tf->self))
+            return 0;
+
+        fontyoffset = yoffset + currentp->maxFontHeight - currentp->maxFontDescent;
+
+        if (clearBG && tf->isRenderAble) {
+            XClearArea(display, TFWINDOW, tf->xUL, yoffset, tf->width,
+                       currentp->maxFontHeight * currentp->breakc, False);
+        }
+        drawLineSeg(tf, currentp, &yoffset, &fontyoffset);
+
+        return 1;
+    }
+
     /*
      * Calculate maximum font height and descent for a line by scanning all characters.
      * This ensures consistent metrics regardless of line wrap points.
@@ -6405,6 +6426,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         TFChar* tfcp;
         int left, right, i, buffi = 0;
         int rangeHint; /* 0=not set, 1=all, 2=mid, 3=left, 4=right*/
+        int draw_yoffset = -1; /* -1 = not yet computed; used for incremental yoffset tracking */
 
         if (to_cy == from_cy) {
             if (to_cx < from_cx) {
@@ -6558,10 +6580,21 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
                         } while (left++ < right);
                     }
                 }
-                if (drawP == 1) {
-                    drawLineOffset(tf, i - tf->screen_row_offset, 1); /*XXX terribly slow...*/
-                } else if (drawP == -1) {
-                    drawLineOffset(tf, i - tf->screen_row_offset, 0); /*XXX terribly slow...*/
+                if (drawP != 0 && i >= tf->screen_row_offset) {
+                    if (draw_yoffset < 0) {
+                        TFLineNode *tp = tf->offsetp;
+                        int screenOff = i - tf->screen_row_offset;
+                        draw_yoffset = tf->yUL;
+                        for (int j = 0; j < screenOff; j++) {
+                            if (!tp)
+                                break;
+                            draw_yoffset += tp->maxFontHeight * tp->breakc;
+                            tp = tp->next;
+                        }
+                    }
+                    if (draw_yoffset < tf->height)
+                        drawLineNode(tf, currentp, draw_yoffset, drawP == 1);
+                    draw_yoffset += currentp->maxFontHeight * currentp->breakc;
                 }
                 lastp = currentp;
                 currentp = currentp->next;

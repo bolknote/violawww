@@ -48,6 +48,7 @@ extern int replaceNodeLine2(TFLineNode* to, TFLineNode* from, int start, int len
 extern int rowAdjustOffset(TFStruct* tf, int delta);
 extern char* decodeURL(char* url);
 extern int replaceNodeLine(TFLineNode* to, TFLineNode* from, int freeOldSpaceP, MemoryGroup* mg);
+int drawLineNode(TFStruct *tf, TFLineNode *currentp, int yoffset, int clearBG);
 extern int updateHilite(TFStruct* tf, int x1, int y1, int x2, int y2, int mode);
 extern int mapFromPixelToCharPosition(TFStruct* tf, int px, int py, int *cx, int *cy, int *exact_px, int *exact_py);
 extern int tfed_placeCursor(VObj* self, int mx, int my);
@@ -1405,7 +1406,7 @@ long kbf_kill_line(TFStruct* tf)
             if (VERBOSE_KBF_KILL_LINE) {
                 printf("***** drawing line %d, py=%d\n", i, py);
             }
-            drawLineOffset(tf, i, 1);
+            drawLineNode(tf, currentp, py, 1);
             i++;
             py += currentp->maxFontHeight * currentp->breakc;
         }
@@ -2460,11 +2461,19 @@ int insertStr(TFStruct* tf, int split, TFLineNode* source)
             }
             /* Draw the new lines
              */
-            for (; linesToDraw; linesToDraw--, i++) {
+            {
+                int draw_y = tf->yUL + upper;
+                TFLineNode *drawp = currentp;
+                for (; linesToDraw; linesToDraw--, i++) {
+                    if (!drawp)
+                        break;
 #ifdef VERBOSE_INSERTSTR
-                printf("DRAWING line offset=%d\n", i);
+                    printf("DRAWING line offset=%d\n", i);
 #endif
-                drawLineOffset(tf, i, 1);
+                    drawLineNode(tf, drawp, draw_y, 1);
+                    draw_y += drawp->maxFontHeight * drawp->breakc;
+                    drawp = drawp->next;
+                }
             }
         }
         placeCursorWithinStr(tf);
@@ -5718,7 +5727,7 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
 
             /*		   printf("***** drawing line %d, py=%d\n", i, py);*/
 
-            drawLineOffset(tf, i, 0);
+            drawLineNode(tf, currentp, py, 0);
             i++;
             py += currentp->maxFontHeight * currentp->breakc;
         }

@@ -3421,16 +3421,11 @@ long meth_generic_freeSelf(VObj* self, Packet* result, int argc, Packet argv[]) 
     /* free children */
     for (olist = GET__children(self); olist; olist = olist->next) {
         if (olist->o) {
-            /*
-                                    ASSERT(validObjectP(olist->o));
-            */
             if (validObjectP(olist->o)) {
-                sendMessage1(olist->o, "freeSelf");
-                /*XXX make faster*/
-            } else {
-                /*	fprintf(stderr, "ERROR: trying to free (again?) obj %x\n",
-                                               olist->o);
-                */
+                Packet freePk;
+                nullPacket(&freePk);
+                callMeth(olist->o, &freePk, 0, NULL, STR_freeSelf);
+                clearPacket(&freePk);
             }
         }
     }

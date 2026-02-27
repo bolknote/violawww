@@ -124,7 +124,6 @@ typedef struct TFCBuildInfo {
  */
 int TFCstrlen(TFChar tfcArray[]);
 int TFCstrcat(TFChar tfcArrayTo[], TFChar tfcArrayFrom[]);
-int str2EBuff(TFStruct* tf, char* str, int* fontID);
 int TFC2StrStrcpy(char* strTo, TFChar* tfcArrayFrom);
 ptrdiff_t TFCstrcpy(TFChar* tfcArrayTo, TFChar* tfcArrayFrom);
 ptrdiff_t TFCstrncpy(TFChar*, TFChar*, int);

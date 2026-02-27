@@ -192,8 +192,6 @@ int tfed_processMouseInput(VObj* self);
 char* tfed_processMouseMove(VObj* self);
 int tfed_processKeyEvent(VObj* self, Window w, char c);
 void tfed_insertChar(VObj* self, char c);
-int tfed_setBuffer(TFStruct* tf, char* str);
-int tfed_getBuffer(char* str);
 int tfed_drawCursor(VObj* self);
 int tfed_eraseCursor(VObj* self);
 int tfed_jumpToOffsetLine(VObj* self, int destLine);

@@ -1978,22 +1978,6 @@ void TFCInsertChar(TFChar tfcArray[], int col, TFChar* tfcp)
     TFCCopy(tfcArray + col, tfcp);
 }
 
-int tfed_setBuffer(TFStruct* tf, char* str)
-{
-    int fontID = 0; /* XXX */
-
-    if (str)
-        return str2EBuff(tf, str, &fontID);
-    return str2EBuff(tf, "", &fontID);
-}
-
-int tfed_getBuffer(char* str)
-{
-    if (str)
-        return TFC2StrStrcpy(str, theBuffLN->linep);
-    return 0;
-}
-
 int tfed_drawCursor(VObj* self)
 {
     TFStruct* tf = updateEStrUser(self);
@@ -2193,11 +2177,6 @@ int TFCstrcat(TFChar tfcArrayTo[], TFChar tfcArrayFrom[])
     TFCClear(tfcArrayTo + i);
 
     return i;
-}
-
-int str2EBuff(TFStruct* tf, char* str, int* fontID)
-{
-    return 0; /*XXX*/
 }
 
 /* returns length of tfcAttarTo */

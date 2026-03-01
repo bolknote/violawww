@@ -61,7 +61,7 @@
 
 /*#include <signal.h>*/
 extern int initImgLib(void);
-extern int loadImg(char*, void**, int*, int*);
+extern int loadImg(char*, XImageInfo**, int*, int*);
 extern int approximateColor(int, unsigned, unsigned);
 extern void FatalError(char*);
 extern int getVariable(Attr*, char*, Packet*);
@@ -102,8 +102,8 @@ char* startUpDisplay = NULL;
 /* modified by -geometry startup option */
 int startUpGeom_x = 0;
 int startUpGeom_y = 0;
-int startUpGeom_width = 0;
-int startUpGeom_height = 0;
+unsigned int startUpGeom_width = 0;
+unsigned int startUpGeom_height = 0;
 
 /* derived (ie: ripped off) from xgif_load.c
  */

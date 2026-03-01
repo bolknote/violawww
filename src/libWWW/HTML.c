@@ -13,7 +13,7 @@
 
 /* Forward declarations */
 extern int CB_HTML_data(char* str, int size);
-extern int CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInfo);
+extern int CB_HTML_stag(int element_number, const BOOL* present, const char** value, HTTag* tagInfo);
 extern int CB_HTML_etag(int element_number);
 extern int CB_HTML_special_entity(int entity_number, char* data, int dataLength);
 extern int CB_HTML_end(void);
@@ -416,7 +416,7 @@ PRIVATE void HTML_put_character ARGS2(HTStructured*, me, char, c) {
 PRIVATE void HTML_put_string ARGS2(HTStructured*, me, const char*, s) {
 #ifdef VIOLA
 
-    char* cp;
+    const char* cp;
     for (cp = s; *cp; cp++) {
         if (majorBuffi >= MAJORBUFF - 1) {
             /* Flush buffer to prevent overflow */

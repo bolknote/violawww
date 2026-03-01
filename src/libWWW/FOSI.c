@@ -14,7 +14,7 @@
 
 /* Forward declarations */
 extern int CB_FOSI_data(char* str, int size);
-extern int CB_FOSI_stag(int element_number, BOOL* present, char** value, HTTag* tagInfo);
+extern int CB_FOSI_stag(int element_number, const BOOL* present, const char** value, HTTag* tagInfo);
 extern int CB_FOSI_etag(int element_number);
 extern int CB_FOSI_end(void);
 extern int CB_FOSI_new(void);

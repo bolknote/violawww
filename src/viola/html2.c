@@ -182,7 +182,7 @@ static char* html2_extract_charset_from_content(const char* content) {
     return NULL;
 }
 
-static void html2_handle_meta_charset(BOOL* present, char** value) {
+static void html2_handle_meta_charset(const BOOL* present, const char** value) {
     char* charset;
     HTParentAnchor* anchor = NULL;
     extern HTParentAnchor* HTMainAnchor;
@@ -645,7 +645,7 @@ void CB_HTML_special_entity(int entity_number, char* data, int dataLength)
     }
 }
 
-void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInfo)
+void CB_HTML_stag(int element_number, const BOOL* present, const char** value, HTTag* tagInfo)
 {
     SGMLBuildInfoState* parent_parent_bstate;
     SGMLBuildInfoState* parent_bstate;
@@ -1029,7 +1029,7 @@ void CB_HTML_stag(int element_number, BOOL* present, char** value, HTTag* tagInf
                     bstate->styleAttr = saveString(value[i]);
                     /* Don't send AA for STYLE - will be sent as setStyleAttr in etag */
                 } else {
-                    sendMessage1N2str(bstate->obj, "AA", tagAttrs[i].name, value[i]);
+                    sendMessage1N2str(bstate->obj, "AA", tagAttrs[i].name, (char*)value[i]);
                 }
             }
         }
@@ -1375,7 +1375,7 @@ void CB_HTML_etag(int element_number)
             }
         } else if (anchor && HTAnchor_title(anchor)) {
             /* Replace with title from anchor */
-            char* anchor_title = HTAnchor_title(anchor);
+            const char* anchor_title = HTAnchor_title(anchor);
             size_t anchor_title_len = strlen(anchor_title);
             if (dataBuffIdxStackIdx >= 0 && anchor_title_len < (DATABUFF_SIZE - dataBuffIdxStack[dataBuffIdxStackIdx])) {
                 src_starti = dataBuffIdxStack[dataBuffIdxStackIdx];
@@ -1854,23 +1854,23 @@ int http_progress_notify(int n)
     return 0;
 }
 
-void user_message(char* message)
+void user_message(const char* message)
 {
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj)
-        sendMessage1N1str(mesgObj, "show", message);
+        sendMessage1N1str(mesgObj, "show", (char*)message);
 }
 
-void user_alert(char* message)
+void user_alert(const char* message)
 {
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj)
-        sendMessage1N1str(mesgObj, "alert", message);
+        sendMessage1N1str(mesgObj, "alert", (char*)message);
 }
 
-int user_message_confirm(char* message)
+int user_message_confirm(const char* message)
 {
     Packet* result = makePacket();
     int i = 0;
@@ -1878,7 +1878,7 @@ int user_message_confirm(char* message)
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj) {
-        sendMessage1N1str_result(mesgObj, "dialog_confirm", message, result);
+        sendMessage1N1str_result(mesgObj, "dialog_confirm", (char*)message, result);
 #ifndef VWMOTIF
         modalLoop();
         i = PkInfo2Int(modalResult);
@@ -1892,7 +1892,7 @@ int user_message_confirm(char* message)
     return i;
 }
 
-char* user_prompt_default(char* message, char* deflt)
+char* user_prompt_default(const char* message, const char* deflt)
 {
     Packet* result = makePacket();
     char* s = NULL;
@@ -1900,7 +1900,7 @@ char* user_prompt_default(char* message, char* deflt)
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj) {
-        sendMessage1N2str_result(mesgObj, "dialog_prompt_default", message, deflt, result);
+        sendMessage1N2str_result(mesgObj, "dialog_prompt_default", (char*)message, (char*)deflt, result);
 #ifndef VWMOTIF
         modalLoop();
         s = saveString(PkInfo2Str(modalResult));
@@ -1914,7 +1914,7 @@ char* user_prompt_default(char* message, char* deflt)
     return s;
 }
 
-char* user_prompt_password(char* message)
+char* user_prompt_password(const char* message)
 {
     Packet* result = makePacket();
     char* s = NULL;
@@ -1922,7 +1922,7 @@ char* user_prompt_password(char* message)
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj) {
-        sendMessage1N1str_result(mesgObj, "dialog_prompt_password", message, result);
+        sendMessage1N1str_result(mesgObj, "dialog_prompt_password", (char*)message, result);
 #ifndef VWMOTIF
         modalLoop();
         s = saveString(PkInfo2Str(modalResult));
@@ -1936,7 +1936,7 @@ char* user_prompt_password(char* message)
     return s;
 }
 
-void user_prompt_username_and_password(char* message, char** username, char** password)
+void user_prompt_username_and_password(const char* message, char** username, char** password)
 {
     Packet* result = makePacket();
     char *ret, *s, buff[200];
@@ -1948,7 +1948,7 @@ void user_prompt_username_and_password(char* message, char** username, char** pa
     if (!mesgObj)
         mesgObj = findObject(getIdent("www.mesg.tf"));
     if (mesgObj) {
-        sendMessage1N1str_result(mesgObj, "dialog_prompt_username_and_password", message, result);
+        sendMessage1N1str_result(mesgObj, "dialog_prompt_username_and_password", (char*)message, result);
 #ifndef VWMOTIF
         modalLoop();
         ret = PkInfo2Str(modalResult);

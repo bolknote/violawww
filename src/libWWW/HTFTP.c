@@ -606,7 +606,7 @@ PRIVATE int get_listen_socket()
 #else
     {
         int status;
-        int address_length = sizeof(soc_address);
+        socklen_t address_length = sizeof(soc_address);
         status = getsockname(control->socket, (struct sockaddr*)&soc_address, &address_length);
         if (status < 0)
             return HTInetStatus("getsockname");
@@ -899,7 +899,7 @@ PUBLIC int HTFTPLoad ARGS4(const char*, name, HTParentAnchor*, anchor, HTFormat,
      */
     {
         struct sockaddr_in soc_address;
-        int soc_addrlen = sizeof(soc_address);
+        socklen_t soc_addrlen = sizeof(soc_address);
         status = accept(master_socket, (struct sockaddr*)&soc_address, &soc_addrlen);
         if (status < 0)
             return HTInetStatus("accept");

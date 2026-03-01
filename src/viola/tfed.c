@@ -6935,9 +6935,12 @@ int addCtrlChar(TFCBuildInfo* buildInfo)
         if (pic->type == TFPic_XBML) {
             int hotx, hoty;
             Pixmap bitmap;
+            unsigned int bm_width, bm_height;
 
-            if (XReadBitmapFile(display, rootWindow, id, &(pic->width), &(pic->height), &bitmap,
+            if (XReadBitmapFile(display, rootWindow, id, &bm_width, &bm_height, &bitmap,
                                 &hotx, &hoty) == 0) {
+                pic->width = (int)bm_width;
+                pic->height = (int)bm_height;
                 pic->data = (XImage*)(long)bitmap;
                 pic->canFree = PK_CANFREE_STR;
             } else {

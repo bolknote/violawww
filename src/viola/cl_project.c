@@ -125,7 +125,8 @@ long helper_project_set(VObj* self, Packet* result, int argc, Packet argv[], lon
     case STR_projectIcon: {
         Pixmap pixmap;
         char* cp;
-        int width, height, hotx, hoty;
+        unsigned int width, height;
+        int hotx, hoty;
 
         result->type = PKT_STR;
         result->canFree = 0;

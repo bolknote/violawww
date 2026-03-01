@@ -88,8 +88,8 @@ typedef struct ColorInfoStruct {
 extern char* startUpDisplay;
 extern int startUpGeom_x;
 extern int startUpGeom_y;
-extern int startUpGeom_width;
-extern int startUpGeom_height;
+extern unsigned int startUpGeom_width;
+extern unsigned int startUpGeom_height;
 extern XEvent e;
 extern char keybuf[];
 extern Display* display;

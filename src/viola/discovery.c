@@ -106,7 +106,7 @@ void discovery_dispatch_sync(const char* id, const char* func, const char* args)
     if (!id || !func) return;
     
     /* Find the object */
-    obj = findObject(getIdent(id));
+    obj = findObject(getIdent((char*)id));
     if (!obj) return;
     
     /* Build argument packets */

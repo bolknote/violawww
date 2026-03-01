@@ -26,7 +26,7 @@ void CB_FOSI_data(char* str, int size)
     printf("CB_FOSI_data() called\n");
 }
 
-void CB_FOSI_stag(int element_number, BOOL* present, char** value, HTTag* tagInfo)
+void CB_FOSI_stag(int element_number, const BOOL* present, const char** value, HTTag* tagInfo)
 {
     char* tag = FOSI_dtd.tags[element_number].name;
 

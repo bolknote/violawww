@@ -269,7 +269,7 @@ int html_search(VObj* self, char* keyword)
         http_method = HTTP_METHOD_GET;
         http_dataToPost = NULL;
         HTPushInputBuffer();
-        status = HTLoadRelative(newAddress, HTAnchor_findAddress(newAddress) /*???*/);
+        status = HTLoadRelative(newAddress, HTAnchor_parent(HTAnchor_findAddress(newAddress)) /*???*/);
         HTPopInputBuffer();
         http_method = HTTP_METHOD_GET;
         http_dataToPost = NULL;
@@ -1016,7 +1016,7 @@ PUBLIC void HText_endAnchor ARGS1(HText*, text) {
 }
 
 PUBLIC void HText_appendText ARGS2(HText*, text, const char*, str) {
-    char* p;
+    const char* p;
     for (p = str; *p; p++)
         HText_appendCharacter(text, *p);
 }

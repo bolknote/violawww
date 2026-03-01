@@ -19,7 +19,8 @@
 
 #define RETAIN_PROP_NAME "_XSETROOT_ID"
 
-void updateProperty(Display* dpy, Window w, char* name, Atom type, int format, int data, int nelem)
+void updateProperty(Display* dpy, Window w, char* name, Atom type, int format, unsigned long data,
+                    int nelem)
 {
     /* intern the property name */
     Atom atom = XInternAtom(dpy, name, 0);
@@ -40,7 +41,7 @@ static void preserveResource(Display* dpy, Window w)
     Pixmap pm = XCreatePixmap(dpy, w, 1, 1, 1);
 
     /* create/replace the property */
-    updateProperty(dpy, w, RETAIN_PROP_NAME, XA_PIXMAP, 32, (int)pm, 1);
+    updateProperty(dpy, w, RETAIN_PROP_NAME, XA_PIXMAP, 32, (unsigned long)pm, 1);
 
     /* retain all client resources until explicitly killed */
     XSetCloseDownMode(dpy, RetainPermanent);
@@ -52,23 +53,23 @@ static void preserveResource(Display* dpy, Window w)
 
 static void freePrevious(Display* dpy, Window w)
 {
-    Pixmap* pm;
+    unsigned char* prop_data = NULL;
     Atom actual_type; /* NOTUSED */
     int format;
-    int nitems;
-    int bytes_after;
+    unsigned long nitems;
+    unsigned long bytes_after;
 
     /* intern the property name */
     Atom atom = XInternAtom(dpy, RETAIN_PROP_NAME, 0);
 
     /* look for existing resource allocation */
     if ((XGetWindowProperty(dpy, w, atom, 0, 1, 1 /*delete*/, AnyPropertyType, &actual_type,
-                            &format, &nitems, &bytes_after, &pm) == Success) &&
+                            &format, &nitems, &bytes_after, &prop_data) == Success) &&
         nitems == 1) {
         if ((actual_type == XA_PIXMAP) && (format == 32) && (nitems == 1) && (bytes_after == 0)) {
             /* blast it away */
-            XKillClient(dpy, *((Pixmap*)pm));
-            XFree(pm);
+            XKillClient(dpy, *((Pixmap*)prop_data));
+            XFree(prop_data);
         } else if (actual_type != None) {
             fprintf(stderr, "%s: warning: invalid format encountered for property %s\n",
                     RETAIN_PROP_NAME, "xloadimage");
@@ -146,7 +147,7 @@ void imageOnRoot(Display* disp, int scrn, Window window, Image* image, unsigned 
         for (i = 0; i < numChildren; i++) {
             Atom actual_type;
             int actual_format;
-            long nitems, bytesafter;
+            unsigned long nitems, bytesafter;
             Window* newRoot = NULL;
 
             if (XGetWindowProperty(disp, children[i], __SWM_VROOT, 0, 1, False, XA_WINDOW,

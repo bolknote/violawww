@@ -224,8 +224,8 @@ void setViewportColormap(Display* disp,
     else {
         cmap_windows[0] = ImageWindow;
         cmap_windows[1] = ViewportWin;
-        XChangeProperty(disp, ViewportWin, cmap_atom, XA_WINDOW, 32, PropModePrepend, cmap_windows,
-                        2);
+        XChangeProperty(disp, ViewportWin, cmap_atom, XA_WINDOW, 32, PropModePrepend,
+                        (unsigned char*)cmap_windows, 2);
     }
 }
 
@@ -524,7 +524,7 @@ XImageInfo* imageInWindow(Display* disp,
         XResizeRequestEvent resize;
         XClientMessageEvent message;
     } event;
-    unsigned int winx, winy, winwidth, winheight;
+    int winx, winy, winwidth, winheight;
 
     /* figure out the window size.  unless specifically requested to do so,
      * we will not exceed 90% of display real estate.
@@ -548,12 +548,12 @@ XImageInfo* imageInWindow(Display* disp,
         if (!winwidth) {
             winwidth = image->width;
             if (winwidth > DisplayWidth(disp, scrn) * 0.9)
-                winwidth = (unsigned int)(DisplayWidth(disp, scrn) * 0.9);
+                winwidth = (int)(DisplayWidth(disp, scrn) * 0.9);
         }
         if (!winheight) {
             winheight = image->height;
             if (winheight > DisplayHeight(disp, scrn) * 0.9)
-                winheight = (unsigned int)(DisplayHeight(disp, scrn) * 0.9);
+                winheight = (int)(DisplayHeight(disp, scrn) * 0.9);
         }
     }
 
@@ -638,7 +638,7 @@ XImageInfo* imageInWindow(Display* disp,
         delete_atom = XInternAtom(disp, "WM_DELETE_WINDOW", False);
         if ((proto_atom != None) && (delete_atom != None))
             XChangeProperty(disp, ViewportWin, proto_atom, XA_ATOM, 32, PropModePrepend,
-                            &delete_atom, 1);
+                            (unsigned char*)&delete_atom, 1);
         paint = 0;
     } else {
         oldimagewindow = ImageWindow;

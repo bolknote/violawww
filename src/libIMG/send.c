@@ -534,7 +534,7 @@ imageToXImage: XAllocColor failed on a TrueColor/Directcolor visual\n");
 
         gcv.function = GXcopy;
         ximageinfo->ximage =
-            XCreateImage(disp, visual, 1, XYBitmap, 0, data, image->width, image->height, 8, 0);
+            XCreateImage(disp, visual, 1, XYBitmap, 0, (char*)data, image->width, image->height, 8, 0);
         ximageinfo->depth = ddepth;
         ximageinfo->foreground = *(index + 1);
         ximageinfo->background = *index;

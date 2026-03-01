@@ -581,19 +581,19 @@ void process_event(XEvent* ep, int tool)
     }
     switch (eventType(*ep)) {
     case KeyPress:
-        handle_KeyPress(ep);
+        handle_KeyPress((XKeyEvent*)ep);
         break;
 
     case KeyRelease:
-        handle_KeyRelease(ep);
+        handle_KeyRelease((XKeyEvent*)ep);
         break;
 
     case EnterNotify:
-        handle_EnterNotify(ep, &dragObj, tool, &mouseDown);
+        handle_EnterNotify((XEnterWindowEvent*)ep, &dragObj, tool, &mouseDown);
         break;
 
     case LeaveNotify:
-        handle_LeaveNotify(ep, &dragObj, tool, &mouseDown);
+        handle_LeaveNotify((XLeaveWindowEvent*)ep, &dragObj, tool, &mouseDown);
 
         keyStat_control = 0;
         keyStat_shift = 0;
@@ -602,11 +602,11 @@ void process_event(XEvent* ep, int tool)
         break;
 
     case ButtonPress:
-        handle_ButtonPress(ep, &dragObj, tool, &resize_corner, &mouseDown, &from_x, &from_y);
+        handle_ButtonPress((XButtonEvent*)ep, &dragObj, tool, &resize_corner, &mouseDown, &from_x, &from_y);
         break;
 
     case ButtonRelease:
-        handle_ButtonRelease(ep, &dragObj, tool, &resize_corner, &mouseDown);
+        handle_ButtonRelease((XButtonEvent*)ep, &dragObj, tool, &resize_corner, &mouseDown);
         break;
 
     case MotionNotify:
@@ -686,12 +686,12 @@ void process_event(XEvent* ep, int tool)
     }
     case ResizeRequest:
         if (!mouseDown)
-            handle_ResizeRequest(ep);
+            handle_ResizeRequest((XResizeRequestEvent*)ep);
         break;
 
     case ConfigureNotify:
         if (!mouseDown)
-            handle_ConfigureNotify(ep);
+            handle_ConfigureNotify((XConfigureEvent*)ep);
         break;
 
     case UnmapNotify: {
@@ -708,7 +708,7 @@ void process_event(XEvent* ep, int tool)
         break;
     }
     case DestroyNotify: {
-        XDestroyWindowEvent* eep = ep;
+        XDestroyWindowEvent* eep = (XDestroyWindowEvent*)ep;
         VObj* obj = findWindowObject(((XDestroyWindowEvent*)eep)->window);
 
         /*

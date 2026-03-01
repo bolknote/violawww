@@ -46,7 +46,7 @@ VObj* HTMLBuildObj(SGMLBuildInfoState*, int, SGMLTagMappingInfo*);
 VObj* html2_parseHTMLDocument(VObj*, char*, char**, char**, int, int, char*);
 void CB_HTML_new(void);
 void CB_HTML_data(char*, int);
-void CB_HTML_stag(int, BOOL*, char**, HTTag*);
+void CB_HTML_stag(int, const BOOL*, const char**, HTTag*);
 void CB_HTML_etag(int);
 void CB_HTML_end(void);
 
@@ -65,12 +65,12 @@ extern int http_progress_total_bytes;
 extern int http_progress_subtotal_bytes;
 
 int http_progress_notify(int);
-void user_alert(char*);
-void user_message(char*);
-int user_message_confirm(char*);
-char* user_prompt_default(char*, char*);
-char* user_prompt_password(char*);
-void user_prompt_username_and_password(char*, char**, char**);
+void user_alert(const char*);
+void user_message(const char*);
+int user_message_confirm(const char*);
+char* user_prompt_default(const char*, const char*);
+char* user_prompt_password(const char*);
+void user_prompt_username_and_password(const char*, char**, char**);
 
 void nullifyCallerDataBuff(void);
 

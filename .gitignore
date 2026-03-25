@@ -23,6 +23,7 @@ src/viola/embeds/*.h
 *.html
 *.stg
 examples/
+tmp/
 
 # Exclude test resources from ignore rules
 !test/res/

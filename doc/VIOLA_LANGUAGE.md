@@ -364,6 +364,43 @@ break;
 }
 ```
 
+### Embedding in HTML (**ViolaWWW 4.0**)
+
+Viola scripts can be embedded directly in HTML documents using two tag forms:
+
+#### `<VSCRIPT>` tag
+
+```html
+<VSCRIPT>
+print("Hello from Viola!\n");
+</VSCRIPT>
+```
+
+The `<VSCRIPT>` tag is Viola-specific. The SGML parser treats its content as literal data (SGML_LITTERAL content model) — no HTML parsing occurs inside the block. The script text is delivered to the `HTML_vscript_script` handler, which calls `interpret()` on it.
+
+#### `<SCRIPT TYPE="viola">` tag
+
+```html
+<SCRIPT TYPE="viola">
+x = 1 + 2;
+print("x = ", x, "\n");
+</SCRIPT>
+```
+
+The standard `<SCRIPT>` tag with `TYPE="viola"` attribute. Behaves identically to `<VSCRIPT>` — content is literal, executed via `interpret()`.
+
+> **Note:** `<SCRIPT>` tags without `TYPE="viola"` (e.g. JavaScript) are ignored by the parser — their content is skipped as literal data but not executed.
+
+#### Return values
+
+Embedded scripts can produce inline text output by returning a non-empty string:
+
+```html
+<p>The answer is <VSCRIPT>return "42";</VSCRIPT>.</p>
+```
+
+A bare `return;` or `return "";` produces no visible output. This is the typical pattern for scripts that only have side effects (like `print()` to the console).
+
 ### Complete Example: Drawing Application
 
 ```

@@ -1426,7 +1426,7 @@ void CB_HTML_etag(int element_number)
             dataBuffIdxStack[dataBuffIdxStackIdx] = src_starti;
 
             cp = PkInfo2Str(&evalResult);
-            if (cp) {
+            if (cp && *cp) {
                 /* Set parent's label directly with the returned inline data */
                 if (parent_bstate && parent_bstate->obj) {
                     char* parent_label = GET_label(parent_bstate->obj);
@@ -1512,7 +1512,7 @@ void CB_HTML_etag(int element_number)
                 bstate->styleAttr = NULL; /* Reset after use to avoid reuse */
             }
 
-            if (parent_bstate->obj != bstate->obj)
+            if (!parent_bstate || parent_bstate->obj != bstate->obj)
                 span = getVSpan(bstate->obj, STR_D);
             else
                 span = 0;
@@ -1574,7 +1574,7 @@ void CB_HTML_etag(int element_number)
        GET_height(bstate->obj));
             }
     */
-    if (bstate->tmi) {
+    if (bstate->tmi && dataBuffIdxStackIdx > 0) {
         if (bstate->tmi->inlineP && bstate->obj /* && !GET__children(bstate->obj) */) {
             --dataBuffIdxStackIdx;
         } else {

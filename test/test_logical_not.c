@@ -10,8 +10,6 @@
  */
 #include "support/viola_test_support.h"
 
-extern AST *theAST;
-
 /* ========================================================================
  * Parser tests
  * ======================================================================== */
@@ -82,81 +80,66 @@ static int test_parse_not_string(void)
  * Execution tests
  * ======================================================================== */
 
-static int eval(char *script, long *out)
-{
-    int size = compile_script(script);
-    if (size < 0) return 0;
-    *out = mini_exec_reg(viola_test_pcode(), size);
-    return 1;
-}
-
 static int test_exec_not_zero(void)
 {
-    long r; return eval("!0;", &r) && r == 1;
+    long r; return eval_reg("!0;", &r) && r == 1;
 }
 
 static int test_exec_not_one(void)
 {
-    long r; return eval("!1;", &r) && r == 0;
+    long r; return eval_reg("!1;", &r) && r == 0;
 }
 
 static int test_exec_not_positive(void)
 {
-    long r; return eval("!42;", &r) && r == 0;
+    long r; return eval_reg("!42;", &r) && r == 0;
 }
 
 static int test_exec_not_negative(void)
 {
-    long r; return eval("!-1;", &r) && r == 0;
+    long r; return eval_reg("!-1;", &r) && r == 0;
 }
 
 static int test_exec_double_not_zero(void)
 {
-    long r; return eval("!!0;", &r) && r == 0;
+    long r; return eval_reg("!!0;", &r) && r == 0;
 }
 
 static int test_exec_double_not_one(void)
 {
-    long r; return eval("!!1;", &r) && r == 1;
+    long r; return eval_reg("!!1;", &r) && r == 1;
 }
 
 static int test_exec_triple_not(void)
 {
-    long r; return eval("!!!0;", &r) && r == 1;
+    long r; return eval_reg("!!!0;", &r) && r == 1;
 }
 
 static int test_exec_not_empty_string(void)
 {
-    long r; return eval("!\"\";", &r) && r == 1;
+    long r; return eval_reg("!\"\";", &r) && r == 1;
 }
 
 static int test_exec_not_nonempty_string(void)
 {
-    long r; return eval("!\"hello\";", &r) && r == 0;
+    long r; return eval_reg("!\"hello\";", &r) && r == 0;
 }
 
 static int test_exec_not_char(void)
 {
-    long r; return eval("!'a';", &r) && r == 0;
+    long r; return eval_reg("!'a';", &r) && r == 0;
 }
 
 static int test_exec_not_null_char(void)
 {
-    long r; return eval("!'\\000';", &r) && r == 1;
+    long r; return eval_reg("!'\\000';", &r) && r == 1;
 }
 
 /* ========================================================================
  * Test runner
  * ======================================================================== */
 
-int main(void)
-{
-    int passed = 0, total = 0;
-
-    printf("Logical NOT Operator Tests\n");
-    printf("==========================\n");
-
-    if (!viola_test_init()) return 1;
+TEST_BEGIN("Logical NOT Operator Tests")
 
     printf("\n--- Parser ---\n");
     RUN("parse !integer",       test_parse_not_integer);
@@ -182,6 +165,4 @@ int main(void)
     RUN("exec !'a' = 0",        test_exec_not_char);
     RUN("exec !'\\0' = 1",      test_exec_not_null_char);
 
-    printf("\nResults: %d/%d passed\n", passed, total);
-    return (passed == total) ? 0 : 1;
-}
+TEST_END

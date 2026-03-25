@@ -24,7 +24,7 @@ VIOLA_DIR := $(PROJECT_ROOT)/src/viola
 LIBWWW_DIR := $(PROJECT_ROOT)/src/libWWW
 
 # All tests (add new tests here!)
-TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not test-do-while test-script-style-skip
+TESTS := test-stg-minors test-stg-context test-xpm-injection test-htcharset test-wayback-detection test-biop test-hash-memory test-mystrings test-pkinfo-concat test-sgmls-a2b test-notsecure test-security-escalation test-path-validation test-htmime test-string-funcs test-destroy-variable test-logical-not test-do-while test-script-style-skip test-vscript-script-tags test-vscript-runtime
 
 .PHONY: all test clean $(TESTS)
 
@@ -59,6 +59,8 @@ test:
 	-@$(MAKE) test-logical-not >$(BUILD_DIR)/test-logical-not.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-logical-not: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-logical-not: FAIL")
 	-@$(MAKE) test-do-while >$(BUILD_DIR)/test-do-while.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-do-while: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-do-while: FAIL")
 	-@$(MAKE) test-script-style-skip >$(BUILD_DIR)/test-script-style-skip.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-script-style-skip: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-script-style-skip: FAIL")
+	-@$(MAKE) test-vscript-script-tags >$(BUILD_DIR)/test-vscript-script-tags.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-vscript-script-tags: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-vscript-script-tags: FAIL")
+	-@$(MAKE) test-vscript-runtime >$(BUILD_DIR)/test-vscript-runtime.log 2>&1 && echo "PASS" >> $(BUILD_DIR)/results.txt && echo "  ✓ test-vscript-runtime: PASS" || (echo "FAIL" >> $(BUILD_DIR)/results.txt && echo "  ✗ test-vscript-runtime: FAIL")
 	@echo ""
 	@echo "======================================="
 	@echo "Test Suite Summary"
@@ -244,6 +246,22 @@ test-script-style-skip: test_script_style_skip.c $(SGML_TEST_OBJS)
 		test_script_style_skip.c $(SGML_TEST_OBJS)
 	@./$(BUILD_DIR)/test_script_style_skip
 
+test-vscript-script-tags: test_vscript_script_tags.c $(SGML_TEST_OBJS)
+	@echo ""
+	@echo "Building VSCRIPT/SCRIPT tag parsing tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_vscript_script_tags \
+		test_vscript_script_tags.c $(SGML_TEST_OBJS)
+	@./$(BUILD_DIR)/test_vscript_script_tags
+
+test-vscript-runtime: test_vscript_runtime.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
+	@echo ""
+	@echo "Building VSCRIPT/SCRIPT runtime tests..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) -I$(VIOLA_DIR) -I$(LIBWWW_DIR) -o $(BUILD_DIR)/test_vscript_runtime \
+		test_vscript_runtime.c $(VIOLA_TEST_SUPPORT) $(VIOLA_TEST_OBJS)
+	@./$(BUILD_DIR)/test_vscript_runtime
+
 # Clean test artifacts
 clean:
 	@echo "Cleaning test artifacts..."
@@ -282,4 +300,6 @@ help:
 	@echo "  test-logical-not     - Logical NOT (!) operator tests"
 	@echo "  test-do-while        - Do-while loop tests"
 	@echo "  test-script-style-skip - SCRIPT/STYLE content skipping tests"
+	@echo "  test-vscript-script-tags - VSCRIPT/SCRIPT tag parsing tests"
+	@echo "  test-vscript-runtime     - VSCRIPT/SCRIPT interpreter runtime tests"
 

@@ -12,5 +12,9 @@
   - Load and apply FOSI stylesheets reliably; verify styling across key components and embeds.
 
 ### Core & HTML
+- [ ] Finish `<TB>` table support
+  - Viola-specific row/bar marker (`HTML_tb`, `TABLE_CELL_TYPE_TB`); layout logic in `HTML_share.c` is marked “Questionable” (TB treated like TR + bar). Clarify intended behavior and align formatter with that intent.
+- [ ] Finish `COMPACT` handling where it is still a no-op
+  - `COMPACT` is parsed but `/* NOT USED YET */` for `<TABLE>`, preformatted text (`HTML_preTxt_script.v`), normal text (`HTML_txt_script.v`), and math (`HTML_math_script.v`). Lists already honor `compact` (e.g. `HTML_list_script.v` + `HTML_listSep_script.v`).
 - [ ] Implement HTML editing functions (`src/viola/html.c`)
   - `HText_applyStyle()`, `HText_updateStyle()`, `HText_selectionStyle()`, `HText_replaceSel()`, `HTextApplyToSimilar()`, `HTextSelectUnstyled()`, `HText_unlinkSelection()`.

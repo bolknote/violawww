@@ -401,3 +401,34 @@ long mini_exec_var(union PCode *pcode, int size, int var_idx)
     mini_exec_internal(pcode, size, vars);
     return (var_idx >= 0 && var_idx < MINI_MAX_VARS) ? vars[var_idx] : 0;
 }
+
+/* ========================================================================
+ * Convenience eval helpers
+ * ======================================================================== */
+
+int eval_reg(const char *script, long *out)
+{
+    int size = compile_script((char *)script);
+    if (size <= 0) {
+        fprintf(stderr, "    compile failed (size=%d) for: %s\n", size, script);
+        return 0;
+    }
+    *out = mini_exec_reg(test_pcode_buf, size);
+    return 1;
+}
+
+int eval_var(const char *script, int var_idx, long *out)
+{
+    int size = compile_script((char *)script);
+    if (size <= 0) {
+        fprintf(stderr, "    compile failed (size=%d) for: %s\n", size, script);
+        return 0;
+    }
+    *out = mini_exec_var(test_pcode_buf, size, var_idx);
+    return 1;
+}
+
+int eval_var0(const char *script, long *out)
+{
+    return eval_var(script, 0, out);
+}

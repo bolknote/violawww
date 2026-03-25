@@ -133,7 +133,7 @@ L 		HTML_txt 		0 0 0 1 0		3 7 1 2\n\
 AUTHOR		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 ENTRY		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 VINSERT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
-VSCRIPT		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
+VSCRIPT		HTML_vscript		1 0 0 0 0		0 0 0 0\n\
 VVIEW		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 GROUP		HTML_ignore		1 0 0 0 0		0 0 0 0\n\
 SECURITY	HTML_security		0 0 0 0 0		0 0 0 0\n\

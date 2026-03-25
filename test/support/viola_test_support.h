@@ -2,7 +2,8 @@
  * viola_test_support.h
  *
  * Shared infrastructure for Viola interpreter tests.
- * Provides parsing, compilation, AST search, and a mini pcode executor.
+ * Provides parsing, compilation, AST search, a mini pcode executor,
+ * and convenience eval helpers + test runner macros.
  */
 #pragma once
 
@@ -12,6 +13,9 @@
 
 #include "../../src/viola/ast.h"
 #include "../../src/viola/cgen.h"
+
+/* The global AST produced by yyparse(). */
+extern AST *theAST;
 
 /* Initialize interpreter subsystems (ident, scanutils, ast).
  * Returns 1 on success, 0 on failure.
@@ -47,9 +51,39 @@ long mini_exec_reg(union PCode *pcode, int size);
  */
 long mini_exec_var(union PCode *pcode, int size, int var_idx);
 
-/* Test runner macro */
+/* ========================================================================
+ * Convenience eval helpers — compile + execute in one call.
+ *
+ * All return 1 on success (result stored in *out), 0 on compile failure.
+ * ======================================================================== */
+
+/* Compile and execute, return final register value. */
+int eval_reg(const char *script, long *out);
+
+/* Compile and execute, return value of variable at var_idx. */
+int eval_var(const char *script, int var_idx, long *out);
+
+/* Shorthand: eval_var with var_idx = 0. */
+int eval_var0(const char *script, long *out);
+
+/* ========================================================================
+ * Test runner macros
+ * ======================================================================== */
+
 #define RUN(name, func) do { \
     total++; \
     if (func()) { passed++; printf("  ok  %s\n", name); } \
     else { printf("  FAIL  %s\n", name); } \
 } while (0)
+
+#define TEST_BEGIN(title) \
+    int main(void) { \
+        int passed = 0, total = 0; \
+        printf("%s\n", title); \
+        printf("==========================\n"); \
+        if (!viola_test_init()) return 1;
+
+#define TEST_END \
+        printf("\nResults: %d/%d passed\n", passed, total); \
+        return (passed == total) ? 0 : 1; \
+    }

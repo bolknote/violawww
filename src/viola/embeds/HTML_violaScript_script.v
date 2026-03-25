@@ -1,8 +1,10 @@
 /* HTML_violaScript_script.v
  * Handler for <SCRIPT TYPE="viola"> tag
- * Note: Since ACTION is SGML_LITTERAL, this script is not actually used.
- * ACTION parses its content directly to extract the viola script.
- * This file is kept for completeness in case we change the DTD.
+ *
+ * Currently CB_HTML_stag ignores all SCRIPT tags at the C level
+ * (inside_ignore_element guard), so this handler is not reached
+ * in the HTML2 parsing path. It is kept so that if the SCRIPT
+ * ignore guard is lifted for TYPE="viola", the object is ready.
  */
 
 	switch (arg[0]) {
@@ -15,16 +17,14 @@
 		}
 		return;
 	break;
-	case 8:
-		/* End of tag - pass script to parent if TYPE="viola" */
+	case 'i':
 		if (scriptType == "viola" || scriptType == "VIOLA") {
 			scriptCode = get("label");
 			if (scriptCode != "" && scriptCode != "0") {
-				send(parent(), "setScript", scriptCode);
+				interpret(scriptCode);
 			}
 		}
-		/* If TYPE is not viola (or not set), do nothing - ignore JS etc */
-		return;
+		return "";
 	break;
 	case "D":
 		return -1;

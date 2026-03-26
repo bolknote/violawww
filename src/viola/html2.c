@@ -670,15 +670,23 @@ void CB_HTML_stag(int element_number, const BOOL* present, const char** value, H
     }
 #endif
 
-    /* Ignore SCRIPT and STYLE opening tags — content is suppressed until
-     * the matching close tag arrives.  The SGML parser uses SGML_LITTERAL
-     * content model for these elements, so it will not call CB_HTML_stag
-     * for any markup inside the block; only the exact close tag triggers
-     * CB_HTML_etag.  We record WHICH element we're inside so that only
-     * the matching close tag can clear the guard (defense-in-depth). */
-    if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
+    /* SCRIPT/STYLE tags use SGML_LITTERAL content model, so content is never
+     * parsed as HTML — only the exact close tag is delivered.  STYLE and
+     * plain SCRIPT (no TYPE or non-viola TYPE) are suppressed entirely.
+     * SCRIPT TYPE="viola" falls through to normal tag processing so it
+     * reaches the HTML_violaScript style handler and executes as Viola. */
+    if (element_number == HTML_STYLE) {
         inside_ignore_element = element_number;
         return;
+    }
+    if (element_number == HTML_SCRIPT) {
+        if (present[HTML_SCRIPT_TYPE] && value[HTML_SCRIPT_TYPE] &&
+            strcasecmp(value[HTML_SCRIPT_TYPE], "viola") == 0) {
+            /* Fall through: HTML_violaScript handles this. */
+        } else {
+            inside_ignore_element = element_number;
+            return;
+        }
     }
 
     /* Defense-in-depth: if the SGML parser somehow delivers a start tag
@@ -1210,16 +1218,22 @@ void CB_HTML_etag(int element_number)
     }
 #endif
 
-    /* Ignore SCRIPT and STYLE closing tags.  Only clear the guard if
-     * the close tag matches the element that set it — this prevents a
-     * stray </style> from disabling a guard set by <script>, etc.
-     * With SGML_LITTERAL content model, the parser guarantees only the
-     * matching close tag reaches here; the element check is defense-in-depth. */
-    if (element_number == HTML_SCRIPT || element_number == HTML_STYLE) {
-        if (inside_ignore_element == element_number) {
+    /* STYLE closing tag: always suppressed. */
+    if (element_number == HTML_STYLE) {
+        if (inside_ignore_element == HTML_STYLE)
             inside_ignore_element = -1;
-        }
         return;
+    }
+    /* SCRIPT closing tag: plain SCRIPT sets inside_ignore_element — clear
+     * it and return.  SCRIPT TYPE="viola" did not set the guard, so it
+     * falls through to normal etag processing (HTML_SCRIPT is on the SBI
+     * stack and the HTML_violaScript handler runs its close logic). */
+    if (element_number == HTML_SCRIPT) {
+        if (inside_ignore_element == HTML_SCRIPT) {
+            inside_ignore_element = -1;
+            return;
+        }
+        /* fall through to normal etag processing */
     }
 
     /* Defense-in-depth: if the SGML parser somehow delivers an end tag

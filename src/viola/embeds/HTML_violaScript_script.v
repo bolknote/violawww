@@ -1,10 +1,10 @@
 /* HTML_violaScript_script.v
  * Handler for <SCRIPT TYPE="viola"> tag
  *
- * Currently CB_HTML_stag ignores all SCRIPT tags at the C level
- * (inside_ignore_element guard), so this handler is not reached
- * in the HTML2 parsing path. It is kept so that if the SCRIPT
- * ignore guard is lifted for TYPE="viola", the object is ready.
+ * CB_HTML_stag checks the TYPE attribute before the inside_ignore_element
+ * guard: TYPE="viola" falls through to normal tag processing, reaching
+ * this handler via the HTML_violaScript style mapping.  Plain <SCRIPT>
+ * (no TYPE or non-viola TYPE) is suppressed before the style lookup.
  */
 
 	switch (arg[0]) {

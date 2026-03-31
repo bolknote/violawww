@@ -232,19 +232,20 @@ Calls `scripts/create-dmg.sh` which uses the `create-dmg` tool.
 #### Step 1: Download XQuartz
 
 ```bash
-curl -L --progress-bar -o dmg/XQuartz-2.8.5.pkg \
+curl -L --progress-bar --retry 5 --retry-delay 5 --retry-all-errors -C - \
+    -o res/dmg/XQuartz-2.8.5.pkg \
     "https://github.com/XQuartz/XQuartz/releases/download/..."
 ```
 
-Cached in `dmg/` directory.
+Cached in `res/dmg/` directory.
 
 #### Step 2: Create Background Image
 
 The script creates a retro-style background:
 
-1. Convert `dmg/background.svg` to PNG
+1. Convert `res/dmg/background.svg` to PNG
 2. Add pixel-art globe from `src/vw/globes.xpm`
-3. Add Pei-Yuan Wei photo (if `dmg/pei_sm.gif` exists)
+3. Add Pei-Yuan Wei photo (if `res/dmg/pei_sm.gif` exists)
 
 ```bash
 # Create background
@@ -438,7 +439,7 @@ killall Finder
 | `scripts/bundle-dylibs.sh` | Dynamic library bundling |
 | `scripts/create-dmg.sh` | DMG creation with custom background |
 | `scripts/build-imagemagick.sh` | ImageMagick custom build |
-| `dmg/background.svg` | DMG background template |
+| `res/dmg/background.svg` | DMG background template |
 
 ---
 

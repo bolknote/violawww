@@ -38,9 +38,9 @@ tmp/
 # App bundle and DMG
 ViolaWWW.app/
 ViolaWWW.dmg
-dmg/background.png
-dmg/build/
-dmg/XQuartz-*.pkg
+res/dmg/background.png
+res/dmg/build/
+res/dmg/XQuartz-*.pkg
 res/ViolaWWW.icns
 res/ViolaWWW.iconset/
 src/launcher/launcher

@@ -58,4 +58,5 @@
   <rect x="440" y="120" width="140" height="140" fill="none" stroke="#808080" stroke-width="2" stroke-dasharray="8,4" rx="5"/>
   <text x="510" y="280" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#606060" text-anchor="middle">Applications</text>
   
-</svg>
+  </svg>
+

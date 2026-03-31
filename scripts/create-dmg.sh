@@ -6,7 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-DMG_DIR="$PROJECT_DIR/dmg"
+DMG_DIR="$PROJECT_DIR/res/dmg"
 BUILD_DIR="$DMG_DIR/build"
 XQUARTZ_VERSION="2.8.5"
 XQUARTZ_PKG="XQuartz-${XQUARTZ_VERSION}.pkg"
@@ -35,12 +35,14 @@ fi
 echo "Copying ViolaWWW.app..."
 cp -r "$PROJECT_DIR/ViolaWWW.app" "$BUILD_DIR/"
 
-# Download XQuartz if not present
+# Download XQuartz (resume if partial download exists)
 if [ ! -f "$DMG_DIR/$XQUARTZ_PKG" ]; then
     echo "Downloading XQuartz ${XQUARTZ_VERSION}..."
-    curl -L --progress-bar -o "$DMG_DIR/$XQUARTZ_PKG" "$XQUARTZ_URL"
-    echo ""
+else
+    echo "Resuming XQuartz ${XQUARTZ_VERSION} download..."
 fi
+curl -L --progress-bar --retry 5 --retry-delay 5 --retry-all-errors -C - -o "$DMG_DIR/$XQUARTZ_PKG" "$XQUARTZ_URL"
+echo ""
 cp "$DMG_DIR/$XQUARTZ_PKG" "$BUILD_DIR/"
 
 # Convert SVG to PNG for background
@@ -53,7 +55,7 @@ echo "Creating background with pixel-perfect globe..."
 # Always regenerate to ensure fresh build
 rm -f "$BACKGROUND_PNG"
 
-# 1. Convert SVG to PNG first
+# 1. Convert SVG to PNG first (1x, matches logical window size)
 echo "  - Creating base background..."
 if command -v rsvg-convert &> /dev/null; then
     rsvg-convert -w 640 -h 520 "$DMG_DIR/background.svg" > /tmp/bg_small.png

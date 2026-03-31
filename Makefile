@@ -972,4 +972,6 @@ dmg: app
 .PHONY: clean-app
 clean-app:
 	@echo "=== Cleaning app bundle ==="
-	rm -rf $(APP_BUNDLE) $(APP_NAME).dmg dmg/build dmg/*.pkg
+	rm -rf $(APP_BUNDLE) $(APP_NAME).dmg \
+		res/dmg/build \
+		res/dmg/XQuartz-*.pkg

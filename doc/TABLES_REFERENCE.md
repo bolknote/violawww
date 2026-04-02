@@ -212,6 +212,8 @@ Hello,
 
 Both examples above follow the Viola book chapter on tables. Archived source page (Pei-Yuan Wei, Berkeley XCF): [chp11_table.html on the Wayback Machine](https://web.archive.org/web/20040207193507id_/http://www.xcf.berkeley.edu/~wei/viola/book/chp11_table.html). That page also links to a historical "Test sample" (`testTableAll.html`).
 
+<img width="640" height="200" alt="" src="https://github.com/user-attachments/assets/fcde395c-bcd2-4ed9-9480-8f6f961e42dc" />
+
 ---
 
 ## See also

@@ -120,6 +120,16 @@ Topics covered:
 - **FIGCAP** — figure captions
 - Format support: XBM, XPM, GIF, PostScript
 
+### [TABLES_REFERENCE.md](TABLES_REFERENCE.md)
+**HTML tables** — HTML+ style model (TABLE, TCAP, TH, TD, TR, TB).
+
+Topics covered:
+- Supported tags vs modern HTML (no THEAD/COLGROUP/CAPTION)
+- DTD attributes for **TABLE**/**TBL**, **TCAP**, **TH**, **TD**
+- Viola classes, embed scripts, and `HTML_share.c` layout
+- Implementation status: which attributes are honored (**TD** **ALIGN** gap, **COMPACT**, **FOLD**/**INDEX**/**LABEL** on table, etc.)
+- Example markup aligned with historical HTML+ tables
+
 ### [CHANGED_TAG_REFERENCE.md](CHANGED_TAG_REFERENCE.md)
 **CHANGED** element for document revision tracking (HTML+ specification).
 
@@ -359,7 +369,7 @@ ViolaWWW (1991–1994) was the first X Window System based graphical web browser
 | FIGA (image maps) | HTML AREA/MAP |
 | STG stylesheets | CSS (similar in spirit) |
 | FOSI stylesheets | DSSSL / XSL-FO (similar in spirit) |
-| Tables | HTML 3.0 Tables |
+| [Tables](TABLES_REFERENCE.md) | HTML+ / early HTML 3.0 style (`TABLE`, `TCAP`, `TR`, `TB`, …) |
 | 3D Graphics tags | VRML, WebGL |
 | TTY (external processes) | External helper processes; IPC |
 | VPLOT (3D visualization) | WebGL, Three.js |
@@ -382,3 +392,4 @@ As Tim Berners-Lee noted in 1993: *"HMML is in fact already an extension of HTML
 - [VIOLA_AHEAD_OF_ITS_TIME.md](VIOLA_AHEAD_OF_ITS_TIME.md) - How Viola predated frames, CSS, JavaScript, MathML, and more
 - [CHANGELOG_HISTORY.md](CHANGELOG_HISTORY.md) - Comprehensive release history (1991–1995)
 - [CHARSET_TRANSLITERATION.md](CHARSET_TRANSLITERATION.md) - Encoding/transliteration pipeline
+- [TABLES_REFERENCE.md](TABLES_REFERENCE.md) - HTML tables (HTML+ model, DTD vs implementation)

@@ -6761,7 +6761,6 @@ static char _slotValue_HTML_tableCap3[] = "100";
 static char _slotValue_HTML_tableCap4[] = "30";
 static char _slotValue_HTML_tableCap5[] = "bold";
 static char _slotValue_HTML_tableCap6[] = "1";
-static char _slotValue_HTML_tableCap7[] = "6";
 /* END OF FILE */
 
 static SlotStruct objDesc_HTML_tableCap[] = {
@@ -6772,7 +6771,6 @@ static SlotStruct objDesc_HTML_tableCap[] = {
     {"height", _slotValue_HTML_tableCap4},
     {"font", _slotValue_HTML_tableCap5},
     {"format", _slotValue_HTML_tableCap6},
-    {"border", _slotValue_HTML_tableCap7},
     {(char*)0, (char*)0},
 };
 

@@ -445,12 +445,8 @@ int HTMLTableFormater(VObj* self, VObj* titleObj, int titleTopP)
             if (rowCount <= rowIdx)
                 rowCount = rowIdx;
         } else if (type & TABLE_CELL_TYPE_TB) {
-            /* Questionable: here TB has effect of TR,bar,TR
-             */
+            /* TB marks a single bar row between table rows. */
             rowIdx++;
-            if (rowCount <= rowIdx)
-                rowCount = rowIdx;
-            reg[rowIdx++] = 1;
             if (rowCount <= rowIdx)
                 rowCount = rowIdx;
         } else if (type & TABLE_CELL_TYPE_THTD) {
@@ -641,20 +637,18 @@ done:
                                      GET_y(mat->obj), GET_width(mat->obj), GET_height(mat->obj));
                 }
             } else if (mat->type & TABLE_CELL_TYPE_TB) {
-                /*				mat->height -= 2;
-                                                mat->y = y;
-                                                mat->height = TABLE_CELL_HEIGHT_TB;
-                */
-                /*
-                                                SET_y(mat->obj, y);
-                                                SET_height(mat->obj, mat->height);
-                                                if (GET_window(mat->obj)) {
-                                                  GLUpdatePosition(!GET__parent(mat->obj),
-                                                                   GET_window(mat->obj),
-                                                                   GET_x(mat->obj),
-                                                                   GET_y(mat->obj));
-                                                }
-                */
+                mat->x = 0;
+                mat->y = y;
+                mat->width = width;
+                mat->height = TABLE_CELL_HEIGHT_TB;
+                SET_x(mat->obj, mat->x);
+                SET_y(mat->obj, mat->y);
+                SET_width(mat->obj, mat->width);
+                SET_height(mat->obj, mat->height);
+                if (GET_window(mat->obj)) {
+                    GLUpdateGeometry(!GET__parent(mat->obj), GET_window(mat->obj),
+                                     mat->x, mat->y, mat->width, mat->height);
+                }
             }
         }
         y += reg[row];

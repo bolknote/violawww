@@ -78,7 +78,6 @@
 		break;
 		case "BORDER":
 			border = 1;
-			set("border", 6);
 		break;
 		case "COMPACT":
 			compact = 1; 	/* NOT USED YET */

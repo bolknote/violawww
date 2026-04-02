@@ -220,5 +220,4 @@ Both examples above follow the Viola book chapter on tables. Archived source pag
 - `src/libWWW/HTMLDTD.c` — element and attribute definitions
 - `src/libWWW/HTMLDTD.h` — `HTML_TABLE_*`, `HTML_TCAP_*`, `HTML_TH_*`, `HTML_TD_*` indices
 - `src/viola/HTML_share.c` — `HTMLTableFormater`, colspan/rowspan grid
-- [FIGURE_REFERENCE.md](FIGURE_REFERENCE.md) — figures and captions (separate from **TCAP**)
 - [STG_REFERENCE.md](STG_REFERENCE.md) — **TABLE** entry in STG for default spacing/style
